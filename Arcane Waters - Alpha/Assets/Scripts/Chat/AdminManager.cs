@@ -130,6 +130,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("wishlist", "Download wishlist", downloadSteamUserWishlistTest, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -739,6 +740,42 @@ public class AdminManager : NetworkBehaviour
       Cmd_RequestServerLog(parameters);
    }
    
+
+   private void requestGuildNameChange (string parameters) {
+      Cmd_RequestGuildNameChange(parameters);
+   }
+
+  [Command]
+   protected void Cmd_RequestGuildNameChange (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 0) {
+         string newGuildName = "";
+         string oldGuildName = "";
+         try {
+            oldGuildName = _player.guildName;
+            newGuildName = list[0];
+         } catch {
+            _player.Target_ReceiveNormalChat("Invalid Parameters" + " : " + parameters, ChatInfo.Type.System);
+         }
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.updateGuildName(_player.guildId, newGuildName);
+            
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               string message = "Changed guild name from {" + oldGuildName + "} to {" + newGuildName + "}";
+               D.debug(message);
+               _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+            });
+         });
+      } else {
+         _player.Target_ReceiveNormalChat("Invalid Parameters" + " : " + parameters, ChatInfo.Type.System);
+      }
+   }
+
    private void requestSpawnObj (string parameters) {
       processSpawnObj(parameters);
    }

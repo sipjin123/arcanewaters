@@ -504,6 +504,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void updateGuildName (int gldId, string newGuildName) {
+
+   }
+
    public static MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
       return null;
    }

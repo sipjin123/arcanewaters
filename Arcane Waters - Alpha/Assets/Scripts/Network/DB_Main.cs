@@ -2165,6 +2165,26 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
+   public static new void updateGuildName (int gldId, string newGuildName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE guilds SET gldName=@gldName WHERE gldId=@gldId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@gldId", gldId);
+            cmd.Parameters.AddWithValue("@gldName", newGuildName);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    #endregion
 
    #region Map Customization
