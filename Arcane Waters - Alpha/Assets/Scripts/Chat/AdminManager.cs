@@ -131,6 +131,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("wishlist", "Download wishlist", downloadSteamUserWishlistTest, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
+      cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -739,7 +740,40 @@ public class AdminManager : NetworkBehaviour
    private void requestLogs (string parameters) {
       Cmd_RequestServerLog(parameters);
    }
-   
+
+   private void requestPortChange (string parameters) {
+      Cmd_RequestPortChange(parameters);
+   }
+
+   [Command]
+   protected void Cmd_RequestPortChange (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 0) {
+         int newServerPort = ServerNetworkingManager.self.server.networkedPort.Value;
+         int oldServerPort = ServerNetworkingManager.self.server.networkedPort.Value;
+         try {
+            newServerPort = int.Parse(list[0]);
+         } catch {
+            _player.Target_ReceiveNormalChat("Invalid Parameters" + " : " + parameters, ChatInfo.Type.System);
+         }
+
+         NetworkedServer newServer = ServerNetworkingManager.self.servers.ToList().Find(_ => _.networkedPort.Value == newServerPort);
+         if (newServer != null) {
+            string message = "Warping user from server port {" + oldServerPort + "} to {" + newServerPort + "}";
+            _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+            _player.spawnInNewMap(_player.areaKey, _player.transform.localPosition, Direction.North, -1, newServerPort);
+         } else {
+            string message = "Failed warp, no server port {" + newServerPort + "} exists!";
+            _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+         }
+      } else {
+         _player.Target_ReceiveNormalChat("Invalid Parameters" + " : " + parameters, ChatInfo.Type.System);
+      }
+   }
 
    private void requestGuildNameChange (string parameters) {
       Cmd_RequestGuildNameChange(parameters);
