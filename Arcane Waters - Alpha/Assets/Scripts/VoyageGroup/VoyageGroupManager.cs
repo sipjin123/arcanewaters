@@ -441,7 +441,6 @@ public class VoyageGroupManager : MonoBehaviour
          foreach (VoyageGroupInfo vGroup in server.voyageGroups.Values) {
             if (vGroup.members.Contains(userId)) {
                voyageGroup = vGroup;
-               voyageGroup.portRegistered = server.networkedPort.Value;
                return true;
             }
          }

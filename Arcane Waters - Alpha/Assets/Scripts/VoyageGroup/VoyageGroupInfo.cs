@@ -37,9 +37,6 @@ public class VoyageGroupInfo
    // Where members of this group will be spawned in pvp
    public string pvpSpawn = "";
 
-   // The server port where this group is registered to
-   public int portRegistered;
-
    #endregion
 
    public VoyageGroupInfo () { }

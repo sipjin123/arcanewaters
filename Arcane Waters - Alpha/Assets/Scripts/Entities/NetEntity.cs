@@ -2314,37 +2314,7 @@ public class NetEntity : NetworkBehaviour
             if (CustomMapManager.isUserSpecificAreaKey(areaKey) || CustomMapManager.isUserSpecificAreaKey(newArea)) {
                D.adminLog("D) Redirecting now! for Visit user {" + userId + "}{" + entityName + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
             }
-
-            int newVoyageId = VoyageGroupManager.self.tryGetGroupByUser(userId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
-            
-            // Check if the area is an arena or league or treasure sit
-            bool tryGetOnGoingVoyageHosting = newVoyageId > 0 && (VoyageManager.isAnyLeagueArea(newArea)
-                                             || VoyageManager.isPvpArenaArea(newArea)
-                                             || VoyageManager.isTreasureSiteArea(newArea));
-            bool overrideServerPort = false;
-            if (!tryGetOnGoingVoyageHosting) {
-               // Check if there is already a server hosting the voyage, if not override the port
-               if (!ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer server)) {
-                  overrideServerPort = true;
-               } else {
-                  serverPort = server.networkedPort.Value;
-               }
-            }
-            if (overrideServerPort) {
-               int targetServerPort = -1;
-
-               // If the user is in a voyage group, find the server containing the voyage group registry, then use that server port to be the primary server of that voyage group
-               if (newVoyageId < 1 && voyageGroupInfo != null) {
-                  targetServerPort = voyageGroupInfo.portRegistered;
-                  D.adminLog("[[VoyageGroupBreakdown]] Found the server containing group: " + (voyageGroupInfo != null ? voyageGroupInfo.portRegistered + ":" + voyageGroupInfo.groupId : "NULL"), D.ADMIN_LOG_TYPE.Redirecting);
-                  if (targetServerPort > 0) {
-                     serverPort = targetServerPort;
-                  }
-               } else {
-                  D.adminLog("[[VoyageGroupBreakdown]] Try to get Voyage ID: {" + voyageId + ":" + newVoyageId + "} for User: {" + userId + ":" + serverPort + "}", D.ADMIN_LOG_TYPE.Redirecting);
-               }
-            }
-            D.adminLog("NetEntity! Redirecting now! for user {" + userId + "}{" + entityName + "} Voyage ID: {" + voyageId + ":" + newVoyageId + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Redirecting);
+            D.adminLog("NetEntity! Redirecting now! for user {" + userId + "}{" + entityName + "} Voyage ID: {" + voyageId + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Redirecting);
 
             // Redirect the player to the best server
             MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject, instanceId, serverPort));
