@@ -39,6 +39,7 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
          WorldMapPanelPin newPin = createPin(spot);
          positionPin(newPin);
          texturePin(newPin);
+         newPin.setTooltip(spot.displayName);
       }
 
       applyFilter();

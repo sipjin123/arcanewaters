@@ -225,7 +225,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public virtual int applyDamage (int amount, uint damageSourceNetId) {      
+   public virtual int applyDamage (int amount, uint damageSourceNetId) {
       float damageMultiplier = 1.0f;
 
       // Apply damage reduction, if there is any
@@ -1253,7 +1253,7 @@ public class SeaEntity : NetEntity
       targetingIndicator.init(lifetime, scaleModifier);
 
       // Play SFX for sea abilities
-      SoundEffectManager.self.playSeaAbilitySfx(seaAbilityType, spawnPosition);
+      SoundEffectManager.self.playSeaAbilitySfx(seaAbilityType, targetPosition: spawnPosition);
    }
 
    [Server]

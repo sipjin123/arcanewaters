@@ -27,8 +27,14 @@ public class WorldMapWaypointsManager : MonoBehaviour
             continue;
          }
 
-         if (!Util.isEmpty(spot.subAreaKey) && spot.subAreaKey != Global.player.areaKey) {
-            continue;
+         if (!Util.isEmpty(spot.subAreaKey)) {
+            if (spot.subAreaKey != Global.player.areaKey) {
+               continue;
+            }
+         } else {
+            if (WorldMapManager.self.getAreaKey(new WorldMapAreaCoords(spot.worldX, spot.worldY)) != Global.player.areaKey) {
+               continue;
+            }
          }
 
          instantiateWaypointAt(spot);

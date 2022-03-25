@@ -553,13 +553,13 @@ public class MouseManager : ClientMonoBehaviour
 
       coordsIndicator.toggle(false);
 
-      if (KeyUtils.GetKey(Key.LeftShift) || KeyUtils.GetKey(Key.RightShift)) {
-         Vector2 mousePosition = MouseUtils.mousePosition;
-         Vector2 pointerPosWorldSpace = Camera.main.ScreenToWorldPoint(mousePosition);
-
+      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
          if (Global.player == null || AreaManager.self.getArea(Global.player.areaKey) == null) {
             return;
          }
+
+         Vector2 mousePosition = MouseUtils.mousePosition;
+         Vector2 pointerPosWorldSpace = Camera.main.ScreenToWorldPoint(mousePosition);
 
          Area area = AreaManager.self.getArea(Global.player.areaKey);
          Vector2 pointerPosLocalSpace = area.transform.InverseTransformPoint(pointerPosWorldSpace);

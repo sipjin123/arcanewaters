@@ -49,6 +49,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    // Reference to the container of the restore button
    public RectTransform charRestoreButtonContainer;
 
+   // Reference to the control that displays the deletion status of the character
+   public Transform deletionIndicator;
+
    #endregion
 
    protected override void Awake () {
@@ -65,6 +68,8 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       // Sync canvas visibility with canvas group interactable flag. UINavigation requirement.
       buttonsCanvasGroup.gameObject.SetActive(!(!CharacterScreen.self.canvasGroup.interactable || CharacterScreen.self.canvasGroup.alpha < 0.01f));
+
+      deletionIndicator.gameObject.SetActive(isDeletedCharacter);
    }
 
    public void assignCharacter (OfflineCharacter character) {

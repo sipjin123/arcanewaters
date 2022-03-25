@@ -360,8 +360,11 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
-      // Only the user that planted the crop can harvest it
-      if (cropToHarvest.userId != _player.userId) {
+      // Check that the player has permission to harvest the crop
+      int guildId = CustomMapManager.getGuildId(cropToHarvest.areaKey);
+      bool canHarvestCrop = (cropToHarvest.userId == _player.userId) || (guildId > 0 && guildId == _player.guildId);
+      
+      if (!canHarvestCrop) {
          return;
       }
 

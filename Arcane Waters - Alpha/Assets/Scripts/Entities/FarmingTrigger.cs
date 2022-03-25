@@ -112,14 +112,27 @@ public class FarmingTrigger : MonoBehaviour
          return;
       }
 
-      // Only allow farming indicators in custom maps
-      bool isInCustomMap = CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey);
-      if (!isInCustomMap) {
-         return;
+      // Check guild map conditions
+      bool isInGuildMap = CustomMapManager.isGuildSpecificAreaKey(Global.player.areaKey);
+      if (isInGuildMap) {
+         // If we're in a guild map, make sure we belong to that guild
+         int guildId = CustomMapManager.getGuildId(Global.player.areaKey);
+         if (Global.player.guildId != guildId) {
+            return;
+         }
       }
 
-      // Check if this map belongs to the user
-      if (CustomMapManager.getUserId(Global.player.areaKey) != Global.player.userId) {
+      // Check user-specific map conditions
+      bool isInUserSpecificMap = CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey);
+      if (isInUserSpecificMap) {
+         // Check if this map belongs to the user
+         if (CustomMapManager.getUserId(Global.player.areaKey) != Global.player.userId) {
+            return;
+         }
+      }
+
+      // If we're not in a guild map, or a user-specific map, don't show indicators
+      if (!isInGuildMap && !isInUserSpecificMap) {
          return;
       }
 
@@ -257,11 +270,11 @@ public class FarmingTrigger : MonoBehaviour
                cropSpot.tryToInteractWithCropOnClient();
 
                // Try to harvest crop when colliding with crops using a pitchfork
-               if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null && cropSpot.crop.userId == Global.player.userId) {
+               if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
                   if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
                      //anyCropHarvested = true;
 
-                     cropSpot.harvestCrop();
+                     cropSpot.tryHarvestCropOnClient();
                   }
                }
             }

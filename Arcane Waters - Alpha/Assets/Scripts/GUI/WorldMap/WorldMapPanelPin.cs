@@ -14,6 +14,9 @@ public class WorldMapPanelPin : MonoBehaviour
    // Reference to the rect transform of the pin
    public RectTransform rect;
 
+   // Tooltip
+   public ToolTipComponent tooltip;
+
    #endregion
 
    public void setSprite(Sprite sprite) {
@@ -26,9 +29,15 @@ public class WorldMapPanelPin : MonoBehaviour
 
    public void toggle(bool show) {
       gameObject.SetActive(show);
+
    }
+   
+   public void setTooltip (string displayName) {
+      tooltip.message = displayName;
+   }   
 
    #region Private Variables
 
    #endregion
+
 }

@@ -242,7 +242,7 @@ public class CharacterScreen : GenericGameManager {
 
             if (spot.isDeletedCharacter) {
                Color deletedUserColor = Color.gray;
-               deletedUserColor.a = 0.3f;
+               deletedUserColor.a = 0.55f;
                offlineChar.characterStack.setGlobalTint(deletedUserColor);
             }
          } else {

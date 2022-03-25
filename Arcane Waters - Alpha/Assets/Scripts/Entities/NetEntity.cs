@@ -2885,7 +2885,12 @@ public class NetEntity : NetworkBehaviour
 
    [Command]
    public void Cmd_BroadcastCropProjectile (CropInfo cropInfo) {
-      Rpc_BroadcastCropProjectile(cropInfo);
+      bool hasFarmingPermissions = (AreaManager.self.isFarmOfUser(cropInfo.areaKey, this.userId) || CustomGuildMapManager.canUserFarm(cropInfo.areaKey, this));
+      if (hasFarmingPermissions) {
+         Rpc_BroadcastCropProjectile(cropInfo);
+      } else {
+         D.error("Client tried to allow harvesting of a crop that it doesn't have permission to farm.");
+      }
    }
 
    [ClientRpc]

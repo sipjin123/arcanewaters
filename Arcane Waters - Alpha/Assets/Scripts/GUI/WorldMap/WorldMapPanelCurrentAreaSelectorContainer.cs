@@ -36,7 +36,10 @@ public class WorldMapPanelCurrentAreaSelectorContainer : MonoBehaviour
 
       if (Global.player != null) {
          spot = WorldMapManager.self.getSpotFromPosition(Global.player.areaKey, Global.player.transform.localPosition);
-         return new WorldMapAreaCoords(spot.worldX, spot.worldY);
+
+         if (spot != null) {
+            return new WorldMapAreaCoords(spot.worldX, spot.worldY);
+         }
       }
 
       // Fallback area

@@ -117,7 +117,7 @@ public class CropSpot : MonoBehaviour {
          // If the player is holding a pitchfork, try to harvest this plot
          if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested() && hasFarmingPermissions) {
             player.playFastInteractAnimation(transform.position, true);
-            harvestCrop();
+            tryHarvestCropOnClient();
             triggeredAction = true;
          }
 
@@ -133,13 +133,16 @@ public class CropSpot : MonoBehaviour {
       }
    }
 
-   public void harvestCrop () {
+   public void tryHarvestCropOnClient () {
       if (!Global.player || !crop) {
          return;
       }
-      
-      PlayerBodyEntity player = Global.player.getPlayerBodyEntity();
-      player.Cmd_BroadcastCropProjectile(crop.getCropInfo());
+
+      bool hasFarmingPermissions = (AreaManager.self.isFarmOfUser(areaKey, Global.player.userId) || CustomGuildMapManager.canUserFarm(areaKey, Global.player));
+      if (hasFarmingPermissions) {
+         PlayerBodyEntity player = Global.player.getPlayerBodyEntity();
+         player.Cmd_BroadcastCropProjectile(crop.getCropInfo());
+      }
    }
 
    #region Private Variables

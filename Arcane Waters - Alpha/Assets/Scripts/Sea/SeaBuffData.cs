@@ -51,6 +51,8 @@ public class SeaBuffData {
             return Attack.Type.SpeedBoost;
          case SeaBuff.Type.DamageAmplify:
             return Attack.Type.DamageAmplify;
+         case SeaBuff.Type.Heal:
+            return Attack.Type.Heal;
          default:
             return Attack.Type.None;
       }

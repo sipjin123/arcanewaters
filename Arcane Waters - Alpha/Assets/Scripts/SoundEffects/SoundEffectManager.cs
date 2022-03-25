@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 using System;
+using System.Linq;
 
 public class SoundEffectManager : GenericGameManager
 {
@@ -59,7 +60,6 @@ public class SoundEffectManager : GenericGameManager
    public const string ATTACK_RUM = "event:/SFX/Player/Interactions/Diegetic/Weapons/Rum/Attack_Rum";
 
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
-   //public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
    public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
 
@@ -140,7 +140,7 @@ public class SoundEffectManager : GenericGameManager
    public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
    public const string DOOR_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Close";
 
-   public const string DOOR_CLOTH_OPEN = "";
+   public const string DOOR_CLOTH_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Cloth_Open";
    public const string DOOR_CLOTH_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Cloth_Close";
 
    public const string PICKUP_POWERUP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Powerup_Generic";
@@ -156,6 +156,10 @@ public class SoundEffectManager : GenericGameManager
    public const string WEB_JUMP = "event:/SFX/Player/Interactions/Diegetic/Web_Jumps";
 
    public const string INTERACTABLE_BOX = "event:/SFX/Player/Interactions/Diegetic/Wooden_Box_SEQ";
+   public const string FIRE_SPLASH = "event:/SFX/Player/Interactions/Diegetic/FireSplash";
+   public const string DISCOVERY_RUINS = "event:/SFX/Player/Interactions/Diegetic/Discovery_Ruins";
+   public const string BERSERKER_CALL = "event:/SFX/Player/Interactions/Diegetic/Berserker_Call";
+   public const string RUFFIAN_REPAIRS = "event:/SFX/Player/Interactions/Diegetic/Ruffian_Repairs";
 
    #endregion
 
@@ -175,6 +179,10 @@ public class SoundEffectManager : GenericGameManager
 
    protected override void Awake () {
       self = this;
+   }
+
+   private void Start () {
+      //InvokeRepeating(nameof(checkRuffianRepairs), 0f, 1f);
    }
 
    public void playFmodSfx (string path, Vector3 position = default) {
@@ -259,6 +267,14 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(hurtPath, position);
    }
 
+   public void playSeaMineExplosionSfx (Vector3 position) {
+      FMOD.Studio.EventInstance eventInstance = createEventInstance(SEA_MINE);
+      eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      eventInstance.setParameterByName(AMBIENCE_SWITCH_PARAM, 2);
+      eventInstance.start();
+      eventInstance.release();
+   }
+
    public void playProjectileTerrainHitSound (bool hitLand, bool hitEnemy, ProjectileType projectileType, Transform projectileTransform, Rigidbody2D projectileBody) {
       if (hitLand || hitEnemy) {
          return;
@@ -275,6 +291,9 @@ public class SoundEffectManager : GenericGameManager
             eventPath = SEA_MINE;
             parameterName = AMBIENCE_SWITCH_PARAM;
             parameterValue = 1;
+            break;
+         case ProjectileType.Cannonball_Fire:
+            eventPath = FIRE_SPLASH;
             break;
       }
 
@@ -386,7 +405,6 @@ public class SoundEffectManager : GenericGameManager
          return;
       }
 
-      _previousAmbience = _currentAmbience;
       _currentAmbience = audioParam;
 
       _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) _currentAmbience);
@@ -410,7 +428,7 @@ public class SoundEffectManager : GenericGameManager
       bool isSea = AreaManager.self.isSeaArea(areaKey);
 
       if (isSea) {
-         if (VoyageManager.isPvpArenaArea(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
             return BackgroundMusicType.Sea_PvP;
          } else if (VoyageManager.isLeagueArea(areaKey)) {
             return BackgroundMusicType.Sea_League;
@@ -705,17 +723,28 @@ public class SoundEffectManager : GenericGameManager
    }
 
    // Sea Abilities SFX
-   public void playSeaAbilitySfx (SeaAbilityType seaAbilityType, Vector3 position) {
+   public void playSeaAbilitySfx (SeaAbilityType seaAbilityType, uint netId = 0, Vector3 targetPosition = default) {
       switch (seaAbilityType) {
          case SeaAbilityType.Sail_Shredder:
          case SeaAbilityType.Davy_Jones:
-            playShipCannonSfx(seaAbilityType, position: position);
+            playShipCannonSfx(seaAbilityType, position: targetPosition);
             break;
          case SeaAbilityType.Fishman_Attack:
-            playFmodSfx(FISHMAN_ATTACK, position);
+            playFmodSfx(FISHMAN_ATTACK, targetPosition);
             break;
          case SeaAbilityType.Reef_Giant_Attack:
-            playFmodSfx(REEFMAN_ATTACK, position);
+            playFmodSfx(REEFMAN_ATTACK, targetPosition);
+            break;
+         case SeaAbilityType.Berzerkers_Call:
+         case SeaAbilityType.Ruffian_Repairs:
+            NetEntity sourceEntity = EntityManager.self.getEntityByNetId(netId);
+            if (sourceEntity != null && sourceEntity is SeaEntity) {
+               if (seaAbilityType == SeaAbilityType.Berzerkers_Call) {
+                  playAttachedSfx(BERSERKER_CALL, sourceEntity.transform, sourceEntity.getRigidbody());
+               } else if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+                  //playRuffianRepairsSfx(netId);
+               }
+            }
             break;
       }
    }
@@ -944,7 +973,7 @@ public class SoundEffectManager : GenericGameManager
 
       switch (action) {
          case DoorAction.Open:
-            path = biomeType == Biome.Type.Desert ? string.Empty : DOOR_OPEN;
+            path = biomeType == Biome.Type.Desert ? DOOR_CLOTH_OPEN : DOOR_OPEN;
             break;
          case DoorAction.Close:
             path = biomeType == Biome.Type.Desert ? DOOR_CLOTH_CLOSE : DOOR_CLOSE;
@@ -954,7 +983,42 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(path, position);
    }
 
-   private FMOD.Studio.EventInstance createEventInstance (string path) {
+   // Ruffian Repairs
+   public void playRuffianRepairsSfx (uint netId) {
+      NetEntity sourceEntity = EntityManager.self.getEntityByNetId(netId);
+      if (sourceEntity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
+         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, sourceEntity.transform, sourceEntity.getRigidbody());
+         eventInstance.start();
+
+         _ruffianRepairsEvents.Add(netId, eventInstance);
+      }
+   }
+
+   private void checkRuffianRepairs () {
+      List<uint> keys = _ruffianRepairsEvents.Keys.ToList();
+      foreach (uint netId in keys) {
+         NetEntity entity = EntityManager.self.getEntityByNetId(netId);
+         releaseRuffianRepairs(netId, false, entity == null);
+      }
+   }
+
+   public void releaseRuffianRepairs (uint netId, bool canRelease, bool canRemove) {
+      if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
+         eventInstance.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
+         eventInstance.getParameterByName(AUDIO_SWITCH_PARAM, out float value);
+
+         if (canRemove || (state == FMOD.Studio.PLAYBACK_STATE.STOPPED && value > 0)) {
+            eventInstance.release();
+            _ruffianRepairsEvents.Remove(netId);
+         }
+         else if (canRelease) {
+            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
+         }
+      }
+   }
+
+   public FMOD.Studio.EventInstance createEventInstance (string path) {
       return FMODUnity.RuntimeManager.CreateInstance(path);
    }
 
@@ -984,14 +1048,14 @@ public class SoundEffectManager : GenericGameManager
    // Current music we're playing
    private BackgroundMusicType _currentMusic = BackgroundMusicType.None;
 
-   // Last ambience we played
-   private AmbienceMusicType _previousAmbience = AmbienceMusicType.None;
-
    // Current ambience we're playing
    private AmbienceMusicType _currentAmbience = AmbienceMusicType.None;
 
    // Cementery area key
    private const string _cementeryAreaKey = "Tutorial Town Cemetery v2";
+
+   // Ruffian Repairs events
+   private Dictionary<uint, FMOD.Studio.EventInstance> _ruffianRepairsEvents = new Dictionary<uint, FMOD.Studio.EventInstance>();
 
    public enum BackgroundMusicType
    {
@@ -1066,7 +1130,9 @@ public class SoundEffectManager : GenericGameManager
       Sail_Shredder = 2,
       Davy_Jones = 3,
       Fishman_Attack = 4,
-      Reef_Giant_Attack = 5
+      Reef_Giant_Attack = 5,
+      Ruffian_Repairs = 6,
+      Berzerkers_Call = 7
    }
 
    public enum HorrorAttackType
@@ -1091,6 +1157,12 @@ public class SoundEffectManager : GenericGameManager
    {
       Movement = 0,
       Stopped = 1
+   }
+
+   public enum RuffianRepairsType
+   {
+      Loop = 0,
+      Stop = 1
    }
 
    #endregion

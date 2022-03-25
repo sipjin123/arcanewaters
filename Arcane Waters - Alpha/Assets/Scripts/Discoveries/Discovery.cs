@@ -89,6 +89,13 @@ public class Discovery : NetworkBehaviour, IObserver
                   _isWaitingForRequestResponse = true;
                   Global.player.rpc.Cmd_FoundDiscovery(data.discoveryId);
                   Minimap.self.deleteDiscoveryIcon(this);
+
+                  _canCancelInvestigateHoldSound = false;
+               }
+
+               // Play investigate hold sound loop
+               if (_canPlayInvestigateHoldSound) {
+                  playSoundEffect(SoundEvent.Investigate_Hold);
                }
             }
          } else {
@@ -100,6 +107,10 @@ public class Discovery : NetworkBehaviour, IObserver
             }
 
             _currentProgress = Mathf.Max(_currentProgress - Time.deltaTime * 2f, 0);
+         }
+
+         if (_hovered && _revealSpriteAnim.getIndex() == revealAnimPressedFrame() - 1 && _canPlayInvestigateAppearSound) {
+            playSoundEffect(SoundEvent.Investigate_Appear);
          }
       }
    }
@@ -114,6 +125,10 @@ public class Discovery : NetworkBehaviour, IObserver
 
    public void onPointerUp () {
       _pointerHeld = false;
+
+      if (!_isRevealed && _canCancelInvestigateHoldSound) {
+         playSoundEffect(SoundEvent.Stop_Investigate_Hold);
+      }
    }
 
    public void onPointerEnter () {
@@ -129,6 +144,8 @@ public class Discovery : NetworkBehaviour, IObserver
          }
 
          _showRevealVisual = true;
+
+         playSoundEffect(SoundEvent.Appear);
       }
    }
 
@@ -138,6 +155,8 @@ public class Discovery : NetworkBehaviour, IObserver
 
       if (!_isRevealed) {
          _showMist = true;
+
+         playSoundEffect(SoundEvent.None);
       }
       _showRevealVisual = false;
    }
@@ -206,6 +225,8 @@ public class Discovery : NetworkBehaviour, IObserver
          _revealSpriteAnim.resetAnimation();
 
          StartCoroutine(CO_Reveal());
+
+         playSoundEffect(SoundEvent.Glow);
       }
    }
 
@@ -235,6 +256,43 @@ public class Discovery : NetworkBehaviour, IObserver
             return 28;
          default:
             return 34;
+      }
+   }
+
+   private void playSoundEffect (SoundEvent soundEvent) {
+      if (!_fmodEvent.isValid()) {
+         _fmodEvent = SoundEffectManager.self.createEventInstance(SoundEffectManager.DISCOVERY_RUINS);
+         _fmodEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform.position));
+      }
+
+      _fmodEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
+      _fmodEvent.getParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, out float value);
+
+      int paramValue = (int) value;
+
+      if (((state == FMOD.Studio.PLAYBACK_STATE.PLAYING || !_canPlayAppearSound) && soundEvent == SoundEvent.Appear) ||
+         (soundEvent == SoundEvent.Investigate_Appear && !_canPlayInvestigateAppearSound) ||
+         (soundEvent == SoundEvent.Investigate_Hold && !_canPlayInvestigateHoldSound) ||
+         (soundEvent == SoundEvent.Stop_Investigate_Hold && paramValue != (int) SoundEvent.Investigate_Hold)) {
+         return;
+      } else if (soundEvent == SoundEvent.None || (paramValue == (int) SoundEvent.Investigate_Hold && soundEvent == SoundEvent.Stop_Investigate_Hold)) {
+         _fmodEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
+         _canPlayAppearSound = _canPlayInvestigateAppearSound = soundEvent == SoundEvent.None;
+         _canPlayInvestigateHoldSound = true;
+      } else {
+         _fmodEvent.setParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, (int) soundEvent);
+         _fmodEvent.start();
+
+         if (soundEvent == SoundEvent.Appear) {
+            _canPlayAppearSound = false;
+         } else if (soundEvent == SoundEvent.Investigate_Appear) {
+            _canPlayInvestigateAppearSound = false;
+         } else if (soundEvent == SoundEvent.Investigate_Hold) {
+            _canPlayInvestigateHoldSound = false;
+         } else if (soundEvent == SoundEvent.Glow) {
+            _fmodEvent.release();
+         }
       }
    }
 
@@ -290,6 +348,31 @@ public class Discovery : NetworkBehaviour, IObserver
 
    // The maximum explorer experience a player can get for finding a discovery
    private const int MAX_EXPLORER_XP = 25;
+
+   // FMOD event
+   private FMOD.Studio.EventInstance _fmodEvent;
+
+   // The sound effect that should play once when the mist disappears
+   private bool _canPlayAppearSound = true;
+
+   // The sound effect that should play once when the Investigate button appears
+   private bool _canPlayInvestigateAppearSound = true;
+
+   // The sound effect that loops when the Investigate button is hold
+   private bool _canPlayInvestigateHoldSound = true;
+
+   // The investigate hold loop won't be cancelled after revealing the discovery
+   private bool _canCancelInvestigateHoldSound = true;
+
+   private enum SoundEvent
+   {
+      None = -2,
+      Stop_Investigate_Hold = -1,
+      Appear = 0,
+      Investigate_Appear = 1,
+      Investigate_Hold = 2,
+      Glow = 3
+   }
 
    #endregion
 }

@@ -484,7 +484,7 @@ public class PlayerShipEntity : ShipEntity
                      ((ShipEntity) casterEntity).totalHeals = voyageGroup.getTotalHeals(casterEntity.userId);
                   }
                }
-               Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false);
+               Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false, this.netId);
             }
          }
       }
@@ -2453,7 +2453,7 @@ public class PlayerShipEntity : ShipEntity
    private const float NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA = 0.2f;
 
    // The maximum number of seconds player ships are invulnerable after spawning
-   private const float SPAWN_INVULNERABILITY_DURATION = 600;
+   private const float SPAWN_INVULNERABILITY_DURATION = 20;
 
    // Current ability index
    private int _currentAbilitySlotIndex = 0;
