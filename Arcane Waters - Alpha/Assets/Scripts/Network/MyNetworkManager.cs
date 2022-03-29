@@ -417,7 +417,6 @@ public class MyNetworkManager : NetworkManager
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the current voyage info the user is part of, if any
             int voyageId = VoyageGroupManager.self.tryGetGroupByUser(authenticatedUserId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
-            D.adminLog("[[VoyageGroupBreakdown]] Try to get Voyage ID: {" + voyageId + "} for User: {" + authenticatedUserId + "}", D.ADMIN_LOG_TYPE.Redirecting);
 
             // If the user is not assigned to this server, we must ask the master server where to redirect him
             if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(authenticatedUserId)) {

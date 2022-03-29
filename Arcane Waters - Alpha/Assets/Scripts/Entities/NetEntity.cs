@@ -2197,7 +2197,6 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
-      D.adminLog("Trigger Spawn in New Map Method-A: {" + newArea + ":-1}", D.ADMIN_LOG_TYPE.Redirecting);
       spawnInNewMap(newArea, targetLocalPos, adjustedNewFacingDirection, -1, -1);
    }
 
@@ -2248,7 +2247,6 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      D.adminLog("Trigger Spawn in New Map Method-B: {" + newArea + ":" + serverPort + "}", D.ADMIN_LOG_TYPE.Redirecting);
       // Now that we know the target server, redirect them there
       findBestServerAndWarp(newArea, newLocalPosition, -1, newFacingDirection, instanceId, serverPort);
    }
@@ -2265,7 +2263,6 @@ public class NetEntity : NetworkBehaviour
             ? SpawnManager.self.getDefaultLocalPosition(newArea, true)
             : SpawnManager.self.getLocalPosition(newArea, spawn, true);
 
-      D.adminLog("Trigger Spawn in New Map Method-AA: {" + newArea + ":-1}", D.ADMIN_LOG_TYPE.Redirecting);
       findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection, -1, -1);
    }
 
