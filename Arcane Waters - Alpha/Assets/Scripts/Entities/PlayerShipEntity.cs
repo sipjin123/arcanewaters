@@ -1733,7 +1733,11 @@ public class PlayerShipEntity : ShipEntity
 
    [Command]
    private void Cmd_RequestRespawn () {
-      this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+      if (VoyageManager.isWorldMapArea(areaKey)) {
+         this.spawnInBiomeHomeTown();
+      } else {
+         this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+      }
 
       // Set the ship health back to max
       restoreMaxShipHealth();

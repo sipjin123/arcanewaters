@@ -2058,7 +2058,11 @@ public class NetEntity : NetworkBehaviour
       }
 
       D.debug($"Returning player {entityName} to town: Go Home Command!");
-      spawnInBiomeHomeTown(Biome.Type.Forest);
+      if (VoyageManager.isWorldMapArea(areaKey)) {
+         spawnInBiomeHomeTown();
+      } else {
+         spawnInBiomeHomeTown(Biome.Type.Forest);
+      }
    }
 
    [Server]
