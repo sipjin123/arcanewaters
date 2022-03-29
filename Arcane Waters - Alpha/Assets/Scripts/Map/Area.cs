@@ -16,7 +16,7 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // The special type of the area
-   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7, PvpArena = 8, GuildMap = 9, POI = 10 }
+   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7, PvpArena = 8, GuildMap = 9, POI = 10, WorldMap = 11 }
 
    public static string TUTORIAL_AREA = "Tutorial Town Cemetery";
 

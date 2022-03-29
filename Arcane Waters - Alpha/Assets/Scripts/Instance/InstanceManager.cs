@@ -37,6 +37,14 @@ public class InstanceManager : MonoBehaviour
          }
       }
 
+      // If the player is warping to a world map instance, search for it
+      if (VoyageManager.isWorldMapArea(areaKey) && WorldMapManager.self.isWorldMapArea(areaKey)) {
+         Instance existingInstance = getWorldMapOpenInstance(areaKey);
+         if (existingInstance != null) {
+            instance = existingInstance;
+         }
+      }
+
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
          if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
@@ -52,11 +60,6 @@ public class InstanceManager : MonoBehaviour
                   instance = inst;
                } else {
                   D.debug("Failed to get voyage instance: " + voyageInstanceId);
-               }
-            } else {
-               Instance existingInstance = getWorldMapOpenInstance(areaKey);
-               if (existingInstance != null) {
-                  instance = existingInstance;
                }
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
@@ -115,16 +118,6 @@ public class InstanceManager : MonoBehaviour
                if (inst != null) {
                   instance = inst;
                }
-            } else {
-               Instance existingInstance = getWorldMapOpenInstance(areaKey);
-               if (existingInstance != null) {
-                  instance = existingInstance;
-               }
-            }
-         } else {
-            Instance existingInstance = getWorldMapOpenInstance(areaKey);
-            if (existingInstance != null) {
-               instance = existingInstance;
             }
          }
       }

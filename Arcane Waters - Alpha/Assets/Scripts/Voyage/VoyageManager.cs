@@ -232,6 +232,10 @@ public class VoyageManager : GenericGameManager {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.POI;
    }
 
+   public static bool isWorldMapArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.WorldMap;
+   }
+
    public static bool isPvpArenaArea (string areaKey) {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.PvpArena;
    }
