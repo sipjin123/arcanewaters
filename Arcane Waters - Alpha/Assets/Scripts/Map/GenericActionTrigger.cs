@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using MapCreationTool.Serialization;
 using MapCreationTool;
+using UnityEngine.UI;
+using TMPro;
 
 public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -15,14 +17,23 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    #region Public Variables
 
+   // If this action trigger is sprite based or image based
+   public bool isSpriteBase;
+
    // The sprite renderer assigned to this object
    public SpriteRenderer spriteRender;
+
+   // The canvas group reference
+   public CanvasGroup canvasGroup;
+
+   // The image assigned to this object
+   public Image genericImage;
 
    // The biome sprite pair
    public List<GenericBiomeSpritePair> biomeSpritePair;
 
    // The distance between this object to trigger interaction
-   public const float INTERACT_DIST = .5f;
+   public const float INTERACT_DIST = 1f;
 
    // The distance between player and this object for the visibility of the sprite to render
    public const float VISIBLITY_DIST = 3;
@@ -84,7 +95,11 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
          if (biomeType != Biome.Type.None) {
             spriteRender.gameObject.SetActive(true);
             GenericBiomeSpritePair spritePairData = biomeSpritePair.Find(_ => _.biomeType == biomeType);
-            spriteRender.sprite = spritePairData == null ? null : spritePairData.sprite;
+            if (isSpriteBase) {
+               spriteRender.sprite = spritePairData == null ? null : spritePairData.sprite;
+            } else {
+               genericImage.sprite = spritePairData == null ? null : spritePairData.sprite;
+            }
             if (circleVoyageCollider != null) {
                circleVoyageCollider.enabled = true;
             }
@@ -96,12 +111,21 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    private void Update () {
       if (actionName == WARP_TO_LEAGUE_ACTION) {
          Color currColor = spriteRender.color;
-         if (withinRenderBounds && currColor.a < 1) {
+         float alphaValue = isSpriteBase ? currColor.a : canvasGroup.alpha;
+         if (withinRenderBounds && alphaValue < 1) {
             currColor.a += Time.deltaTime * FADE_SPEED;
-            spriteRender.color = currColor;
-         } else if (!withinRenderBounds && currColor.a > 0) {
+            if (isSpriteBase) {
+               spriteRender.color = currColor;
+            } else {
+               canvasGroup.alpha += Time.deltaTime * FADE_SPEED;
+            }
+         } else if (!withinRenderBounds && alphaValue > 0) {
             currColor.a -= Time.deltaTime * FADE_SPEED;
-            spriteRender.color = currColor;
+            if (isSpriteBase) {
+               spriteRender.color = currColor;
+            } else {
+               canvasGroup.alpha -= Time.deltaTime * FADE_SPEED;
+            }
          }
       }
    }
@@ -176,6 +200,11 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
+      // Warping to league uses GUI button to trigger
+      if (actionName == WARP_TO_LEAGUE_ACTION) {
+         return;
+      }
+      
       NetEntity entity = collision.GetComponent<NetEntity>();
       if (entity != null && interactionType == InteractionType.Enter && actionName != WARP_TO_LEAGUE_ACTION && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
@@ -190,6 +219,10 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
          withinRenderBounds = false;
       }
 
+      // Warping to league uses GUI button to trigger
+      if (actionName == WARP_TO_LEAGUE_ACTION) {
+         return;
+      }
       if (entity != null && interactionType == InteractionType.Exit && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
@@ -203,6 +236,11 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
       if (entity != null && (interactionType == InteractionType.Stay || (interactionType == InteractionType.Enter && actionName == WARP_TO_LEAGUE_ACTION))) {
          if (distanceBetweenPlayer < INTERACT_DIST) {
+            // Warping to league uses GUI button to trigger
+            if (actionName == WARP_TO_LEAGUE_ACTION) {
+               return;
+            }
+
             if (canActivateTrigger(entity)) {
                if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
                   action.Invoke(entity);
@@ -214,6 +252,31 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       }
+   }
+
+   public void triggerAction () {
+      if (Global.player == null) {
+         return;
+      }
+      string message = "";
+      float distanceBetweenPlayer = Vector2.Distance(transform.position, Global.player.transform.position);
+      if (distanceBetweenPlayer < INTERACT_DIST) {
+         if (canActivateTrigger(Global.player)) {
+            if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
+               action.Invoke(Global.player);
+               return;
+            }
+         } else {
+            message = "User cannot activate this!";
+         }
+      } else {
+         message = "Too far away!";
+      }
+
+      Vector3 pos = Global.player.transform.position + new Vector3(0f, .32f);
+      GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+      messageCanvas.transform.position = pos;
+      messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = message;
    }
 
    private bool canActivateTrigger (NetEntity entity) {
