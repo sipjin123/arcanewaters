@@ -37,6 +37,9 @@ public class VoyageGroupInfo
    // Where members of this group will be spawned in pvp
    public string pvpSpawn = "";
 
+   // The creator of the voyage group
+   public int voyageCreator = 0;
+
    #endregion
 
    public VoyageGroupInfo () { }
@@ -121,9 +124,10 @@ public class VoyageGroupInfo
       }
    }
 
-   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate, bool isGhost) {
+   public VoyageGroupInfo (int groupId, int creatorId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate, bool isGhost) {
       this.groupId = groupId;
       this.voyageId = voyageId;
+      this.voyageCreator = creatorId;
       this.creationDate = creationDate.ToBinary();
       this.isQuickmatchEnabled = isQuickmatchEnabled;
       this.isPrivate = isPrivate;

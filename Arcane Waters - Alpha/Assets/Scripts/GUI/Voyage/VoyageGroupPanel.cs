@@ -49,6 +49,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // Distance between voyage member arrow before colliding
    public const float ARROW_COLLISION_DISTANCE = .1f;
 
+   // The leader of the voyage group
+   public int voyageLeader;
+
    #endregion
 
    protected override void Awake () {
@@ -138,12 +141,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
                }
             }
 
-            if (i == 0) {
-               memberCell.teamLeaderIndicator.SetActive(true);
-            } else {
-               memberCell.teamLeaderIndicator.SetActive(false);
-            }
-
             if (i < directionalArrowList.Count) {
                VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
                voyageMemArrow.setTarget(entity.gameObject);
@@ -184,26 +181,27 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       VoyageGroupManager.self.groupMemberArrowContainer.DestroyChildren();
       _memberArrows.Clear();
 
+      this.voyageLeader = voyageLeader;
       if (groupMembers.Length > MAX_MEMBER_CELLS) {
          // Large groups only display the local player portrait (temporary)
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
             if (cellInfo.userId == Global.player.userId) {
-               instantiatePortraitAndArrow(cellInfo, voyageLeader);
+               instantiatePortraitAndArrow(cellInfo);
             }
          }
       } else {
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
-            instantiatePortraitAndArrow(cellInfo, voyageLeader);
+            instantiatePortraitAndArrow(cellInfo);
          }
       }
 
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
-   private void instantiatePortraitAndArrow (VoyageGroupMemberCellInfo cellInfo, int voyageLeader) {
+   private void instantiatePortraitAndArrow (VoyageGroupMemberCellInfo cellInfo) {
       // Instantiate the cell
       VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
-      cell.setCellForGroupMember(cellInfo, voyageLeader);
+      cell.setCellForGroupMember(cellInfo);
       _memberCells.Add(cell);
    }
 

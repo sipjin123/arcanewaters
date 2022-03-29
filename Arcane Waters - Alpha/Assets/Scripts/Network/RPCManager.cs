@@ -6507,8 +6507,7 @@ public class RPCManager : NetworkBehaviour
          } else {
             // Back to the Unity thread
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               int totalMembers = voyageGroup.members.Count;
-               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray(), totalMembers > 0 ? voyageGroup.members[0] : 0);
+               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray(), voyageGroup.voyageCreator);
 
                // Also send updated info of this user to the other group members
                foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {
@@ -6530,7 +6529,7 @@ public class RPCManager : NetworkBehaviour
          EntityManager.self.removeBypassForUser(_player.userId);
          return true;
       }
-      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
+      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +

@@ -122,7 +122,7 @@ public class VoyageGroupManager : MonoBehaviour
          yield return null;
       }
       
-      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(response.Value, voyageId, DateTime.UtcNow, !isPrivate, isPrivate, isGhost);
+      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(response.Value, userId, voyageId, DateTime.UtcNow, !isPrivate, isPrivate, isGhost);
       voyageGroup.members.Add(userId);
 
       // Store the group in our server
@@ -190,7 +190,7 @@ public class VoyageGroupManager : MonoBehaviour
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, NetEntity player) {
       player.voyageGroupId = -1;
       removeUserFromGroup(voyageGroup, player.userId);
-      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0], voyageGroup.members.Count > 0 ? voyageGroup.members[0] : 0);
+      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0], voyageGroup.voyageCreator);
       
       // Clear user powerups on the server
       PowerupManager.self.clearPowerupsForUser(player.userId);
@@ -585,8 +585,7 @@ public class VoyageGroupManager : MonoBehaviour
                if (player != null) {
                   // Make sure the player entity has the correct voyage group id set
                   player.voyageGroupId = groupId;
-                  int groupMembersTotal = voyageGroup.members.Count;
-                  player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray(), groupMembersTotal > 0 ? voyageGroup.members[0] : 0);
+                  player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray(), voyageGroup.voyageCreator);
                }
             }
          });

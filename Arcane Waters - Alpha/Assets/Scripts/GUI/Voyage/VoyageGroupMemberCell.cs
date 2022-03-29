@@ -65,9 +65,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       InvokeRepeating(nameof(updatePortrait), Random.Range(0f, 2f), 3f);
    }
 
-   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo, int voyageLeader) {
+   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo) {
       _userId = cellInfo.userId;
-      teamLeaderIndicator.SetActive(_userId == voyageLeader);
+      teamLeaderIndicator.SetActive(false);
 
       Weapon weapon = WeaponStatData.translateDataToWeapon(WeaponStatData.getDefaultData());
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(cellInfo.weapon.itemTypeId);
@@ -143,7 +143,10 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    private void updatePortrait () {
       // Try to find the entity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
-      
+
+      bool enableLeaderIcon = _userId == VoyageGroupPanel.self.voyageLeader && VoyageGroupPanel.self.voyageLeader > 0;
+      teamLeaderIndicator.SetActive(enableLeaderIcon);
+
       if (entity == null) {
          characterPortrait.updateBackground(null);
          return;
