@@ -270,6 +270,8 @@ public class PlayerShipEntity : ShipEntity
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
+
+         EntityLagMonitor.self.trackedShipEntities.Add(this);
       }
 
       if (!Util.isBatch()) {
@@ -1874,6 +1876,10 @@ public class PlayerShipEntity : ShipEntity
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
+      }
+
+      if (isServer) {
+         EntityLagMonitor.self.trackedShipEntities.Remove(this);
       }
 
       //if (isLocalPlayer && !ClientManager.isApplicationQuitting) {

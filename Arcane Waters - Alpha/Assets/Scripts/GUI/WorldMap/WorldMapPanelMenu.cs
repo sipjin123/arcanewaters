@@ -78,7 +78,7 @@ public class WorldMapPanelMenu : MonoBehaviour
          menuItem.transform.SetParent(menuItemsContainer);
          menuItem.menu = this;
          menuItem.spot = spot;
-         menuItem.setTitle(WorldMapManager.self.getStringFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(spot)));
+         menuItem.setTitle(WorldMapManager.self.getDisplayStringFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(spot)));
          _waypointsMenuItems.Add(menuItem);
       }
    }

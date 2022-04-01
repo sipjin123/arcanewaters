@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class CropsDataManager : MonoBehaviour {
+public class CropsDataManager : MonoBehaviour
+{
    #region Public Variables
 
    // Self
@@ -12,6 +13,9 @@ public class CropsDataManager : MonoBehaviour {
 
    // The crop data list
    public List<CropsData> cropDataList;
+
+   // Have all the crops been loaded
+   public bool cropsLoaded = false;
 
    #endregion
 
@@ -26,9 +30,13 @@ public class CropsDataManager : MonoBehaviour {
       return new CropsData();
    }
 
+   public bool tryGetCropData (Crop.Type cropType, out CropsData data) => _cropDataCollection.TryGetValue(cropType, out data);
+   public bool tryGetCropData (int cropDataId, out CropsData data) => _cropsDataById.TryGetValue(cropDataId, out data);
+
    public void initializeDataCache () {
       _cropDataCollection = new Dictionary<Crop.Type, CropsData>();
       cropDataList = new List<CropsData>();
+      _cropsDataById = new Dictionary<int, CropsData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getCropsXML();
@@ -43,9 +51,12 @@ public class CropsDataManager : MonoBehaviour {
                if (!_cropDataCollection.ContainsKey(cropType)) {
                   _cropDataCollection.Add(cropType, cropsData);
                   cropDataList.Add(cropsData);
+                  _cropsDataById.Add(cropsData.xmlId, cropsData);
                } else {
                   D.debug("Key already exists: " + cropType);
                }
+
+               cropsLoaded = true;
             }
          });
       });
@@ -58,14 +69,20 @@ public class CropsDataManager : MonoBehaviour {
          if (!_cropDataCollection.ContainsKey(cropType)) {
             _cropDataCollection.Add(cropType, cropData);
             cropDataList.Add(cropData);
-         } 
+            _cropsDataById.Add(cropData.xmlId, cropData);
+         }
       }
+
+      cropsLoaded = true;
    }
 
    #region Private Variables
 
    // The data collection of crops data
    protected Dictionary<Crop.Type, CropsData> _cropDataCollection = new Dictionary<Crop.Type, CropsData>();
+
+   // The data collection of crops by their id
+   protected Dictionary<int, CropsData> _cropsDataById = new Dictionary<int, CropsData>();
 
    #endregion
 }

@@ -75,13 +75,6 @@ public class RewardManager : MonoBehaviour {
       PanelManager.self.linkPanel(Panel.Type.Reward);
    }
 
-   public void showItemsInRewardPanel (IEnumerable<ItemInstance> items) {
-      // Calls the panel and injects the List of items
-      RewardScreen rewardPanel = PanelManager.self.get<RewardScreen>(Panel.Type.Reward);
-      rewardPanel.setItemDataGroup(items);
-      PanelManager.self.linkPanel(Panel.Type.Reward);
-   }
-
    public void showRecruitmentNotice (string recruitedName, string recruitedIconPath) {
       // Calls the panel and injects the info of the recruited npc
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);

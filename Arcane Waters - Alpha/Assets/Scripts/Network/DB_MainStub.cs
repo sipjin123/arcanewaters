@@ -9,6 +9,7 @@ using MapCustomization;
 using System.Threading.Tasks;
 using Steam;
 using Store;
+using Rewards;
 
 public class DB_MainStub : MonoBehaviour
 {
@@ -251,26 +252,6 @@ public class DB_MainStub : MonoBehaviour
       return new List<ItemDefinition>();
    }
 
-   public static ItemInstance getItemInstance (object command, int userId, int itemDefinitionId) {
-      return null;
-   }
-
-   public static void createOrAppendItemInstance (object command, ItemInstance item) {
-
-   }
-
-   public static void createNewItemInstance (object command, ItemInstance itemInstance) {
-
-   }
-
-   public static void increaseItemInstanceCount (object command, int id, int increaseBy) {
-
-   }
-
-   public static void decreaseOrDeleteItemInstance (object command, int id, int decreaseBy) {
-
-   }
-
    public static void createNewItemDefinition (ItemDefinition definition) {
 
    }
@@ -346,9 +327,6 @@ public class DB_MainStub : MonoBehaviour
    }
 
    #endregion
-   public static List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
-      return new List<ItemInstance>();
-   }
 
    public static void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
 
@@ -501,6 +479,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void setCustomGuildMapBase (object command, int guildId, int baseMapId) {
+
+   }
+
+   public static void setCustomGuildHouseBase (object command, int guildId, int baseMapId) {
 
    }
 
@@ -909,14 +891,6 @@ public class DB_MainStub : MonoBehaviour
    public static void restoreShipMaxHealth (int shipId) {
    }
 
-   public static List<SiloInfo> getSiloInfo (int userId) {
-      return null;
-   }
-
-   public static void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
-
-   }
-
    public static int getUserId (string username) {
       return 0;
    }
@@ -941,7 +915,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string ipAddress) {
+   public static int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string ipAddress, string extra) {
       return 0;
    }
 
@@ -1784,8 +1758,28 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   #region Reward Codes
+
+   public static bool useRewardCode (int codeId) {
+      return false;
+   }
+
+   public static IEnumerable<RewardCode> getRewardCodes (string steamId, string consumerId, string producerId) {
+      return Array.Empty<RewardCode>();
+   }
+
+   public static IEnumerable<RewardCode> getRewardCodesByProducer (string steamId, string producerId) {
+      return Array.Empty<RewardCode>();
+   }
+
+   public static IEnumerable<RewardCode> getUnusedRewardCodes (string steamId, string consumerId) {
+      return Array.Empty<RewardCode>();
+   }
+
+   #endregion
+
    #region Server stats
-   
+
    public static void serverStatStarted (string machine, int port) {
    }
 

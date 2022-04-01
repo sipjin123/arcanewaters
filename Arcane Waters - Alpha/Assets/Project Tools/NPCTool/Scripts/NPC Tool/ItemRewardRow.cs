@@ -39,7 +39,7 @@ public class ItemRewardRow : GenericItemRow
       itemReward.data = itemData;
 
       if (category == Item.Category.Blueprint) {
-         itemReward.itemTypeId = Blueprint.modifyID(category, newID);
+         //itemReward.itemTypeId = Blueprint.modifyID(category, newID);
       }
       return itemReward;
    }

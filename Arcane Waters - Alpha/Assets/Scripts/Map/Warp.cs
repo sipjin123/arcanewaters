@@ -196,7 +196,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          bool isWarpingToPrivateCustomArea = CustomMapManager.isPrivateCustomArea(areaTarget);
          bool doesUserOwnUserSpecificArea = false;
          bool isUserInUserSpecificArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
-         bool isWarpingToGuildSpecificArea = areaTarget.Contains(CustomGuildMapManager.GROUP_AREA_KEY);
+         bool isWarpingToGuildMap = areaTarget.Contains(CustomGuildMapManager.GROUP_AREA_KEY);
+         bool isWarpingToGuildHouse = areaTarget.Contains(CustomGuildHouseManager.GROUP_AREA_KEY);
 
          if (isUserInUserSpecificArea) {
             int userIdOfMapOwner = CustomMapManager.getUserId(player.areaKey);
@@ -204,14 +205,27 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          }
 
          string visitedArea = areaTarget + "_user";
-         if (isWarpingToGuildSpecificArea) {
-            
+         if (isWarpingToGuildMap) {
+
             // If the player isn't in a guild, send them to their home town
             if (player.guildId <= 0) {
                player.spawnInBiomeHomeTown();
             } else {
                if (areaTarget == CustomGuildMapManager.GROUP_AREA_KEY) {
                   areaTarget = CustomGuildMapManager.getGuildSpecificAreaKey(player.guildId);
+                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+               } else {
+                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+               }
+            }
+         } else if (isWarpingToGuildHouse) {
+
+            // If the player isn't in a guild, send them to their home town
+            if (player.guildId <= 0) {
+               player.spawnInBiomeHomeTown();
+            } else {
+               if (areaTarget == CustomGuildHouseManager.GROUP_AREA_KEY) {
+                  areaTarget = CustomGuildHouseManager.getGuildSpecificAreaKey(player.guildId);
                   player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
                } else {
                   player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);

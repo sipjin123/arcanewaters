@@ -35,10 +35,10 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
          return;
       }
 
-      advanceTime();
-      CompositeAnimationFrame frame = computeFrameByTime(_time);
+      computeFrame(_time, out CompositeAnimationFrame frame);
       applyFrame(frame);
-      checkStatus(frame);
+      checkStatus(frame, _time);
+      advanceTime();
    }
 
    #region Animation Controls
@@ -54,9 +54,12 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
          return;
       }
 
-      // Store the flip state of the sprite rendeer
       if (getRenderer()) {
-         bool _prevFlipXStatus = getRenderer().flipX;
+         // Store the flip state of the sprite rendeer
+         _prevFlipXStatus = getRenderer().flipX;
+
+         // Store the offset of the sprite renderer
+         _prevLocalPosition = getRenderer().transform.localPosition;
       }
 
       _currentAnimation = animation;
@@ -67,9 +70,12 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
    }
 
    public void stop () {
-      // Revert the flipX flag
       if (getRenderer()) {
+         // Revert the flipX flag
          getRenderer().flipX = _prevFlipXStatus;
+
+         // Revert offset
+         getRenderer().transform.localPosition = _prevLocalPosition;
       }
 
       _status = CompositeAnimationStatus.Stopped;
@@ -108,9 +114,10 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
       return _currentAnimation.frames.Sum(_ => _.duration);
    }
 
-   private CompositeAnimationFrame computeFrameByTime (float time) {
+   private void computeFrame (float time, out CompositeAnimationFrame computedFrame) {
       if (_currentAnimation.frames == null || _currentAnimation.frames.Length == 0) {
-         return null;
+         computedFrame = null;
+         return;
       }
 
       float frameTimeAccumulator = 0.0f;
@@ -120,13 +127,14 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
          frameTimeAccumulator += frame.duration;
 
          if (prevFrameTimeAccumulator <= time && time < frameTimeAccumulator) {
-            return frame;
+            computedFrame = frame;
+            return;
          }
 
          prevFrameTimeAccumulator = frameTimeAccumulator;
       }
 
-      return _currentAnimation.frames.First();
+      computedFrame = _currentAnimation.frames.Last();
    }
 
    private void applyFrame (CompositeAnimationFrame frame) {
@@ -158,17 +166,22 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
                getRenderer().flipX = !getRenderer().flipX;
             }
             break;
+         case CompositeAnimationFrame.FrameTypes.Offset:
+            if (getRenderer()) {
+               getRenderer().transform.localPosition = _prevLocalPosition + frame.offset;
+            }
+            break;
       }
 
       _lastFrame = frame;
    }
 
-   private void checkStatus (CompositeAnimationFrame frame) {
-      if (frame == null || _currentAnimation == null || _currentAnimation.isLooping) {
+   private void checkStatus (CompositeAnimationFrame frame, float time) {
+      if (frame == null || _currentAnimation == null || _currentAnimation.isLooping || _currentAnimation.keepLastFrame) {
          return;
       }
 
-      if (frame == _currentAnimation.frames.Last()) {
+      if (time >= computeTotalDuration()) {
          _status = CompositeAnimationStatus.Stopped;
       }
    }
@@ -257,6 +270,9 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
 
    // Reference to the last frame
    private CompositeAnimationFrame _lastFrame;
+
+   // The value of the local position of the sprite renderer before the animation started
+   protected Vector3 _prevLocalPosition;
 
    #endregion
 }

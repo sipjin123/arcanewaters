@@ -58,9 +58,7 @@ public class MerchantCropRow : MonoBehaviour {
       cropImage.sprite = ImageManager.getSprite("Cargo/" + offer.cropType);
       cropName.text = Util.UppercaseFirst(offer.cropType.ToString());
 
-      int availableCropCount = CargoBoxManager.self.getCargoCount(offer.cropType);
-
-      ownedCropCount.text = availableCropCount.ToString();
+      ownedCropCount.text = offer.userAvailableCrops.ToString();
 
       // Determines the demand meter fill amount
       float demand = offer.demand / CropOffer.MAX_DEMAND;
@@ -102,7 +100,7 @@ public class MerchantCropRow : MonoBehaviour {
       star3Image.sprite = rarityStars[2];
 
       // Make sure the button can only be clicked if we have crops to sell
-      if (availableCropCount > 0) {
+      if (offer.userAvailableCrops > 0) {
          sellButton.interactable = true;
          sellButtonTooltip.enabled = false;
       } else {

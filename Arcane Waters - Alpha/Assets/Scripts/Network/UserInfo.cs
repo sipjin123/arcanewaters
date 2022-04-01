@@ -105,6 +105,9 @@ public class UserInfo {
    // The custom guild map layout our guild has chosen
    public int guildMapBaseId;
 
+   // The custom guild house layout our guild has chosen
+   public int guildHouseBaseId;
+
    // The house layout map we've chosen
    public int customHouseBaseId;
 

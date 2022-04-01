@@ -86,9 +86,8 @@ public class ConfirmScreen : FullScreenSeparatePanel
 
       // Wait for input
       PanelManager.self.confirmScreen.confirmInputField.onValueChanged.AddListener((inputWord) => {
-         if (inputWord.ToUpper() == keyWord.ToUpper()) {
-            PanelManager.self.confirmScreen.confirmButton.interactable = true;
-         }
+         bool isInputMatched = inputWord.ToUpper() == keyWord.ToUpper(); 
+         PanelManager.self.confirmScreen.confirmButton.interactable = isInputMatched;
       });
    }
 

@@ -503,31 +503,31 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
-      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin);
+   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
+      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin, extra);
    }
 
    [ClientRPC]
-   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
+   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
       // Send the chat message to all users assigned to this server
       foreach (int userId in ServerNetworkingManager.self.server.assignedUserIds.Keys) {
-         ChatManager.self.receiveChatMessageForUser(userId, chatId, ChatInfo.Type.Global, message, timestamp, senderName, "", senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin);
+         ChatManager.self.receiveChatMessageForUser(userId, chatId, ChatInfo.Type.Global, message, timestamp, senderName, "", senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin, extra);
       }
    }
 
    [ServerRPC]
-   public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
+   public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, string extra) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAssignedUser(userId);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ReceiveSpecialChatMessage, userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted);
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveSpecialChatMessage, userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted, extra);
       } else {
-         ChatManager.self.handleChatMessageDeliveryError(senderUserId, messageType, message);
+         ChatManager.self.handleChatMessageDeliveryError(senderUserId, messageType, message, extra);
       }
    }
 
    [ClientRPC]
-   public void Server_ReceiveSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
-      ChatManager.self.receiveChatMessageForUser(userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted, false);
+   public void Server_ReceiveSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, string extra) {
+      ChatManager.self.receiveChatMessageForUser(userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted, false, extra);
    }
 
    [ServerRPC]

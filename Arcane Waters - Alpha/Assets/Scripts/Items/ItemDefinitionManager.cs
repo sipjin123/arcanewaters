@@ -15,18 +15,29 @@ public class ItemDefinitionManager : MonoBehaviour
    // List of items for preview in the editor
    public List<ItemDefinition> itemDefinitionsPreview = new List<ItemDefinition>();
 
+   // Has the manager finished loading the definitions
+   public bool definitionsLoaded = false;
+
    #endregion
 
    private void Awake () {
       self = this;
    }
 
-   public ItemDefinition getDefinition (int id) {
-      if (_itemDefinitions.TryGetValue(id, out ItemDefinition definition)) {
-         return definition;
+   /// <summary>
+   /// Get item definition. If main class is enough, set T as 'ItemDefinition'.
+   /// You can require it to be of certain subclass by setting T. If it can't be casted to that, 'false' will be returned.
+   /// </summary>
+   public bool tryGetDefinition<T> (int id, out T def) where T : ItemDefinition {
+      if (_itemDefinitions.TryGetValue(id, out ItemDefinition d)) {
+         if (d is T) {
+            def = d as T;
+            return true;
+         }
       }
 
-      return null;
+      def = null;
+      return false;
    }
 
    public IEnumerable<ItemDefinition> getDefinitions () {
@@ -50,9 +61,15 @@ public class ItemDefinitionManager : MonoBehaviour
          List<ItemDefinition> itemDefinitions = DB_Main.getItemDefinitions();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (ItemDefinition itemDefinition in itemDefinitions) {
-               storeItemDefinition(itemDefinition);
+            try {
+               foreach (ItemDefinition itemDefinition in itemDefinitions) {
+                  storeItemDefinition(itemDefinition);
+               }
+            } catch (Exception ex) {
+               D.error(ex.ToString());
             }
+
+            definitionsLoaded = true;
 
             callback?.Invoke(itemDefinitions);
          });

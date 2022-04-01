@@ -37,6 +37,10 @@ public abstract class CustomMapManager
       return areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY);
    }
 
+   public static bool isGuildHouseAreaKey (string areaKey) {
+      return areaKey.Contains(CustomGuildHouseManager.GROUP_AREA_KEY);
+   }
+
    // Extracts map type area key from a user specific area key
    public static string getMapTypeAreaKey (string userSpecificAreaKey) {
       try {

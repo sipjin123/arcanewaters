@@ -247,6 +247,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildMapBaseId;
 
+   // The base id of the custom guild house map for this user's guild
+   [SyncVar]
+   public int guildHouseBaseId;
+
    [Header("Warping")]
 
    // Gets set to true when we're about to execute a warp on the server or client
@@ -720,6 +724,7 @@ public class NetEntity : NetworkBehaviour
       this.guildId = userInfo.guildId;
       this.guildName = guildInfo.guildName;
       this.guildMapBaseId = guildInfo.guildMapBaseId;
+      this.guildHouseBaseId = guildInfo.guildHouseBaseId;
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
       }
@@ -1613,14 +1618,6 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveSiloInfo (NetworkConnection connection, SiloInfo[] siloInfo) {
-      _siloInfo = new List<SiloInfo>(siloInfo);
-
-      // Update our GUI display
-      CargoBoxManager.self.updateCargoBoxes(_siloInfo);
-   }
-
-   [TargetRpc]
    protected void Target_ReceiveServerDateTime (NetworkConnection conn, float serverUnityTime, long serverDateTime) {
       TimeManager.self.setLastServerDateTime(serverDateTime);
 
@@ -1801,25 +1798,25 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, guildName, isSenderMuted, isSenderAdmin);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, guildName, isSenderMuted, isSenderAdmin, extra: extra);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, guildName, isSenderMuted, isSenderAdmin);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, guildName, isSenderMuted, isSenderAdmin, extra: extra);
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, string guildName, int senderId, bool isSenderMuted) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, guildName, isSenderMuted);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, string guildName, int senderId, bool isSenderMuted, string extra) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, guildName, isSenderMuted, extra: extra);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
@@ -2144,6 +2141,18 @@ public class NetEntity : NetworkBehaviour
             NetEntity guildMember = EntityManager.self.getEntity(userId);
             string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(guildMember));
             targetLocalPos = (spawn == null) ? SpawnManager.self.getDefaultLocalPosition(baseMapKey) : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
+
+         } else if (customMapManager is CustomGuildHouseManager) { 
+            // Make a guild-specific area key for this user, if it is not a guild-specific key already
+            if (newArea == CustomGuildHouseManager.GROUP_AREA_KEY) {
+               newArea = CustomGuildHouseManager.getGuildSpecificAreaKey(guildId);
+            }
+
+            // Get the base map key
+            NetEntity guildMember = EntityManager.self.getEntity(userId);
+            string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(guildMember));
+            targetLocalPos = (spawn == null) ? SpawnManager.self.getDefaultLocalPosition(baseMapKey) : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
+
          } else {
             // Make a user-specific area key for this user, if it is not a user-specific area key already
             if (!CustomMapManager.isUserSpecificAreaKey(newArea)) {
@@ -2888,14 +2897,14 @@ public class NetEntity : NetworkBehaviour
    public void Cmd_BroadcastCropProjectile (CropInfo cropInfo) {
       bool hasFarmingPermissions = (AreaManager.self.isFarmOfUser(cropInfo.areaKey, this.userId) || CustomGuildMapManager.canUserFarm(cropInfo.areaKey, this));
       if (hasFarmingPermissions) {
-         Rpc_BroadcastCropProjectile(cropInfo);
+         Rpc_BroadcastCropProjectile(cropInfo, userId);
       } else {
          D.error("Client tried to allow harvesting of a crop that it doesn't have permission to farm.");
       }
    }
 
    [ClientRpc]
-   public void Rpc_BroadcastCropProjectile (CropInfo cropInfo) {
+   public void Rpc_BroadcastCropProjectile (CropInfo cropInfo, int harvesterUserId) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
 
       Crop harvestedCrop = cropSpot.crop;
@@ -2908,6 +2917,7 @@ public class NetEntity : NetworkBehaviour
       Vector2 dir = (cropSpot.transform.position - transform.position).normalized;
       cropProjectile.setSprite(harvestedCrop.cropType);
       cropProjectile.init(cropSpot.transform.position, dir, cropSpot);
+      cropProjectile.harvesterUserId = harvesterUserId;
    }
 
    [Server]
@@ -2945,9 +2955,6 @@ public class NetEntity : NetworkBehaviour
 
    // The key of the previous area that we were in
    protected string _previousAreaKey;
-
-   // Info on the crops in our silo
-   protected List<SiloInfo> _siloInfo = new List<SiloInfo>();
 
    // Our various component references
    protected Rigidbody2D _body;

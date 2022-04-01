@@ -591,8 +591,9 @@ public class MouseManager : ClientMonoBehaviour
 
          // Process press
          if (Mouse.current.leftButton.wasPressedThisFrame) {
-            string currentInput = ChatPanel.self.inputField.getTextData();
-            ChatPanel.self.inputField.setTextWithoutNotify(currentInput + WorldMapManager.self.getStringFromGeoCoords(pointerGeoCoords));
+            string displayGeoCoords = WorldMapManager.self.getDisplayStringFromGeoCoords(pointerGeoCoords);
+            string encodedGeoCoords = WorldMapManager.self.encodeGeoCoords(pointerGeoCoords);
+            ChatManager.self.sendMessageToServer(displayGeoCoords, ChatPanel.self.currentChatType, encodedGeoCoords);
 
             if (PanelManager.self != null) {
                PanelManager.self.noticeScreen.show("Location copied!");

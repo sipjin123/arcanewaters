@@ -606,6 +606,9 @@ public class ChatPanel : MonoBehaviour {
          chatRowComponent.toggleGenericIcon(true);
          chatRowComponent.setGenericIcon(systemSprite);
       }
+
+      // Refresh the actions associated to this chat message
+      chatRowComponent.refreshActions();
    }
 
    private void setChatLineText (SpeakChatLine chatLine) {

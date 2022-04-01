@@ -56,9 +56,8 @@ public class MerchantScreen : Panel {
    public void sellButtonPressed (int offerId) {
       CropOffer offer = getOffer(offerId);
       string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
-      int availableCropCount = CargoBoxManager.self.getCargoCount(offer.cropType);
 
-      if (availableCropCount <= 0) {
+      if (offer.userAvailableCrops <= 0) {
          PanelManager.self.noticeScreen.show("You do not have any " + cropName + " to sell!");
          return;
       }
@@ -70,7 +69,7 @@ public class MerchantScreen : Panel {
       // Update the Trade Confirm Screen
       confirmScreen.cropType = offer.cropType;
       confirmScreen.maxAmount = offer.isLowestRarity() ? int.MaxValue : Mathf.CeilToInt(offer.demand);
-      confirmScreen.maxAmount = Mathf.Clamp(confirmScreen.maxAmount, 0, availableCropCount);
+      confirmScreen.maxAmount = Mathf.Clamp(confirmScreen.maxAmount, 0, offer.userAvailableCrops);
       confirmScreen.pricePerUnit = offer.pricePerUnit;
 
       // Associate a new function with the confirmation button
@@ -85,7 +84,7 @@ public class MerchantScreen : Panel {
       confirmScreen.show("How many " + cropName + " do you want to sell?");
 
       // Trigger the tutorial if the user has any of the selected crop to sell
-      if (CargoBoxManager.self.getCargoCount(offer.cropType) > 0) {
+      if (offer.userAvailableCrops > 0) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenTradeConfirmScreen);
       }
    }

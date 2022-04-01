@@ -148,6 +148,9 @@ public class PlantableTree : MonoBehaviour
 
          leafFallEffect.Play();
       }
+
+      // Play sound effect
+      SoundEffectManager.self.playTreeChop(this.transform.position, currentChopCount >= 3);
    }
 
    public bool isOneHitAwayFromDestroy () {

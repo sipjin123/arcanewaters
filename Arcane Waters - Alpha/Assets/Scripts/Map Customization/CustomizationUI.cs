@@ -176,9 +176,9 @@ namespace MapCustomization
          }
       }
 
-      public static void updatePropCount (ItemInstance prop) {
+      public static void updatePropCount (Item prop) {
          foreach (PrefabSelectionEntry entry in _prefabEntries) {
-            if (entry.propDefinitionId == prop.itemDefinitionId) {
+            if (entry.propDefinitionId == prop.itemTypeId) {
                entry.setCount(prop.count);
             }
          }

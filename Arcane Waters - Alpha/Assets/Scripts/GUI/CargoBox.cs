@@ -19,12 +19,13 @@ public class CargoBox : MonoBehaviour
 
    #endregion
 
-   public void updateBox (SiloInfo siloInfo) {
-      cargoCountText.text = siloInfo.cropCount+"";
-      cargoImage.sprite = ImageManager.getSprite("Cargo/" + siloInfo.cropType);
-      cropType = siloInfo.cropType;
+   // Cargo boxes have been disabled as crops were made into regular items
+   //public void updateBox (SiloInfo siloInfo) {
+   //   cargoCountText.text = siloInfo.cropCount+"";
+   //   cargoImage.sprite = ImageManager.getSprite("Cargo/" + siloInfo.cropType);
+   //   cropType = siloInfo.cropType;
 
-   }
+   //}
 
    #region Private Variables
 

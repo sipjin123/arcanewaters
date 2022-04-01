@@ -76,11 +76,12 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
       _commandData.Add(new CommandData("/gif", "Make a GIF of what just happened in game", GIFReplayManager.self.userRequestedGIF));
       _commandData.Add(new CommandData("/e", "Lists the available emotes", requestEmoteList));
-      _commandData.Add(new CommandData("/dance", "Dance!", () => requestPlayEmote(EmoteManager.EmoteTypes.Dance)));
-      _commandData.Add(new CommandData("/greet", "Wave your hand", () => requestPlayEmote(EmoteManager.EmoteTypes.Greet)));
-      _commandData.Add(new CommandData("/kneel", "Kneeling pose", () => requestPlayEmote(EmoteManager.EmoteTypes.Kneel)));
-      _commandData.Add(new CommandData("/point", "Point at something", () => requestPlayEmote(EmoteManager.EmoteTypes.Point)));
-      _commandData.Add(new CommandData("/wave", "Wave your hand", () => requestPlayEmote(EmoteManager.EmoteTypes.Wave)));
+      _commandData.Add(new CommandData("/dance", "Dance!", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Dance), parameterNames: new List<string>() { "target" }));
+      _commandData.Add(new CommandData("/greet", "Wave your hand", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Greet), parameterNames: new List<string>() { "target" }));
+      _commandData.Add(new CommandData("/kneel", "Kneeling pose", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Kneel), parameterNames: new List<string>() { "target" }));
+      _commandData.Add(new CommandData("/point", "Point at something", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Point), parameterNames: new List<string>() { "target" }));
+      _commandData.Add(new CommandData("/wave", "Wave your hand", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Wave), parameterNames: new List<string>() { "target" }));
+      _commandData.Add(new CommandData("/sit", "Sit on the ground", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Sit)));
    }
 
    public void startChatManagement () {
@@ -250,17 +251,17 @@ public class ChatManager : GenericGameManager
       sendMessageToServer(message, ChatInfo.Type.Emote);
    }
 
-   private string computeEmoteChatMessage(EmoteManager.EmoteTypes emoteType) {
+   private string computeEmoteChatMessage(EmoteManager.EmoteTypes emoteType, string target) {
       switch (emoteType) {
          case EmoteManager.EmoteTypes.Dance:
-            return $"dances";
+            return Util.isEmpty(target) ? $"dances" : $"dances and would like {target} to join!";
          case EmoteManager.EmoteTypes.Kneel:
             return $"kneels";
          case EmoteManager.EmoteTypes.Greet:
          case EmoteManager.EmoteTypes.Wave:
-            return $"waves";
+            return Util.isEmpty(target) ? $"waves" : $"waves at {target}";
          case EmoteManager.EmoteTypes.Point:
-            return $"is pointing at something";
+            return Util.isEmpty(target) ? $"is pointing at something" : $"points at {target}";
          case EmoteManager.EmoteTypes.None:
          default:
             return string.Empty;
@@ -277,20 +278,59 @@ public class ChatManager : GenericGameManager
       addChat(sb.ToString(), ChatInfo.Type.System);
    }
 
-   public void requestPlayEmote (EmoteManager.EmoteTypes emote) {
+   private bool canEmote (EmoteManager.EmoteTypes emote) {
       if (Global.player == null ||
          Global.player.getPlayerBodyEntity() == null ||
-         Global.player.getPlayerBodyEntity().isSitting() || 
+         Global.player.getPlayerBodyEntity().isSitting() ||
          Global.player.isInBattle() ||
          Global.player.getPlayerBodyEntity().isEmoting() ||
          emote == EmoteManager.EmoteTypes.None) {
+         return false;
+      }
+
+      return true;
+   }
+
+   public void requestPlayEmote (string parameters, EmoteManager.EmoteTypes emote) {
+      if (!canEmote(emote)) {
+         addChat("Can't do that now...", ChatInfo.Type.System);
+         return;
+      }
+
+      if (Util.isEmpty(parameters)) {
+         requestPlayTargetableEmote(emote, string.Empty);
+         return;
+      }
+
+      // Extract user handle
+      if (parameters.StartsWith("@")) {
+         string handle = parameters.Substring(1);
+         NetEntity handleEntity = EntityManager.self.getEntityWithName(handle);
+
+         if (handleEntity != null && handleEntity.isPlayerEntity()) {
+            requestPlayTargetableEmote(emote, handleEntity.entityName);
+         } else {
+            addChat("Invalid target", ChatInfo.Type.System);
+         }
+
+         return;
+      }
+
+      // If the player is pointing, use the parameters as the target
+      if (emote == EmoteManager.EmoteTypes.Point || emote == EmoteManager.EmoteTypes.Wave || emote == EmoteManager.EmoteTypes.Greet) {
+         requestPlayTargetableEmote(emote, parameters);
+      }
+   }
+
+   public void requestPlayTargetableEmote (EmoteManager.EmoteTypes emote, string target) {
+      if (!canEmote(emote)) {
          addChat("Can't do that now...", ChatInfo.Type.System);
          return;
       }
 
       Direction playerFacingDirection = Global.player.getPlayerBodyEntity().facing;
       Global.player.getPlayerBodyEntity().Cmd_PlayEmote(emote, playerFacingDirection);
-      sendEmoteMessageToServer(computeEmoteChatMessage(emote));
+      sendEmoteMessageToServer(computeEmoteChatMessage(emote, target));
    }
 
    public void sendGlobalMessageToServer (string message) {
@@ -319,7 +359,7 @@ public class ChatManager : GenericGameManager
       _sentWhisperNameHistory.Add(ChatPanel.self.nameInputField.text);
    }
 
-   public void sendMessageToServer (string message, ChatInfo.Type chatType) {
+   public void sendMessageToServer (string message, ChatInfo.Type chatType, string extra = "") {
       // Check if they're trying to send guild chat without being in a guild
       if (chatType == ChatInfo.Type.Guild && Global.player.guildId == 0) {
          this.addChat("You are not currently in a guild!", ChatInfo.Type.Error);
@@ -352,7 +392,7 @@ public class ChatManager : GenericGameManager
       }
 
       // Pass the message along to the server
-      Global.player.rpc.Cmd_SendChat(message, chatType);
+      Global.player.rpc.Cmd_SendChatWithExtra(message, chatType, extra);
    }
 
    public static string extractWhisperNameFromChat (string message) {
@@ -980,8 +1020,8 @@ public class ChatManager : GenericGameManager
    }
 
    [Server]
-   public void receiveChatMessageForUser (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, DateTime.FromBinary(timestamp), messageType, senderName, receiverName, senderUserId, GuildIconData.guildIconDataFromString(guildIconDataString), guildName, isSenderMuted, isSenderAdmin, userId);
+   public void receiveChatMessageForUser (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, DateTime.FromBinary(timestamp), messageType, senderName, receiverName, senderUserId, GuildIconData.guildIconDataFromString(guildIconDataString), guildName, isSenderMuted, isSenderAdmin, userId, extra: extra);
 
       NetEntity player = EntityManager.self.getEntity(userId);
       if (player != null) {
@@ -1004,7 +1044,7 @@ public class ChatManager : GenericGameManager
          // When the recipient is no longer assigned to this server, the user either moved to another server or disconnected, so the missed chat message is deleted
          if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(chatInfo.recipientId)) {
             messagesToDelete.Add(chatInfo);
-            handleChatMessageDeliveryError(chatInfo.senderId, chatInfo.messageType, chatInfo.text);
+            handleChatMessageDeliveryError(chatInfo.senderId, chatInfo.messageType, chatInfo.text, chatInfo.extra);
             continue;
          }
 
@@ -1028,19 +1068,19 @@ public class ChatManager : GenericGameManager
    private void commonSendChatMessageToPlayer (NetEntity player, ChatInfo chatInfo) {
       switch (chatInfo.messageType) {
          case ChatInfo.Type.Global:
-            player.Target_ReceiveGlobalChat(chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
+            player.Target_ReceiveGlobalChat(chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin, chatInfo.extra);
             break;
          default:
-            player.Target_ReceiveSpecialChat(player.connectionToClient, chatInfo.chatId, chatInfo.text, chatInfo.sender, chatInfo.recipient, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, chatInfo.isSenderMuted);
+            player.Target_ReceiveSpecialChat(player.connectionToClient, chatInfo.chatId, chatInfo.text, chatInfo.sender, chatInfo.recipient, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, chatInfo.isSenderMuted, chatInfo.extra);
             break;
       }
    }
 
    [Server]
-   public void handleChatMessageDeliveryError (int senderUserId, ChatInfo.Type messageType, string originalMessage) {
+   public void handleChatMessageDeliveryError (int senderUserId, ChatInfo.Type messageType, string originalMessage, string extra) {
       if (messageType == ChatInfo.Type.Whisper) {
          // For whispers, send a notification to the sender when the message failed to be delivered   
-         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
+         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error, extra: extra);
          chatInfo.recipient = "";
          ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
       }

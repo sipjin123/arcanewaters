@@ -23,7 +23,10 @@ public class EmoteManager {
       Point = 4,
 
       // Wave
-      Wave = 5
+      Wave = 5,
+
+      // Sit
+      Sit = 6
    }
 
    #endregion
@@ -58,6 +61,10 @@ public class EmoteManager {
 
       if (Util.areStringsEqual(source, "wave")) {
          return EmoteTypes.Wave;
+      }
+
+      if (Util.areStringsEqual(source, "sit")) {
+         return EmoteTypes.Sit;
       }
 
       return EmoteTypes.None;

@@ -399,7 +399,11 @@ namespace MapCreationTool.Serialization
                   }
 
                   if (Layer.isStair(columns[i, j].tiles[z].layer)) {
-                     columns[i, j].hasStair = true;
+                     if (columns[i, j].tiles[z].sublayer == 0) {
+                        columns[i, j].hasStair0 = true;
+                     } else if (columns[i, j].tiles[z].sublayer == 1) {
+                        columns[i, j].hasStair1 = true;
+                     }
                   }
 
                   if (Layer.isVine(columns[i, j].tiles[z].layer)) {
@@ -551,7 +555,8 @@ namespace MapCreationTool.Serialization
       }
 
       private SpecialTileChunk[] formSpecialTileChunks () {
-         IEnumerable<SpecialTileChunk> stairs = formSquareChunks(SpecialTileChunk.Type.Stair, (c) => c.hasStair);
+         IEnumerable<SpecialTileChunk> stairs0 = formSquareChunks(SpecialTileChunk.Type.Stair, (c) => c.hasStair0);
+         IEnumerable<SpecialTileChunk> stairs1 = formSquareChunks(SpecialTileChunk.Type.StairNorth, (c) => c.hasStair1);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(SpecialTileChunk.Type.Waterfall, (c) => c.hasWater4 && editorType == EditorType.Area);
 
          IEnumerable<SpecialTileChunk> currents = Enumerable.Empty<SpecialTileChunk>();
@@ -570,7 +575,7 @@ namespace MapCreationTool.Serialization
                (c) => c.hasRug && tileToRug.ContainsKey(c.getTileFromTop(Layer.RUG_KEY).tileBase) && tileToRug[c.getTileFromTop(Layer.RUG_KEY).tileBase] == type);
          });
 
-         return stairs.Union(waterfalls).Union(currents).Union(rugs).ToArray();
+         return stairs0.Union(stairs1).Union(waterfalls).Union(currents).Union(rugs).ToArray();
       }
 
       private IEnumerable<SpecialTileChunk> formWaterCurrentChunk (Func<BoardCell, bool> columnSelector, Direction dir) {
@@ -786,7 +791,8 @@ namespace MapCreationTool.Serialization
          public bool hasCeiling { get; set; }
          public bool hasWall { get; set; }
          public bool hasDoorframe { get; set; }
-         public bool hasStair { get; set; }
+         public bool hasStair0 { get; set; }
+         public bool hasStair1 { get; set; }
          public bool hasVine { get; set; }
          public bool hasRug { get; set; }
          public bool hasWater4 { get; set; }
@@ -980,7 +986,8 @@ namespace MapCreationTool.Serialization
          Rug1 = 5,
          Rug2 = 6,
          Rug3 = 7,
-         Rug4 = 8
+         Rug4 = 8,
+         StairNorth = 9
       }
    }
 

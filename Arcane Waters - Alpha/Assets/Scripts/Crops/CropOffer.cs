@@ -32,6 +32,9 @@ public class CropOffer {
    // The rarity of this offer
    public Rarity.Type rarity;
 
+   // Changed at runtime - how many relevant crops user has to accept the offer
+   public int userAvailableCrops = 0;
+
    #endregion
 
    public CropOffer () { }

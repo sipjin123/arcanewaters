@@ -172,7 +172,7 @@ public class MailPanel : Panel
       subjectInput.text = "RE: " + originalSubject;
    }
 
-   public void updatePanelWithMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount) {
+   public void updatePanelWithMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount, List<bool> systemMailStatusList) {
       // Update the current page number
       _currentPage = pageNumber;
 
@@ -192,9 +192,16 @@ public class MailPanel : Panel
       mailRowsContainer.DestroyChildren();
 
       // Instantiate the rows
+      int mailIndex = 0;
       foreach (MailInfo mail in mailList) {
          MailRow row = Instantiate(mailRowPrefab, mailRowsContainer.transform, false);
          row.setRowForMail(mail, mail.mailId == _displayedMailId);
+
+         if (systemMailStatusList[mailIndex]) {
+            row.senderName.text = MailManager.SYSTEM_USERNAME;
+         }
+
+         mailIndex++;
       }
 
       // Set the panel mode if it has not been initialized yet
@@ -208,7 +215,7 @@ public class MailPanel : Panel
 
    }
 
-   public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems, bool hasUnreadMail) {
+   public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems, bool hasUnreadMail, bool isSystemMail) {
       _displayedMailId = mail.mailId;
 
       // Configure the panel
@@ -266,6 +273,10 @@ public class MailPanel : Panel
 
       // Update the new mail notification
       BottomBar.self.setUnreadMailNotificationStatus(hasUnreadMail);
+
+      // Adjust UI for system mails
+      replyMailButton.interactable = !isSystemMail;
+      senderNameText.text = isSystemMail ? MailManager.SYSTEM_USERNAME : senderNameText.text;
    }
 
    public void composeNewMail () {

@@ -364,11 +364,12 @@ public class MyNetworkManager : NetworkManager
          GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
          string previousAreaKey = userInfo.areaKey;
          userInfo.guildMapBaseId = guildInfo.guildMapBaseId;
+         userInfo.guildHouseBaseId = guildInfo.guildHouseBaseId;
 
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
          bool isUserSpecificArea = CustomMapManager.isUserSpecificAreaKey(previousAreaKey);
-         bool isGuildSpecificArea = CustomMapManager.isGuildSpecificAreaKey(previousAreaKey);
+         bool isGuildSpecificArea = CustomMapManager.isGuildSpecificAreaKey(previousAreaKey) || CustomMapManager.isGuildHouseAreaKey(previousAreaKey);
          
          // If the map is owned by a user, get their info
          int mapOwnerId = isUserSpecificArea ? CustomMapManager.getUserId(previousAreaKey) : -1;
@@ -428,16 +429,16 @@ public class MyNetworkManager : NetworkManager
 
             // Check if this is a custom map
             if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
-               if (customMapManager is CustomGuildMapManager) {
+               if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
                   
                   // If the guild exists
-                  if (owningGuildInfo != null) {
+                  if (owningGuildInfo != null && userInfo.guildId == owningGuildInfo.guildId) {
                      // If this is a guild map, get the base key
-                     if (userInfo.guildId == owningGuildInfo.guildId) {
-                        baseMapAreaKey = AreaManager.self.getAreaName(owningGuildInfo.guildMapBaseId);
-                     }
+                     int mapBaseId = (customMapManager is CustomGuildMapManager) ? owningGuildInfo.guildMapBaseId : owningGuildInfo.guildHouseBaseId;
+                     baseMapAreaKey = AreaManager.self.getAreaName(mapBaseId);
+                     
                   } else {
-                     // If the guild doesn't exist, warp the player back to the tutorial town
+                     // If the guild doesn't exist, or the user isn't in the guild, warp the player back to the tutorial town
                      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                         DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
@@ -514,6 +515,7 @@ public class MyNetworkManager : NetworkManager
             player.guildIconSigil = guildInfo.iconSigil;
             player.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
             player.guildMapBaseId = guildInfo.guildMapBaseId;
+            player.guildHouseBaseId = guildInfo.guildHouseBaseId;
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
@@ -638,7 +640,6 @@ public class MyNetworkManager : NetworkManager
             });
 
             // Send any extra info as targeted RPCs
-            player.cropManager.sendSiloInfo();
             player.rpc.sendItemShortcutList();
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();

@@ -48,48 +48,50 @@ public class CargoBoxManager : MonoBehaviour
       canvasGroup.alpha = shouldHidePanel ? 0 : 1f;
    }
 
-   public void updateCargoBoxes (List<SiloInfo> siloInfo) {
-      // Clear out the old
-      foreach (GameObject go in _dynamicElements) {
-         if (go != null) {
-            Destroy(go);
-         }
-      }
-      _dynamicElements.Clear();
+   // Cargo boxes are disabled
+   //public void updateCargoBoxes (List<SiloInfo> siloInfo) {
+   //   // Clear out the old
+   //   foreach (GameObject go in _dynamicElements) {
+   //      if (go != null) {
+   //         Destroy(go);
+   //      }
+   //   }
+   //   _dynamicElements.Clear();
 
-      boxesCount = 0;
+   //   boxesCount = 0;
 
-      foreach (SiloInfo info in siloInfo) {
-         // Ignore 0 counts
-         if (info.cropCount == 0) {
-            continue;
-         }
+   //   foreach (SiloInfo info in siloInfo) {
+   //      // Ignore 0 counts
+   //      if (info.cropCount == 0) {
+   //         continue;
+   //      }
 
-         CargoBox box = Instantiate(cargoBoxPrefab);
-         _dynamicElements.Add(box.gameObject);
-         box.transform.SetParent(this.transform, false);
-         box.updateBox(info);
+   //      CargoBox box = Instantiate(cargoBoxPrefab);
+   //      _dynamicElements.Add(box.gameObject);
+   //      box.transform.SetParent(this.transform, false);
+   //      box.updateBox(info);
 
-         boxesCount++;
-      }
+   //      boxesCount++;
+   //   }
 
-      if (boxesCount > 0) {
-         Image bot = Instantiate(listBottomPrefab, transform, false);
-         _dynamicElements.Add(bot.gameObject);
-      }
+   //   if (boxesCount > 0) {
+   //      Image bot = Instantiate(listBottomPrefab, transform, false);
+   //      _dynamicElements.Add(bot.gameObject);
+   //   }
 
-      topVisual.gameObject.SetActive(boxesCount > 0);
-   }
+   //   topVisual.gameObject.SetActive(boxesCount > 0);
+   //}
 
-   public int getCargoCount (Crop.Type cropType) {
-      foreach (CargoBox box in GetComponentsInChildren<CargoBox>()) {
-         if (box.cropType == cropType) {
-            return int.Parse(box.cargoCountText.text);
-         }
-      }
+   // Cargo boxes are disabled
+   //public int getCargoCount (Crop.Type cropType) {
+   //   foreach (CargoBox box in GetComponentsInChildren<CargoBox>()) {
+   //      if (box.cropType == cropType) {
+   //         return int.Parse(box.cargoCountText.text);
+   //      }
+   //   }
 
-      return 0;
-   }
+   //   return 0;
+   //}
 
    #region Private Variables
 

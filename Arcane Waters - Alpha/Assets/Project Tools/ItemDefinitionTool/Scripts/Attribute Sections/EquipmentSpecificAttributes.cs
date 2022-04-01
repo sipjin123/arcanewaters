@@ -6,12 +6,15 @@ using UnityEngine.UI;
 
 namespace ItemDefinitionTool
 {
+   /// <summary>
+   /// THIS CLASS IS DISCONTINUED
+   /// </summary>
    public class EquipmentSpecificAttributes : TypeSpecificAttributes
    {
       #region Public Variables
 
       // The target class type of this attribute section
-      public override Type targetType => typeof(EquipmentDefinition);
+      public override Type targetType => typeof(object);
 
       // Various attribute inputs and controls
       public InputField priceInput;
@@ -50,67 +53,67 @@ namespace ItemDefinitionTool
       }
 
       public override void applyAttributeValues (ItemDefinition target) {
-         EquipmentDefinition eq = target as EquipmentDefinition;
-
-         eq.price = int.Parse(priceInput.text);
-         eq.canBeTrashed = canBeTrashedToggle.isOn;
-         eq.setAllColors = setAllColorsToggle.isOn;
-         eq.statsData.intelligence = int.Parse(intelligenceInput.text);
-         eq.statsData.strength = int.Parse(strengthInput.text);
-         eq.statsData.spirit = int.Parse(spiritInput.text);
-         eq.statsData.vitality = int.Parse(vitalityInput.text);
-         eq.statsData.precision = int.Parse(precisionInput.text);
-         eq.statsData.luck = int.Parse(luckInput.text);
-         eq.mainTexturePath = mainTextureSelector.value;
-
-         eq.elementModifiers = new ElementModifier[_elementalEntries.Count];
-         eq.rarityModifiers = new RarityModifier[_rarityEntries.Count];
-
-         for (int i = 0; i < eq.elementModifiers.Length; i++) {
-            eq.elementModifiers[i] = getElementalValues(_elementalEntries[i]);
-         }
-         for (int i = 0; i < eq.rarityModifiers.Length; i++) {
-            eq.rarityModifiers[i] = getRarityValues(_rarityEntries[i]);
-         }
+         //EquipmentDefinition eq = target as EquipmentDefinition;
+         //
+         //eq.price = int.Parse(priceInput.text);
+         //eq.canBeTrashed = canBeTrashedToggle.isOn;
+         //eq.setAllColors = setAllColorsToggle.isOn;
+         //eq.statsData.intelligence = int.Parse(intelligenceInput.text);
+         //eq.statsData.strength = int.Parse(strengthInput.text);
+         //eq.statsData.spirit = int.Parse(spiritInput.text);
+         //eq.statsData.vitality = int.Parse(vitalityInput.text);
+         //eq.statsData.precision = int.Parse(precisionInput.text);
+         //eq.statsData.luck = int.Parse(luckInput.text);
+         //eq.mainTexturePath = mainTextureSelector.value;
+         //
+         //eq.elementModifiers = new ElementModifier[_elementalEntries.Count];
+         //eq.rarityModifiers = new RarityModifier[_rarityEntries.Count];
+         //
+         //for (int i = 0; i < eq.elementModifiers.Length; i++) {
+         //   eq.elementModifiers[i] = getElementalValues(_elementalEntries[i]);
+         //}
+         //for (int i = 0; i < eq.rarityModifiers.Length; i++) {
+         //   eq.rarityModifiers[i] = getRarityValues(_rarityEntries[i]);
+         //}
       }
 
       public override void setValuesWithoutNotify (ItemDefinition itemDefinition) {
-         EquipmentDefinition eq = itemDefinition as EquipmentDefinition;
-
-         priceInput.SetTextWithoutNotify(eq.price.ToString());
-         canBeTrashedToggle.SetIsOnWithoutNotify(eq.canBeTrashed);
-         setAllColorsToggle.SetIsOnWithoutNotify(eq.setAllColors);
-         intelligenceInput.SetTextWithoutNotify(eq.statsData.intelligence.ToString());
-         strengthInput.SetTextWithoutNotify(eq.statsData.strength.ToString());
-         spiritInput.SetTextWithoutNotify(eq.statsData.spirit.ToString());
-         vitalityInput.SetTextWithoutNotify(eq.statsData.vitality.ToString());
-         precisionInput.SetTextWithoutNotify(eq.statsData.precision.ToString());
-         luckInput.SetTextWithoutNotify(eq.statsData.luck.ToString());
-         mainTextureSelector.setValueWithoutNotify(eq.mainTexturePath);
-
-         // Remove if too many entries
-         while (eq.elementModifiers.Length < _elementalEntries.Count) {
-            removeElementalEntry(_elementalEntries.Last());
-         }
-         while (eq.rarityModifiers.Length < _rarityEntries.Count) {
-            removeRarityEntry(_rarityEntries.Last());
-         }
-
-         // Added if not enough entries
-         while (eq.elementModifiers.Length > _elementalEntries.Count) {
-            addElementalEntry();
-         }
-         while (eq.rarityModifiers.Length > _rarityEntries.Count) {
-            addRarityEntry();
-         }
-
-         // Set entry values
-         for (int i = 0; i < eq.elementModifiers.Length; i++) {
-            setElementalValues(_elementalEntries[i], eq.elementModifiers[i]);
-         }
-         for (int i = 0; i < eq.rarityModifiers.Length; i++) {
-            setRarityValues(_rarityEntries[i], eq.rarityModifiers[i]);
-         }
+         //EquipmentDefinition eq = itemDefinition as EquipmentDefinition;
+         //
+         //priceInput.SetTextWithoutNotify(eq.price.ToString());
+         //canBeTrashedToggle.SetIsOnWithoutNotify(eq.canBeTrashed);
+         //setAllColorsToggle.SetIsOnWithoutNotify(eq.setAllColors);
+         //intelligenceInput.SetTextWithoutNotify(eq.statsData.intelligence.ToString());
+         //strengthInput.SetTextWithoutNotify(eq.statsData.strength.ToString());
+         //spiritInput.SetTextWithoutNotify(eq.statsData.spirit.ToString());
+         //vitalityInput.SetTextWithoutNotify(eq.statsData.vitality.ToString());
+         //precisionInput.SetTextWithoutNotify(eq.statsData.precision.ToString());
+         //luckInput.SetTextWithoutNotify(eq.statsData.luck.ToString());
+         //mainTextureSelector.setValueWithoutNotify(eq.mainTexturePath);
+         //
+         //// Remove if too many entries
+         //while (eq.elementModifiers.Length < _elementalEntries.Count) {
+         //   removeElementalEntry(_elementalEntries.Last());
+         //}
+         //while (eq.rarityModifiers.Length < _rarityEntries.Count) {
+         //   removeRarityEntry(_rarityEntries.Last());
+         //}
+         //
+         //// Added if not enough entries
+         //while (eq.elementModifiers.Length > _elementalEntries.Count) {
+         //   addElementalEntry();
+         //}
+         //while (eq.rarityModifiers.Length > _rarityEntries.Count) {
+         //   addRarityEntry();
+         //}
+         //
+         //// Set entry values
+         //for (int i = 0; i < eq.elementModifiers.Length; i++) {
+         //   setElementalValues(_elementalEntries[i], eq.elementModifiers[i]);
+         //}
+         //for (int i = 0; i < eq.rarityModifiers.Length; i++) {
+         //   setRarityValues(_rarityEntries[i], eq.rarityModifiers[i]);
+         //}
       }
 
       public void addElementalEntry () {

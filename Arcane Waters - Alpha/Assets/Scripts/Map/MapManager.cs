@@ -100,7 +100,7 @@ public class MapManager : MonoBehaviour
             }
 
             // Fetch map customization data if required
-            if ((ownerId != -1 || CustomMapManager.isGuildSpecificAreaKey(areaKey)) && customizationData == null) {
+            if ((ownerId != -1 || (CustomMapManager.isGuildSpecificAreaKey(areaKey)) || CustomMapManager.isGuildHouseAreaKey(areaKey)) && customizationData == null) {
                if (mapInfo != null) {
                   int baseMapId = DB_Main.getMapId(mapInfo.mapName);
                   customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
@@ -443,14 +443,14 @@ public class MapManager : MonoBehaviour
 
       // Check if there are any prefab changes that occurred that does not exist for visiting users
       bool isUserSpecificKey = CustomMapManager.isUserSpecificAreaKey(area.areaKey);
-      bool isGuildSpecificKey = CustomMapManager.isGuildSpecificAreaKey(area.areaKey);
+      bool isGuildSpecificKey = CustomMapManager.isGuildSpecificAreaKey(area.areaKey) || CustomMapManager.isGuildHouseAreaKey(area.areaKey);
       if (!hasFoundAnyChanges && isUserSpecificKey && Global.player != null) {
          int userOwner = CustomMapManager.getUserId(area.areaKey);
          if (userOwner != Global.player.userId) {
             createPrefab(area, biome, changes, true);
          }
       } else if (!hasFoundAnyChanges && isGuildSpecificKey && Global.player != null) {
-         if (Global.player.guildId == CustomGuildMapManager.getGuildId(area.areaKey)) {
+         if (Global.player.guildId == CustomMapManager.getGuildId(area.areaKey)) {
             createPrefab(area, biome, changes, true);
          }
       }

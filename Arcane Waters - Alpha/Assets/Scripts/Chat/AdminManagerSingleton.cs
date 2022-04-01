@@ -17,6 +17,8 @@ public class AdminManagerSingleton : GenericGameManager
    public Dictionary<string, int> hatNames = new Dictionary<string, int>();
    public Dictionary<string, int> usableNames = new Dictionary<string, int>();
    public Dictionary<string, int> craftingIngredientNames = new Dictionary<string, int>();
+   public Dictionary<string, int> cropNames = new Dictionary<string, int>();
+   public Dictionary<string, int> propNames = new Dictionary<string, int>();
 
    // The dictionary of blueprint names
    public Dictionary<string, int> blueprintNames = new Dictionary<string, int>();
@@ -79,7 +81,7 @@ public class AdminManagerSingleton : GenericGameManager
       D.adminLog("Total out going messages = " + totalMessagesOut, D.ADMIN_LOG_TYPE.NetworkMessages);
       D.adminLog("Total number of ticks = " + totalTicks, D.ADMIN_LOG_TYPE.NetworkMessages);
       if (totalTicks > 0) {
-         D.adminLog("Average messages per tick = " + (float)(((float)totalMessagesIn + totalMessagesOut) / totalTicks), D.ADMIN_LOG_TYPE.NetworkMessages);
+         D.adminLog("Average messages per tick = " + (float) (((float) totalMessagesIn + totalMessagesOut) / totalTicks), D.ADMIN_LOG_TYPE.NetworkMessages);
       }
       if (totalMessagesOut > 0) {
          D.adminLog("Average numbers of observers(clients) per message = " + totalOutObservers / totalMessagesOut, D.ADMIN_LOG_TYPE.NetworkMessages);
@@ -146,7 +148,7 @@ public class AdminManagerSingleton : GenericGameManager
    }
 
    private IEnumerator CO_CreateItemNamesDictionary () {
-      while (!EquipmentXMLManager.self.loadedAllEquipment) {
+      while (!EquipmentXMLManager.self.loadedAllEquipment || !ItemDefinitionManager.self.definitionsLoaded || !CropsDataManager.self.cropsLoaded) {
          yield return null;
       }
 
@@ -160,6 +162,8 @@ public class AdminManagerSingleton : GenericGameManager
       hatNames.Clear();
       usableNames.Clear();
       craftingIngredientNames.Clear();
+      cropNames.Clear();
+      propNames.Clear();
 
       // Set all the weapon names
       foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
@@ -185,6 +189,20 @@ public class AdminManagerSingleton : GenericGameManager
       foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
          addToItemNameDictionary(craftingIngredientNames, Item.Category.CraftingIngredients, (int) craftingIngredientsType);
       }
+
+      // Set all the crop items names
+      foreach (Crop.Type crop in Enum.GetValues(typeof(Crop.Type))) {
+         if (CropsDataManager.self.tryGetCropData(crop, out CropsData data)) {
+            addToItemNameDictionary(cropNames, Item.Category.Crop, data.xmlId, data.xmlName);
+         }
+      }
+
+      // Set all the prop names
+      foreach (ItemDefinition def in ItemDefinitionManager.self.getDefinitions()) {
+         if (def.category == ItemDefinition.Category.Prop) {
+            addToItemNameDictionary(propNames, Item.Category.Prop, def.id, def.name);
+         }
+      }
    }
 
    private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
@@ -200,7 +218,12 @@ public class AdminManagerSingleton : GenericGameManager
       itemName = itemName.ToLower();
 
       // Add the new entry in the dictionary
-      if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName) && !itemName.ToLower().Contains("none") && itemName != "") {
+      if (!"undefined".Equals(itemName) && 
+         !"usable item".Equals(itemName) && 
+         !"undefined design".Equals(itemName) && 
+         !itemName.ToLower().Contains("none") && 
+         itemName != "" && 
+         !itemName.ToLower().Contains("disabled")) {
          if (!dictionary.ContainsKey(itemName)) {
             dictionary.Add(itemName, itemTypeId);
          } else {

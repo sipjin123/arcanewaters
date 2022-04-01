@@ -20,6 +20,9 @@ public class CropPickup : MonoBehaviour {
    // The shadow rendered underneath crop
    public GameObject shadow;
 
+   // The user id of the player who harvested this crop. Only this player may pick up the pickup
+   public int harvesterUserId = 0;
+
    #endregion
 
    private void Start () {
@@ -39,25 +42,7 @@ public class CropPickup : MonoBehaviour {
 
    private void checkForNewTarget () {
       if (_targetEntity == null) {
-
-         // On a guild map, we will select the closest guild member to move to
-         // Look for better way to fetch all players on client
-         List<PlayerBodyEntity> instancePlayers = FindObjectsOfType<PlayerBodyEntity>().ToList();
-         PlayerBodyEntity closestPlayer = null;
-         float closestPlayerDistance = float.MaxValue;
-
-         // Find the closest player that is in the guild
-         foreach (PlayerBodyEntity player in instancePlayers) {
-            float distanceToPlayer = Vector2.Distance(player.transform.position, transform.position);
-            if (distanceToPlayer < closestPlayerDistance && (_guildId > 0 && _guildId == player.guildId)) {
-               closestPlayer = player;
-               closestPlayerDistance = distanceToPlayer;
-            }
-         }
-
-         if (closestPlayer != null) {
-            _targetEntity = closestPlayer;
-         }
+         _targetEntity = EntityManager.self.getEntity(harvesterUserId);
       }
    }
 
@@ -69,7 +54,7 @@ public class CropPickup : MonoBehaviour {
          return;
       }
 
-      bool canPickupCrop = (player.userId == cropSpot.crop.userId) || (_guildId > 0 && player.guildId == _guildId);
+      bool canPickupCrop = (player.userId == harvesterUserId);
 
       if (canPickupCrop) {
          cropSpot.cropPickupLocation = transform.position;

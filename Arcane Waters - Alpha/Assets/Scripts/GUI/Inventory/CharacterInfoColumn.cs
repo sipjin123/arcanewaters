@@ -219,6 +219,7 @@ public class CharacterInfoColumn : MonoBehaviour {
       info.iconSigilPalettes = player.guildIconSigilPalettes;
       info.guildId = player.guildId;
       info.guildMapBaseId = player.guildMapBaseId;
+      info.guildHouseBaseId = player.guildHouseBaseId;
 
       return info;
    }

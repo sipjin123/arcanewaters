@@ -32,9 +32,9 @@ public class WorldMapManager : MonoBehaviour
    }
 
    public void Update () {
-    if (Global.player != null) {
+      if (Global.player != null) {
          updatePlayerSpot();
-      }  
+      }
    }
 
    private void updatePlayerSpot () {
@@ -301,7 +301,26 @@ public class WorldMapManager : MonoBehaviour
       };
    }
 
-   public string getStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
+   public string encodeGeoCoords (WorldMapGeoCoords geoCoords) {
+      try {
+         return JsonUtility.ToJson(geoCoords);
+      } catch {
+         return string.Empty;
+      }
+   }
+
+   public WorldMapGeoCoords decodeGeoCoords (string geoCoordsStr) {
+      try {
+         return JsonUtility.FromJson<WorldMapGeoCoords>(geoCoordsStr);
+      } catch {
+         return null;
+      }
+   }
+
+   public string getDisplayStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      float adjustedAreaY = geoCoords.areaY / 255 * 999; 
+      float adjustedAreaX = geoCoords.areaX / 255 * 999; 
+
       if (!Util.isEmpty(geoCoords.subAreaKey)) {
          int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
 
@@ -309,96 +328,103 @@ public class WorldMapManager : MonoBehaviour
             string subAreaIdStr = subAreaId.ToString("D3");
             string subAreaXStr = geoCoords.subAreaX.ToString("F0");
             string subAreaYStr = geoCoords.subAreaY.ToString("F0");
-            return $"<{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}.{subAreaIdStr}{subAreaYStr}, {geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}.{subAreaIdStr}{subAreaXStr}>";
+            return $"<{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}.*, {geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}.*>";
          }
       }
 
-      return $"<{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}, {geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}>";
+      return $"<{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}, {geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}>";
    }
 
    public string getLatitudeFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      float adjustedAreaY = geoCoords.areaY / 255 * 999;
+
       if (!Util.isEmpty(geoCoords.subAreaKey)) {
          int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
 
          if (subAreaId >= 0) {
             string subAreaIdStr = subAreaId.ToString("D3");
             string subAreaYStr = geoCoords.subAreaY.ToString("F0");
-            return $"{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}.{subAreaIdStr}{subAreaYStr}";
+            return $"{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}.{subAreaIdStr}{subAreaYStr}";
          }
       }
 
-      return $"{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}";
+      return $"{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}";
    }
 
    public string getLongitudeFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      float adjustedAreaX = geoCoords.areaX / 255 * 999;
+
       if (!Util.isEmpty(geoCoords.subAreaKey)) {
          int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
 
          if (subAreaId >= 0) {
             string subAreaIdStr = subAreaId.ToString("D3");
             string subAreaXStr = geoCoords.subAreaX.ToString("F0");
-            return $"{geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}.{subAreaIdStr}{subAreaXStr}";
+            return $"{geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}.{subAreaIdStr}{subAreaXStr}";
          }
       }
 
-      return $"{geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}";
+      return $"{geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}";
    }
 
-   public WorldMapGeoCoords getGeoCoordsFromString (string geoCoordsStr) {
-      if (!Util.isEmpty(geoCoordsStr)) {
-         int prefixIndex = geoCoordsStr.IndexOf("<");
-
-         if (prefixIndex >= 0) {
-            int suffixIndex = geoCoordsStr.IndexOf(">");
-
-            if (suffixIndex >= 0) {
-               int commaIndex = geoCoordsStr.IndexOf(",");
-
-               if (prefixIndex < commaIndex && commaIndex < suffixIndex) {
-                  // Latitude is the first coordinate
-                  string latitudeString = geoCoordsStr.Substring(prefixIndex + 1, commaIndex - prefixIndex - 1);
-                  string longitudeString = geoCoordsStr.Substring(commaIndex + 1, suffixIndex - commaIndex - 1);
-
-                  string[] latitudeStringTokens = latitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
-                  string[] longitudeStringTokens = longitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-                  WorldMapGeoCoords newGeoCoords = new WorldMapGeoCoords();
-
-                  if (longitudeStringTokens.Length > 1) {
-                     newGeoCoords.worldX = int.Parse(longitudeStringTokens[0]);
-                     newGeoCoords.areaX = int.Parse(longitudeStringTokens[1]);
-                  }
-
-                  if (latitudeStringTokens.Length > 1) {
-                     newGeoCoords.worldY = int.Parse(latitudeStringTokens[0]);
-                     newGeoCoords.areaY = int.Parse(latitudeStringTokens[1]);
-                  }
-
-                  if (longitudeStringTokens.Length > 2) {
-                     string subAreaIdStr = longitudeStringTokens[2].Substring(0, 3);
-                     string subAreaXStr = longitudeStringTokens[2].Substring(3);
-                     float subAreaX = float.Parse(subAreaXStr);
-                     string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
-                     newGeoCoords.subAreaX = subAreaX;
-                     newGeoCoords.subAreaKey = subAreaKey;
-                  }
-
-                  if (latitudeStringTokens.Length > 2) {
-                     string subAreaIdStr = latitudeStringTokens[2].Substring(0, 3);
-                     string subAreaYStr = latitudeStringTokens[2].Substring(3);
-                     float subAreaY = float.Parse(subAreaYStr);
-                     string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
-                     newGeoCoords.subAreaY = subAreaY;
-                     newGeoCoords.subAreaKey = subAreaKey;
-                  }
-
-                  return newGeoCoords;
-               }
-            }
-         }
+   public WorldMapGeoCoords getGeoCoordsFromDisplayString (string geoCoordsStr) {
+      if (Util.isEmpty(geoCoordsStr)) {
+         return null;
+      }
+      
+      int prefixIndex = geoCoordsStr.IndexOf("<");
+      if (prefixIndex < 0) {
+         return null;
       }
 
-      return null;
+      int suffixIndex = geoCoordsStr.IndexOf(">");
+      if (suffixIndex < 0) {
+         return null;
+      }
+
+      int commaIndex = geoCoordsStr.IndexOf(",");
+      if (prefixIndex >= commaIndex || commaIndex >= suffixIndex) {
+         return null;
+      }
+
+      // Latitude is the first coordinate
+      string latitudeString = geoCoordsStr.Substring(prefixIndex + 1, commaIndex - prefixIndex - 1);
+      string longitudeString = geoCoordsStr.Substring(commaIndex + 1, suffixIndex - commaIndex - 1);
+
+      string[] latitudeStringTokens = latitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+      string[] longitudeStringTokens = longitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+      WorldMapGeoCoords newGeoCoords = new WorldMapGeoCoords();
+
+      if (longitudeStringTokens.Length > 1) {
+         newGeoCoords.worldX = int.Parse(longitudeStringTokens[0]);
+         newGeoCoords.areaX = int.Parse(longitudeStringTokens[1]);
+      }
+
+      if (latitudeStringTokens.Length > 1) {
+         newGeoCoords.worldY = int.Parse(latitudeStringTokens[0]);
+         newGeoCoords.areaY = int.Parse(latitudeStringTokens[1]);
+      }
+
+      if (longitudeStringTokens.Length > 2) {
+         string subAreaIdStr = longitudeStringTokens[2].Substring(0, 3);
+         string subAreaXStr = longitudeStringTokens[2].Substring(3);
+         float subAreaX = float.Parse(subAreaXStr);
+         string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
+         newGeoCoords.subAreaX = subAreaX;
+         newGeoCoords.subAreaKey = subAreaKey;
+      }
+
+      if (latitudeStringTokens.Length > 2) {
+         string subAreaIdStr = latitudeStringTokens[2].Substring(0, 3);
+         string subAreaYStr = latitudeStringTokens[2].Substring(3);
+         float subAreaY = float.Parse(subAreaYStr);
+         string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
+         newGeoCoords.subAreaY = subAreaY;
+         newGeoCoords.subAreaKey = subAreaKey;
+      }
+
+      return newGeoCoords;
    }
 
    public WorldMapGeoCoords getGeoCoordsFromWorldMapAreaCoords (WorldMapAreaCoords areaCoords) {

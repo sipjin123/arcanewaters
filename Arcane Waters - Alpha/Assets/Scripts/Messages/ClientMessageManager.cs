@@ -294,9 +294,6 @@ public class ClientMessageManager : MonoBehaviour {
                StoreScreen.self.refreshPanel();
             }
 
-            // Play the SFX for purchasing an item
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
-
             return;
          case ConfirmMessage.Type.ShipBought:
             // Hide the ship panel

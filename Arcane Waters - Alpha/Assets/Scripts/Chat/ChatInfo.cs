@@ -72,13 +72,16 @@ public class ChatInfo
    // Is the sender muted?
    public bool isSenderMuted;
 
+   // Extra
+   public string extra;
+
    #endregion
 
    public ChatInfo () {
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, string guildName="", bool isSenderMuted = false, bool isSenderAdmin = false, int recipientId = 0) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, string guildName="", bool isSenderMuted = false, bool isSenderAdmin = false, int recipientId = 0, string extra = "") {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
@@ -91,6 +94,7 @@ public class ChatInfo
       this.guildName = guildName;
       this.isSenderMuted = isSenderMuted;
       this.isSenderAdmin = isSenderAdmin;
+      this.extra = extra;
 
       // Fill in the sender for certain types of messages
       if (Util.isEmpty(sender)) {

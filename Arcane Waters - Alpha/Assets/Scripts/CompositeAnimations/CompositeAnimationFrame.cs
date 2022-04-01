@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class CompositeAnimationFrame
@@ -14,6 +15,9 @@ public class CompositeAnimationFrame
    // The duration of the frame (seconds)
    public float duration = 0.25f;
 
+   // The offset to apply the animated sprite
+   public Vector3 offset = Vector3.zero;
+
    // The frame types
    public enum FrameTypes
    {
@@ -25,6 +29,9 @@ public class CompositeAnimationFrame
 
       // Flip
       Flip = 2,
+
+      // Offset
+      Offset = 3
    }
 
    #endregion

@@ -115,10 +115,18 @@ namespace MapCreationTool
          foreach (SpecialTileChunk chunk in chunks) {
             switch (chunk.type) {
                case SpecialTileChunk.Type.Stair:
+               case SpecialTileChunk.Type.StairNorth:
                   GameObject stairs = UnityEngine.Object.Instantiate(AssetSerializationMaps.stairsEffector, map.effectorContainer);
                   stairs.transform.localPosition = chunk.position;
                   stairs.transform.localScale = Vector3.one;
                   stairs.GetComponent<BoxCollider2D>().size = chunk.size;
+                  if (chunk.type == SpecialTileChunk.Type.StairNorth) {
+                     // For north effectors, increase the drag so player moves slower
+                     AreaEffector2D effector = stairs.GetComponentInChildren<AreaEffector2D>();
+                     if (effector != null) {
+                        effector.drag *= 2.5f;
+                     }
+                  }
                   break;
                case SpecialTileChunk.Type.Vine:
                   Vines vines = UnityEngine.Object.Instantiate(AssetSerializationMaps.vinesTrigger, map.effectorContainer);
@@ -409,7 +417,7 @@ namespace MapCreationTool
                   }
                   shopEntity.isSeaShop = area.isSea;
                }
-               
+
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
                }

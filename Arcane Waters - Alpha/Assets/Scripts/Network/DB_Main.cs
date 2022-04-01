@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using MiniJSON;
 using Steam;
 using Store;
+using Rewards;
 
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
@@ -2159,6 +2160,15 @@ public class DB_Main : DB_MainStub
    public static new void setCustomGuildMapBase (object command, int guildId, int baseMapId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "UPDATE guilds SET gldMapBaseId = @baseMapId WHERE gldId = @guildId";
+      cmd.Parameters.AddWithValue("@guildId", guildId);
+      cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      DebugQuery(cmd);
+      cmd.ExecuteNonQuery();
+   }
+
+   public static new void setCustomGuildHouseBase (object command, int guildId, int baseMapId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE guilds SET gldHouseBaseId = @baseMapId WHERE gldId = @guildId";
       cmd.Parameters.AddWithValue("@guildId", guildId);
       cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
       DebugQuery(cmd);
@@ -5014,118 +5024,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Item Instances
-
-   public static new List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
-      MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "SELECT * FROM item_instances WHERE item_instances.userId = @ownerUserId AND category = @category;";
-      cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
-      cmd.Parameters.AddWithValue("@category", (int) category);
-      DebugQuery(cmd);
-
-      List<ItemInstance> result = new List<ItemInstance>();
-      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-         while (dataReader.Read()) {
-            result.Add(new ItemInstance(dataReader));
-         }
-      }
-
-      return result;
-   }
-
-   public static new ItemInstance getItemInstance (object command, int userId, int itemDefinitionId) {
-      MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;";
-      cmd.Parameters.AddWithValue("@userId", userId);
-      cmd.Parameters.AddWithValue("@itemDefinitionId", itemDefinitionId);
-      DebugQuery(cmd);
-
-      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-         if (dataReader.Read()) {
-            return new ItemInstance(dataReader);
-         }
-      }
-      return null;
-   }
-
-   public static new void createOrAppendItemInstance (object command, ItemInstance item) {
-      MySqlCommand cmd = command as MySqlCommand;
-      if (item.getDefinition().canBeStacked()) {
-         // If item can be stacked, we want to check if it already exists
-         ItemInstance existingInstance = getItemInstance(cmd, item.ownerUserId, item.itemDefinitionId);
-         cmd.Parameters.Clear();
-
-         // If the item exist, update its count
-         if (existingInstance != null) {
-            increaseItemInstanceCount(cmd, existingInstance.id, item.count);
-
-            // Update item's fields to represent newly updated entry
-            item.id = existingInstance.id;
-         } else {
-            // Otherwise, create a new stack
-            createNewItemInstance(cmd, item);
-         }
-      } else {
-         int count = item.count;
-
-         // Since the item cannot be stacked, set its count to 1
-         item.count = 1;
-
-         for (int i = 0; i < count; i++) {
-            // Create the item
-            createNewItemInstance(cmd, item);
-         }
-      }
-   }
-
-   public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
-      MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, rarity, palettes, category) " +
-         "VALUES(@itemDefinitionId, @userId, @count, @rarity, @palettes, @category);";
-      cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
-      cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
-      cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
-      cmd.Parameters.AddWithValue("@palettes", itemInstance.palettes);
-      cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
-      cmd.Parameters.AddWithValue("@category", (int) itemInstance.getDefinition().category);
-      DebugQuery(cmd);
-      cmd.ExecuteNonQuery();
-
-      // Set the ID that was created for the instance
-      itemInstance.id = (int) cmd.LastInsertedId;
-   }
-
-   public static new void increaseItemInstanceCount (object command, int id, int increaseBy) {
-      MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;";
-      cmd.Parameters.AddWithValue("@increaseBy", increaseBy);
-      cmd.Parameters.AddWithValue("@id", id);
-      DebugQuery(cmd);
-      cmd.ExecuteNonQuery();
-   }
-
-   public static new void decreaseOrDeleteItemInstance (object command, int id, int decreaseBy) {
-      MySqlCommand cmd = command as MySqlCommand;
-      cmd.Transaction = cmd.Connection.BeginTransaction();
-      try {
-         // First query deletes the entry which has only 'decreaseBy' of item left
-         // Second query decreases the count by 'decreaseBy' if the item wasn't deleted (had more than 'decreaseBy' left)
-         cmd.CommandText = "DELETE FROM item_instances WHERE id = @id AND count <= @decreaseBy; " +
-            "UPDATE item_instances SET count = count - @decreaseBy WHERE id = @id;";
-
-         cmd.Parameters.AddWithValue("@id", id);
-         cmd.Parameters.AddWithValue("@decreaseBy", decreaseBy);
-         DebugQuery(cmd);
-         cmd.ExecuteNonQuery();
-         cmd.Transaction.Commit();
-      } catch (Exception ex) {
-         cmd.Transaction.Rollback();
-         throw ex;
-      }
-   }
-
-   #endregion
-
    #region Companions Features
 
    public static new void updateCompanionExp (int xmlId, int userId, int exp) {
@@ -6006,58 +5904,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Crops Features
-
-   public static new List<SiloInfo> getSiloInfo (int userId) {
-      List<SiloInfo> siloInfo = new List<SiloInfo>();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM silo WHERE usrId=@usrId ORDER BY silo.crpType", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            DebugQuery(cmd);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  SiloInfo info = new SiloInfo(dataReader);
-                  siloInfo.Add(info);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return siloInfo;
-   }
-
-   public static new void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO silo (usrId, crpType, cropCount) VALUES(@usrId, @crpType, @cropCount) " +
-            "ON DUPLICATE KEY UPDATE cropCount = cropCount + " + amount, conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@crpType", (int) cropType);
-            cmd.Parameters.AddWithValue("@cropCount", 1);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   #endregion
-
    public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
 
@@ -6383,12 +6229,12 @@ public class DB_Main : DB_MainStub
    //   }
    //}
 
-   public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress) {
+   public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress, string extra) {
       int chatId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO chat_log (usrId, userName, message, time, chatType, serverIpAddress) VALUES(@userId, @userName, @message, @time, @chatType, @serverIpAddress) ", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO chat_log (usrId, userName, message, time, chatType, serverIpAddress, extra) VALUES(@userId, @userName, @message, @time, @chatType, @serverIpAddress, @extra) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
@@ -6397,6 +6243,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@serverIpAddress", serverIpAddress);
             cmd.Parameters.AddWithValue("@time", dateTime);
             cmd.Parameters.AddWithValue("@chatType", (int) chatType);
+            cmd.Parameters.AddWithValue("@extra", extra);
             DebugQuery(cmd);
 
             // Execute the command
@@ -6444,6 +6291,7 @@ public class DB_Main : DB_MainStub
                   string message = dataReader.GetString("message");
                   int chatId = dataReader.GetInt32("chtId");
                   DateTime time = dataReader.GetDateTime("time");
+                  string extra = dataReader.GetString("extra");
 
                   if (chatType != ChatInfo.Type.Global) {
                      int userId = dataReader.GetInt32("usrId");
@@ -7064,7 +6912,7 @@ public class DB_Main : DB_MainStub
 
       return userId;
    }
-   
+
    public static new int getDeletedUserId (string username) {
       int userId = -1;
 
@@ -7088,8 +6936,8 @@ public class DB_Main : DB_MainStub
       }
 
       return userId;
-   }   
-   
+   }
+
    public static new UserObjects getUserObjects (int userId) {
       UserObjects userObjects = new UserObjects();
 
@@ -11633,7 +11481,7 @@ public class DB_Main : DB_MainStub
 
    #region World Map
 
-   public static new void addVisitedAreas(int userId, IEnumerable<string> areaKeys) {
+   public static new void addVisitedAreas (int userId, IEnumerable<string> areaKeys) {
       if (areaKeys == null || areaKeys.Count() == 0) {
          return;
       }
@@ -11696,7 +11544,7 @@ public class DB_Main : DB_MainStub
       return unlockedAreas;
    }
 
-   public static new bool hasUserVisitedArea(int userId, string areaKey) {
+   public static new bool hasUserVisitedArea (int userId, string areaKey) {
       bool isAreaUnlocked = false;
 
       try {
@@ -12378,6 +12226,119 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Reward Codes
+
+   public static new bool useRewardCode (int codeId) {
+      bool result = false;
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("UPDATE reward_codes SET rcUsed=TRUE WHERE rcId=@codeId", connection)) {
+               command.Parameters.AddWithValue("@codeId", codeId);
+               result = command.ExecuteNonQuery() > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   public static new IEnumerable<RewardCode> getRewardCodes (string steamId, string consumerId, string producerId) {
+      List<RewardCode> codes = new List<RewardCode>();
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM reward_codes WHERE rcUserId=@userId AND rcConsumerId=@consumerId AND rcProducerId=@producerId", connection)) {
+               command.Parameters.AddWithValue("@userId", steamId);
+               command.Parameters.AddWithValue("@consumerId", consumerId);
+               command.Parameters.AddWithValue("@producerId", producerId);
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     RewardCode rewardCode = new RewardCode {
+                        id = reader.GetInt32("rcId"),
+                        code = reader.GetString("rcCode"),
+                        userId = reader.GetString("rcUserId"),
+                        consumerId = reader.GetString("rcConsumerId"),
+                        producerId = reader.GetString("rcProducerId"),
+                     };
+                     codes.Add(rewardCode);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return codes;
+   }
+
+   public static new IEnumerable<RewardCode> getRewardCodesByProducer (string steamId, string producerId) {
+      List<RewardCode> codes = new List<RewardCode>();
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM reward_codes WHERE rcUserId=@userId AND rcProducerId=@producerId", connection)) {
+               command.Parameters.AddWithValue("@userId", steamId);
+               command.Parameters.AddWithValue("@producerId", producerId);
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     RewardCode rewardCode = new RewardCode {
+                        id = reader.GetInt32("rcId"),
+                        code = reader.GetString("rcCode"),
+                        userId = reader.GetString("rcUserId"),
+                        consumerId = reader.GetString("rcConsumerId"),
+                        producerId = reader.GetString("rcProducerId"),
+                     };
+                     codes.Add(rewardCode);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return codes;
+   }
+
+   public static new IEnumerable<RewardCode> getUnusedRewardCodes (string steamId, string consumerId) {
+      List<RewardCode> codes = new List<RewardCode>();
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM reward_codes WHERE rcUserId=@userId AND rcConsumerId=@consumerId AND rcUsed=FALSE", connection)) {
+               command.Parameters.AddWithValue("@userId", steamId);
+               command.Parameters.AddWithValue("@consumerId", consumerId);
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     RewardCode rewardCode = new RewardCode {
+                        id = reader.GetInt32("rcId"),
+                        code = reader.GetString("rcCode"),
+                        userId = reader.GetString("rcUserId"),
+                        consumerId = reader.GetString("rcConsumerId"),
+                        producerId = reader.GetString("rcProducerId"),
+                     };
+                     codes.Add(rewardCode);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return codes;
+   }
+
+   #endregion
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -12492,8 +12453,8 @@ public class DB_Main : DB_MainStub
 
       return result;
    }
-   
-   public static string [] getPlayersNames (int [] userIds) {
+
+   public static string[] getPlayersNames (int[] userIds) {
       List<string> playersNames = new List<string>();
 
       try {
@@ -12515,7 +12476,7 @@ public class DB_Main : DB_MainStub
       }
 
       return playersNames.ToArray();
-   }   
+   }
 
    #region Wrapper Call Methods
 

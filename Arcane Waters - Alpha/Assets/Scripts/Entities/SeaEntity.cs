@@ -94,6 +94,10 @@ public class SeaEntity : NetEntity
    // The total healed value of this entity
    public int totalHealed;
 
+   // A reference to a sea harpoon attached to this entity, if there is one
+   [HideInInspector]
+   public List<uint> attachedByHarpoonNetIds = new List<uint>();
+
    #region Enemy AI
 
    [Header("AI")]
@@ -1162,9 +1166,6 @@ public class SeaEntity : NetEntity
                }
                StartCoroutine(CO_FireAtSpot(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
-
-            // Play sfx for cluster
-            SoundEffectManager.self.playHorrorPoisonSfx(SoundEffectManager.HorrorAttackType.Cluster, spawnPosition);
 
             // Outer circle
             for (float angle = angleStep / 2; angle < 360f; angle += angleStep) {

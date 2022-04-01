@@ -783,6 +783,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                   errors += ex + Environment.NewLine;
                }
             }
+            ItemDefinitionManager.self.definitionsLoaded = true;
             if (!string.IsNullOrEmpty(errors)) {
                D.error("There were errors when storing item definitions:" + Environment.NewLine + errors);
             }

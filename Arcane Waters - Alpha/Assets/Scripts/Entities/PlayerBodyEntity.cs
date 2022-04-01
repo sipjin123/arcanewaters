@@ -541,6 +541,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                }
             }
 
+            // Sitting/Lying
+            if (emoteType == EmoteManager.EmoteTypes.Sit) {
+               playCompositeAnimation(CompositeAnimationManager.self.SittingS);
+            }
+
             if (isLocalPlayer) {
                InputManager.toggleInput(enable: false);
             }

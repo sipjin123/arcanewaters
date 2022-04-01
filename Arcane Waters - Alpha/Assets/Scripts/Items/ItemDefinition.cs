@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
 
 /// <summary>
 /// Represents a description of an item - it's name, images and various properties.
-/// When this item is used/owned/created inside the game, it takes form of 'ItemInstance'.
 /// </summary>
 // NOTE: Include '[XmlRoot("Item")]' in every derived class to avoid type errors when deserializing.
 [Serializable]
@@ -14,7 +14,7 @@ public class ItemDefinition
    #region Public Variables
 
    // Category type of an item
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Prop = 10 }
+   public enum Category { None = 0, Prop = 10 }
 
    // Name of the item
    public string name = "";
@@ -65,24 +65,6 @@ public class ItemDefinition
          // return <call appropriate subclass constructor with provided parameters>
          case Category.None:
             return new ItemDefinition();
-         case Category.Weapon:
-            return new WeaponDefinition();
-         case Category.Armor:
-            return new ArmorDefinition();
-         case Category.Hats:
-            return new HatDefinition();
-         case Category.Potion:
-            return new PotionDefinition();
-         case Category.Usable:
-            return new UsableItemDefinition();
-         case Category.CraftingIngredients:
-            return new CraftingIngredientDefinition();
-         case Category.Blueprint:
-            return new BlueprintDefinition();
-         case Category.Currency:
-            return new CurrencyDefinition();
-         case Category.Quest_Item:
-            return new QuestItemDefinition();
          case Category.Prop:
             return new PropDefinition();
          default:
@@ -97,24 +79,6 @@ public class ItemDefinition
          // return <call appropriate subclass constructor with provided parameters>
          case Category.None:
             return deserialize<ItemDefinition>(data);
-         case Category.Weapon:
-            return deserialize<WeaponDefinition>(data);
-         case Category.Armor:
-            return deserialize<ArmorDefinition>(data);
-         case Category.Hats:
-            return deserialize<HatDefinition>(data);
-         case Category.Potion:
-            return deserialize<PotionDefinition>(data);
-         case Category.Usable:
-            return deserialize<UsableItemDefinition>(data);
-         case Category.CraftingIngredients:
-            return deserialize<CraftingIngredientDefinition>(data);
-         case Category.Blueprint:
-            return deserialize<BlueprintDefinition>(data);
-         case Category.Currency:
-            return deserialize<CurrencyDefinition>(data);
-         case Category.Quest_Item:
-            return deserialize<QuestItemDefinition>(data);
          case Category.Prop:
             return deserialize<PropDefinition>(data);
          default:
@@ -135,6 +99,39 @@ public class ItemDefinition
          D.error($"Error deserializing data to type: { typeof(T) }, provided data: { data }, exception: { ex }");
          return null;
       }
+   }
+
+   public List<Item> getStumpHarvestLoot () {
+      return new List<Item> {
+         new Item {
+            category = Item.Category.CraftingIngredients,
+            count = 1,
+            itemTypeId = (int) CraftingIngredients.Type.Wood,
+            data = "",
+            durability = 100,
+            itemName = CraftingIngredients.Type.Wood.ToString(),
+         }
+      };
+   }
+
+   // Hardcoded item rewards for when player gets his first house/farm
+   // 2 Tables, 6 Chairs, 2 Stools, 6 Tree seeds, 4 Bush seeds
+   public static List<Item> getFirstFarmRewards (int receiverUserId) {
+      return new List<Item> {
+         new Item(0, Item.Category.Weapon, 82, 2, "", "", 100),
+         new Item(0, Item.Category.Weapon, 84, 2, "", "", 100),
+         new Item(0, Item.Category.Weapon, 86, 2, "", "", 100),
+         new Item(0, Item.Category.Weapon, 87, 2, "", "", 100),
+         new Item(0, Item.Category.Weapon, 88, 2, "", "", 100)
+      };
+   }
+
+   public static List<Item> getFirstHouseRewards (int receiverUserId) {
+      return new List<Item> {
+         new Item(0, Item.Category.Prop, 11, 2, "", "", 100),
+         new Item(0, Item.Category.Prop, 10, 6, "", "", 100),
+         new Item(0, Item.Category.Prop, 16, 2, "", "", 100)
+      };
    }
 
    #region Private Variables

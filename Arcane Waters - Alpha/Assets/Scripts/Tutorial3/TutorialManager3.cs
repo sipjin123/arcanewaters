@@ -251,6 +251,16 @@ public class TutorialManager3 : MonoBehaviour {
       // If there are no more uncompleted tutorials, select the last one (the end notice)
       if (_currentTutorial == null) {
          _currentTutorial = tutorialDataList[tutorialDataList.Count - 1];
+
+         if (Global.player != null) {
+            // Try to get the steamId
+            string steamId = Global.player.userId.ToString();
+            if (SteamManager.Initialized && Global.isSteamLogin) {
+               steamId = Global.lastSteamId;
+            }
+
+            Global.player.rpc.Cmd_ReportCompletedTutorial(steamId);
+         }
       }
 
       _currentStep = 0;

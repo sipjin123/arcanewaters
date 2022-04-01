@@ -28,7 +28,7 @@ public class CustomGuildMapManager : CustomMapManager
 
       if (areaKey.Equals(mapTypeAreaKey) || areaKey.Equals(getGuildSpecificAreaKey(user.guildId))) {
          if (user.guildMapBaseId <= 0) {
-            D.log("This guild hasn't chosen a map layout yet.");
+            D.debug("This guild hasn't chosen a map layout yet.");
 
             // Check if the user has priveleges to choose a map layout
             if (user.guildPermissions == int.MaxValue) {
@@ -46,7 +46,7 @@ public class CustomGuildMapManager : CustomMapManager
                return false;
             } else {
                denyWarpHandler = (player) => {
-                  ChatManager.self.addChat("Can't enter guild map until the guild leader chooses a layout.", ChatInfo.Type.System);
+                  player.rpc.Target_DisplayServerMessage("Can't enter guild house until the guild leader chooses a layout.");
                };
 
                return false;

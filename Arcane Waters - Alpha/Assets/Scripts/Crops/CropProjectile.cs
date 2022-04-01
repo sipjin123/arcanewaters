@@ -37,6 +37,9 @@ public class CropProjectile : MonoBehaviour {
    // Reference to scriptable object which modifies spawned crop pickable object transform
    public CropPickableConfig cropPickableConfig;
 
+   // The user id of the player who harvested this crop
+   public int harvesterUserId = 0;
+
    #endregion
 
    private void Update () {
@@ -108,6 +111,7 @@ public class CropProjectile : MonoBehaviour {
          CropPickup cropPickup = spawnedObj.GetComponent<CropPickup>();
          cropPickup.cropSpot = _cropSpot;
          cropPickup.spriteRender.sprite = projectileSpriteObj.GetComponent<SpriteRenderer>().sprite;
+         cropPickup.harvesterUserId = harvesterUserId;
 
          // Adjust crop pickup transform based on config file
          CropPickableConfig.SinglePickableConfig config = cropPickableConfig.config.Find(_ => _.cropType == cropReference.cropType);

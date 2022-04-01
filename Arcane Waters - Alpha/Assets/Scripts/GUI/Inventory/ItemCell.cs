@@ -58,9 +58,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The cahed item data
    public Item itemCache;
 
-   // The item instance that is being displayed
-   public ItemInstance targetItem;
-
    // The icon indicating this item is a blueprint
    public GameObject blueprintIcon;
 
@@ -80,7 +77,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public virtual void clear () {
       itemCache = null;
-      targetItem = null;
       itemSpriteId = 0;
       itemTypeId = 0;
       leftClickEvent.RemoveAllListeners();
@@ -355,6 +351,26 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
             icon.sprite = ImageManager.getSprites(item.getIconPath())[1]; //TODO: Use a more item specific sprite of this item.
             break;
+         case Item.Category.Crop:
+            if (item.tryGetCastItem(out CropItem cropItem)) {
+               item = cropItem;
+               icon.sprite = ImageManager.getSprite(cropItem.getIconPath());
+            } else {
+               D.debug("Failed to cast Crop item for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+            break;
+         case Item.Category.Prop:
+            if (item.tryGetCastItem(out Prop propItem)) {
+               item = propItem;
+               icon.sprite = ImageManager.getSprite(propItem.getIconPath());
+            } else {
+               D.debug("Failed to cast Prop item for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+            break;
          default:
             D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);
             icon.sprite = defaultItemIcon;
@@ -368,7 +384,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       recoloredSprite.recolor(item.paletteNames);
 
       // Show the item count when relevant
-      if (count > 1 || item.category == Item.Category.CraftingIngredients || item.category == Item.Category.Quest_Item) {
+      if (count > 1 || item.category == Item.Category.CraftingIngredients || item.category == Item.Category.Quest_Item || item.category == Item.Category.Crop) {
          itemCountText.SetText(count.ToString());
          itemCountText.gameObject.SetActive(true);
       } else {
@@ -404,34 +420,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             itemCellImage.color = highDurabilityColor;
          }
       }
-   }
-
-   public void setCellForItem (ItemInstance item) {
-      targetItem = item;
-      icon.sprite = ImageManager.getSprite(item.getDefinition().iconPath);
-
-      // Set the sprite of the shadow
-      iconShadow.sprite = icon.sprite;
-
-      // Recolor
-      recoloredSprite.recolor(item.palettes);
-
-      // Show the item count when relevant
-      if (item.count > 1 || item.getDefinition().category == ItemDefinition.Category.CraftingIngredients) {
-         itemCountText.SetText(item.count.ToString());
-         itemCountText.gameObject.SetActive(true);
-      } else {
-         itemCountText.gameObject.SetActive(false);
-      }
-
-      // Set the tooltip
-      tooltip.message = item.getTooltip();
-
-      // Store the rarity type
-      itemRarityType = item.rarity;
-
-      // Hides the selection box
-      hideSelectedBox();
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {

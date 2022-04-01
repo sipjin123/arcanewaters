@@ -56,7 +56,9 @@ namespace ItemDefinitionTool
 
       public void duplicateDefinition (int id) {
          XmlLoadingPanel.self.startLoading();
-         ItemDefinition definition = ItemDefinitionManager.self.getDefinition(id);
+
+         ItemDefinitionManager.self.tryGetDefinition(id, out ItemDefinition definition);
+
          definition.creatorUserId = MasterToolAccountManager.self.currentAccountID;
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -69,7 +71,7 @@ namespace ItemDefinitionTool
       }
 
       public void editDefinition (int id) {
-         selectedItemDefinition = ItemDefinitionManager.self.getDefinition(id);
+         ItemDefinitionManager.self.tryGetDefinition(id, out selectedItemDefinition);
          ItemDefinitionEditPanel.self.show();
       }
 
@@ -82,7 +84,7 @@ namespace ItemDefinitionTool
 
       public void deleteDefinition (int id) {
          XmlLoadingPanel.self.startLoading();
-         ItemDefinition definition = ItemDefinitionManager.self.getDefinition(id);
+         ItemDefinitionManager.self.tryGetDefinition(id, out ItemDefinition definition);
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             DB_Main.deleteItemDefinition(definition.id);

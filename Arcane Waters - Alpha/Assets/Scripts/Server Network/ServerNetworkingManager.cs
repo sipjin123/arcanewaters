@@ -321,11 +321,11 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin, chatInfo.extra);
    }
 
    public void sendSpecialChatMessage (int userId, ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted);
+      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.extra);
    }
 
    public void censorGlobalMessagesFromUser (int userId) {

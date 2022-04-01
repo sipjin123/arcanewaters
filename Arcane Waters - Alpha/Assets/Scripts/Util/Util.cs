@@ -196,6 +196,16 @@ public class Util : MonoBehaviour
          case Item.Category.Quest_Item:
             itemTypeName = ((QuestItem.Type) typeID).ToString();
             break;
+         case Item.Category.Crop:
+            if (CropsDataManager.self.tryGetCropData(typeID, out CropsData data)) {
+               itemTypeName = data.xmlName;
+            }
+            break;
+         case Item.Category.Prop:
+            if (ItemDefinitionManager.self.tryGetDefinition(typeID, out PropDefinition prop)) {
+               itemTypeName = prop.name;
+            }
+            break;
          default:
             itemTypeName = "None";
             break;
@@ -265,7 +275,7 @@ public class Util : MonoBehaviour
 
       return (buildType == "Production");
    }
-   
+
    public static bool isLocalDevBuild () {
       try {
          TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
@@ -279,7 +289,7 @@ public class Util : MonoBehaviour
       } catch {
          return true;
       }
-   }   
+   }
 
    public static bool isEmpty (String str) {
       return (str == null || str.Equals(""));
@@ -1881,7 +1891,36 @@ public class Util : MonoBehaviour
       }
    }
 
-   public static Color getColorWithA(Color color, float a) {
+   public static Color getColorWithA (Color color, float a) {
       return new Color(color.r, color.g, color.b, a);
+   }
+
+   public static string getRandomString (int length) {
+      if (length < 1) {
+         return string.Empty;
+      }
+
+      string chars = "ABCDEFGHKLMNPQRSTUVWXYZ3456789";
+      StringBuilder sb = new StringBuilder();
+
+      for (int i = 0; i < length; i++) {
+         int index = UnityEngine.Random.Range(0, chars.Length);
+         sb.Append(chars[index]);
+      }
+
+      return sb.ToString();
+   }
+
+   public static int getCollisionLayerMask (int layer) {
+
+      // Returns a layermask representing the layers that will collide with the input layer
+      int layerMask = 0;
+      for (int i = 0; i < 32; i++) {
+         if (!Physics2D.GetIgnoreLayerCollision(layer, i)) {
+            layerMask = layerMask | 1 << i;
+         }
+      }
+
+      return layerMask;
    }
 }

@@ -160,6 +160,9 @@ public class SoundEffectManager : GenericGameManager
    public const string DISCOVERY_RUINS = "event:/SFX/Player/Interactions/Diegetic/Discovery_Ruins";
    public const string BERSERKER_CALL = "event:/SFX/Player/Interactions/Diegetic/Berserker_Call";
    public const string RUFFIAN_REPAIRS = "event:/SFX/Player/Interactions/Diegetic/Ruffian_Repairs";
+   public const string TREE_CUTTER = "event:/SFX/Player/Interactions/Diegetic/TreeCutter";
+
+   public const string WATERFALL_SECRET = "event:/SFX/Player/Interactions/Diegetic/WF_Secret";
 
    #endregion
 
@@ -1011,11 +1014,24 @@ public class SoundEffectManager : GenericGameManager
          if (canRemove || (state == FMOD.Studio.PLAYBACK_STATE.STOPPED && value > 0)) {
             eventInstance.release();
             _ruffianRepairsEvents.Remove(netId);
-         }
-         else if (canRelease) {
+         } else if (canRelease) {
             eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
          }
       }
+   }
+
+   public void playTreeChop (Vector3 position, bool isLastHit) {
+      if (!Util.isBatch()) {
+         FMOD.Studio.EventInstance eventInstance = createEventInstance(TREE_CUTTER);
+         eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+         eventInstance.setParameterByName(AMBIENCE_SWITCH_PARAM, isLastHit ? 1 : 0);
+         eventInstance.start();
+         eventInstance.release();
+      }
+   }
+
+   public void playBuySellSfx () {
+      playFmodSfx(PURCHASE_ITEM);
    }
 
    public FMOD.Studio.EventInstance createEventInstance (string path) {

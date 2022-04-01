@@ -40,7 +40,7 @@ namespace MapCustomization
       public static int areaGuildId { get; private set; }
 
       // Remaining props for the user to place
-      public static List<ItemInstance> remainingProps { get; private set; }
+      public static List<Item> remainingProps { get; private set; }
 
       [Space(5), Tooltip("Color for outline that is used when prefab isnt selected but is ready for input")]
       public Color prefabReadyColor;
@@ -84,7 +84,8 @@ namespace MapCustomization
 
          // Make sure that the user can only edit on a map where they have permissions
          bool hasAreaPermissions = (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId) || 
-         (CustomMapManager.isGuildSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId);
+         (CustomMapManager.isGuildSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId) || 
+         (CustomMapManager.isGuildHouseAreaKey(Global.player.areaKey) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId);
 
          // Check if player should be customizing
          bool shouldBeCustomizing = AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager cmm) && // Check that this is a customizable area
@@ -112,7 +113,7 @@ namespace MapCustomization
             return;
          }
 
-         if (!CustomMapManager.isUserSpecificAreaKey(areaName) && !CustomMapManager.isGuildSpecificAreaKey(areaName)) {
+         if (!CustomMapManager.isUserSpecificAreaKey(areaName) && !CustomMapManager.isGuildSpecificAreaKey(areaName) && !CustomMapManager.isGuildHouseAreaKey(areaName)) {
             D.error("Trying to customize a map by a key that is not user-specific and is not a guild map: " + areaName);
             return;
          }
@@ -302,8 +303,8 @@ namespace MapCustomization
                selectPrefab(_newPrefab);
 
                // Decrease remaining prop item that corresponds to this prefab
-               foreach (ItemInstance item in remainingProps) {
-                  if (item.itemDefinitionId == _newPrefab.propDefinitionId) {
+               foreach (Item item in remainingProps) {
+                  if (item.itemTypeId == _newPrefab.propDefinitionId) {
                      item.count--;
                      CustomizationUI.updatePropCount(item);
                      if (item.count <= 0) {
@@ -494,7 +495,7 @@ namespace MapCustomization
          self.selectionArrows.SetActive(false);
       }
 
-      public static void serverAllowedEnterCustomization (ItemInstance[] remainingProps) {
+      public static void serverAllowedEnterCustomization (Item[] remainingProps) {
          MapCustomizationManager.remainingProps = remainingProps.ToList();
          _waitingServerResponse = false;
       }
@@ -505,7 +506,7 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (Area area, Biome.Type biome, List<ItemInstance> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
+      public static bool validatePrefabChanges (Area area, Biome.Type biome, List<Item> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
          // If we are host, and this is was validated on the 'client' side, lets just assume it's valid
          if (Util.isHost() && isServer) {
             errorMessage = null;
@@ -600,11 +601,11 @@ namespace MapCustomization
          return true;
       }
 
-      public static int amountOfPropLeft (List<ItemInstance> items, int propDefinitionId) {
+      public static int amountOfPropLeft (List<Item> items, int propDefinitionId) {
          if (items == null) return 0;
 
-         foreach (ItemInstance item in items) {
-            if (item.itemDefinitionId == propDefinitionId) {
+         foreach (Item item in items) {
+            if (item.itemTypeId == propDefinitionId) {
                return item.count;
             }
          }
@@ -612,14 +613,14 @@ namespace MapCustomization
          return 0;
       }
 
-      public static int amountOfPropLeft (List<ItemInstance> items, CustomizablePrefab propPrefab) {
+      public static int amountOfPropLeft (List<Item> items, CustomizablePrefab propPrefab) {
          return amountOfPropLeft(items, propPrefab.propDefinitionId);
       }
 
       private static void incrementPropCount (int itemDefinitionId) {
          bool found = false;
-         foreach (ItemInstance item in remainingProps) {
-            if (item.itemDefinitionId == itemDefinitionId) {
+         foreach (Item item in remainingProps) {
+            if (item.itemTypeId == itemDefinitionId) {
                item.count++;
                CustomizationUI.updatePropCount(item);
                found = true;
@@ -628,7 +629,7 @@ namespace MapCustomization
          }
 
          if (!found) {
-            ItemInstance item = new ItemInstance(itemDefinitionId, -1, 1);
+            Item item = new Item(-1, Item.Category.Prop, itemDefinitionId, -1, "", "", 100);
             remainingProps.Add(item);
             CustomizationUI.updatePropCount(item);
          }
@@ -684,8 +685,8 @@ namespace MapCustomization
             // If we were trying to create a new prefab, delete it
             if (changes.created) {
                // Readd this prefab to remaining prop items
-               foreach (ItemInstance item in remainingProps) {
-                  if (item.itemDefinitionId == changedPrefab.propDefinitionId) {
+               foreach (Item item in remainingProps) {
+                  if (item.itemTypeId == changedPrefab.propDefinitionId) {
                      item.count++;
                   }
                }

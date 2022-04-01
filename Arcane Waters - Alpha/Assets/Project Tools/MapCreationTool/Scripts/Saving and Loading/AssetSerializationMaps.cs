@@ -190,6 +190,17 @@ public class AssetSerializationMaps : MonoBehaviour
       return null;
    }
 
+   public static bool tryGetPrefabGame<T> (int index, Biome.Type biome, out T result) {
+      if (allBiomes.indexToPrefab.TryGetValue(index, out GameObject prefab) || biomeSpecific[biome].indexToPrefab.TryGetValue(index, out prefab)) {
+         if (prefab.TryGetComponent(out result)) {
+            return true;
+         }
+      }
+
+      result = default;
+      return false;
+   }
+
    public static int getIndex (GameObject prefab, Biome.Type biome) {
       if (allBiomes.prefabToIndex.TryGetValue(prefab, out int index))
          return index;

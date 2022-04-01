@@ -166,6 +166,11 @@ public class SeaHarpoon : SeaProjectile {
    protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
       base.onHitEnemy(hitEntity, sourceEntity, finalDamage);
 
+      // If either entity is already attached to the other by a harpoon, don't attach them.
+      if (hitEntity.attachedByHarpoonNetIds.Contains(sourceEntity.netId) || sourceEntity.attachedByHarpoonNetIds.Contains(hitEntity.netId)) {
+         return;
+      }
+
       attachToEntity(hitEntity);
       _cancelDestruction = true;
       _rigidbody.velocity = Vector2.zero;
@@ -180,8 +185,12 @@ public class SeaHarpoon : SeaProjectile {
 
       _attachedEntity = entity;
       _attachedEntityNetId = entity.netId;
+      _sourceEntityNetId = _sourceEntity.netId;
       Rpc_OnAttachToEntity(entity.netId);
       _circleCollider.enabled = false;
+
+      _sourceEntity.attachedByHarpoonNetIds.Add(_attachedEntityNetId);
+      _attachedEntity.attachedByHarpoonNetIds.Add(_sourceEntityNetId);
    }
 
    [ClientRpc]
@@ -207,6 +216,13 @@ public class SeaHarpoon : SeaProjectile {
 
       foreach (SpriteRenderer renderer in spriteRenderers) {
          renderer.enabled = false;
+      }
+   }
+
+   private void OnDisable () {
+      if (isServer) {
+         _sourceEntity.attachedByHarpoonNetIds.Remove(_attachedEntityNetId);
+         _attachedEntity.attachedByHarpoonNetIds.Remove(_sourceEntityNetId);
       }
    }
 
@@ -254,6 +270,9 @@ public class SeaHarpoon : SeaProjectile {
    // The netid of the entity we are attached to
    [SyncVar]
    protected uint _attachedEntityNetId = 0;
+
+   // The netid of the source entity
+   protected uint _sourceEntityNetId = 0;
 
    // The maximum length for the harpoon rope
    [SyncVar]

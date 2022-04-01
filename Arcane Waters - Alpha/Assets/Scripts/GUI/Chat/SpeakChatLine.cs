@@ -72,24 +72,6 @@ public class SpeakChatLine : ChatLine, IScrollHandler
 
    public override void OnPointerClick (PointerEventData eventData) {
       if (isValidInteraction()) {
-         WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromString(chatInfo.text);
-
-         if (geoCoords != null) {
-            if (!WorldMapManager.self.areGeoCoordsValid(geoCoords)) {
-               PanelManager.self.noticeScreen.show("Invalid Location");
-               return;
-            }
-
-            WorldMapSpot spot = WorldMapManager.self.getSpotFromGeoCoords(geoCoords);
-
-            if (!WorldMapWaypointsManager.self.getWaypointSpots().Any(_ => WorldMapManager.self.areSpotsInTheSamePosition(_, spot))) {
-               WorldMapWaypointsManager.self.addWaypoint(spot);
-            }
-
-            PanelManager.self.noticeScreen.show("Waypoint created!");
-            return;
-         }
-
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
          } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
@@ -106,12 +88,6 @@ public class SpeakChatLine : ChatLine, IScrollHandler
 
    public void chatlineButtonClick () {
       if (isValidInteraction()) {
-         WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromString(chatInfo.text);
-
-         if (geoCoords != null) {
-            return;
-         }
-
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
          } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
@@ -144,11 +120,6 @@ public class SpeakChatLine : ChatLine, IScrollHandler
 
    public bool isValidInteraction () {
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement || chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
-         return true;
-      }
-
-      // If the line contains geographic coordinates, allow player click
-      if (WorldMapManager.self.getGeoCoordsFromString(chatInfo.text) != null) {
          return true;
       }
 

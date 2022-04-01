@@ -16,10 +16,10 @@ public class ChatPanelObserver : MonoBehaviour {
          _tickCount++;
 
          if (_tickCount >= FOCUS_CHECK_TICKS) {
-            D.warning("Chat input is blocked");
+            // D.warning("Chat input is blocked");
          
             // Send bug report
-            BugReportManager.self.sendBugReport("[Auto bug] Chat input is blocked");
+            // BugReportManager.self.sendBugReport("[Auto bug] Chat input is blocked");
          
             // Force chat on focus logic
             ChatManager.self.onChatGainedFocus();

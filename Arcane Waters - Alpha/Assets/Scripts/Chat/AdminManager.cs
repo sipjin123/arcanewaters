@@ -12,6 +12,9 @@ using MLAPI.Messaging;
 using UnityEngine.InputSystem;
 using System.Text;
 using Steam.Purchasing;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Rewards;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -157,6 +160,10 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("stealth_mute", "Mutes a player for X seconds, without notifying the player", requestStealthMutePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "seconds", "reason" }));
       cm.addCommand(new CommandData("unmute", "Unmutes a player, if it's already muted", requestUnMutePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "username", "reason" }));
       cm.addCommand(new CommandData("unban", "Unbans a player, if it's already banned", requestUnBanPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "username", "reason" }));
+
+      // Test commands
+      cm.addCommand(new CommandData("get_reward_code", "Simulates getting a code in AW and redeeming it in a game XYZ (AW for testing)", requestRewardCodeTest, requiredPrefix: CommandType.Admin));
+
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -343,7 +350,7 @@ public class AdminManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReportTestOpenWorldResults (NetworkConnection connectionToClient, int numAreasCreated, float testDuration, float baselineCpuUsage, float baselineRamUsage, float finalCpuUsage, float finalRamUsage) {
-      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] A performance limit was hit after creating " + numAreasCreated 
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] A performance limit was hit after creating " + numAreasCreated
          + ". The test took " + testDuration + " seconds.", DateTime.Now, ChatInfo.Type.System));
       ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Final Cpu: " + finalCpuUsage + ", Final Ram: " + finalRamUsage, DateTime.Now, ChatInfo.Type.System));
       ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage, DateTime.Now, ChatInfo.Type.System));
@@ -397,7 +404,7 @@ public class AdminManager : NetworkBehaviour
 
       D.debug("Creating open world areas.");
       List<string> areasUnderCreation = new List<string>();
-      float creationStartTime = (float)NetworkTime.time;
+      float creationStartTime = (float) NetworkTime.time;
 
       // Create 'numAreas' open world maps, with 'delayBetweenAreas' delay between creating areas
       for (int i = 0; i < numAreas; i++) {
@@ -416,7 +423,7 @@ public class AdminManager : NetworkBehaviour
       yield return new WaitForSeconds(3.0f);
 
       // Wait for all areas to be finished creating
-      while(areasUnderCreation.Count > 0) {
+      while (areasUnderCreation.Count > 0) {
          for (int i = areasUnderCreation.Count - 1; i >= 0; i--) {
             if (!MapManager.self.isAreaUnderCreation(areasUnderCreation[i])) {
                areasUnderCreation.RemoveAt(i);
@@ -582,7 +589,7 @@ public class AdminManager : NetworkBehaviour
          _player.rpc.Target_AddPowerup(connectionToClient, newPowerup);
       }
    }
-   
+
    private void requestPlayerList (string parameter) {
       Cmd_RequestPlayerList();
    }
@@ -779,7 +786,7 @@ public class AdminManager : NetworkBehaviour
       Cmd_RequestGuildNameChange(parameters);
    }
 
-  [Command]
+   [Command]
    protected void Cmd_RequestGuildNameChange (string parameters) {
       if (!_player.isAdmin()) {
          return;
@@ -798,7 +805,7 @@ public class AdminManager : NetworkBehaviour
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             DB_Main.updateGuildName(_player.guildId, newGuildName);
-            
+
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                string message = "Changed guild name from {" + oldGuildName + "} to {" + newGuildName + "}";
                D.debug(message);
@@ -882,7 +889,7 @@ public class AdminManager : NetworkBehaviour
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
                foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
                   foreach (KeyValuePair<int, VoyageGroupInfo> serverGroup in server.voyageGroups) {
-                     message += "-> VoyageGrp: {" + server.networkedPort + "}{" + serverGroup.Key + ":" + 
+                     message += "-> VoyageGrp: {" + server.networkedPort + "}{" + serverGroup.Key + ":" +
                         serverGroup.Value.voyageId + ":" + serverGroup.Value.groupId
                         + ":" + serverGroup.Value.members.Count + "}\n";
                   }
@@ -3144,7 +3151,7 @@ public class AdminManager : NetworkBehaviour
       if (Util.isLocalDevBuild()) {
          return;
       }
-      
+
       DateTime timePoint = DateTime.UtcNow + TimeSpan.FromMinutes(delay);
       long ticks = timePoint.Ticks;
 
@@ -3196,7 +3203,7 @@ public class AdminManager : NetworkBehaviour
 
       // For owned maps, the base map key
       string baseMapAreaKey = null;
-      
+
       // If no partialAreaKey passed as parameter, then choosing random area to warp
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
@@ -3230,7 +3237,7 @@ public class AdminManager : NetworkBehaviour
                baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(entity));
                closestAreaKey = partialAreaKey;
             }
-            
+
          } else {
             // Get the area key closest to the given partial key
             closestAreaKey = getClosestAreaKey(areaKeys, partialAreaKey);
@@ -3979,7 +3986,7 @@ public class AdminManager : NetworkBehaviour
    private void downloadSteamUserWishlistTest () {
       try {
          D.warning($"Is Steam initialized?: {SteamManager.Initialized}");
-         
+
          if (SteamManager.Initialized) {
             D.warning($"Downloading wishlist for steam user '{Global.lastSteamId}'");
             var httpRequest = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, $"https://store.steampowered.com/wishlist/profiles/{Global.lastSteamId}/wishlistdata");
@@ -3997,6 +4004,39 @@ public class AdminManager : NetworkBehaviour
          D.error(ex.Message);
          D.error(ex.StackTrace);
       }
+   }
+
+   private void requestRewardCodeTest () {
+      if (Global.player == null || !Global.player.isAdmin()) {
+         return;
+      }
+
+      string steamId = Global.player.userId.ToString();
+      if (SteamManager.Initialized && Global.isSteamLogin) {
+         steamId = Global.lastSteamId;
+      }
+
+      Cmd_RequestRewardCodeTest(steamId);
+   }
+
+   [Command]
+   public void Cmd_RequestRewardCodeTest (string steamId) {
+      // This is a test method
+      RewardCodesManager.self.createRewardCodeFor(steamId, code => {
+         if (Util.isEmpty(code)) {
+            D.error($"Player {_player.userId} (steamId: {steamId}) couldn't receive a valid reward code.");
+            return;
+         }
+
+         // Send the code to the player via mail
+         MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>());
+         D.debug($"New reward code generated and sent to player {steamId}.");
+
+         // This part will not be present in the final version. It's here just for testing purposes
+         RewardCodesManager.self.verifyRewardCodeFor(steamId, code, verified => {
+            D.debug($"The verification process for the reward code {code} generated for player {steamId} completed. The result is: {verified}");
+         });
+      });
    }
 
    #region Private Variables

@@ -39,28 +39,6 @@ public class RewardRow : MonoBehaviour {
       rewardName.text = EquipmentXMLManager.self.getItemName(castedItem);
    }
 
-   public void activateRowForItem (ItemInstance item) {
-      // Clear any existing item cell
-      itemCellContainer.DestroyChildren();
-
-      // Instantiates an item cell
-      ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
-
-      // Initializes the cell
-      cell.setCellForItem(item);
-
-      // Disable the click event on the cell
-      cell.disablePointerEvents();
-
-      // Disable the cell background
-      cell.hideBackground();
-
-      // Set the item name
-      rewardName.text = item.getName();
-
-      gameObject.SetActive(true);
-   }
-
    public void setDisplayRow (string name, string iconPath) {
       itemCellContainer.DestroyChildren();
       rewardName.text = name;

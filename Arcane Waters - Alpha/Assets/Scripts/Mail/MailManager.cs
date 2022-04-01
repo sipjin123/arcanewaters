@@ -23,6 +23,12 @@ public class MailManager : GenericGameManager {
    // Allow users to send mails to themselves?
    public static bool ALLOW_SELF_MAILING = false;
 
+   // The account used to send system mails
+   public static int SYSTEM_ACCOUNT_ID = 215165;
+
+   // The subject used to send system mails
+   public static string SYSTEM_USERNAME = "Arcane Waters";
+
    // Self
    public static MailManager self;
 
@@ -63,6 +69,15 @@ public class MailManager : GenericGameManager {
 
    public static int getMailSendingCost () {
       return Math.Max(0, MAIL_SENDING_COST);
+   }
+
+   public static void sendSystemMail (int recipientUserId, string subject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Use the player to send a system mail
+      RPCManager.createSystemMail(recipientUserId, subject, message, attachedItemsIds, attachedItemsCount);
    }
 
    #region Private Variables

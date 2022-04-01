@@ -341,7 +341,7 @@ public class AreaManager : MonoBehaviour
    protected List<string> _areaNames = new List<string>();
 
    // Managers of owned maps
-   protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager(), new CustomGuildMapManager() };
+   protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager(), new CustomGuildMapManager(), new CustomGuildHouseManager() };
 
    #endregion
 }

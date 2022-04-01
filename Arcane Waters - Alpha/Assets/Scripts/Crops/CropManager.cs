@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class CropManager : NetworkBehaviour {
+public class CropManager : NetworkBehaviour
+{
    #region Public Variables
 
    // The Crop that we start out with
@@ -113,7 +114,7 @@ public class CropManager : NetworkBehaviour {
       // Prepare crop data
       long now = DateTime.UtcNow.ToBinary();
       CropsData cropData = CropsDataManager.self.getCropData(cropType);
-      CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (int)(cropData.minutesToRipe * 60));
+      CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (int) (cropData.minutesToRipe * 60));
       cropInfo.areaKey = areaKey;
 
       _cropsProcessing.Add(cropNumber);
@@ -258,7 +259,7 @@ public class CropManager : NetworkBehaviour {
          D.adminLog("Crop can't grow any more: " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
          return;
       }
-      
+
       // Make sure it's not already processing
       if (isCropProcessing(cropNumber)) {
          D.adminLog("Crop is already processing : " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
@@ -363,7 +364,7 @@ public class CropManager : NetworkBehaviour {
       // Check that the player has permission to harvest the crop
       int guildId = CustomMapManager.getGuildId(cropToHarvest.areaKey);
       bool canHarvestCrop = (cropToHarvest.userId == _player.userId) || (guildId > 0 && guildId == _player.guildId);
-      
+
       if (!canHarvestCrop) {
          return;
       }
@@ -373,15 +374,24 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
+      if (!CropsDataManager.self.tryGetCropData(cropToHarvest.cropType, out CropsData cropData)) {
+         D.error("Can't harvest crop, missing data: " + cropNumber + " " + cropToHarvest.cropType);
+         return;
+      }
+
       // Remove it from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deleteCrop(cropToHarvest.cropNumber, cropToHarvest.userId);
 
-         // Add it to their silo
-         DB_Main.addToSilo(userId, cropToHarvest.cropType);
+         // Add new crop to inventory
+         Item itemToCreate = new Item {
+            category = Item.Category.Crop,
+            count = 1,
+            itemTypeId = cropData.xmlId,
+            durability = 100
+         };
 
-         // Grab their latest silo info
-         List<SiloInfo> siloInfo = DB_Main.getSiloInfo(userId);
+         DB_Main.createItemOrUpdateItemCount(userId, itemToCreate);
 
          // Add the farming XP
          int xp = Crop.getXP(cropToHarvest.cropType);
@@ -417,9 +427,6 @@ public class CropManager : NetworkBehaviour {
 
             // Let the player see the crop go away
             _player.Rpc_BroadcastHarvestedCrop(cropToHarvest);
-
-            // Send their new silo info
-            _player.Target_ReceiveSiloInfo(_player.connectionToClient, siloInfo.ToArray());
          });
       });
    }
@@ -471,11 +478,12 @@ public class CropManager : NetworkBehaviour {
 
       // To the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Grab their latest silo info
-         List<SiloInfo> siloInfo = DB_Main.getSiloInfo(_player.userId);
+         // Grab their crop info
+         List<Item> items = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Crop }, 0, 1000);
 
-         foreach (SiloInfo info in siloInfo) {
-            if (info.cropType != offer.cropType || info.cropCount <= 0 || amountToSell <= 0 || amountToSell > info.cropCount) {
+         foreach (Item item in items) {
+            if (!CropsDataManager.self.tryGetCropData(item.itemTypeId, out CropsData cropsData)
+            || (Crop.Type) cropsData.cropsType != offer.cropType || amountToSell <= 0 || amountToSell > item.count) {
                continue;
             }
 
@@ -490,8 +498,8 @@ public class CropManager : NetworkBehaviour {
             // Add the gold to the database
             DB_Main.addGold(_player.userId, goldForThisCrop);
 
-            // Remove the crops from their silo
-            DB_Main.addToSilo(_player.userId, info.cropType, -amountToSell);
+            // Remove the crops from their inventory
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, amountToSell);
 
             // Handle crop demand
             ShopManager.self.onUserSellCrop(shopId, offerId, amountToSell);
@@ -519,13 +527,9 @@ public class CropManager : NetworkBehaviour {
                _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
             });
          }
-         
-         // Send them the new info on what's in their silo
-         sendSiloInfo();
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
             if (totalGoldMade > 0) {
                Target_JustSoldCrops(_player.connectionToClient, offer.cropType, totalGoldMade);
 
@@ -623,38 +627,8 @@ public class CropManager : NetworkBehaviour {
       return cropInfo;
    }
 
-   [Server]
-   public void sendSiloInfo () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<SiloInfo> siloInfo = DB_Main.getSiloInfo(_player.userId);
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.Target_ReceiveSiloInfo(_player.connectionToClient, siloInfo.ToArray());
-         });
-      });
-   }
-
-   [TargetRpc]
-   public void Target_HarvestCrop (NetworkConnection connection, CropInfo cropInfo) {
-      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
-      Vector3 effectSpawnPos = cropSpot.cropPickupLocation;
-
-      // Show some effects to notify client that the crop spot is now available again
-      EffectManager.self.create(Effect.Type.Crop_Harvest, effectSpawnPos);
-      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, effectSpawnPos);
-
-      // Then delete the crop
-      if (cropSpot.crop != null) {
-         Destroy(cropSpot.crop.gameObject);
-      }
-
-      // Trigger the tutorial
-      TutorialManager3.self.tryCompletingStep(TutorialTrigger.HarvestCrop);
-   }
-
    public void receiveUpdatedCrop (CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
-      
+
       // Only try to trigger the tutorial for the player who owns the farm
       if (Global.player != null && _player.userId == Global.player.userId) {
          // Trigger the tutorial
@@ -698,7 +672,7 @@ public class CropManager : NetworkBehaviour {
       PanelManager.self.noticeScreen.show("You just sold your crops for " + totalGold + " gold!");
 
       // Play a sound (buy_sell was triggered here)
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
+      SoundEffectManager.self.playBuySellSfx();
 
       // Updates the offers in the merchant panel
       Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopId);

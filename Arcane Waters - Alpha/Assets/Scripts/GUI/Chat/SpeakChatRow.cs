@@ -10,13 +10,16 @@ public class SpeakChatRow : MonoBehaviour
 
    // Reference to the GameObject that expresses the highlighted state
    public GameObject highlighter;
-	
+
    // Reference to the generic icon
    public Image genericIcon;
-	
+
+   // Reference to the set of actions
+   public SpeakChatRowAction[] actions;
+
    #endregion
 
-   public void toggleHighlight(bool show) {
+   public void toggleHighlight (bool show) {
       if (highlighter == null) {
          return;
       }
@@ -32,12 +35,18 @@ public class SpeakChatRow : MonoBehaviour
       genericIcon.gameObject.SetActive(show);
    }
 
-   public void setGenericIcon(Sprite sprite) {
+   public void setGenericIcon (Sprite sprite) {
       if (genericIcon == null || sprite == null) {
          return;
       }
 
       genericIcon.sprite = sprite;
+   }
+
+   public void refreshActions () {
+      foreach (SpeakChatRowAction action in actions) {
+         action.refresh();
+      }
    }
 
    #region Private Variables

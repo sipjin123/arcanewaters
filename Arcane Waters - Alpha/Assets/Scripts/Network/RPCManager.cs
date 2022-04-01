@@ -18,6 +18,8 @@ using System.IO;
 using Store;
 using Steam.Purchasing;
 using Steam;
+using Api;
+using Rewards;
 
 public class RPCManager : NetworkBehaviour
 {
@@ -141,7 +143,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
-         int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false);
+         int mailId = createMailCommon(-1, _player.userId, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false);
          if (mailId < 0) {
             return;
          }
@@ -1110,7 +1112,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveSingleMail (NetworkConnection connection, MailInfo mail, Item[] attachedItems, bool hasUnreadMail) {
+   public void Target_ReceiveSingleMail (NetworkConnection connection, MailInfo mail, Item[] attachedItems, bool hasUnreadMail, bool isSystemMail) {
       List<Item> attachedItemList = new List<Item>(attachedItems);
 
       // Make sure the panel is showing
@@ -1121,13 +1123,14 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithSingleMail(mail, attachedItemList, hasUnreadMail);
+      panel.updatePanelWithSingleMail(mail, attachedItemList, hasUnreadMail, isSystemMail);
    }
 
    [TargetRpc]
    public void Target_ReceiveMailList (NetworkConnection connection,
-      MailInfo[] mailArray, int pageNumber, int totalMailCount) {
+      MailInfo[] mailArray, int pageNumber, int totalMailCount, bool[] mailSystemStatusArray) {
       List<MailInfo> mailList = new List<MailInfo>(mailArray);
+      List<bool> mailSystemStatusList = new List<bool>(mailSystemStatusArray);
 
       // Make sure the panel is showing
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
@@ -1137,7 +1140,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithMailList(mailList, pageNumber, totalMailCount);
+      panel.updatePanelWithMailList(mailList, pageNumber, totalMailCount, mailSystemStatusList);
    }
 
    [TargetRpc]
@@ -1296,8 +1299,8 @@ public class RPCManager : NetworkBehaviour
       ServerNetworkingManager.self.sendContextMenuRequest(_player.userId, _player.entityName, targetUserId);
    }
 
-   [Command]
-   public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
+   [Server]
+   public void SendChat (string message, ChatInfo.Type chatType, string extra) {
       GuildIconData guildIconData = null;
       string guildIconDataString = "";
       string guildName = "";
@@ -1315,7 +1318,7 @@ public class RPCManager : NetworkBehaviour
          guildIconDataString = GuildIconData.guildIconDataToString(guildIconData);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, guildName, stealthMuted, _player.isAdmin());
+      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, guildName, stealthMuted, _player.isAdmin(), extra: extra);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -1328,7 +1331,7 @@ public class RPCManager : NetworkBehaviour
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, guildName, stealthMuted, _player.isAdmin());
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, guildName, stealthMuted, _player.isAdmin(), extra);
       } else if (chatType == ChatInfo.Type.Emote) {
          // Send the message to all the players in the current area
          List<NetEntity> entities = EntityManager.self.getAllEntities();
@@ -1363,12 +1366,12 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (destinationUserInfo == null) {
                   string errorMsg = "Recipient does not exist!";
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, "", 0, stealthMuted);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, "", 0, stealthMuted, string.Empty);
                   return;
                }
 
                ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, stealthMuted);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, stealthMuted, string.Empty);
             });
          });
       } else if (chatType == ChatInfo.Type.Group) {
@@ -1420,9 +1423,19 @@ public class RPCManager : NetworkBehaviour
       // Store chat message in database, if the player is not muted
       if (!stealthMuted) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address, chatInfo.extra);
          });
       }
+   }
+
+   [Command]
+   public void Cmd_SendChatWithExtra (string message, ChatInfo.Type chatType, string extra) {
+      SendChat(message, chatType, extra);
+   }
+
+   [Command]
+   public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
+      SendChat(message, chatType, string.Empty);
    }
 
    [TargetRpc]
@@ -1780,6 +1793,12 @@ public class RPCManager : NetworkBehaviour
             break;
          case Item.Category.Consumable:
             referredItemIsEnabled = (ConsumableXMLManager.self.getConsumableData(storeItem.itemId) != null);
+            break;
+         case Item.Category.Crop:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Prop:
+            referredItemIsEnabled = ItemDefinitionManager.self.tryGetDefinition(storeItem.itemId, out PropDefinition _);
             break;
          default:
             break;
@@ -2408,7 +2427,7 @@ public class RPCManager : NetworkBehaviour
       string feedback = "Thank you for your purchase!";
 
       // Play the SFX for purchasing an item
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
+      SoundEffectManager.self.playBuySellSfx();
 
       bool canUseImmediately = Item.isUsable(itemCategory) || itemCategory == Item.Category.Hats;
 
@@ -2903,9 +2922,15 @@ public class RPCManager : NetworkBehaviour
          D.error("A crop shop in area " + _player.areaKey + " has no defined shopName");
       }
 
-      // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Look up their current gold in the database
          int gold = DB_Main.getGold(_player.userId);
+
+         // Get their owned crops
+         List<Item> crops = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Crop }, 0, 1000);
+
+         // Calculate and cache how many crops the user has to seell
+         list = calculateAvailableCropsForOffers(list, crops);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string greetingText = "";
@@ -2918,6 +2943,29 @@ public class RPCManager : NetworkBehaviour
             _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), greetingText);
          });
       });
+   }
+
+   private List<CropOffer> calculateAvailableCropsForOffers (List<CropOffer> offers, List<Item> availableCrops) {
+      List<CropOffer> result = new List<CropOffer>();
+
+      foreach (CropOffer offer in offers) {
+         // Clone it to start
+         CropOffer newOf = new CropOffer(offer.id, offer.areaKey, offer.cropType, offer.demand, offer.basePricePerUnit, offer.rarity);
+         result.Add(newOf);
+
+         // Calculate how many crops are available
+         foreach (Item item in availableCrops) {
+            if (item.tryGetCastItem(out CropItem cropItem)) {
+               if (cropItem.tryGetCropType(out Crop.Type t)) {
+                  if (newOf.cropType == t) {
+                     newOf.userAvailableCrops += cropItem.count;
+                  }
+               }
+            }
+         }
+      }
+
+      return result;
    }
 
    [Command]
@@ -4031,6 +4079,14 @@ public class RPCManager : NetworkBehaviour
    private void Target_ReceivePlayerAddedToServer (NetworkConnection connection) {
       if (Global.isFirstSpawn) {
          Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
+
+         // On first spawn check for rewards
+         string steamId = _player.userId.ToString();
+         if (SteamManager.Initialized && Global.isSteamLogin) {
+            steamId = Global.lastSteamId;
+         }
+
+         Cmd_CheckRewardCodes(steamId);
          D.debug($"First spawn!");
       }
 
@@ -4102,7 +4158,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Create the mail
-         int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
+         int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -4124,11 +4180,11 @@ public class RPCManager : NetworkBehaviour
 
    // This function must be called from the background thread!
    [Server]
-   private int createMailCommon (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack) {
+   private int createMailCommon (int recipientUserId, int senderId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack) {
       // Check soul binding
       foreach (int itemId in attachedItemsIds) {
          // Get the item
-         Item item = DB_Main.getItem(_player.userId, itemId);
+         Item item = DB_Main.getItem(senderId, itemId);
 
          if (item == null) {
             continue;
@@ -4141,13 +4197,13 @@ public class RPCManager : NetworkBehaviour
 
       // Verify that the number of attached items is below the maximum
       if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
-         D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserId, attachedItemsIds.Length));
+         D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", senderId, recipientUserId, attachedItemsIds.Length));
          return -1;
       }
 
       // Verify the validity of the attached items
       for (int i = 0; i < attachedItemsIds.Length; i++) {
-         Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+         Item item = DB_Main.getItem(senderId, attachedItemsIds[i]);
 
          if (item == null) {
             sendError("An item is not present in your inventory!");
@@ -4160,7 +4216,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Verify that the item is not equipped
-         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
+         UserInfo userInfo = DB_Main.getUserInfoById(senderId);
 
          if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
             sendError("You cannot select an equipped item!");
@@ -4171,11 +4227,11 @@ public class RPCManager : NetworkBehaviour
       MailInfo mail = null;
 
       // Create the mail
-      mail = new MailInfo(-1, recipientUserId, _player.userId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack);
+      mail = new MailInfo(-1, recipientUserId, senderId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack);
       mail.mailId = DB_Main.createMail(mail);
 
       if (mail.mailId == -1) {
-         D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", _player.userId, recipientUserId));
+         D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", senderId, recipientUserId));
          sendError("An error occurred when creating a mail!");
          return -1;
       }
@@ -4183,19 +4239,82 @@ public class RPCManager : NetworkBehaviour
       // Attach the items
       for (int i = 0; i < attachedItemsIds.Length; i++) {
          // Retrieve the item from the player's inventory
-         Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+         Item item = DB_Main.getItem(senderId, attachedItemsIds[i]);
 
          // Check if the item was correctly retrieved
          if (item == null) {
-            D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, _player.userId));
+            D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, senderId));
             continue;
          }
 
          // Transfer the item from the user inventory to the mail
-         DB_Main.transferItem(item, _player.userId, -mail.mailId, attachedItemsCount[i]);
+         DB_Main.transferItem(item, senderId, -mail.mailId, attachedItemsCount[i]);
       }
 
       return mail.mailId;
+   }
+
+   [Server]
+   public static void createSystemMail (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the recipient info
+         string recipientName = DB_Main.getUserName(recipientUserId);
+         UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
+
+         if (recipientUserInfo == null) {
+            D.error("The player '" + recipientName + "' does not exist!");
+            return;
+         }
+
+         // Create the mail
+         List<UserInfo> users = DB_Main.getUsersForAccount(MailManager.SYSTEM_ACCOUNT_ID);
+
+         if (users == null || users.Count == 0) {
+            return;
+         }
+
+         UserInfo systemUser = users.First();
+
+         // Give the attached items to the MailManager system user
+         foreach (var itemId in attachedItemsIds) {
+            DB_Main.setItemOwner(systemUser.userId, itemId);
+         }
+
+         // Verify that the number of attached items is below the maximum
+         if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
+            D.error(string.Format("The mail from the system to recipient {0} has too many attached items ({1}).", recipientUserId, attachedItemsIds.Length));
+            return;
+         }
+
+         MailInfo mail = null;
+
+         // Create the mail
+         mail = new MailInfo(-1, recipientUserId, systemUser.userId, DateTime.UtcNow, false, mailSubject, message, false, false);
+         mail.mailId = DB_Main.createMail(mail);
+
+         if (mail.mailId == -1) {
+            D.error(string.Format("Error while creating a system mail going to recipient {0}.", recipientUserId));
+            return;
+         }
+
+         // Attach the items
+         for (int i = 0; i < attachedItemsIds.Length; i++) {
+            // Retrieve the item from the player's inventory
+            Item item = DB_Main.getItem(attachedItemsIds[i]);
+
+            // Check if the item was correctly retrieved
+            if (item == null) {
+               D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} ", attachedItemsIds[i], mail.mailId));
+               continue;
+            }
+
+            // Transfer the item from the user inventory to the mail
+            DB_Main.transferItem(item, systemUser.userId, -mail.mailId, attachedItemsCount[i]);
+         }
+
+         D.debug($"New system mail '{mailSubject}' sent to player {recipientUserId}.");
+      });
    }
 
    [Command]
@@ -4222,9 +4341,12 @@ public class RPCManager : NetworkBehaviour
          // Check if the user has unread mail
          bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
 
+         int senderAccountId = DB_Main.getAccountId(mail.senderUserId);
+         bool isSystemMail = senderAccountId == MailManager.SYSTEM_ACCOUNT_ID;
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail);
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail, isSystemMail);
          });
       });
    }
@@ -4259,9 +4381,12 @@ public class RPCManager : NetworkBehaviour
          // Check if the user has unread mail
          bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
 
+         int senderAccountId = DB_Main.getAccountId(mail.senderUserId);
+         bool isSystemMail = senderAccountId == MailManager.SYSTEM_ACCOUNT_ID;
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail);
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail, isSystemMail);
          });
       });
    }
@@ -4408,9 +4533,18 @@ public class RPCManager : NetworkBehaviour
          // Get the items from the database
          List<MailInfo> mailList = DB_Main.getMailInfoList(_player.userId, pageNumber, itemsPerPage);
 
+         // Find out which ones were sent by the system
+         List<UserInfo> users = DB_Main.getUsersForAccount(MailManager.SYSTEM_ACCOUNT_ID);
+         UserInfo systemUser = users.FirstOrDefault();
+         if (systemUser == null) {
+            D.debug($"System User couldn't be found.");
+            return;
+         }
+         bool[] systemMailMap = mailList.Select(mail => mail.senderUserId == systemUser.userId).ToArray();
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount);
+            Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount, systemMailMap);
          });
       });
    }
@@ -4779,6 +4913,8 @@ public class RPCManager : NetworkBehaviour
       panel.userSilverText.text = remainingSilver.ToString();
       panel.updatedShopTemplates(remainingSilver);
       panel.receivePurchaseResult(pvpShopList[0]);
+
+      SoundEffectManager.self.playBuySellSfx();
    }
 
    [Command]
@@ -5230,6 +5366,10 @@ public class RPCManager : NetworkBehaviour
                // Assign the guild ID to the player
                _player.guildId = guildId;
 
+               // Give the player max permissions, as they are the guild leader
+               _player.guildPermissions = int.MaxValue;
+               _player.guildRankPriority = 0;
+
                // Net entity _player are where the syncvars are stored for the player's guild icon
                _player.guildIconBackground = iconBackground;
                _player.guildIconBorder = iconBorder;
@@ -5306,6 +5446,7 @@ public class RPCManager : NetworkBehaviour
             _player.guildIconSigil = null;
             _player.guildIconSigilPalettes = null;
             _player.guildMapBaseId = 0;
+            _player.guildHouseBaseId = 0;
             _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
             refreshPvpStateForUser(userInfo, _player);
 
@@ -6529,14 +6670,15 @@ public class RPCManager : NetworkBehaviour
          EntityManager.self.removeBypassForUser(_player.userId);
          return true;
       }
-      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
+
+      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
                "Player cant stay in voyage because of warp restriction, No Voyage group found {" + _player.voyageGroupId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             _player.voyageGroupId = -1;
 
-            // If player cant bypass restirctions, return them to town due to insufficient conditions being met
+            // If player cant bypass restrictions, return them to town due to insufficient conditions being met
             if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
                D.adminLog("Returning player to town: Voyage Group does not Exist!", D.ADMIN_LOG_TYPE.Warp);
                return false;
@@ -7283,22 +7425,6 @@ public class RPCManager : NetworkBehaviour
             }
          }
       });
-   }
-
-   [Server]
-   private async Task giveItemRewardsToPlayer (int userID, List<ItemInstance> rewardList, bool showPanel) {
-      // Assign item id for the reward
-      foreach (ItemInstance item in rewardList) {
-         item.ownerUserId = userID;
-      }
-
-      // Add all items to database in parallel
-      await Task.WhenAll(rewardList.Select(async item => await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, item))));
-
-      // Show panel to player if needed
-      if (showPanel) {
-         Target_ReceiveItemRewardList(rewardList.ToArray());
-      }
    }
 
    [Command]
@@ -9030,7 +9156,7 @@ public class RPCManager : NetworkBehaviour
       Instance instance = _player.getInstance();
 
       // Don't check if somone is already customising for guild maps
-      if (!CustomMapManager.isGuildSpecificAreaKey(areaKey)) {
+      if (!CustomMapManager.isGuildSpecificAreaKey(areaKey) && !CustomMapManager.isGuildHouseAreaKey(areaKey)) {
          // Check if someone is already customizing
          if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != _player.userId) {
             Target_DenyEnterMapCustomization("Someone else is already customizing the area");
@@ -9041,14 +9167,16 @@ public class RPCManager : NetworkBehaviour
          instance.playerMakingCustomizations = _player;
       }
 
-      // Get props that can be used for customization
-      ItemInstance[] remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToArray());
-
-      Target_AllowEnterMapCustomization(remainingProps);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> items = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_AllowEnterMapCustomization(items.ToArray());
+         });
+      });
    }
 
    [TargetRpc]
-   private void Target_AllowEnterMapCustomization (ItemInstance[] remainingProps) {
+   private void Target_AllowEnterMapCustomization (Item[] remainingProps) {
       MapCustomizationManager.serverAllowedEnterCustomization(remainingProps);
    }
 
@@ -9126,13 +9254,13 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If player did not have a base map before, give him some props as a reward
-      List<ItemInstance> rewards = new List<ItemInstance>();
+      List<Item> rewards = new List<Item>();
 
       if (manager is CustomHouseManager) {
          await DB_Main.execAsync((cmd) => DB_Main.setCustomHouseBase(cmd, _player.userId, baseMapId));
 
          if (_player.customHouseBaseId == 0) {
-            rewards = ItemInstance.getFirstHouseRewards(_player.userId);
+            rewards = ItemDefinition.getFirstHouseRewards(_player.userId);
          }
 
          _player.customHouseBaseId = baseMapId;
@@ -9140,7 +9268,7 @@ public class RPCManager : NetworkBehaviour
          await DB_Main.execAsync((cmd) => DB_Main.setCustomFarmBase(cmd, _player.userId, baseMapId));
 
          if (_player.customFarmBaseId == 0) {
-            rewards = ItemInstance.getFirstFarmRewards(_player.userId);
+            rewards = ItemDefinition.getFirstFarmRewards(_player.userId);
          }
 
          _player.customFarmBaseId = baseMapId;
@@ -9157,6 +9285,18 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
+      } else if (manager is CustomGuildHouseManager) {
+         await DB_Main.execAsync((cmd) => DB_Main.setCustomGuildHouseBase(cmd, _player.guildId, baseMapId));
+
+         GuildInfo playerGuildInfo = await DB_Main.execAsync((cmd) => DB_Main.getGuildInfo(_player.guildId));
+
+         // Update the guildHouseBaseId for any members online
+         foreach (UserInfo memberInfo in playerGuildInfo.guildMembers) {
+            NetEntity playerEntity = EntityManager.self.getEntity(memberInfo.userId);
+            if (playerEntity != null) {
+               playerEntity.guildHouseBaseId = baseMapId;
+            }
+         }
       } else {
          D.error("Unrecognized custom map manager");
          return;
@@ -9174,7 +9314,17 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      await giveItemRewardsToPlayer(_player.userId, rewards, false);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (Item item in rewards) {
+            Item createdItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+
+            if (createdItem.id == 0) {
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.error("Failed to save given prop to the database");
+               });
+            }
+         }
+      });
    }
 
    [TargetRpc]
@@ -9183,64 +9333,74 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, int areaGuildId) {
+   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, int areaGuildId) {
       Area area = AreaManager.self.getArea(areaKey);
       Instance instance = _player.getInstance();
 
-      // Get list of props of the user
-      List<ItemInstance> remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToList());
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> items = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Check if changes are valid
+            if (!MapCustomizationManager.validatePrefabChanges(area, instance.biome, items, changes, true, out string errorMessage)) {
+               Target_FailAddPrefabCustomization(changes, errorMessage);
+               return;
+            }
 
-      // Check if changes are valid
-      if (!MapCustomizationManager.validatePrefabChanges(area, instance.biome, remainingProps, changes, true, out string errorMessage)) {
-         Target_FailAddPrefabCustomization(changes, errorMessage);
-         return;
-      }
+            // Figure out the base map of area
+            AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
+            int baseMapId;
 
-      // Figure out the base map of area
-      AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
-      int baseMapId;
+            // If the area has a valid owner id
+            if (areaOwnerId != -1) {
+               NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
+               baseMapId = customMapManager.getBaseMapId(areaOwner);
 
-      // If the area has a valid owner id
-      if (areaOwnerId != -1) {
-         NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
-         baseMapId = customMapManager.getBaseMapId(areaOwner);
+               // If the area has a valid guild owner id
+            } else if (areaGuildId != -1) {
+               baseMapId = customMapManager.getBaseMapId(_player);
+            } else {
+               string errorString = "Couldn't find the 'owner' of the map we are customising. OwnerId: " + areaOwnerId + ", GuildId: " + areaGuildId;
+               D.error(errorString);
+               Target_FailAddPrefabCustomization(changes, errorString);
+               return;
+            }
 
-         // If the area has a valid guild owner id
-      } else if (areaGuildId != -1) {
-         baseMapId = customMapManager.getBaseMapId(_player);
-      } else {
-         string errorString = "Couldn't find the 'owner' of the map we are customising. OwnerId: " + areaOwnerId + ", GuildId: " + areaGuildId;
-         D.error(errorString);
-         Target_FailAddPrefabCustomization(changes, errorString);
-         return;
-      }
+            // Find the customizable prefab that is being targeted
+            if (!AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, instance.biome, out CustomizablePrefab prefab)) {
+               Target_FailAddPrefabCustomization(changes, "Could not find associated object " + changes.serializationId);
+               return;
+            }
 
-      // Find the customizable prefab that is being targeted
-      CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, instance.biome).GetComponent<CustomizablePrefab>();
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               // Set changes in the database
+               PrefabState currentState = DB_Main.exec((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
+               bool createdByUser = currentState.created;
+               currentState = currentState.id == -1 ? changes : currentState.add(changes);
+               DB_Main.exec((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
 
-      // Set changes in the database
-      PrefabState currentState = await DB_Main.execAsync((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
-      bool createdByUser = currentState.created;
-      currentState = currentState.id == -1 ? changes : currentState.add(changes);
-      await DB_Main.execAsync((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
+               // If creating a new prefab, remove an item from the inventory
+               if (changes.created) {
+                  int itemId = items.FirstOrDefault(i => i.itemTypeId == prefab.propDefinitionId)?.id ?? -1;
+                  if (itemId != -1) {
+                     DB_Main.decreaseQuantityOrDeleteItem(_player.userId, itemId, 1);
+                  }
+               }
 
-      // If creating a new prefab, remove an item from the inventory
-      if (changes.created) {
-         int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
-         await DB_Main.execAsync((cmd) => DB_Main.decreaseOrDeleteItemInstance(cmd, itemId, 1));
-      }
+               // If deleting a prefab and it's not placed in map editor, return to inventory
+               if (changes.deleted && createdByUser) {
+                  DB_Main.createItemOrUpdateItemCount(_player.userId, Prop.createNewItem(prefab.propDefinitionId, 1));
+               }
 
-      // If deleting a prefab and it's not placed in map editor, return to inventory
-      if (changes.deleted && createdByUser) {
-         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd,
-                  new ItemInstance { count = 1, itemDefinitionId = prefab.propDefinitionId, ownerUserId = _player.userId, id = -1 }));
-      }
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Set changes in the server
+                  MapManager.self.addCustomizations(area, instance.biome, changes);
 
-      // Set changes in the server
-      MapManager.self.addCustomizations(area, instance.biome, changes);
-
-      // Notify all clients about them
-      Rpc_AddPrefabCustomizationSuccess(areaKey, instance.biome, changes);
+                  // Notify all clients about them
+                  Rpc_AddPrefabCustomizationSuccess(areaKey, instance.biome, changes);
+               });
+            });
+         });
+      });
    }
 
    [TargetRpc]
@@ -9252,15 +9412,6 @@ public class RPCManager : NetworkBehaviour
    public void Rpc_AddPrefabCustomizationSuccess (string areaKey, Biome.Type biome, PrefabState changes) {
       MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, biome, changes);
    }
-
-   #region Item Instances
-
-   [TargetRpc]
-   public void Target_ReceiveItemRewardList (ItemInstance[] items) {
-      RewardManager.self.showItemsInRewardPanel(items);
-   }
-
-   #endregion
 
    [Command]
    public void Cmd_FetchPerkPointsForUser () {
@@ -10314,6 +10465,48 @@ public class RPCManager : NetworkBehaviour
       ChatPanel.self.addChatInfo(chatInfo);
    }
 
+   [Command]
+   public void Cmd_ReportCompletedTutorial (string steamId) {
+      D.debug($"player {_player.userId} completed the tutorial!");
+      Target_ReceiveReportCompletedTutorial();
+
+      if (Util.isEmpty(steamId)) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the player already received a code for completing the tutorial
+         IEnumerable<RewardCode> completedTutorialRewardCodes = DB_Main.getRewardCodes(steamId, ApiManager.OTHER_API_CLIENT_ID, ApiManager.ARCANE_WATERS_API_CLIENT_ID);
+         if (completedTutorialRewardCodes != null && completedTutorialRewardCodes.Count() > 0) {
+            return;
+         }
+
+         // Check if the player received a code from another game
+         IEnumerable<RewardCode> rewardCodes = DB_Main.getRewardCodesByProducer(steamId, ApiManager.OTHER_API_CLIENT_ID);
+         if (rewardCodes == null || rewardCodes.Count() == 0) {
+            return;
+         }
+
+         RewardCodesManager.self.createRewardCodeFor(steamId, code => {
+            if (Util.isEmpty(code)) {
+               D.error($"Player {_player.userId} (steamId: {steamId}) couldn't receive a valid reward code.");
+               return;
+            }
+
+            // Send the code to the player via mail
+            MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>());
+            D.debug($"New reward code generated and sent to player {steamId}.");
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveReportCompletedTutorial () {
+      if (ChatManager.self != null) {
+         ChatManager.self.addChat("Tutorial completed", ChatInfo.Type.System);
+      }
+   }
+
    #region User Search
 
    [Command]
@@ -10512,6 +10705,71 @@ public class RPCManager : NetworkBehaviour
       int newRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(newRatingPoints);
       int prevRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(prevRatingPoints);
       D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
+   }
+
+   #endregion
+
+   #region Reward Codes
+
+   [Command]
+   public void Cmd_CheckRewardCodes (string steamId) {
+      if (_player == null || Util.isEmpty(steamId)) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         bool wasPlayerNotified = false;
+
+         // Find any unused reward code and try to send them to the player
+         IEnumerable<RewardCode> unusedRewardCodes = DB_Main.getUnusedRewardCodes(steamId, ApiManager.ARCANE_WATERS_API_CLIENT_ID);
+         if (unusedRewardCodes == null || unusedRewardCodes.Count() == 0) {
+            return;
+         }
+
+         // Getting the System User
+         List<UserInfo> users = DB_Main.getUsersForAccount(MailManager.SYSTEM_ACCOUNT_ID);
+         UserInfo systemUser = users.FirstOrDefault();
+         if (systemUser == null) {
+            D.debug($"System User couldn't be found.");
+            return;
+         }
+
+         // Assinging the reward to the System User, so that it can be attached to the mail
+         ArmorStatData armorData = EquipmentXMLManager.self.armorStatList[0];
+         Item baseItem = ItemGenerator.generate(Item.Category.Armor, armorData.armorType, 1).getCastItem();
+         Item rewardItem = DB_Main.createItemOrUpdateItemCount(systemUser.userId, baseItem);
+
+         if (rewardItem == null) {
+            D.debug($"Couldn't create the reward item.");
+            return;
+         }
+
+         foreach (RewardCode rewardCode in unusedRewardCodes) {
+            // Update the reward code
+            bool updated = DB_Main.useRewardCode(rewardCode.id);
+            if (!updated) {
+               // The use status of the code failed to update, so we log and abort
+               D.debug($"The reward code {rewardCode.code} generated for player {steamId} couldn't be used.");
+               continue;
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 });
+
+               if (!wasPlayerNotified) {
+                  Target_ReceiveCheckRewardCodes();
+                  wasPlayerNotified = true;
+               }
+
+               D.debug($"The reward code {rewardCode.code} generated for player {steamId} was used. The player was notified.");
+            });
+         }
+      });
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveCheckRewardCodes () {
+      ChatManager.self.addChat("Good news! Check your mails!", ChatInfo.Type.System);
    }
 
    #endregion

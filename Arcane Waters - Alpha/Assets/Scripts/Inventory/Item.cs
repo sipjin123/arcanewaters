@@ -6,11 +6,17 @@ using System;
 using System.Linq;
 
 [Serializable]
-public class Item {
+public class Item
+{
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Dye = 13, Pet = 14, Consumable = 15 }
+   public enum Category
+   {
+      None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6,
+      Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Dye = 13,
+      Pet = 14, Consumable = 15, Crop = 16, Prop = 17
+   }
 
    // The durability filter being used by the item
    public enum DurabilityFilter { None = 0, MaxDurability = 1, ReducedDurability = 2 }
@@ -22,6 +28,9 @@ public class Item {
    public int id;
 
    // The item type ID, which will be properly cast by subclasses
+   // This ID refers to generic type of item (Apple, Wood, Sword, etc.), not it's replicas.
+   // Depending on the category, it may link to different things, ex:
+   // A value of an enum, the ID of XML data entry in database, the ID of ItemDefinition in database
    public int itemTypeId;
 
    // Name of palettes that changes color of item
@@ -61,7 +70,8 @@ public class Item {
    public const int PERCENT_CHANCE = 100;
 
    // Soul binding types
-   public enum SoulBindingType {
+   public enum SoulBindingType
+   {
       // No soul binding
       None = 0,
 
@@ -124,6 +134,11 @@ public class Item {
       this.durability = durability;
    }
 
+   public bool tryGetCastItem<T> (out T castItem) where T : Item {
+      castItem = getCastItem() as T;
+      return castItem != null;
+   }
+
    public Item getCastItem () {
       switch (this.category) {
          case Category.Hats:
@@ -148,6 +163,10 @@ public class Item {
             return new Consumable(this.id, this.itemTypeId, paletteNames, data, durability, count);
          case Category.Dye:
             return new Dye(this.id, this.itemTypeId, paletteNames, data, durability, count);
+         case Category.Crop:
+            return new CropItem(id, itemTypeId, paletteNames, data, durability, count);
+         case Category.Prop:
+            return new Prop(id, itemTypeId, paletteNames, data, durability, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;
