@@ -371,19 +371,21 @@ public class EnemyManager : MonoBehaviour {
 
    private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       Ship.Type shipType = Ship.Type.Type_1;
+      int shipXmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
 
       if (difficulty == Voyage.Difficulty.None) {
          shipType = randomizeShipType(instance.biome);
       } else {
-         SeaMonsterEntityData randomShipByDifficulty = randomizeShipByDifficulty(difficulty);
+         SeaMonsterEntityData randomShipByDifficulty = randomizeShipByDifficulty(difficulty, instance.biome);
          if (randomShipByDifficulty != null) {
             shipType = (Ship.Type) randomShipByDifficulty.subVarietyTypeId;
+            shipXmlId = randomShipByDifficulty.xmlId;
          } else {
             shipType = randomizeShipType(instance.biome);
          }
       }
 
-      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
+      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType && ent.xmlId == shipXmlId);
       if (seaEnemyData == null) {
          D.debug("Ship type {" + shipType + "} does not have matching data registered in sea enemy manager!");
          return;
@@ -490,8 +492,13 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private SeaMonsterEntityData randomizeShipByDifficulty (Voyage.Difficulty difficulty) {
-      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(_ => _.difficultyLevel == difficulty && _.subVarietyTypeId > 0);
+   private SeaMonsterEntityData randomizeShipByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(
+         _ => _.difficultyLevel == difficulty
+         // Ships have variety types
+         && _.subVarietyTypeId > 0
+         // There are biome filters that needs consideration
+         && _.biomes.Contains(biomeType));
       if (seaMonsterList.Count > 0) {
          return seaMonsterList.ChooseRandom();
       }
@@ -506,7 +513,7 @@ public class EnemyManager : MonoBehaviour {
             && _.subVarietyTypeId < 1 
             // There are biome filters that needs consideration
             && _.biomes.Contains(biomeType)
-            // Only pick standalone mosnters
+            // Only pick standalone monsters
             && _.roleType == RoleType.Standalone);
       if (seaMonsterList.Count > 0) {
          return seaMonsterList.ChooseRandom();
