@@ -194,11 +194,45 @@ namespace NubisDataHandling {
          string armorFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableArmors), userId);
          string weaponFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableWeapons), userId);
          string hatFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableHats), userId);
+         string ingredientFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableIngredients), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients, Item.Category.Weapon);
          List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients, Item.Category.Armor);
          List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients, Item.Category.Hats);
+         List<CraftableItemData> ingredientCraftables = CraftableItem.processCraftableGroups(ingredientFetch, craftingIngredients, Item.Category.CraftingIngredients);
+
+         // Craftable ingredients are hard coded for now, remove this block if it will be limited to unlocking
+         IEnumerable<CraftableItemRequirements> unlockedIngredientList = CraftingManager.self.getAllCraftableData().Where(_ => _.resultItem.category == Item.Category.CraftingIngredients);
+         foreach (CraftableItemRequirements unlockedRequirements in unlockedIngredientList) {
+            // Determine the status of this craftable Item depending on the available ingredients
+            Blueprint.Status status = Blueprint.Status.Craftable;
+            if (unlockedRequirements == null) {
+               status = Blueprint.Status.MissingRecipe;
+            } else {
+               // Compare the ingredients present in the inventory with the requirements
+               foreach (Item requiredIngredient in unlockedRequirements.combinationRequirements) {
+                  // Get the inventory ingredient, if there is any
+                  Item inventoryIngredient = craftingIngredients.Find(s =>
+                     s.itemTypeId == requiredIngredient.itemTypeId);
+
+                  // Verify that there are enough items in the inventory stack
+                  if (inventoryIngredient == null || inventoryIngredient.count < requiredIngredient.count) {
+                     status = Blueprint.Status.NotCraftable;
+                     break;
+                  }
+               }
+            }
+
+            CraftableItemData newCraftableData = new CraftableItemData {
+               craftableItem = unlockedRequirements.resultItem,
+               craftingStatus = status,
+               craftableRequirements = unlockedRequirements
+            };
+
+            craftableItems.Add(newCraftableData.craftableItem);
+            blueprintStatus.Add(status);
+         }
 
          foreach (CraftableItemData weaponData in weaponCraftables) {
             craftableItems.Add(weaponData.craftableItem);
@@ -212,6 +246,11 @@ namespace NubisDataHandling {
             craftableItems.Add(hatData.craftableItem);
             blueprintStatus.Add(hatData.craftingStatus);
          }
+         /* Enable this if filtering of crafting ingredients are needed, right now they are hard coded to be available
+         foreach (CraftableItemData ingredientData in ingredientCraftables) {
+            craftableItems.Add(ingredientData.craftableItem);
+            blueprintStatus.Add(ingredientData.craftingStatus);
+         }*/
          craftingPanel.updatePanelWithBlueprintList(craftableItems.ToArray(), blueprintStatus.ToArray(), pageIndex, itemsPerPage);
       }
 

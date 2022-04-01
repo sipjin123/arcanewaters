@@ -296,6 +296,38 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new string fetchCraftableIngredients (int usrId) {
+      try {
+         // Connect to the server.
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType " +
+               "FROM items " +
+               "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=ingredients%') AND items.usrId = @usrId",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
    public static new string fetchCraftableArmors (int usrId) {
       try {
          // Connect to the server.

@@ -436,6 +436,12 @@ public class EquipmentXMLManager : MonoBehaviour {
                      return fetchedData.equipmentName + " Design";
                   }
                }
+               if (craftingItem.resultItem.category == Item.Category.CraftingIngredients) {
+                  CraftingIngredients referenceItem = new CraftingIngredients(craftingItem.resultItem);
+                  if (referenceItem != null) {
+                     return referenceItem.getName() + " Design";
+                  }
+               }
             } else {
                D.debug("The result is null for: " + item.category + " : " + item.itemTypeId + " : " + item.data);
             }
@@ -486,6 +492,12 @@ public class EquipmentXMLManager : MonoBehaviour {
             if (craftingItem.resultItem.category == Item.Category.Hats) {
                HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
+            }
+            if (craftingItem.resultItem.category == Item.Category.CraftingIngredients) {
+               CraftingIngredients referenceItem = new CraftingIngredients(craftingItem.resultItem);
+               if (referenceItem != null) {
+                  return referenceItem.getDescription();
+               }
             }
             break;
       }
@@ -538,6 +550,12 @@ public class EquipmentXMLManager : MonoBehaviour {
                HatStatData fetchedData = self.getHatData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentIconPath;
             }
+            if (craftingItem.resultItem.category == Item.Category.CraftingIngredients) {
+               CraftingIngredients referenceItem = new CraftingIngredients(craftingItem.resultItem);
+               if (referenceItem != null) {
+                  return referenceItem.getBorderlessIconPath();
+               }
+            }
             break;
       }
 
@@ -555,6 +573,9 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
          case Blueprint.HAT_DATA_PREFIX:
             blueprintCategory = Item.Category.Hats;
+            break;
+         case Blueprint.INGREDIENT_DATA_PREFIX:
+            blueprintCategory = Item.Category.CraftingIngredients;
             break;
       }
 

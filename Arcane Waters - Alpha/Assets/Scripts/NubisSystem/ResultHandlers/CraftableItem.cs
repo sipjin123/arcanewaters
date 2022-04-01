@@ -24,6 +24,9 @@ namespace NubisDataHandling {
       // This Function translates the raw text data into a craftable item group (In order to get crafting info, this class requires an initial fetch for the crafting ingredients the user currently has)
       public static List<CraftableItemData> processCraftableGroups (string contentData, List<Item> craftableIngredients, Item.Category category) {
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
+         if (contentData == null || contentData.Length < 1) {
+            return craftableItems;
+         }
 
          // Grab the crafting data from the request
          string rawData = contentData;
@@ -37,7 +40,7 @@ namespace NubisDataHandling {
             string[] dataGroup = itemGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
             if (dataGroup.Length > 0) {
                // Crafting ingredients have no crafting data
-               if (dataGroup.Length >= 4) {
+               if ((category == Item.Category.CraftingIngredients && dataGroup.Length >= 3) || (category != Item.Category.CraftingIngredients && dataGroup.Length >= 4)) {
                   int itemID = int.Parse(dataGroup[0]);
                   Item.Category itemCategory = Item.Category.None;
                   if (category == Item.Category.None) {
@@ -48,6 +51,8 @@ namespace NubisDataHandling {
                         itemCategory = Item.Category.Armor;
                      } else if (dataGroup[3].StartsWith(Blueprint.HAT_DATA_PREFIX)) {
                         itemCategory = Item.Category.Hats;
+                     } else if (dataGroup[3].StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
+                        itemCategory = Item.Category.CraftingIngredients;
                      } else {
                         itemCategory = (Item.Category) int.Parse(dataGroup[1]);
                      }
@@ -97,6 +102,18 @@ namespace NubisDataHandling {
                            itemDesc = hatData.equipmentDescription;
                            itemIconPath = hatData.equipmentIconPath;
                            itemData = HatStatData.serializeHatStatData(hatData);
+                        }
+                     }
+
+                     // Process the item as a hat and extract the hat data
+                     if (craftableRequirements.resultItem.category == Item.Category.CraftingIngredients) {
+                        try {
+                           itemName = EquipmentXMLManager.self.getItemName(craftableRequirements.resultItem);
+                           itemDesc = EquipmentXMLManager.self.getItemDescription(craftableRequirements.resultItem);
+                           itemIconPath = EquipmentXMLManager.self.getItemIconPath(craftableRequirements.resultItem);
+                           itemData = "";
+                        } catch {
+                           D.debug("Failed to process new crafting feature {Ingredients}");
                         }
                      }
 

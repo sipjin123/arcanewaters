@@ -74,6 +74,16 @@ public class CraftingIngredients : RecipeItem
       this.data = data;
    }
 
+   public CraftingIngredients (Item item) {
+      this.category = Category.CraftingIngredients;
+      this.id = item.id;
+      this.count = item.count;
+      this.itemTypeId = item.itemTypeId;
+      this.type = (Type) item.itemTypeId;
+      this.paletteNames = item.paletteNames;
+      this.data = item.data;
+   }
+
    public override string getDescription () {
       switch (type) {
          // Lizard Drops
@@ -210,7 +220,11 @@ public class CraftingIngredients : RecipeItem
       //string palettes = Item.trimItmPalette(paletteNames);
       string palettes = PaletteSwapManager.self.getPalettesDisplayName(paletteNames);
 
-      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}",
+      if (!string.IsNullOrEmpty(palettes)) {
+         palettes = " (" + palettes + ")";
+      }
+
+      return string.Format("<color={0}>{1}</color>" + palettes + "\n\n{2}",
          "#" + colorHex, getName(), getDescription());
    }
 

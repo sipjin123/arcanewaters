@@ -4958,6 +4958,10 @@ public class RPCManager : NetworkBehaviour
                      shopItemCopy.data = Blueprint.HAT_DATA_PREFIX;
                      shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
                      break;
+                  case Item.Category.CraftingIngredients:
+                     shopItemCopy.data = Blueprint.INGREDIENT_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
                }
             }
 
@@ -5965,6 +5969,21 @@ public class RPCManager : NetworkBehaviour
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(blueprint.itemTypeId);
             resultItem = ArmorStatData.translateDataToArmor(armorData);
             resultItem.data = "";
+         } else if (blueprint.data.StartsWith(Blueprint.HAT_DATA_PREFIX)) {
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(blueprint.itemTypeId);
+            resultItem = HatStatData.translateDataToHat(hatData);
+            resultItem.data = "";
+         } else if (blueprint.data.StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
+            resultItem = new CraftingIngredients {
+               id = 0,
+               itemTypeId = blueprint.itemTypeId,
+               category = Item.Category.CraftingIngredients,
+               paletteNames = "",
+               data = ""
+            };
+            resultItem.itemName = resultItem.getName();
+            resultItem.itemDescription = resultItem.getDescription();
+            resultItem.iconPath = resultItem.getIconPath();
          }
 
          // Blueprint ID is now same to a craftable equipment ID
@@ -7373,6 +7392,10 @@ public class RPCManager : NetworkBehaviour
                case Item.Category.Hats:
                   newDatabaseItem.data = Blueprint.HAT_DATA_PREFIX;
                   item.data = Blueprint.HAT_DATA_PREFIX;
+                  break;
+               case Item.Category.CraftingIngredients:
+                  newDatabaseItem.data = Blueprint.INGREDIENT_DATA_PREFIX;
+                  item.data = Blueprint.INGREDIENT_DATA_PREFIX;
                   break;
             }
             D.adminLog("Database item is Blueprint! " + itemCache.xmlId + " : " + EquipmentXMLManager.self.getItemName(itemCache.resultItem), D.ADMIN_LOG_TYPE.Blueprints);
