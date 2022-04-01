@@ -14,6 +14,10 @@ public class WindowInteractable : NetworkBehaviour
    // The open curtain asset
    public GameObject closedCurtain;
 
+   // The type of biome
+   [SyncVar]
+   public Biome.Type biomeType;
+
    // The instance that this obj is in
    [SyncVar]
    public int instanceId;
@@ -33,6 +37,12 @@ public class WindowInteractable : NetworkBehaviour
    [SyncVar]
    public string areaKey;
 
+   // The sprite biome pair list
+   public List<GenericBiomeSpritePair> openSpriteBiomeList, closeSpriteBiomeList;
+
+   // The sprite renderer reference
+   public SpriteRenderer openSpriteRenderer, closedSpriteRenderer;
+
    #endregion
 
    private void Start () {
@@ -41,6 +51,16 @@ public class WindowInteractable : NetworkBehaviour
          openWindow();
       } else {
          closeWindow();
+      }
+
+      GenericBiomeSpritePair openBiomeReference = openSpriteBiomeList.Find(_ => _.biomeType == biomeType);
+      if (openBiomeReference != null) {
+         openSpriteRenderer.sprite = openBiomeReference.sprite;
+      }
+
+      GenericBiomeSpritePair closedBiomeReference = closeSpriteBiomeList.Find(_ => _.biomeType == biomeType);
+      if (closedBiomeReference != null) {
+         closedSpriteRenderer.sprite = closedBiomeReference.sprite;
       }
 
       // Make the node a child of the Area

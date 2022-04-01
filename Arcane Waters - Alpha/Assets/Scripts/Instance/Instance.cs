@@ -604,6 +604,7 @@ public class Instance : NetworkBehaviour
             WindowInteractable windowInteractable = Instantiate(PrefabsManager.self.WindowInteractable);
             windowInteractable.instanceId = this.id;
             windowInteractable.areaKey = areaKey;
+            windowInteractable.biomeType = biome;
             windowInteractable.id = windowId;
             windowId++;
 
@@ -621,6 +622,7 @@ public class Instance : NetworkBehaviour
             WindowInteractable windowInteractable = Instantiate(PrefabsManager.self.LargeWindowInteractable);
             windowInteractable.instanceId = this.id;
             windowInteractable.areaKey = areaKey;
+            windowInteractable.biomeType = biome;
             windowInteractable.id = windowId;
             windowId++;
 
