@@ -150,7 +150,7 @@ public class SeaMonsterEntityData
    public int hurtSoundEffectId = -1;
 
    // The default id of the sea entity bot ship
-   public const int DEFAULT_SHIP_ID = 17;
+   public const int DEFAULT_SHIP_ID = 16;
 
    // Rewarded experience
    public int rewardedExp;

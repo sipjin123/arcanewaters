@@ -324,7 +324,19 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       ShipAbilityData abilityData = null;
       if (primaryAbilityId > 0) {
-         abilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
+         if (abilityList.Count == 1) {
+            abilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
+         } else {
+            int normalAttachChance = Random.Range(0, 10);
+
+            // 40% chance for normal attack, then randomize between other abilities
+            if (normalAttachChance > 6) {
+               abilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
+            } else {
+               int randomAbilityId = Random.Range(1, abilityList.Count);
+               abilityData = ShipAbilityManager.self.getAbility(abilityList[randomAbilityId]);
+            }
+         }
       } else {
          abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
       }
@@ -337,8 +349,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       float lobHeight = 0.25f * distanceModifier;
       float lifetime = targetDistance / Attack.getSpeedModifier(Attack.Type.Cannon);
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon);
+      Status.Type newStatusType = abilityData == null ? Status.Type.None : (Status.Type) abilityData.statusType;
+      float newStatusDuration = abilityData == null ? 0 : abilityData.statusDuration;
 
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, abilityData == null ? Attack.ImpactMagnitude.Normal : abilityData.impactMagnitude, abilityData.abilityId, velocity, lobHeight,
+         statusType: newStatusType, statusDuration: newStatusDuration, lifetime: lifetime);
       netBall.setPlayFiringSound(true);
 
       netBall.addEffectors(getCannonballEffectors());

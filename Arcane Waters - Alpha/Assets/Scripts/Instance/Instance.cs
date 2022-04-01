@@ -908,6 +908,9 @@ public class Instance : NetworkBehaviour
       botShip.shipType = shipType;
       if (seaMonsterData.skillIdList.Count > 0) {
          botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
+         foreach (int abilityIdNew in seaMonsterData.skillIdList) {
+            botShip.abilityList.Add(abilityIdNew);
+         }
       }
       botShip.guildId = guildId;
       botShip.setShipData(xmlId, shipType, this.difficulty);
@@ -970,6 +973,10 @@ public class Instance : NetworkBehaviour
          botShip.shipType = shipType;
          if (data.skillIdList.Count > 0) {
             botShip.primaryAbilityId = data.skillIdList[0];
+
+            foreach (int abilityIdNew in data.skillIdList) {
+               botShip.abilityList.Add(abilityIdNew);
+            }
          }
 
          // All ships in the web tool currently are pirates

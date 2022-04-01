@@ -410,6 +410,9 @@ public class EnemyManager : MonoBehaviour {
       botShip.shipType = shipType;
       if (seaEnemyData.skillIdList.Count > 0) {
          botShip.primaryAbilityId = seaEnemyData.skillIdList[0];
+         foreach (int abilityIdNew in seaEnemyData.skillIdList) {
+            botShip.abilityList.Add(abilityIdNew);
+         }
       }
       botShip.guildId = guildId;
       botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);

@@ -37,6 +37,9 @@ public class ShipEntity : SeaEntity
    [SyncVar]
    public int primaryAbilityId = -1;
 
+   // All the abilities of this ship
+   public SyncList<int> abilityList = new SyncList<int>();
+
    // The Rarity of the ship
    public Rarity.Type rarity;
 
