@@ -37,9 +37,14 @@ public class VisitListPanel : Panel {
    public override void Awake () {
       base.Awake();
       self = this;
+
+      nextPageButton.onClick.AddListener(() => nextPage());
+      previousPageButton.onClick.AddListener(() => previousPage());
    }
 
    public void updatePanelWithFriendshipInfo (bool isCustomMapSet, List<FriendshipInfo> friendshipInfoList, int totalFriends) {
+      _maxPage = (totalFriends / MAX_ITEM_PER_PAGE) + (totalFriends % MAX_ITEM_PER_PAGE > 0 ? 1 : 0);
+
       visitTempHolder.gameObject.DestroyChildren();
       FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
       if (FriendListManager.self.cachedFriendshipInfoList == null) {
@@ -52,11 +57,7 @@ public class VisitListPanel : Panel {
       friendshipInfoList = friendshipInfoList.OrderByDescending(f => f.isOnline).ToList();
 
       friendCountText.text = friendshipInfoList.Count + "/" + totalFriends;
-      int totalPages = 0;
-      if (totalFriends > 0) {
-         totalPages = totalFriends / MAX_ITEM_PER_PAGE;
-      }
-      pageText.text = _currentPage + " / " + Mathf.Clamp(totalPages, 1, Friendship.MAX_FRIENDS);
+      pageText.text = _currentPage + " / " + _maxPage;
 
       // Create the friend rows
       foreach (FriendshipInfo friend in friendshipInfoList) {

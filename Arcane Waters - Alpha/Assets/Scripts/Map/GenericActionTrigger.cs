@@ -24,7 +24,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    public SpriteRenderer spriteRender;
 
    // The canvas group reference
-   public CanvasGroup canvasGroup;
+   public CanvasGroup canvasGroup, alternativeCanvasGroup;
 
    // The image assigned to this object
    public Image genericImage;
@@ -116,6 +116,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
             currColor.a += Time.deltaTime * FADE_SPEED;
             if (isSpriteBase) {
                spriteRender.color = currColor;
+               alternativeCanvasGroup.alpha += Time.deltaTime * FADE_SPEED;
             } else {
                canvasGroup.alpha += Time.deltaTime * FADE_SPEED;
             }
@@ -123,6 +124,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
             currColor.a -= Time.deltaTime * FADE_SPEED;
             if (isSpriteBase) {
                spriteRender.color = currColor;
+               alternativeCanvasGroup.alpha -= Time.deltaTime * FADE_SPEED;
             } else {
                canvasGroup.alpha -= Time.deltaTime * FADE_SPEED;
             }
