@@ -267,6 +267,14 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                      item.paletteNames = PaletteSwapManager.extractPalettes(fetchedHatData.defaultPalettes);
                   }
                }
+            } else if (item.data.Contains(Blueprint.INGREDIENT_DATA_PREFIX)) {
+               CraftingIngredients ingredientReference = new CraftingIngredients (item);
+
+               item.itemName = ingredientReference.getName();
+               item.itemDescription = ingredientReference.getDescription();
+               item.iconPath = ingredientReference.getBorderlessIconPath();
+               icon.sprite = ImageManager.getSprite(ingredientReference.getBorderlessIconPath());
+
             } else {
                D.debug("Unknown blueprint item! " + item.data);
                Destroy(gameObject);

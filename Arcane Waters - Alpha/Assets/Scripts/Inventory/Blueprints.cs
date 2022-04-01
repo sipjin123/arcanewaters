@@ -24,17 +24,16 @@ public class Blueprint : RecipeItem
    public Item.Category equipmentType;
 
    // Prefixes for ID
-   public const string WEAPON_ID_PREFIX = "100";
-   public const string ARMOR_ID_PREFIX = "200";
-   public const string HAT_ID_PREFIX = "300";
    public const string WEAPON_DATA_PREFIX = "blueprintType=weapon";
    public const string ARMOR_DATA_PREFIX = "blueprintType=armor";
    public const string HAT_DATA_PREFIX = "blueprintType=hat";
+   public const string INGREDIENT_DATA_PREFIX = "blueprintType=ingredients";
 
    // Set a generic blueprint icon 
    public const string BLUEPRINT_WEAPON_ICON = "Assets/Sprites/Icons/Blueprint/WeaponBP.png";
    public const string BLUEPRINT_ARMOR_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
    public const string BLUEPRINT_HAT_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
+   public const string BLUEPRINT_INGREDIENT_ICON = "Assets/Sprites/Icons/Blueprint/IngredientBP.png";
 
    #endregion Public Variables
 
@@ -89,34 +88,13 @@ public class Blueprint : RecipeItem
          return Item.Category.Weapon;
       } else if (data.StartsWith(ARMOR_DATA_PREFIX)) {
          return Item.Category.Armor;
+      } else if (data.StartsWith(HAT_DATA_PREFIX)) {
+         return Item.Category.Hats;
+      } else if (data.StartsWith(INGREDIENT_DATA_PREFIX)) {
+         return Item.Category.CraftingIngredients;
       }
-      
+
       return Item.Category.None;
-   }
-
-   public static string createData (Item.Category resultCategory, int typeID) {
-      switch (resultCategory) {
-         case Category.Weapon:
-            return WEAPON_DATA_PREFIX + typeID;
-         case Category.Armor:
-            return ARMOR_DATA_PREFIX + typeID;
-      }
-
-      return "";
-   }
-
-   public static int modifyID (Item.Category resultCategory, int typeID) {
-      int modifiedID = typeID;
-      if (resultCategory == Item.Category.Blueprint) {
-         if (typeID.ToString().StartsWith(ARMOR_ID_PREFIX)) {
-            modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
-         } else if (typeID.ToString().StartsWith(WEAPON_ID_PREFIX)) {
-            modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.WEAPON_ID_PREFIX, ""));
-         } else if (typeID.ToString().StartsWith(HAT_ID_PREFIX)) {
-            modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.HAT_ID_PREFIX, ""));
-         }
-      } 
-      return modifiedID;
    }
 
    public override bool canBeTrashed () {

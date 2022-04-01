@@ -148,18 +148,6 @@ public class TreasureDropsToolScene : MonoBehaviour {
 
             string rawData = "";
             CraftableItemRequirements craftingRequirements = TreasureDropsToolManager.instance.craftingDataList.Find(_ => _.xmlId == ingredientType);
-            switch (craftingRequirements.resultItem.category) {
-               case Item.Category.Weapon:
-                  rawData = Blueprint.WEAPON_DATA_PREFIX;
-                  break;
-               case Item.Category.Armor:
-                  rawData = Blueprint.ARMOR_DATA_PREFIX;
-                  break;
-               case Item.Category.Hats:
-                  rawData = Blueprint.HAT_DATA_PREFIX;
-                  break;
-            }
-
             processItemTemplate(template, category, ingredientType, rawData);
          });
          genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);

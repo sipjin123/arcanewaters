@@ -42,28 +42,6 @@ public class GenericItemRow : MonoBehaviour {
       if (category == Item.Category.Blueprint) {
          itemCategoryName.text = category.ToString();
          int modifiedID = itemTypeID;
-
-         if (data != "") {
-            if (data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
-               if (itemTypeID.ToString().StartsWith(Blueprint.WEAPON_ID_PREFIX)) {
-                  modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.WEAPON_ID_PREFIX, ""));
-               }
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(modifiedID);
-
-               itemTypeName.text = weaponData.equipmentName;
-               string spritePath = weaponData.equipmentIconPath;
-               itemIcon.sprite = ImageManager.getSprite(spritePath);
-            } else if (data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
-               if (itemTypeID.ToString().StartsWith(Blueprint.ARMOR_ID_PREFIX)) {
-                  modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
-               }
-               /*ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
-
-               itemTypeName.text = armorData.equipmentName;
-               string spritePath = armorData.equipmentIconPath;
-               itemIcon.sprite = ImageManager.getSprite(spritePath);*/
-            }
-         }
       } else if (category == Item.Category.Hats) {
          itemCategoryName.text = category.ToString();
          itemTypeName.text = Util.getItemName(category, itemTypeID);

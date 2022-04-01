@@ -522,6 +522,10 @@ public class TreasureChest : NetworkBehaviour {
                image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
             } else if (item.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
                image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_ARMOR_ICON);
+            } else if (item.data.StartsWith(Blueprint.HAT_DATA_PREFIX)) {
+               image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_HAT_ICON);
+            } else if (item.data.StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
+               image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_INGREDIENT_ICON);
             }
             item.itemTypeId = craftableData.resultItem.itemTypeId;
             itemName = EquipmentXMLManager.self.getItemName(item);

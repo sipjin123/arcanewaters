@@ -69,6 +69,10 @@ public class BlueprintRow : MonoBehaviour
          icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
 
          resultItem.paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
+      } else if (resultItem.category == Item.Category.CraftingIngredients) {
+         CraftingIngredients ingredientReference = new CraftingIngredients(resultItem);
+         itemNameText.text = ingredientReference.getName();
+         icon.sprite = ImageManager.getSprite(ingredientReference.getBorderlessIconPath());
       } else {
          icon.sprite = null;
       }
