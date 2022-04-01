@@ -251,8 +251,13 @@ public class PlayerShipEntity : ShipEntity
       _targetCircle.maxRange = getCannonballDistance(1.0f) * CANNON_BARRAGE_RANGE_MULTIPLIER;
 
       if (isServer) {
-         List<Powerup> userPowerups = PowerupManager.self.getPowerupsForUser(userId);
-         userPowerups = getFilteredPowerup(userPowerups);
+         List<Powerup> userPowerups = new List<Powerup>();
+         if (VoyageManager.isWorldMapArea(areaKey)) {
+            userPowerups = new List<Powerup>();
+         } else {
+            userPowerups = PowerupManager.self.getPowerupsForUser(userId);
+            userPowerups = getFilteredPowerup(userPowerups);
+         }
 
          setPowerups(userPowerups, true);
 
