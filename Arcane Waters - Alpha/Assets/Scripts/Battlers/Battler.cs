@@ -1110,6 +1110,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public IEnumerator animateDeath () {
+      // Do not proceed to animate death yet if this unit is still attacking
+      while (isAttacking) {
+         yield return 0;
+      }
+      
       if (_anims[0].currentAnimation == Anim.Type.Death_East) {
          yield break;
       }

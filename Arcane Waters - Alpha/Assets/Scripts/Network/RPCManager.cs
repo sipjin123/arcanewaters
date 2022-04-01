@@ -5671,6 +5671,7 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_KickGuildMember (int userToKickId) {
       int kickerId = _player.userId;
+      NetEntity kickedUserEntity = EntityManager.self.getEntity(userToKickId);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToKickId);
@@ -5679,11 +5680,17 @@ public class RPCManager : NetworkBehaviour
          int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
          int kickerRankPriority = kickerRankId == 0 ? 0 : guildRanks.Find(x => x.rankId == kickerRankId).rankPriority;
 
-         if (kickerRankPriority >= userRankPriority) {
+         if (kickerRankPriority != 0 && kickerRankPriority >= userRankPriority) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "You cannot kick guild member with higher or equal rank!");
             });
             return;
+         } else {
+            // TODO: Investigate bug wherein creator gets same rank as the other user
+            if (kickerRankPriority == 0 && kickerRankPriority >= userRankPriority) {
+               D.debug("Kicker {" + _player.userId + ":" + _player.entityName + "} rank is {" + kickerRankId + "}, " +
+                  "can always kick anyone {" + kickedUserEntity.userId + ":" + kickedUserEntity.entityName + "} rank is {" + rankId + "}");
+            }
          }
 
          // Check if user has permissions to demote members
@@ -5697,13 +5704,17 @@ public class RPCManager : NetworkBehaviour
                DB_Main.assignRankGuild(userToKickId, -1);
 
                // Set the syncvars to null and then update the guild icon
-               _player.guildIconBackground = null;
-               _player.guildIconBorder = null;
-               _player.guildIconBackPalettes = null;
-               _player.guildIconSigil = null;
-               _player.guildIconSigilPalettes = null;
-               _player.guildMapBaseId = 0;
-               _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+               if (kickedUserEntity != null) {
+                  kickedUserEntity.guildIconBackground = null;
+                  kickedUserEntity.guildIconBorder = null;
+                  kickedUserEntity.guildIconBackPalettes = null;
+                  kickedUserEntity.guildIconSigil = null;
+                  kickedUserEntity.guildIconSigilPalettes = null;
+                  kickedUserEntity.guildMapBaseId = 0;
+                  kickedUserEntity.guildHouseBaseId = 0;
+                  kickedUserEntity.Rpc_UpdateGuildIconSprites(kickedUserEntity.guildIconBackground, kickedUserEntity.guildIconBackPalettes,
+                     kickedUserEntity.guildIconBorder, kickedUserEntity.guildIconSigil, kickedUserEntity.guildIconSigilPalettes);
+               }
 
                // Remove past invite from kicked player. If he was kicked by accident, he can be invited back immediately
                GuildManager.self.removePastInvite(_player, userToKickId, DB_Main.getGuildInfo(_player.guildId));
