@@ -354,7 +354,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
 
       // Play the new animation
-      bodyAnim.playAnimation(newAnimType);
+      if (newAnimType != Anim.Type.Death_East || (newAnimType == Anim.Type.Death_East && bodyAnim.currentAnimation != Anim.Type.Death_East)) {
+         bodyAnim.playAnimation(newAnimType);
+      }
 
       if (newAnimType == Anim.Type.Death_East && !_shadowAnimDataCopied) {
          // Use only once to setup shadowAnim

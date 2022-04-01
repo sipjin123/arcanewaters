@@ -199,8 +199,13 @@ public class ContextMenuPanel : MonoBehaviour
                Global.player.rpc.Cmd_InviteToGuild(targetUserId);
             });
          } else {
-            D.debug("You cannot guild invite user {" + (targetEntity == null ? "Null" : (targetEntity.entityName + ":" + targetEntity.userId)) + "} " +
-               "{" + (targetEntity == null ? "Null" : targetEntity.canPerformAction(GuildPermission.Invite).ToString()) + "}");
+            string targetEntityInfo = (targetEntity == null ? "Null" : (targetEntity.entityName + ":" + targetEntity.userId));
+            if (Global.player.guildId < 1 || targetEntity.guildId < 1) {
+               D.debug("GuildInviteFailed! Invalid Guild parameters! {" + targetEntityInfo + "}");
+            }
+            if (targetEntity != null && targetEntity.canPerformAction(GuildPermission.Invite)) {
+               D.debug("GuildInviteFailed! No permission to invite! {" + targetEntityInfo + "}");
+            }
          }
 
          addButton("Whisper", () => ChatPanel.self.sendWhisperTo(userName));

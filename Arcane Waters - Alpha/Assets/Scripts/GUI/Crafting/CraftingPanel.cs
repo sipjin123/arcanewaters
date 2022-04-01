@@ -223,6 +223,7 @@ public class CraftingPanel : Panel
 
    public void craft () {
       if (_selectedBlueprintId != -1) {
+         toggleBlockers(true);
          Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId);
       }
    }

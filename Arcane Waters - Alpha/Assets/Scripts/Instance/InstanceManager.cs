@@ -342,6 +342,7 @@ public class InstanceManager : MonoBehaviour
 
       // Update the instance count in the server network
       if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
+         D.adminLog("Registering Instance {" + ServerNetworkingManager.self.server.networkedPort.Value + "} for area {" + areaKey + "}", D.ADMIN_LOG_TYPE.InstanceProcess);
          ServerNetworkingManager.self.server.areaToInstanceCount[areaKey] = getInstanceCount(areaKey);
       }
 

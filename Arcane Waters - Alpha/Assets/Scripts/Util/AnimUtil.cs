@@ -446,7 +446,7 @@ public class AnimUtil : MonoBehaviour {
             }
       }
 
-      D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType + ", Game obj is {" + objReference.name + "}");
+      D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType + ", Game obj is {" + objReference == null ? "Null" : objReference.name + "}");
       return new AnimInfo(animType, 0, 0);
    }
 

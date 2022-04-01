@@ -256,6 +256,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       isPvpStateDroppedDown = isOn;
+      tooltipObject.gameObject.SetActive(false);
    }
 
    public void enableTooltipDisabled () {
