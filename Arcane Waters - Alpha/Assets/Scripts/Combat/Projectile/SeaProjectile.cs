@@ -357,7 +357,7 @@ public class SeaProjectile : NetworkBehaviour
          }
          int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
 
-         int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId);
+         int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId, _attackType);
 
          string abilityDataDamageModifier = (_abilityData != null) ? (_abilityData.damageModifier * 100).ToString() : "0";
          // TODO: Observe damage formula on live build

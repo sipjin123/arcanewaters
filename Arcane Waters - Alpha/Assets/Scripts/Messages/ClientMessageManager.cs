@@ -16,6 +16,9 @@ public class ClientMessageManager : MonoBehaviour {
    // If the steam state has been logged in the playerlogs
    public static bool steamStateLogged = false;
 
+   // The time at which we last received a redirect message
+   public static float lastRedirectMessageTime;
+
    #endregion
 
    private void Awake () {
@@ -31,6 +34,7 @@ public class ClientMessageManager : MonoBehaviour {
 
    public static void On_Redirect (NetworkConnection conn, RedirectMessage msg) {
       D.debug($"Received redirect message for {msg.newIpAddress}:{msg.newPort}, currently connected port {MyNetworkManager.self.telepathy.port}");
+      lastRedirectMessageTime = (float)NetworkTime.time;
 
       // If the address and port are the same, we just send another login request
       if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {

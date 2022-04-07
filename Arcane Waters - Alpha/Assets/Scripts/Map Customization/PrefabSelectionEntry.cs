@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace MapCustomization {
-   public class PrefabSelectionEntry : MonoBehaviour {
+namespace MapCustomization
+{
+   public class PrefabSelectionEntry : MonoBehaviour
+   {
       #region Public Variables
 
       // Image that is showing the prefab's icon
@@ -26,6 +28,9 @@ namespace MapCustomization {
       // The prop item definition id that this entry is targeting
       public int propDefinitionId;
 
+      // The prop category this entry is targeting
+      public Item.Category propItemCategory;
+
       // Arrow buttons for selecting different prefabs
       public Button previousButton;
       public Button nextButton;
@@ -36,8 +41,9 @@ namespace MapCustomization {
          return _prefabs[_selectedIndex];
       }
 
-      public void setData (int propDefinitionId, PlaceablePrefabData[] prefabs) {
+      public void setData (int propDefinitionId, Item.Category category, PlaceablePrefabData[] prefabs) {
          this.propDefinitionId = propDefinitionId;
+         propItemCategory = category;
          _prefabs = prefabs;
 
          previousButton.gameObject.SetActive(prefabs.Length > 1);
@@ -58,10 +64,16 @@ namespace MapCustomization {
       }
 
       public void setCount (int count) {
+         _count = count;
+
          countText.text = count.ToString();
          canvasGroup.alpha = count > 0 ? 1f : 0.5f;
          canvasGroup.interactable = count > 0;
          canvasGroup.blocksRaycasts = count > 0;
+      }
+
+      public int getCount () {
+         return _count;
       }
 
       public void onClick () {
@@ -91,6 +103,9 @@ namespace MapCustomization {
 
       // Which prefab is currently selected
       private int _selectedIndex;
+
+      // How many of this prop is left
+      private int _count = -1;
 
       #endregion
    }

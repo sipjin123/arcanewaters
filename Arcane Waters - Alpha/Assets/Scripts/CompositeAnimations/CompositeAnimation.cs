@@ -9,8 +9,8 @@ public class CompositeAnimation : ScriptableObject
    // Should the animation loop?
    public bool isLooping;
 
-   // Should the animation maintain the last frame on end?
-   public bool keepLastFrame;
+   // Should the animation hold the last frame on end?
+   public bool holdLastFrame;
 
    // The set of frames
    public CompositeAnimationFrame[] frames;

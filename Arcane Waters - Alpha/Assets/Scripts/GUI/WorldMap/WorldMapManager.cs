@@ -317,9 +317,27 @@ public class WorldMapManager : MonoBehaviour
       }
    }
 
-   public string getDisplayStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
+   public string getStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
       float adjustedAreaY = geoCoords.areaY / 255 * 999; 
       float adjustedAreaX = geoCoords.areaX / 255 * 999; 
+
+      if (!Util.isEmpty(geoCoords.subAreaKey)) {
+         int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
+
+         if (subAreaId >= 0) {
+            string subAreaIdStr = subAreaId.ToString("D3");
+            string subAreaXStr = geoCoords.subAreaX.ToString("F0");
+            string subAreaYStr = geoCoords.subAreaY.ToString("F0");
+            return $"<{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}.{subAreaIdStr}{subAreaYStr}, {geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}.{subAreaIdStr}{subAreaXStr}>";
+         }
+      }
+
+      return $"<{geoCoords.worldY}.{Mathf.FloorToInt(adjustedAreaY)}, {geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}>";
+   }
+
+   public string getDisplayStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      float adjustedAreaY = geoCoords.areaY / 255 * 999;
+      float adjustedAreaX = geoCoords.areaX / 255 * 999;
 
       if (!Util.isEmpty(geoCoords.subAreaKey)) {
          int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
@@ -367,7 +385,10 @@ public class WorldMapManager : MonoBehaviour
       return $"{geoCoords.worldX}.{Mathf.FloorToInt(adjustedAreaX)}";
    }
 
-   public WorldMapGeoCoords getGeoCoordsFromDisplayString (string geoCoordsStr) {
+   public WorldMapGeoCoords getGeoCoordsFromString (string geoCoordsStr, out int startIndex, out int strLength) {
+      startIndex = -1;
+      strLength = 0;
+
       if (Util.isEmpty(geoCoordsStr)) {
          return null;
       }
@@ -387,6 +408,9 @@ public class WorldMapManager : MonoBehaviour
          return null;
       }
 
+      startIndex = prefixIndex;
+      strLength = suffixIndex + 1 - prefixIndex;
+
       // Latitude is the first coordinate
       string latitudeString = geoCoordsStr.Substring(prefixIndex + 1, commaIndex - prefixIndex - 1);
       string longitudeString = geoCoordsStr.Substring(commaIndex + 1, suffixIndex - commaIndex - 1);
@@ -398,12 +422,12 @@ public class WorldMapManager : MonoBehaviour
 
       if (longitudeStringTokens.Length > 1) {
          newGeoCoords.worldX = int.Parse(longitudeStringTokens[0]);
-         newGeoCoords.areaX = int.Parse(longitudeStringTokens[1]);
+         newGeoCoords.areaX = (int) (float.Parse(longitudeStringTokens[1]) / 999.0f * 255.0f);
       }
 
       if (latitudeStringTokens.Length > 1) {
          newGeoCoords.worldY = int.Parse(latitudeStringTokens[0]);
-         newGeoCoords.areaY = int.Parse(latitudeStringTokens[1]);
+         newGeoCoords.areaY = (int) (float.Parse(latitudeStringTokens[1]) / 999.0f * 255.0f);
       }
 
       if (longitudeStringTokens.Length > 2) {

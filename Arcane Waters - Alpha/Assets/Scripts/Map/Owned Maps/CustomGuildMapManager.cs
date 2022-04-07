@@ -46,7 +46,7 @@ public class CustomGuildMapManager : CustomMapManager
                return false;
             } else {
                denyWarpHandler = (player) => {
-                  player.rpc.Target_DisplayServerMessage("Can't enter guild house until the guild leader chooses a layout.");
+                  player.rpc.Target_DisplayServerMessage("Can't enter guild map until the guild leader chooses a layout.");
                };
 
                return false;
@@ -84,6 +84,10 @@ public class CustomGuildMapManager : CustomMapManager
 
    public static string getGuildSpecificAreaKey (int guildId) {
       return GROUP_AREA_KEY + "_guild" + guildId;
+   }
+
+   public override int Bkg_GetBaseMapIdFromDB (int ownerId, int guildId) {
+      return DB_Main.getCustomGuildMapBaseId(guildId);
    }
 
    #region Private Variables

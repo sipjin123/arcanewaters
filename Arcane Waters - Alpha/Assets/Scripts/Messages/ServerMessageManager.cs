@@ -557,12 +557,14 @@ public class ServerMessageManager : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (DB_Main.doesUserExists(msg.userId)) {
-            // Delete any previously deleted user at the same spot
             UserInfo userInfo = DB_Main.getUserInfoById(msg.userId);
-            DB_Main.forgetUserBySpot(accountId, userInfo.charSpot);
 
-            // Deactivate (Soft delete) the user
-            DB_Main.deactivateUser(accountId, msg.userId);
+            if (userInfo != null) {
+               // Delete any previous characters at the same spot
+               DB_Main.forgetUserBySpot(accountId, userInfo.charSpot);
+               DB_Main.deactivateUser(accountId, userInfo.userId);
+               DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userInfo.userId, userInfo.username, UserHistoryEventInfo.EventType.Delete, DateTime.UtcNow));
+            } 
          }
 
          // Send confirmation to the client, so that they can request their user list again
@@ -585,6 +587,12 @@ public class ServerMessageManager : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (!DB_Main.doesUserExists(msg.userId)) {
             DB_Main.activateUser(accountId, msg.userId);
+
+            UserInfo userInfo = DB_Main.getUserInfoById(msg.userId);
+
+            if (userInfo != null) {
+               DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userInfo.userId, userInfo.username, UserHistoryEventInfo.EventType.Restore, DateTime.UtcNow));
+            }
          }
 
          // Send confirmation to the client, so that they can request their user list again
@@ -609,10 +617,13 @@ public class ServerMessageManager : MonoBehaviour
 
       // Assign the new armor to the user
       // msg.userInfo.armorId = armorId;
+      List<UserInfo> deletedCharacters = DB_Main.getDeletedUsersForAccount(accountId);
+      UserInfo deletedCharacter = deletedCharacters.FirstOrDefault(user => user.charSpot == msg.characterSpot);
 
       // Then insert the User in the database
       userInfo.facingDirection = (int) Direction.West;
       int userId = DB_Main.createUser(accountId, adminFlag, userInfo, area);
+      DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userId, userInfo.username, UserHistoryEventInfo.EventType.Create, DateTime.UtcNow));
       DB_Main.insertIntoJobs(userId);
 
       // Update the armor as belonging to this new user id, and equip it
@@ -696,7 +707,12 @@ public class ServerMessageManager : MonoBehaviour
       DB_Main.storeGameAccountLoginEvent(userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
 
       // Forget any user previously deleted at the same character spot
-      DB_Main.forgetUserBySpot(accountId, msg.characterSpot);
+      if (deletedCharacter != null) {
+         DB_Main.forgetUserBySpot(accountId, msg.characterSpot);
+
+         // Update the history table with the info about the deleted character
+         DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, deletedCharacter.userId, deletedCharacter.username, UserHistoryEventInfo.EventType.DeletePermanent, DateTime.UtcNow));
+      }
 
       // Switch back to the Unity Thread to let the client know the result
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {

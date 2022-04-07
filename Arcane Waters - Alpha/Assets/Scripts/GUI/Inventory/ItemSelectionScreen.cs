@@ -152,6 +152,12 @@ public class ItemSelectionScreen : SubPanel
       // Set the item count slider to the max possible value
       itemCountSlider.maxValue = selectedItem.count;
       itemCountSlider.value = selectedItem.count;
+
+      // This is a small hack to make sure the slider's handle is on the right side when there's only 1 item available
+      itemCountSlider.direction = itemCountSlider.minValue == itemCountSlider.maxValue 
+         ? Slider.Direction.RightToLeft 
+         : Slider.Direction.LeftToRight;
+
       updateSelectedItemCount();
 
       // Activate the select button

@@ -38,7 +38,7 @@ public static class MapCache
       }
 
       if (removedMapsCount != 0) {
-         D.log($"Map data files pruning: had { previousMapCount }, aimed for { MAX_MAPS }, removed { removedMapsCount }.");
+         D.adminLog($"Map data files pruning: had { previousMapCount }, aimed for { MAX_MAPS }, removed { removedMapsCount }.", D.ADMIN_LOG_TYPE.Initialization);
       }
    }
 

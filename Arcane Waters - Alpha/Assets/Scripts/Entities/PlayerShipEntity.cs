@@ -472,6 +472,15 @@ public class PlayerShipEntity : ShipEntity
             } else if (InputManager.self.inputMaster.Sea.ReelIn.WasReleasedThisFrame()) {
                Cmd_SetIsReelingIn(false);
             }
+
+            // Read input mouse scroll value and divide it to scroll magnitude to get the target ability index
+            float scrollVal = InputManager.self.inputMaster.Sea.AbilitySwitch.ReadValue<float>();
+            if (scrollVal != 0.0f) {
+               // The base scroll value is 120, multiply it with scroll magnitude and divide the result with scroll value to get switch value
+               int switchValue = (int) (scrollVal / (abilitySwitchMagnitude * 120));
+               int targetAbility = Mathf.Clamp(selectedShipAbilityIndex + switchValue, 0, 4);
+               selectAbility(targetAbility);
+            }
          }
       }
 

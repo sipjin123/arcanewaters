@@ -6,7 +6,7 @@ public class DroppedItem : NetworkBehaviour, IObserver
 {
    #region Public Variables
 
-   // The instance ID of this mine
+   // The instance ID of this item
    [HideInInspector]
    [SyncVar]
    public int instanceId;

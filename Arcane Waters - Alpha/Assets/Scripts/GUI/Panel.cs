@@ -22,7 +22,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35,
       CustomMaps = 38, StepCompletedNotification = 39, Auction = 41, Keybindings = 42,
       ReturnToCurrentVoyagePanel = 43, CharacterInfo = 44, AdminVoyage = 45, PvpScoreBoard = 46,
-      PvpArena = 47, Admin = 48, PvpShop = 49, VisitPanel = 50
+      PvpArena = 47, Admin = 48, PvpShop = 49, VisitPanel = 50, GIFReplaySettings = 51
    }
 
    // The type of Panel this is

@@ -185,7 +185,7 @@ public class SoundEffectManager : GenericGameManager
    }
 
    private void Start () {
-      //InvokeRepeating(nameof(checkRuffianRepairs), 0f, 1f);
+      InvokeRepeating(nameof(checkRuffianRepairs), 0f, 1f);
    }
 
    public void playFmodSfx (string path, Vector3 position = default) {
@@ -313,118 +313,130 @@ public class SoundEffectManager : GenericGameManager
       hitInstance.release();
    }
 
+   // Background Music & Ambience
+   public void playBgMusic (BgType bgType, AmbType ambType) {
+      #region Events validation
 
-   // Returns the state of the title screen ambience event
-   private void checkAmbienceEvent () {
-      if (!_ambienceMusicEvent.isValid()) {
-         _ambienceMusicEvent = createEventInstance(AMBIENCE_BED_MASTER);
+      if (!_ambEvent.isValid()) {
+         _ambEvent = createEventInstance(AMBIENCE_BED_MASTER);
       }
+
+      if (!_tsEvent.isValid()) {
+         _tsEvent = createEventInstance(TITLE_SCREEN_AMBIENCE);
+      }
+
+      if (!_bgEvent.isValid()) {
+         _bgEvent = createEventInstance(BGM_MASTER);
+      }
+
+      #endregion
+
+      #region Ambience & Title Screen
+
+      if (_currentAmbience != ambType) {
+         if (ambType == AmbType.Previous) {
+            ambType = _previousAmbience;
+         }
+
+         _previousAmbience = _currentAmbience;
+         _currentAmbience = ambType;
+
+         if (ambType != AmbType.None) {
+            _ambEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) ambType);
+
+            _ambEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE ambState);
+            if (ambState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+               _ambEvent.start();
+            }
+         } else {
+            _ambEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         }
+
+         _tsEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE tsState);
+         if (bgType == BgType.Intro && tsState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+            _tsEvent.start();
+         } else if (tsState == FMOD.Studio.PLAYBACK_STATE.PLAYING) {
+            _tsEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         }
+      }
+
+      #endregion
+
+      #region Background Music
+
+      if (_currentMusic != bgType) {
+         if (bgType == BgType.Previous) {
+            bgType = _previousMusic;
+         }
+
+         _previousMusic = _currentMusic;
+         _currentMusic = bgType;
+
+         if (bgType != BgType.None) {
+            _bgEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) bgType);
+
+            _bgEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE bgState);
+            if (bgState == FMOD.Studio.PLAYBACK_STATE.STOPPED || _previousMusic == BgType.Land_Battle) {
+               _bgEvent.start();
+            }
+         } else {
+            _bgEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         }
+      }
+
+      #endregion
+
+      //D.debug("Should Play biome BGM: " + _currentMusic + ", with Ambience: " + _currentAmbience);
    }
 
-   private void checkTitleScreenAmbienceEvent () {
-      if (!_titleScreenAmbienceEvent.isValid()) {
-         _titleScreenAmbienceEvent = createEventInstance(TITLE_SCREEN_AMBIENCE);
-      }
-   }
-
-   private void checkBackgroundMusicEvent () {
-      if (!_backgroundMusicEvent.isValid()) {
-         _backgroundMusicEvent = createEventInstance(BGM_MASTER);
-      }
-   }
-
-   private void playAmbienceEvent () {
-      _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE playbackState);
-      if (playbackState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _ambienceMusicEvent.start();
-      }
-   }
-
-   private void playBackgroundMusicEvent () {
-      _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
-      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _backgroundMusicEvent.start();
-      }
-   }
-
-   public void playTitleScreenAmbienceEvent (bool stop = false) {
-      checkTitleScreenAmbienceEvent();
-
-      if (stop) {
-         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      } else {
-         _titleScreenAmbienceEvent.start();
-      }
-   }
-
-   private AmbienceMusicType getAmbienceType (string areaKey) {
-      Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
-
+   public AmbType getAreaBasedAmbience (string areaKey, Biome.Type biomeType) {
       if (string.Equals(areaKey, _cementeryAreaKey, StringComparison.InvariantCultureIgnoreCase)) {
-         return AmbienceMusicType.Forest_Cementery;
+         return AmbType.Forest_Cementery;
+      }
+
+      if (VoyageManager.isTreasureSiteArea(areaKey)) {
+         return AmbType.Treasure_Site;
       }
 
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
-            return AmbienceMusicType.Farm;
+            return AmbType.Farm;
          }
       }
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
-         return AmbienceMusicType.Interior;
+         return AmbType.Interior;
       } else if (AreaManager.self.isSeaArea(areaKey)) {
-         return AmbienceMusicType.Sea;
+         return AmbType.Sea;
       } else {
-         switch (biomeType) {
-            case Biome.Type.Forest:
-               return AmbienceMusicType.Forest;
-            case Biome.Type.Desert:
-               return AmbienceMusicType.Desert;
-            case Biome.Type.Pine:
-               return AmbienceMusicType.Pine;
-            case Biome.Type.Snow:
-               return AmbienceMusicType.Snow;
-            case Biome.Type.Lava:
-               return AmbienceMusicType.Lava;
-            case Biome.Type.Mushroom:
-               return AmbienceMusicType.Mushroom;
-            default:
-               return AmbienceMusicType.None;
-         }
+         return getBiomeBasedAmbience(biomeType);
       }
    }
 
-   // We can use the areaKey or send an ambience type directly (optional)
-   public void playAmbienceMusic (string areaKey = "", AmbienceMusicType ambienceMusicType = AmbienceMusicType.None) {
-      checkAmbienceEvent();
-
-      AmbienceMusicType audioParam = ambienceMusicType;
-
-      if (!string.IsNullOrEmpty(areaKey)) {
-         audioParam = getAmbienceType(areaKey);
-      }
-
-      if (_currentAmbience == audioParam) {
-         return;
-      }
-
-      _currentAmbience = audioParam;
-
-      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) _currentAmbience);
-
-      playAmbienceEvent();
-
-      if (_currentAmbience == AmbienceMusicType.None) {
-         _ambienceMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+   private AmbType getBiomeBasedAmbience (Biome.Type biomeType) {
+      switch (biomeType) {
+         case Biome.Type.Forest:
+            return AmbType.Forest;
+         case Biome.Type.Desert:
+            return AmbType.Desert;
+         case Biome.Type.Pine:
+            return AmbType.Pine;
+         case Biome.Type.Snow:
+            return AmbType.Snow;
+         case Biome.Type.Lava:
+            return AmbType.Lava;
+         case Biome.Type.Mushroom:
+            return AmbType.Mushroom;
+         default:
+            return AmbType.None;
       }
    }
 
-   private BackgroundMusicType getBackgroundMusicType (string areaKey) {
-      Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
-
+   public BgType getAreaBasedBgMusic (string areaKey, Biome.Type biomeType) {
+      // Farm or Guild Map
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
-            return BackgroundMusicType.Farm;
+            return BgType.Farm;
          }
       }
 
@@ -432,94 +444,56 @@ public class SoundEffectManager : GenericGameManager
 
       if (isSea) {
          if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
-            return BackgroundMusicType.Sea_PvP;
+            return BgType.Sea_PvP;
          } else if (VoyageManager.isLeagueArea(areaKey)) {
-            return BackgroundMusicType.Sea_League;
+            return BgType.Sea_League;
          } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
-            return BackgroundMusicType.Sea_Lava; // Temp
+            return BgType.Sea_Lava; // Temp
          }
       }
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
-         return BackgroundMusicType.Interior;
+         return BgType.Interior;
       } else {
-         switch (biomeType) {
-            case Biome.Type.Forest:
-               return isSea ? BackgroundMusicType.Sea_Forest : BackgroundMusicType.Forest;
-            case Biome.Type.Desert:
-               return isSea ? BackgroundMusicType.Sea_Desert : BackgroundMusicType.Desert;
-            case Biome.Type.Pine:
-               return isSea ? BackgroundMusicType.Sea_Pine : BackgroundMusicType.Pine;
-            case Biome.Type.Snow:
-               return isSea ? BackgroundMusicType.Sea_Snow : BackgroundMusicType.Snow;
-            case Biome.Type.Lava:
-               return isSea ? BackgroundMusicType.Sea_Lava : BackgroundMusicType.Lava;
-            case Biome.Type.Mushroom:
-               return isSea ? BackgroundMusicType.Sea_Mushroom : BackgroundMusicType.Mushroom;
-            default:
-               return BackgroundMusicType.None;
-         }
+         return getBiomeBasedBgMusic(isSea, biomeType);
       }
    }
 
-   public void playBackgroundMusic (string areaKey = "", BackgroundMusicType backgroundMusicType = BackgroundMusicType.None) {
-      checkBackgroundMusicEvent();
-
-      BackgroundMusicType audioParam = backgroundMusicType;
-
-      if (!string.IsNullOrEmpty(areaKey)) {
-         audioParam = getBackgroundMusicType(areaKey);
-      }
-
-      if (_currentMusic == audioParam) {
-         return;
-      }
-
-      _previousMusic = _currentMusic;
-      _currentMusic = audioParam;
-
-      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) _currentMusic);
-
-      playBackgroundMusicEvent();
-
-      // Title Screen ambience
-      if (_currentMusic == BackgroundMusicType.Intro) {
-         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.None);
-         playTitleScreenAmbienceEvent();
-      } else if (_currentMusic == BackgroundMusicType.None) {
-         _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      } else if (_currentMusic == BackgroundMusicType.Land_Battle) {
-         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.Farm);
-      } else if (_previousMusic == BackgroundMusicType.Land_Battle) {
-         // If our previous background music was the land battle one, then we reset the ambience event to the correct area.
-         playAmbienceMusic(areaKey);
-      } else {
-         playTitleScreenAmbienceEvent(true);
+   private BgType getBiomeBasedBgMusic (bool isSea, Biome.Type biomeType) {
+      switch (biomeType) {
+         case Biome.Type.Forest:
+            return isSea ? BgType.Sea_Forest : BgType.Forest;
+         case Biome.Type.Desert:
+            return isSea ? BgType.Sea_Desert : BgType.Desert;
+         case Biome.Type.Pine:
+            return isSea ? BgType.Sea_Pine : BgType.Pine;
+         case Biome.Type.Snow:
+            return isSea ? BgType.Sea_Snow : BgType.Snow;
+         case Biome.Type.Lava:
+            return isSea ? BgType.Sea_Lava : BgType.Lava;
+         case Biome.Type.Mushroom:
+            return isSea ? BgType.Sea_Mushroom : BgType.Mushroom;
+         default:
+            return BgType.None;
       }
    }
 
    public void playTriumphSfx () {
-      checkBackgroundMusicEvent();
-
-      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
-
-      playBackgroundMusicEvent();
+      if (_bgEvent.isValid()) {
+         _bgEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
+      }
    }
 
    public void setAmbienceWeather (WeatherEffectType weatherEffect) {
-      checkAmbienceEvent();
-
-      int param = 0;
-
-      switch (weatherEffect) {
-         case WeatherEffectType.Rain:
-            param = 1;
-            break;
+      if (_ambEvent.isValid()) {
+         int param = 0;
+         switch (weatherEffect) {
+            case WeatherEffectType.Rain:
+               param = 1;
+               break;
+         }
+         _ambEvent.setParameterByName(WEATHER_PARAM, param);
       }
-
-      _ambienceMusicEvent.setParameterByName(WEATHER_PARAM, param);
-
-      playAmbienceEvent();
    }
 
    public void playShipSailingSfx (ShipSailingType shipSailingType, Transform shipTransform, Rigidbody2D shipBody) {
@@ -744,8 +718,6 @@ public class SoundEffectManager : GenericGameManager
             if (sourceEntity != null && sourceEntity is SeaEntity) {
                if (seaAbilityType == SeaAbilityType.Berzerkers_Call) {
                   playAttachedSfx(BERSERKER_CALL, sourceEntity.transform, sourceEntity.getRigidbody());
-               } else if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-                  //playRuffianRepairsSfx(netId);
                }
             }
             break;
@@ -986,15 +958,17 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(path, position);
    }
 
-   // Ruffian Repairs
-   public void playRuffianRepairsSfx (uint netId) {
-      NetEntity sourceEntity = EntityManager.self.getEntityByNetId(netId);
-      if (sourceEntity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
-         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
-         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, sourceEntity.transform, sourceEntity.getRigidbody());
-         eventInstance.start();
+   #region Ruffian Repairs
 
-         _ruffianRepairsEvents.Add(netId, eventInstance);
+   public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
+      if (isPlay) {
+         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+            playRuffianRepairs(netId);
+         }
+      } else {
+         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+            stopRuffianRepairs(netId);
+         }
       }
    }
 
@@ -1002,23 +976,39 @@ public class SoundEffectManager : GenericGameManager
       List<uint> keys = _ruffianRepairsEvents.Keys.ToList();
       foreach (uint netId in keys) {
          NetEntity entity = EntityManager.self.getEntityByNetId(netId);
-         releaseRuffianRepairs(netId, false, entity == null);
-      }
-   }
-
-   public void releaseRuffianRepairs (uint netId, bool canRelease, bool canRemove) {
-      if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
-         eventInstance.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
-         eventInstance.getParameterByName(AUDIO_SWITCH_PARAM, out float value);
-
-         if (canRemove || (state == FMOD.Studio.PLAYBACK_STATE.STOPPED && value > 0)) {
-            eventInstance.release();
+         if (entity == null) {
+            if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
+               eventInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            }
             _ruffianRepairsEvents.Remove(netId);
-         } else if (canRelease) {
-            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
          }
       }
    }
+
+   private void playRuffianRepairs (uint netId) {
+      NetEntity entity = EntityManager.self.getEntityByNetId(netId);
+      if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
+         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
+
+         eventInstance.start();
+         _ruffianRepairsEvents.Add(netId, eventInstance);
+
+         //D.debug($"[SFX] Play Ruffian Repairs for netId: {netId}");
+      }
+   }
+
+   private void stopRuffianRepairs (uint netId) {
+      if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
+         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
+         eventInstance.release();
+      }
+      _ruffianRepairsEvents.Remove(netId);
+
+      //D.debug($"[SFX] Stop Ruffian Repairs for netId: {netId}");
+   }
+
+   #endregion
 
    public void playTreeChop (Vector3 position, bool isLastHit) {
       if (!Util.isBatch()) {
@@ -1044,13 +1034,13 @@ public class SoundEffectManager : GenericGameManager
    private Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
 
    // Event for main background music
-   private FMOD.Studio.EventInstance _backgroundMusicEvent;
+   private FMOD.Studio.EventInstance _bgEvent;
 
    // Event for main ambience music
-   private FMOD.Studio.EventInstance _ambienceMusicEvent;
+   private FMOD.Studio.EventInstance _ambEvent;
 
    // Event for title screen ambience music
-   private FMOD.Studio.EventInstance _titleScreenAmbienceEvent;
+   private FMOD.Studio.EventInstance _tsEvent;
 
    // Footsteps dictionary
    private Dictionary<int, float> _footstepsLastSound = new Dictionary<int, float>();
@@ -1059,13 +1049,16 @@ public class SoundEffectManager : GenericGameManager
    private FMOD.Studio.EventInstance _shipSailingEvent;
 
    // Last music we played
-   private BackgroundMusicType _previousMusic = BackgroundMusicType.None;
+   private BgType _previousMusic = BgType.None;
 
    // Current music we're playing
-   private BackgroundMusicType _currentMusic = BackgroundMusicType.None;
+   private BgType _currentMusic = BgType.None;
+
+   // Last ambience we played
+   private AmbType _previousAmbience = AmbType.None;
 
    // Current ambience we're playing
-   private AmbienceMusicType _currentAmbience = AmbienceMusicType.None;
+   private AmbType _currentAmbience = AmbType.None;
 
    // Cementery area key
    private const string _cementeryAreaKey = "Tutorial Town Cemetery v2";
@@ -1073,9 +1066,10 @@ public class SoundEffectManager : GenericGameManager
    // Ruffian Repairs events
    private Dictionary<uint, FMOD.Studio.EventInstance> _ruffianRepairsEvents = new Dictionary<uint, FMOD.Studio.EventInstance>();
 
-   public enum BackgroundMusicType
+   public enum BgType
    {
-      None = -1,
+      None = -2,
+      Previous = -1,
       Forest = 0,
       Desert = 1,
       Snow = 2,
@@ -1096,18 +1090,20 @@ public class SoundEffectManager : GenericGameManager
       Land_Battle = 19
    }
 
-   public enum AmbienceMusicType
+   public enum AmbType
    {
-      None = -2,
-      Title_Screen = -1,
+      None = -3,
+      Title_Screen = -2,
+      Previous = -1,
       Forest = 0,
       Desert = 1,
       Snow = 2,
       Lava = 3,
       Pine = 4,
       Mushroom = 5,
-      Interior = 8,
+      Treasure_Site = 6,
       Farm = 7,
+      Interior = 8,
       Sea = 9,
       Forest_Cementery = 10
    }

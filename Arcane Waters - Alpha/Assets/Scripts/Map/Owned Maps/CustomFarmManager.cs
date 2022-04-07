@@ -17,6 +17,10 @@ public class CustomFarmManager : CustomMapManager
    public override string mapTypeAreaKey => GROUP_AREA_KEY;
    public override string typeDisplayName => "Farm";
 
+   public override int Bkg_GetBaseMapIdFromDB (int ownerId, int guildId) {
+      return DB_Main.getCustomFarmBaseId(ownerId);
+   }
+
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {
       // Check if user is trying to warp into his farm
       if (areaKey.Equals(mapTypeAreaKey) || areaKey.Equals(getUserSpecificAreaKey(user.userId))) {

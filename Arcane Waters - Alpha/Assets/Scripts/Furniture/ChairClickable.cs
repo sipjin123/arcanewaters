@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
-using MapCustomization;
 
 public class ChairClickable : MonoBehaviour
 {
@@ -68,7 +67,7 @@ public class ChairClickable : MonoBehaviour
 
    public void onClick () {
       // Don't interact with chairs when we are customizing
-      if (MapCustomizationManager.isLocalPlayerCustomizing) {
+      if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager) && manager.isLocalPlayerCustomizing) {
          return;
       }
 
@@ -103,12 +102,12 @@ public class ChairClickable : MonoBehaviour
       }
 
       if (chairType == ChairType.Chair) {
-         Global.player.getPlayerBodyEntity().Cmd_EnterChair(transform.position, direction, chairType);
+         Global.player.getPlayerBodyEntity().enterChair(transform.position, direction, chairType);
       } else if (chairType == ChairType.Stool) {
          Vector2 playerPos = new Vector2(Global.player.transform.position.x, Global.player.transform.position.y);
          Vector2 chairPos = new Vector2(transform.position.x, transform.position.y);
          Direction? computedDirection = Util.getMajorDirectionFromVector(playerPos - chairPos);
-         Global.player.getPlayerBodyEntity().Cmd_EnterChair(transform.position, computedDirection.HasValue ? computedDirection.Value : Direction.East, chairType);
+         Global.player.getPlayerBodyEntity().enterChair(transform.position, computedDirection.HasValue ? computedDirection.Value : Direction.East, chairType);
       }
    }
 
@@ -192,7 +191,7 @@ public class ChairClickable : MonoBehaviour
    }
 
    private void handleSpriteOutline () {
-      if (MapCustomizationManager.isLocalPlayerCustomizing || _outline == null || _clickableBox == null || MouseManager.self == null) {
+      if ((MapCustomizationManager.tryGetCurentLocalManager(out var manager) && manager.isLocalPlayerCustomizing) || _outline == null || _clickableBox == null || MouseManager.self == null) {
          return;
       }
 

@@ -26,6 +26,9 @@ namespace MapCustomization
       // ID of the prop item definition that corresponds to this prefab
       public int propDefinitionId;
 
+      // Category of the prop item that corresponds to this prefab
+      public Item.Category propItemCategory = Item.Category.Prop;
+
       // The icon of the prop
       public Sprite propIcon = null;
 
@@ -62,7 +65,7 @@ namespace MapCustomization
             }
          }
 
-         Color outlineColor = ready ? MapCustomizationManager.self.prefabReadyColor : new Color(0, 0, 0, 0);
+         Color outlineColor = ready ? MapCustomizationManager.prefabReadyColor : new Color(0, 0, 0, 0);
 
          _spriteOutline.setNewColor(outlineColor);
          _spriteOutline.setVisibility(outlineColor.a != 0);
@@ -75,17 +78,17 @@ namespace MapCustomization
 
          if (selected) {
             if (valid) {
-               return MapCustomizationManager.self.prefabValidColor;
+               return MapCustomizationManager.prefabValidColor;
             } else {
-               return MapCustomizationManager.self.prefabInvalidColor;
+               return MapCustomizationManager.prefabInvalidColor;
             }
          }
 
          if (hovered) {
-            return MapCustomizationManager.self.prefabHoveredColor;
+            return MapCustomizationManager.prefabHoveredColor;
          }
 
-         return MapCustomizationManager.self.prefabReadyColor;
+         return MapCustomizationManager.prefabReadyColor;
       }
 
       public void setGameInteractionsActive (bool active) {
@@ -139,7 +142,9 @@ namespace MapCustomization
          GetComponent<ZSnap>()?.snapZ();
 
          if (!mapEditorState.created && !customizedState.created) {
-            MapCustomizationManager.removeTracked(this);
+            if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+               manager.removeTracked(unappliedChanges.id, this);
+            }
             Destroy(gameObject);
          } else {
             unappliedChanges.clearAll();
@@ -161,7 +166,9 @@ namespace MapCustomization
 
       public void submitUnappliedChanges () {
          if (unappliedChanges.deleted) {
-            MapCustomizationManager.removeTracked(this);
+            if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+               manager.removeTracked(unappliedChanges.id, this);
+            }
             Destroy(gameObject);
             return;
          }

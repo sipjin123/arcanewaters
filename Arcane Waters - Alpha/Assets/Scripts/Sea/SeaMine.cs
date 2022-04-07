@@ -211,7 +211,7 @@ public class SeaMine : NetworkBehaviour, IObserver
          float distanceToEnemy = (enemyHit.transform.position - transform.position).magnitude;
          float damageQuotient = Mathf.InverseLerp(0.0f, _explosionRadius, distanceToEnemy);
          int damageAmount = (int) Mathf.Lerp(minDamage, maxDamage, damageQuotient);
-         int finalDamage = enemyHit.applyDamage(damageAmount, sourceEntityNetId);
+         int finalDamage = enemyHit.applyDamage(damageAmount, sourceEntityNetId, Attack.Type.None);
 
          enemyHit.Rpc_ShowDamageTaken(finalDamage, false);
       }

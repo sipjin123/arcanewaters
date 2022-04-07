@@ -45,7 +45,7 @@ public class EffectResidue : MonoBehaviour {
          return;
       }
 
-      int finalDamage = seaEntity.applyDamage(damagePerTick, creatorNetId);
+      int finalDamage = seaEntity.applyDamage(damagePerTick, creatorNetId, attackType);
       seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, finalDamage, attackType, false);
    }
 

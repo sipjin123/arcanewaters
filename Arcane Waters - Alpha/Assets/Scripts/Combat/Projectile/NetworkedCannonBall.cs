@@ -43,13 +43,13 @@ public class NetworkedCannonBall : NetworkedProjectile
       if (NetworkServer.active) {
          SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
          int initialDamage = (int) (sourceEntity.damage * _distanceDamageMultiplier);
-         int finalDamage = hitEntity.applyDamage(initialDamage, sourceEntity.netId);
+         int finalDamage = hitEntity.applyDamage(initialDamage, sourceEntity.netId, attackType);
 
          // Apply the status effect
          StatusManager.self.create(Status.Type.Slowed, 1.0f, 3f, hitEntity.netId);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, finalDamage, Attack.Type.Cannon, false);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, finalDamage, attackType, false);
 
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);

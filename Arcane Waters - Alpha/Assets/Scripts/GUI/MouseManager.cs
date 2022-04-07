@@ -494,10 +494,7 @@ public class MouseManager : ClientMonoBehaviour
                   if (!_isOverForbidden) {
                      _isOverForbidden = !selectable.interactable;
 
-                     if (_isOverForbidden) {
-                        Debug.Log("Is over forbidden");
-                        break;
-                     }
+                     break;
                   }
 
                   _isOverTouchable = true;
@@ -591,9 +588,8 @@ public class MouseManager : ClientMonoBehaviour
 
          // Process press
          if (Mouse.current.leftButton.wasPressedThisFrame) {
-            string displayGeoCoords = WorldMapManager.self.getDisplayStringFromGeoCoords(pointerGeoCoords);
-            string encodedGeoCoords = WorldMapManager.self.encodeGeoCoords(pointerGeoCoords);
-            ChatManager.self.sendMessageToServer(displayGeoCoords, ChatPanel.self.currentChatType, encodedGeoCoords);
+            string geoCoords = WorldMapManager.self.getStringFromGeoCoords(pointerGeoCoords);
+            ChatPanel.self.inputField.insertText(geoCoords);
 
             if (PanelManager.self != null) {
                PanelManager.self.noticeScreen.show("Location copied!");

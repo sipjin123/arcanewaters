@@ -77,12 +77,6 @@ public class OptionsPanel : Panel
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
-   // GIF replay preset dropdown
-   public Dropdown gifReplaypresetDropdown = null;
-
-   // GIF replay memory estimation text
-   public Text gifReplayMemoryEstimation = null;
-
    // Bool to track if all players should continuously display their guild icon
    public static bool onlyShowGuildIconsOnMouseover = false;
 
@@ -142,7 +136,6 @@ public class OptionsPanel : Panel
    public override void Start () {
       initializeResolutionsDropdown();
       initializeFullScreenSettings();
-      setupGifReplayDropdown();
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
@@ -244,12 +237,6 @@ public class OptionsPanel : Panel
       autoFarmToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_AUTO_FARM, value ? 1 : 0);
          Global.autoFarm = value;
-      });
-
-      int gifReplay = PlayerPrefs.GetInt(GIFReplayManager.GIF_PRESET_SAVE_KEY, 0);
-      gifReplaypresetDropdown.SetValueWithoutNotify(gifReplay);
-      gifReplaypresetDropdown.onValueChanged.AddListener(value => {
-         GIFReplayManager.self.setSettingsPresetIndex(value, true);
       });
 
       // Build string and show version number
@@ -358,12 +345,6 @@ public class OptionsPanel : Panel
             _supportedResolutions.Add(res);
          }
       }
-   }
-
-   private void setupGifReplayDropdown () {
-      gifReplaypresetDropdown.options = GIFReplayManager.self.possibleSettingsPresets.Select(s =>
-         new OptionData { text = s.description }
-      ).ToList();
    }
 
    private void initializeResolutionsDropdown () {
@@ -625,6 +606,10 @@ public class OptionsPanel : Panel
 
    public void onKeybindingsButtonPress () {
       PanelManager.self.linkIfNotShowing(Type.Keybindings);
+   }
+
+   public void onGifButtonPress () {
+      PanelManager.self.linkIfNotShowing(Type.GIFReplaySettings);
    }
 
    public void onExitButtonPress () {

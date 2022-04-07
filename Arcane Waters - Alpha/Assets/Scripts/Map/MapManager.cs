@@ -71,16 +71,6 @@ public class MapManager : MonoBehaviour
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
 
-      // Find out if we are creating an owned map, if so, get owner id
-      int ownerId = -1;
-      if (!areaKey.Equals(mapInfo.mapName)) {
-         if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
-            if (CustomMapManager.isUserSpecificAreaKey(areaKey)) {
-               ownerId = CustomMapManager.getUserId(areaKey);
-            }
-         }
-      }
-
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Only read the DB on server and hosts
@@ -100,7 +90,8 @@ public class MapManager : MonoBehaviour
             }
 
             // Fetch map customization data if required
-            if ((ownerId != -1 || (CustomMapManager.isGuildSpecificAreaKey(areaKey)) || CustomMapManager.isGuildHouseAreaKey(areaKey)) && customizationData == null) {
+            int ownerId = CustomMapManager.getMapChangesOwnerId(areaKey);
+            if (ownerId != 0 && customizationData == null) {
                if (mapInfo != null) {
                   int baseMapId = DB_Main.getMapId(mapInfo.mapName);
                   customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
@@ -159,6 +150,8 @@ public class MapManager : MonoBehaviour
       AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
+
+      double functionStartTime = NetworkTime.time;
 
       if (exportedProject.biome == Biome.Type.None) {
          // Biome should never be None, redownload map data using nubis and overwrite the cached map data
@@ -287,6 +280,9 @@ public class MapManager : MonoBehaviour
          area.vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
          onAreaCreationIsFinished(area, biome);
+
+         float elapsedTime = (float) (NetworkTime.time - functionStartTime);
+         D.debug("[Timing] MapManager CO_InstantiateMapData for area: " + areaKey + " took " + elapsedTime.ToString("F2") + "seconds.");
       }
    }
 
@@ -442,16 +438,22 @@ public class MapManager : MonoBehaviour
       }
 
       // Check if there are any prefab changes that occurred that does not exist for visiting users
+      CustomizablePrefab newPrefab = null;
       bool isUserSpecificKey = CustomMapManager.isUserSpecificAreaKey(area.areaKey);
       bool isGuildSpecificKey = CustomMapManager.isGuildSpecificAreaKey(area.areaKey) || CustomMapManager.isGuildHouseAreaKey(area.areaKey);
-      if (!hasFoundAnyChanges && isUserSpecificKey && Global.player != null) {
+      if (!hasFoundAnyChanges && isUserSpecificKey && Global.player != null && !changes.deleted) {
          int userOwner = CustomMapManager.getUserId(area.areaKey);
          if (userOwner != Global.player.userId) {
-            createPrefab(area, biome, changes, true);
+            newPrefab = createPrefab(area, biome, changes, true);
          }
-      } else if (!hasFoundAnyChanges && isGuildSpecificKey && Global.player != null) {
+      } else if (!hasFoundAnyChanges && isGuildSpecificKey && Global.player != null && !changes.deleted) {
          if (Global.player.guildId == CustomMapManager.getGuildId(area.areaKey)) {
-            createPrefab(area, biome, changes, true);
+            newPrefab = createPrefab(area, biome, changes, true);
+         }
+      }
+      if (Mirror.NetworkClient.active && newPrefab != null) {
+         if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager man)) {
+            man.startTracking(newPrefab);
          }
       }
 

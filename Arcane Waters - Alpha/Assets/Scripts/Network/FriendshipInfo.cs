@@ -52,6 +52,10 @@ public class FriendshipInfo
    public string friendIconBackPalettes;
    public string friendIconSigilPalettes;
 
+   // The friend farm and house maps (base maps - layouts)
+   public int friendFarmMapId;
+   public int friendHouseMapId;
+
    #endregion
 
    public FriendshipInfo () { }
@@ -73,6 +77,8 @@ public class FriendshipInfo
       this.friendIconSigil = DataUtil.getString(dataReader, "gldIconSigil");
       this.friendIconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
       this.friendIconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
+      this.friendFarmMapId = DataUtil.getInt(dataReader, "customFarmBase");
+      this.friendHouseMapId = DataUtil.getInt(dataReader, "customHouseBase");
    }
 
 #endif

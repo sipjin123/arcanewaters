@@ -157,6 +157,19 @@ public class ChatInputField : MonoBehaviour
       _inputField.text = text;
    }
 
+   public void insertText (string text) {
+      if (_inputField == null) {
+         return;
+      }
+
+      // Clamp caret position
+      int caretPos = Mathf.Min(_inputField.caretPosition, _inputField.text.Length - 1);
+      caretPos = Mathf.Max(caretPos, 0);
+
+      // Insert the text
+      _inputField.SetTextWithoutNotify(_inputField.text.Insert(caretPos, text));
+   }
+
    public void setTextWithoutNotify (string text) {
       // Remove any unsupported characters that the user might've added
       text = removeUnsupportedCharacters(text);

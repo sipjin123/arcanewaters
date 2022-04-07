@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-public class UINavigationController : MonoBehaviour {
+public class UINavigationController : MonoBehaviour
+{
    public CanvasGroup parentCanvasGroup;
    public GameObject[] items;
    public Button actionButton;
@@ -16,24 +17,24 @@ public class UINavigationController : MonoBehaviour {
       if (!parentCanvasGroup) {
          parentCanvasGroup = GetComponent<CanvasGroup>();
       }
-      
+
       ResetItems();
    }
 
-   private void ResetItems() {
+   private void ResetItems () {
       _currItemId = 0;
-      
+
       // Init items data
       _itemsData = new List<ItemData>();
       foreach (GameObject item in items) {
          _itemsData.Add(new ItemData(item));
       }
-      
+
       // Reset items selection
       foreach (var itemData in _itemsData) {
          itemData.deselectItem();
       }
-      
+
       // Set default selection
       updateSelection(true);
    }
@@ -44,7 +45,7 @@ public class UINavigationController : MonoBehaviour {
 
       // Skip update when chat is focused
       if (ChatManager.self.chatPanel.inputField.isFocused) return;
-      
+
       // Check parentCanvasGroup status
       if (parentCanvasGroup) {
          if (parentCanvasGroup.interactable && !_canvasGroupInteractable) {
@@ -56,20 +57,20 @@ public class UINavigationController : MonoBehaviour {
 
          _canvasGroupInteractable = parentCanvasGroup.interactable;
       }
-      
+
       // Don't tick update when disabled (controlled by UINavigationManager), or parentCanvasGroup is not interactable
       if (!enabled || isLocked || (parentCanvasGroup && !parentCanvasGroup.interactable)) return;
 
       // Skip tick update if InputManager is not initialized yet 
       if (!InputManager.self) return;
-      
+
       // Enable UIControl input group if its disabled
       if (!InputManager.self.inputMaster.UIControl.enabled) {
          InputManager.self.inputMaster.UIControl.Enable();
       }
-      
+
       // Check if input field becomes selected after mouse click for ex.
-      for (int id=0; id<_itemsData.Count; id++) {
+      for (int id = 0; id < _itemsData.Count; id++) {
          if (_itemsData[id].isInputField && _itemsData[id].inputField.isFocused) {
             changeSelection(id);
          }
@@ -79,7 +80,7 @@ public class UINavigationController : MonoBehaviour {
       if (
          Keyboard.current.enterKey.wasPressedThisFrame &&
          !PanelManager.self.noticeScreen.isActive &&
-         actionButton != null && 
+         actionButton != null &&
          !_itemsData[_currItemId].isButton
       ) {
          if (actionButton.interactable) {
@@ -93,10 +94,10 @@ public class UINavigationController : MonoBehaviour {
          Keyboard.current.tabKey.wasPressedThisFrame
       ) {
          _isNavVisible = true;
-         
+
          // If not input field and sKey pressed
          if (!(_itemsData[_currItemId].isInputField && Keyboard.current.sKey.wasPressedThisFrame)) {
-            
+
             // Is dropdown open - delegate action
             if (_itemsData[_currItemId].isDropdownOpen) {
                _itemsData[_currItemId].downAction();
@@ -111,10 +112,10 @@ public class UINavigationController : MonoBehaviour {
       // Up
       if (InputManager.self.inputMaster.UIControl.MoveUp.WasPressedThisFrame()) {
          _isNavVisible = true;
-         
+
          // If not input field and wKey pressed
          if (!(_itemsData[_currItemId].isInputField && Keyboard.current.wKey.wasPressedThisFrame)) {
-            
+
             // Is dropdown open - delegate action
             if (_itemsData[_currItemId].isDropdownOpen) {
                _itemsData[_currItemId].upAction();
@@ -122,21 +123,21 @@ public class UINavigationController : MonoBehaviour {
             // otherwise - select prev item
             else {
                changeSelection(_currItemId - 1, -1);
-            }            
+            }
          }
       }
 
       // Left
       if (InputManager.self.inputMaster.UIControl.MoveLeft.WasPressedThisFrame()) {
          _isNavVisible = true;
-         
+
          _itemsData[_currItemId].leftAction();
       }
 
       // Right
       if (InputManager.self.inputMaster.UIControl.MoveRight.WasPressedThisFrame()) {
          _isNavVisible = true;
-         
+
          _itemsData[_currItemId].rightAction();
       }
 
@@ -160,7 +161,7 @@ public class UINavigationController : MonoBehaviour {
             _itemsData[_currItemId].useItem();
          }
       }
-      
+
       // Space
       if (Keyboard.current.spaceKey.wasPressedThisFrame) {
          if (_itemsData[_currItemId].isActive) {
@@ -169,7 +170,7 @@ public class UINavigationController : MonoBehaviour {
       }
    }
 
-   private void changeSelection(int newItemId, int direction=1) {
+   private void changeSelection (int newItemId, int direction = 1) {
       bool isAnyItemActive = false;
       foreach (var item in _itemsData) {
          if (item.isActive) {
@@ -181,32 +182,32 @@ public class UINavigationController : MonoBehaviour {
       if (!isAnyItemActive) {
          return;
       }
-      
+
       // If new item is not active - find active one
-      if (!_itemsData[Mathf.Clamp(newItemId, 0, _itemsData.Count-1)].isActive) {
+      if (!_itemsData[Mathf.Clamp(newItemId, 0, _itemsData.Count - 1)].isActive) {
          // If moving to the next item and new id is the last one - move to prev active item 
          if (direction == 1 && newItemId >= _itemsData.Count - 1) {
-            changeSelection(newItemId-1, -1);
+            changeSelection(newItemId - 1, -1);
             return;
          }
          // If moving to the prev item and new id is the first one - move fo next active item 
          if (direction == -1 && newItemId <= 0) {
-            changeSelection(newItemId+1, 1);
+            changeSelection(newItemId + 1, 1);
             return;
          }
-         
+
          // Otherwise - continue
          changeSelection(newItemId + direction, direction);
          return;
       }
-      
+
       // Process normal way
       _prevItemId = _currItemId;
-      _currItemId = Mathf.Clamp(newItemId, 0, _itemsData.Count-1) ;
+      _currItemId = Mathf.Clamp(newItemId, 0, _itemsData.Count - 1);
       updateSelection();
    }
-   
-   public void updateSelection(bool force=false) {
+
+   public void updateSelection (bool force = false) {
       if (_prevItemId == _currItemId && !force) {
          return;
       }
@@ -234,7 +235,8 @@ public class UINavigationController : MonoBehaviour {
       InputManager.self.inputMaster.UIControl.Disable();
    }
 
-   private class ItemData {
+   private class ItemData
+   {
       #region Public Variables
       public readonly InputField inputField;
       public readonly Button button;
@@ -244,7 +246,7 @@ public class UINavigationController : MonoBehaviour {
       public readonly UINavigationItem navigationItem;
       #endregion
 
-      public ItemData(GameObject item) {
+      public ItemData (GameObject item) {
          _item = item;
          inputField = item.GetComponent<InputField>();
          button = item.GetComponent<Button>();
@@ -254,14 +256,18 @@ public class UINavigationController : MonoBehaviour {
          navigationItem = item.GetComponent<UINavigationItem>();
          isDropdownOpen = false;
       }
-      
-      public bool isActive { get { 
-         return 
-            _item.activeSelf && 
-            _item.activeInHierarchy && 
-            (isButton && button.interactable || !isButton)
-            ; 
-      } }
+
+      public bool isActive
+      {
+         get
+         {
+            return
+               _item.activeSelf &&
+               _item.activeInHierarchy &&
+               (isButton && button.interactable || !isButton)
+               ;
+         }
+      }
       public bool isInputField { get { return inputField != null; } }
       public bool isButton { get { return button != null; } }
       public bool isToggle { get { return toggle != null; } }
@@ -291,7 +297,7 @@ public class UINavigationController : MonoBehaviour {
       public void equipItem () {
          navigationItem?.Equip();
       }
-      
+
       public void useItem () {
          navigationItem?.Use();
       }
@@ -300,7 +306,7 @@ public class UINavigationController : MonoBehaviour {
          if (isButton && button.interactable) {
             button.onClick.Invoke();
          }
-         
+
          if (isToggle) {
             toggle.isOn = !toggle.isOn;
          }
@@ -309,8 +315,7 @@ public class UINavigationController : MonoBehaviour {
             if (isDropdownOpen) {
                isDropdownOpen = false;
                dropdown.Hide();
-            } 
-            else {
+            } else {
                isDropdownOpen = true;
                dropdown.Show();
             }
@@ -321,14 +326,18 @@ public class UINavigationController : MonoBehaviour {
 
       public void leftAction () {
          if (isSlider) {
-            var step = (slider.maxValue - slider.minValue) / 10f;
+            var step = slider.wholeNumbers && slider.maxValue - slider.minValue < 30
+               ? 1
+               : (slider.maxValue - slider.minValue) / 10f;
             slider.value = Mathf.Clamp(slider.value - step, slider.minValue, slider.maxValue);
          }
       }
 
       public void rightAction () {
          if (isSlider) {
-            var step = (slider.maxValue - slider.minValue) / 10f;
+            var step = slider.wholeNumbers && slider.maxValue - slider.minValue < 30
+               ? 1
+               : (slider.maxValue - slider.minValue) / 10f;
             slider.value = Mathf.Clamp(slider.value + step, slider.minValue, slider.maxValue);
          }
       }
@@ -346,7 +355,7 @@ public class UINavigationController : MonoBehaviour {
             dropdown.RefreshShownValue();
          }
       }
-      
+
       #region Private Variables
       private GameObject _item;
       #endregion

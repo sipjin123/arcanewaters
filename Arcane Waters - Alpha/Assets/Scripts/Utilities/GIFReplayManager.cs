@@ -9,42 +9,17 @@ public class GIFReplayManager : ClientMonoBehaviour
 {
    #region Public Variables
 
-   // The key we use to store GIF recording setting
-   public const string GIF_PRESET_SAVE_KEY = "gif-replay-settings-preset-index";
+   // The keys we use to store GIF recording settings
+   public const string GIF_RECORDING_ENABLED_KEY = "gif-replay-settings-enabled";
+   public const string GIF_RECORDING_RESOLUTION_KEY = "gif-replay-settings-resolution";
+   public const string GIF_RECORDING_FPS_KEY = "gif-replay-settings-fps";
+   public const string GIF_RECORDING_DURATION_KEY = "gif-replay-settings-duration";
 
    // Singleton instance
    public static GIFReplayManager self;
 
    // Current encoding progress
    public EncodeProgress currentProgress;
-
-   // Possible recorder settings presets, indexed by serialization ID
-   public RecorderSettings[] possibleSettingsPresets = new RecorderSettings[] {
-      new RecorderSettings { downscaleFactor = 1, fps = 0, length = 0, description = "Off (Recommended)" }, // Turned off
-      new RecorderSettings { downscaleFactor = 2, fps = 10, length = 10, description = "1/2 Res, 10 FPS, 10s" },
-      new RecorderSettings { downscaleFactor = 4, fps = 10, length = 10, description = "1/4 Res, 10 FPS, 10s" },
-      new RecorderSettings { downscaleFactor = 1, fps = 10, length = 10, description = "Full Res, 10 FPS, 10s" },
-      new RecorderSettings { downscaleFactor = 1, fps = 10, length = 20, description = "Full Res, 10 FPS, 20s" },
-      new RecorderSettings { downscaleFactor = 1, fps = 10, length = 30, description = "Full Res, 10 FPS, 30s" },
-      new RecorderSettings { downscaleFactor = 1, fps = 30, length = 10, description = "Full Res, 30 FPS, 10s" },
-      new RecorderSettings { downscaleFactor = 8, fps = 10, length = 60, description = "1/8 Res, 10 FPS, 60s" }
-
-   };
-
-   public struct RecorderSettings
-   {
-      // How much to downscale each dimension of screen
-      public int downscaleFactor;
-
-      // How many frames per second to record
-      public int fps;
-
-      // The length of replay to keep (seconds)
-      public int length;
-
-      // The user-friendly description of the preset
-      public string description;
-   }
 
    // Class we use to cache info about the encoding progress
    public class EncodeProgress
@@ -81,9 +56,11 @@ public class GIFReplayManager : ClientMonoBehaviour
       // Initialize temp texture to whatever
       _tempRenderTexture = new RenderTexture(0, 0, 0);
 
-      // Load preset
-      int index = PlayerPrefs.GetInt(GIF_PRESET_SAVE_KEY, 0);
-      setSettingsPresetIndex(index, false);
+      // Load settings
+      setIsRecording(PlayerPrefs.GetInt(GIF_RECORDING_ENABLED_KEY, 0) == 1, false);
+      setDownscaleFactor(PlayerPrefs.GetInt(GIF_RECORDING_RESOLUTION_KEY, 1), false);
+      setFPS(PlayerPrefs.GetInt(GIF_RECORDING_FPS_KEY, 10), false);
+      setDuration(PlayerPrefs.GetInt(GIF_RECORDING_DURATION_KEY, 10), false);
    }
 
    private void Start () {
@@ -112,7 +89,7 @@ public class GIFReplayManager : ClientMonoBehaviour
             continue;
          }
 
-         if (Time.time - _lastRecordTime > _recordDelay) {
+         if (Time.time - _lastRecordTime > getRecordDelay()) {
             _lastRecordTime = Time.time;
 
             if (_tempRenderTexture.width != Screen.width || _tempRenderTexture.height != _tempRenderTexture.height) {
@@ -192,7 +169,7 @@ public class GIFReplayManager : ClientMonoBehaviour
          return;
       }
 
-      ChatManager.self.addChat("Creating a GIF: " + Mathf.RoundToInt(_currentFrames.Count * _recordDelay) + "s recorded", ChatInfo.Type.System);
+      ChatManager.self.addChat("Creating a GIF: " + Mathf.RoundToInt(_currentFrames.Count * getRecordDelay()) + "s recorded", ChatInfo.Type.System);
 
       currentProgress.message = "initializing...";
 
@@ -201,7 +178,7 @@ public class GIFReplayManager : ClientMonoBehaviour
          List<CustomFrame> frames = _currentFrames;
          _currentFrames = new List<CustomFrame>();
 
-         StartEncode(frames, (int) (1 / _recordDelay), 0, 50);
+         StartEncode(frames, (int) (1 / getRecordDelay()), 0, 50);
       } catch (Exception ex) {
          currentProgress.message = ex.Message;
          currentProgress.error = true;
@@ -337,30 +314,94 @@ public class GIFReplayManager : ClientMonoBehaviour
       return _isRecording;
    }
 
-   public void setIsRecording (bool value) {
-      if (value != _isRecording) {
-         _isRecording = value;
-         _currentFrames.Clear();
+   public void setIsRecording (bool isRecording, bool saveToPrefs) {
+      if (_isRecording == isRecording) {
+         return;
+      }
+
+      _isRecording = isRecording;
+
+      _currentFrames.Clear();
+      if (saveToPrefs) {
+         PlayerPrefs.SetInt(GIF_RECORDING_ENABLED_KEY, isRecording ? 1 : 0);
       }
    }
 
-   public void setSettingsPresetIndex (int index, bool saveToPrefs) {
-      if (index < 0 || index >= possibleSettingsPresets.Length) {
-         setSettingsPreset(possibleSettingsPresets[0]);
-      } else {
-         setSettingsPreset(possibleSettingsPresets[index]);
-         if (saveToPrefs) {
-            PlayerPrefs.SetInt(GIF_PRESET_SAVE_KEY, index);
-         }
+   public void setDownscaleFactor (int factor, bool saveToPrefs) {
+      if (_resolutionDownscaleFactor == factor) {
+         return;
+      }
+
+      factor = Mathf.Clamp(factor, 1, 8);
+
+      _resolutionDownscaleFactor = factor;
+
+      _currentFrames.Clear();
+      if (saveToPrefs) {
+         PlayerPrefs.SetInt(GIF_RECORDING_RESOLUTION_KEY, factor);
       }
    }
 
-   public void setSettingsPreset (RecorderSettings settings) {
-      _isRecording = settings.fps != 0 && settings.length != 0;
+   public void setFPS (int fps, bool saveToPrefs) {
+      if (_recordFPS == fps) {
+         return;
+      }
 
-      _resolutionDownscaleFactor = settings.downscaleFactor == 0 ? 1 : settings.downscaleFactor;
-      _maxFrames = settings.fps * settings.length;
-      _recordDelay = settings.fps == 0 ? 0 : 1f / settings.fps;
+      fps = Mathf.Clamp(fps, 5, 30);
+
+      _recordFPS = fps;
+      _maxFrames = _recordDuration * fps;
+
+      _currentFrames.Clear();
+      if (saveToPrefs) {
+         PlayerPrefs.SetInt(GIF_RECORDING_FPS_KEY, fps);
+      }
+   }
+
+   public void setDuration (int duration, bool saveToPrefs) {
+      if (_recordDuration == duration) {
+         return;
+      }
+
+      duration = Mathf.Clamp(duration, 5, 30);
+
+      _recordDuration = duration;
+      _maxFrames = _recordFPS * duration;
+
+      _currentFrames.Clear();
+      if (saveToPrefs) {
+         PlayerPrefs.SetInt(GIF_RECORDING_DURATION_KEY, duration);
+      }
+   }
+
+   public bool getIsRecording () {
+      return _isRecording;
+   }
+
+   public int getFPS () {
+      return _recordFPS;
+   }
+
+   public int getDuration () {
+      return _recordDuration;
+   }
+
+   public int getDownscaleFactor () {
+      return _resolutionDownscaleFactor;
+   }
+
+   public string getMemoryEstimation () {
+      int frames = _recordFPS * _recordDuration;
+      float framesSize = 0.026f * frames;
+      float downScale = 1f / (_resolutionDownscaleFactor <= 1f ? 1f : _resolutionDownscaleFactor);
+      float temp = 0.000001f * Screen.width * Screen.height;
+      float pixelSize = frames * temp * downScale * downScale * 0.1678466796875f;
+
+      return "~" + Mathf.RoundToInt(framesSize + pixelSize) + " MB";
+   }
+
+   public float getRecordDelay () {
+      return _recordFPS <= 0 ? 0.5f : 1f / _recordFPS;
    }
 
    public void userRequestedGIF () {
@@ -399,14 +440,11 @@ public class GIFReplayManager : ClientMonoBehaviour
    // Last time we recorded a frame
    private float _lastRecordTime = 0f;
 
-   // Downscale factor of the resolution
-   private int _resolutionDownscaleFactor = 1;
-
-   // Are we recording right now
+   // Recording settings
    private bool _isRecording = false;
-
-   // What's the delay between recording frames (inverse FPS)
-   private float _recordDelay = 0.2f;
+   private int _resolutionDownscaleFactor = 1;
+   private int _recordFPS = 10;
+   private int _recordDuration = 10;
 
    // Maximum number of frames we can record
    private float _maxFrames = 300;

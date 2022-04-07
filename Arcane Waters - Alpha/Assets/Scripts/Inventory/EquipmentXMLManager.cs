@@ -415,6 +415,16 @@ public class EquipmentXMLManager : MonoBehaviour {
                newName = questItem.itemName;
             }
             break;
+         case Item.Category.Crop:
+            if (CropsDataManager.self.tryGetCropData(item.itemTypeId, out CropsData data)) {
+               newName = data.xmlName;
+            }
+            break;
+         case Item.Category.Prop:
+            if (ItemDefinitionManager.self.tryGetDefinition(item.itemTypeId, out PropDefinition prop)) {
+               newName = prop.name;
+            }
+            break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = getCraftingItem(item);
             if (craftingItem != null) {

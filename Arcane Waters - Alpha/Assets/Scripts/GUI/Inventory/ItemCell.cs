@@ -268,7 +268,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   }
                }
             } else if (item.data.Contains(Blueprint.INGREDIENT_DATA_PREFIX)) {
-               CraftingIngredients ingredientReference = new CraftingIngredients (item);
+               CraftingIngredients ingredientReference = new CraftingIngredients(item);
 
                item.itemName = ingredientReference.getName();
                item.itemDescription = ingredientReference.getDescription();
@@ -392,7 +392,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       recoloredSprite.recolor(item.paletteNames);
 
       // Show the item count when relevant
-      if (count > 1 || item.category == Item.Category.CraftingIngredients || item.category == Item.Category.Quest_Item || item.category == Item.Category.Crop) {
+      if (count > 1 || Item.shouldAlwaysShowCount(item.category)) {
          itemCountText.SetText(count.ToString());
          itemCountText.gameObject.SetActive(true);
       } else {

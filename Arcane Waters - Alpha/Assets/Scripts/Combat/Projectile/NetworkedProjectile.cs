@@ -223,7 +223,7 @@ public class NetworkedProjectile : MonoBehaviour {
          }
 
          int initialDamage = (int) ((calculatedDamage) * _distanceDamageMultiplier);
-         int finalDamage = hitEntity.applyDamage(initialDamage, sourceEntity.netId);
+         int finalDamage = hitEntity.applyDamage(initialDamage, sourceEntity.netId, attackType);
 
          switch (attackType) {
             case Attack.Type.Boulder:

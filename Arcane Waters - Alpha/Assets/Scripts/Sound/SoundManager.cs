@@ -144,8 +144,7 @@ public class SoundManager : GenericGameManager
       }
 
       // Look up the background music for the Title Screen, if we have any
-      //setBackgroundMusic(Type.Intro_Music);
-      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Intro);
+      SoundEffectManager.self.playBgMusic(SoundEffectManager.BgType.Intro, SoundEffectManager.AmbType.Title_Screen);
    }
 
    public void Start () {

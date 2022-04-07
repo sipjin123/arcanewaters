@@ -351,14 +351,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If the player is sitting down and tries to move or jump, get up
       if (sittingInfo.isSitting) {
          if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-            Cmd_ExitChair();
+            exitChair();
          }
       }
 
       // If the player is emoting and tries to move or jump, stop
       if (isEmoting()) {
          if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-            Cmd_StopEmote();
+            stopEmote();
          }
       }
 
@@ -453,120 +453,38 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          facing = sittingInfo.sittingDirection;
       }
 
-      if (sittingInfo.isSitting != _prevIsSitting) {
-         if (sittingInfo.isSitting) {
-            getMainCollider().isTrigger = true;
-            toggleWeaponVisibility(show: false);
-            applySittingEmoteMask(show: true, chairType: sittingInfo.chairType);
-            transform.position = sittingInfo.chairPosition;
-
-            if (sittingInfo.sittingDirection == Direction.North) {
-               if (sittingInfo.chairType == ChairClickable.ChairType.Stool) {
-                  transform.position = sittingInfo.chairPosition + new Vector3(-0.02f, -0.021f, 0);
-               }
-
-               playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
-            } else if (sittingInfo.sittingDirection == Direction.South) {
-               transform.position = sittingInfo.chairPosition + new Vector3(0, -0.022f, 0);
-               playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
-            } else if (sittingInfo.sittingDirection == Direction.West) {
-               transform.position = sittingInfo.chairPosition + new Vector3(-0.09f, -0.022f, 0);
-               playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
-            } else if (sittingInfo.sittingDirection == Direction.East) {
-               transform.position = sittingInfo.chairPosition + new Vector3(+0.09f, -0.022f, 0);
-               playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
-            }
-
-            if (isLocalPlayer) {
-               InputManager.toggleInput(enable: false);
-            }
-         } else {
-            transform.position = sittingInfo.positionBeforeSitting;
-            applySittingEmoteMask(show: false);
-            toggleWeaponVisibility(show: true);
-            getMainCollider().isTrigger = false;
-            stopCompositeAnimation();
-
-            if (isLocalPlayer) {
-               InputManager.toggleInput(enable: true);
-               GenericActionPromptScreen.self.hide();
-            }
-         }
-
-         _prevIsSitting = sittingInfo.isSitting;
+      if (sittingInfo.isSitting == _prevIsSitting) {
+         return;
       }
+
+      // The sitting state has been already processed on the client by the player, so there is no need to do it again
+      if (!isLocalPlayer) {
+         if (sittingInfo.isSitting) {
+            enterSittingState(sittingInfo.chairPosition, sittingInfo.sittingDirection, sittingInfo.chairType);
+         } else {
+            exitSittingState();
+         }
+      }
+
+      _prevIsSitting = sittingInfo.isSitting;
    }
 
    private void processEmoting () {
       if (emoteType != _prevEmoteType) {
-         if (emoteType != EmoteManager.EmoteTypes.None) {
-            shouldAlignRenderersToFacingDirection = false;
-            toggleWeaponVisibility(show: false);
-
-            // Greeting / Waving
-            if (emoteType == EmoteManager.EmoteTypes.Greet || emoteType == EmoteManager.EmoteTypes.Wave) {
-               if (facing == Direction.North) {
-                  playCompositeAnimation(CompositeAnimationManager.self.WavingN);
-               } else if (facing == Direction.South) {
-                  playCompositeAnimation(CompositeAnimationManager.self.WavingS);
-               } else if (facing == Direction.West || facing == Direction.East) {
-                  playCompositeAnimation(CompositeAnimationManager.self.WavingWE);
-               }
-            }
-
-            // Dancing
-            if (emoteType == EmoteManager.EmoteTypes.Dance) {
-               playCompositeAnimation(CompositeAnimationManager.self.Dancing);
-            }
-
-            // Kneeling
-            if (emoteType == EmoteManager.EmoteTypes.Kneel) {
-               if (facing == Direction.North) {
-                  playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
-               } else if (facing == Direction.South) {
-                  playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
-               } else if (facing == Direction.West || facing == Direction.East) {
-                  playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
-               }
-            }
-
-            // Pointing
-            if (emoteType == EmoteManager.EmoteTypes.Point) {
-               if (facing == Direction.North) {
-                  playCompositeAnimation(CompositeAnimationManager.self.PointingN);
-               } else if (facing == Direction.South) {
-                  playCompositeAnimation(CompositeAnimationManager.self.PointingS);
-               } else if (facing == Direction.West || facing == Direction.East) {
-                  playCompositeAnimation(CompositeAnimationManager.self.PointingWE);
-               }
-            }
-
-            // Sitting/Lying
-            if (emoteType == EmoteManager.EmoteTypes.Sit) {
-               playCompositeAnimation(CompositeAnimationManager.self.SittingS);
-            }
-
-            if (isLocalPlayer) {
-               InputManager.toggleInput(enable: false);
-            }
-         } else {
-            shouldAlignRenderersToFacingDirection = true;
-            toggleWeaponVisibility(show: true);
-            stopCompositeAnimation();
-
-            if (isLocalPlayer) {
-               InputManager.toggleInput(enable: true);
+         if (!isLocalPlayer) {
+            if (emoteType != EmoteManager.EmoteTypes.None) {
+               enterEmoteState(emoteType, facing);
+            } else {
+               exitEmoteState();
             }
          }
-
-         _prevEmoteType = emoteType;
       }
 
-      if (emoteType != EmoteManager.EmoteTypes.None) {
-         if (areCompositeAnimationsStopped()) {
-            Cmd_StopEmote();
-         }
+      if (emoteType != EmoteManager.EmoteTypes.None && areCompositeAnimationsStopped()) {
+         stopEmote();
       }
+
+      _prevEmoteType = emoteType;
    }
 
    public void resetCombatAvailability () {
@@ -873,7 +791,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void processActionLogic () {
-      if (MapCustomization.MapCustomizationManager.isCustomizing) {
+      if (MapCustomizationManager.tryGetCurentLocalManager(out var manager) && manager.isLocalPlayerCustomizing) {
          return;
       }
 
@@ -1455,32 +1373,88 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return sittingInfo.isSitting;
    }
 
-   [Command]
-   public void Cmd_EnterChair (Vector3 chairPosition, Direction direction, ChairClickable.ChairType chairType) {
-      if (!sittingInfo.isSitting) {
-         sittingInfo = new SittingInfo {
-            isSitting = true,
-            sittingDirection = direction,
-            chairPosition = chairPosition,
-            positionBeforeSitting = transform.position,
-            chairType = chairType
-         };
-
-         this.facing = direction;
-         this.transform.position = chairPosition;
+   public void enterChair (Vector3 chairPosition, Direction direction, ChairClickable.ChairType chairType) {
+      if (!isSitting()) {
+         // The players sits down on the client, and then replicates the new sitting state to the other clients
+         enterSittingState(chairPosition, direction, chairType);
+         Cmd_EnterChair(sittingInfo);
       }
    }
 
    [Command]
-   public void Cmd_ExitChair () {
-      if (sittingInfo.isSitting) {
-         sittingInfo = new SittingInfo {
-            isSitting = false,
-            sittingDirection = sittingInfo.sittingDirection,
-            chairPosition = sittingInfo.chairPosition,
-            positionBeforeSitting = sittingInfo.positionBeforeSitting,
-            chairType = sittingInfo.chairType
-         };
+   private void Cmd_EnterChair (SittingInfo sittingInfo) {
+      this.sittingInfo = sittingInfo;
+      this.facing = sittingInfo.sittingDirection;
+   }
+
+   public void exitChair () {
+      if (isSitting()) {
+         // The players stands up on the client, and then replicates the new sitting state to the other clients
+         exitSittingState();
+         Cmd_ExitChair(sittingInfo);
+      }
+   }
+
+   private void enterSittingState (Vector3 chairPosition, Direction direction, ChairClickable.ChairType chairType) {
+      this.sittingInfo = new SittingInfo {
+         isSitting = true,
+         sittingDirection = direction,
+         chairPosition = chairPosition,
+         positionBeforeSitting = transform.position,
+         chairType = chairType
+      };
+
+      getMainCollider().isTrigger = true;
+      toggleWeaponVisibility(show: false);
+      applySittingEmoteMask(show: true, chairType: sittingInfo.chairType);
+      transform.position = sittingInfo.chairPosition;
+
+      if (sittingInfo.sittingDirection == Direction.North) {
+         if (sittingInfo.chairType == ChairClickable.ChairType.Stool) {
+            transform.position = sittingInfo.chairPosition + new Vector3(-0.02f, -0.021f, 0);
+         }
+
+         playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
+      } else if (sittingInfo.sittingDirection == Direction.South) {
+         transform.position = sittingInfo.chairPosition + new Vector3(0, -0.022f, 0);
+         playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
+      } else if (sittingInfo.sittingDirection == Direction.West) {
+         transform.position = sittingInfo.chairPosition + new Vector3(-0.09f, -0.022f, 0);
+         playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+      } else if (sittingInfo.sittingDirection == Direction.East) {
+         transform.position = sittingInfo.chairPosition + new Vector3(+0.09f, -0.022f, 0);
+         playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+      }
+
+      if (isLocalPlayer) {
+         InputManager.toggleInput(enable: false);
+      }
+   }
+
+   [Command]
+   private void Cmd_ExitChair (SittingInfo sittingInfo) {
+      this.sittingInfo = sittingInfo;
+      this.transform.position = sittingInfo.positionBeforeSitting;
+   }
+
+   private void exitSittingState () {
+      this.sittingInfo = new SittingInfo {
+         isSitting = false,
+         sittingDirection = this.sittingInfo.sittingDirection,
+         chairPosition = this.sittingInfo.chairPosition,
+         positionBeforeSitting = this.sittingInfo.positionBeforeSitting,
+         chairType = this.sittingInfo.chairType
+      };
+
+      transform.position = sittingInfo.positionBeforeSitting;
+      applySittingEmoteMask(show: false);
+      toggleWeaponVisibility(show: true);
+      getMainCollider().isTrigger = false;
+      stopCompositeAnimation();
+
+      if (isLocalPlayer) {
+         InputManager.toggleInput(enable: true);
+         GenericActionPromptScreen.self.hide();
       }
    }
 
@@ -1492,21 +1466,99 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return emoteType != EmoteManager.EmoteTypes.None;
    }
 
-   [Command]
-   public void Cmd_PlayEmote (EmoteManager.EmoteTypes emoteType, Direction direction) {
-      if (this.emoteType != emoteType && this.emoteType == EmoteManager.EmoteTypes.None) {
-         facing = direction;
-         this.emoteType = emoteType;
+   public void playEmote (EmoteManager.EmoteTypes emoteType, Direction direction) {
+      if (emoteType == EmoteManager.EmoteTypes.None) {
+         return;
+      }
+
+      if (!isEmoting()) {
+         enterEmoteState(emoteType, direction);
+         Cmd_PlayEmote(emoteType, direction);
       }
    }
 
    [Command]
-   public void Cmd_StopEmote () {
-      if (!isEmoting()) {
-         return;
+   private void Cmd_PlayEmote (EmoteManager.EmoteTypes emoteType, Direction direction) {
+      facing = direction;
+      this.emoteType = emoteType;
+   }
+
+   private void enterEmoteState (EmoteManager.EmoteTypes emoteType, Direction direction) {
+      shouldAlignRenderersToFacingDirection = false;
+      toggleWeaponVisibility(show: false);
+
+      // Greeting / Waving
+      if (emoteType == EmoteManager.EmoteTypes.Greet || emoteType == EmoteManager.EmoteTypes.Wave) {
+         if (facing == Direction.North) {
+            playCompositeAnimation(CompositeAnimationManager.self.WavingN);
+         } else if (facing == Direction.South) {
+            playCompositeAnimation(CompositeAnimationManager.self.WavingS);
+         } else if (facing == Direction.West || facing == Direction.East) {
+            playCompositeAnimation(CompositeAnimationManager.self.WavingWE);
+         }
       }
 
+      // Dancing
+      if (emoteType == EmoteManager.EmoteTypes.Dance) {
+         playCompositeAnimation(CompositeAnimationManager.self.Dancing);
+      }
+
+      // Kneeling
+      if (emoteType == EmoteManager.EmoteTypes.Kneel) {
+         if (facing == Direction.North) {
+            playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
+         } else if (facing == Direction.South) {
+            playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
+         } else if (facing == Direction.West || facing == Direction.East) {
+            playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+         }
+      }
+
+      // Pointing
+      if (emoteType == EmoteManager.EmoteTypes.Point) {
+         if (facing == Direction.North) {
+            playCompositeAnimation(CompositeAnimationManager.self.PointingN);
+         } else if (facing == Direction.South) {
+            playCompositeAnimation(CompositeAnimationManager.self.PointingS);
+         } else if (facing == Direction.West || facing == Direction.East) {
+            playCompositeAnimation(CompositeAnimationManager.self.PointingWE);
+         }
+      }
+
+      // Sitting/Lying
+      if (emoteType == EmoteManager.EmoteTypes.Sit) {
+         if (facing == Direction.North) {
+            playCompositeAnimation(CompositeAnimationManager.self.SittingN);
+         } else {
+            playCompositeAnimation(CompositeAnimationManager.self.SittingS);
+         }
+      }
+
+      if (isLocalPlayer) {
+         InputManager.toggleInput(enable: false);
+      }
+   }
+
+   public void stopEmote () {
+      if (isEmoting()) {
+         exitEmoteState();
+         Cmd_StopEmote();
+      }
+   }
+
+   [Command]
+   private void Cmd_StopEmote () {
       emoteType = EmoteManager.EmoteTypes.None;
+   }
+
+   private void exitEmoteState () {
+      shouldAlignRenderersToFacingDirection = true;
+      toggleWeaponVisibility(show: true);
+      stopCompositeAnimation();
+
+      if (isLocalPlayer) {
+         InputManager.toggleInput(enable: true);
+      }
    }
 
    #endregion

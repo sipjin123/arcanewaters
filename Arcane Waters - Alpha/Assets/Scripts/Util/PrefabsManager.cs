@@ -97,6 +97,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for dropped items
    public DroppedItem droppedItemPrefab;
 
+   // The prefab of the customization manager
+   public MapCustomizationManager mapCustomizationManagerPrefab = null;
+
    [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;

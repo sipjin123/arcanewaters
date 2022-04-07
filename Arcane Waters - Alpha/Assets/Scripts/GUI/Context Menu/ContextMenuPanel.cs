@@ -228,9 +228,8 @@ public class ContextMenuPanel : MonoBehaviour
 
             if (spot != null) {
                WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromSpot(spot);
-               string displayGeoCoords = WorldMapManager.self.getDisplayStringFromGeoCoords(geoCoords);
-               string encodedGeoCoords = WorldMapManager.self.encodeGeoCoords(geoCoords);
-               ChatManager.self.sendMessageToServer(displayGeoCoords, ChatPanel.self.currentChatType, encodedGeoCoords);
+               string geoCoordsStr = WorldMapManager.self.getStringFromGeoCoords(geoCoords);
+               ChatPanel.self.inputField.insertText(geoCoordsStr);
 
                if (PanelManager.self != null) {
                   PanelManager.self.noticeScreen.show("Location copied!");

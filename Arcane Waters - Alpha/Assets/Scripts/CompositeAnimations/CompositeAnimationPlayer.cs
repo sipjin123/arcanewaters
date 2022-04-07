@@ -177,7 +177,7 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
    }
 
    private void checkStatus (CompositeAnimationFrame frame, float time) {
-      if (frame == null || _currentAnimation == null || _currentAnimation.isLooping || _currentAnimation.keepLastFrame) {
+      if (frame == null || _currentAnimation == null || _currentAnimation.isLooping || _currentAnimation.holdLastFrame) {
          return;
       }
 

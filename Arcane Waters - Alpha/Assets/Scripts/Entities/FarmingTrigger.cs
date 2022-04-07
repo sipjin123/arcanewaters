@@ -36,6 +36,7 @@ public class FarmingTrigger : MonoBehaviour
    [Space(5)]
    public Transform treePlantIndicator = null;
    public SpriteRenderer treePlantIndicatorRenderer = null;
+   public SpriteOutline treePlantIndicatorOutline = null;
 
    // Types of colors plant tree indicator can have
    public Color treeIndicatorValidColor = Color.white;
@@ -69,13 +70,14 @@ public class FarmingTrigger : MonoBehaviour
       if (NetworkClient.active && Global.player != null && Global.player.userId == bodyEntity.userId) {
          if (AreaManager.self.tryGetArea(bodyEntity.areaKey, out Area area)) {
             Vector2 pos = area.transform.InverseTransformPoint(getTreePlantPosition());
-            bool canPlantTree = PlantableTreeManager.self.canPlayerPlant(bodyEntity, bodyEntity.areaKey, pos, out PlantableTreeDefinition definition);
+            bool canPlantTree = PlantableTreeManager.self.canPlayerPlant(bodyEntity, bodyEntity.areaKey, pos, out PlantableTreeDefinition definition, out PlantableTree prefab, out string _);
+            bool showIndicator = definition != null && prefab != null;
 
-            if (treePlantIndicator.gameObject.activeSelf != canPlantTree) {
-               treePlantIndicator.gameObject.SetActive(canPlantTree);
+            if (treePlantIndicator.gameObject.activeSelf != showIndicator) {
+               treePlantIndicator.gameObject.SetActive(showIndicator);
             }
 
-            if (canPlantTree) {
+            if (showIndicator) {
                treePlantIndicator.transform.position = getTreePlantPosition();
 
                // Make sure indicator doesn't flip along with the player
@@ -84,9 +86,12 @@ public class FarmingTrigger : MonoBehaviour
                   treePlantIndicator.transform.localScale.y,
                   treePlantIndicator.transform.localScale.z);
 
-
                treePlantIndicatorRenderer.sprite = getGrownTreeSprite(definition);
                treePlantIndicatorRenderer.color = canPlantTree ? treeIndicatorValidColor : treeIndicatorInvalidColor;
+               treePlantIndicatorOutline.setVisibility(true);
+               treePlantIndicatorOutline.setNewColor(canPlantTree
+                  ? MapCustomizationManager.prefabValidColor
+                  : MapCustomizationManager.prefabInvalidColor);
             }
          }
       }

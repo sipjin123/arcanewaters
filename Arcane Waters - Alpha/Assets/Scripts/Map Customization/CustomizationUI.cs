@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using MapCustomization;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
@@ -31,7 +30,13 @@ namespace MapCustomization
       public PrefabSelectionEntry prefabSelectEntryPref;
 
       // Reference to the grouping of prefabs
-      public static IEnumerable<IGrouping<int, PlaceablePrefabData>> itemPrefabs;
+      public static IEnumerable<IGrouping<(int itemTypeId, Item.Category itemCategory), PlaceablePrefabData>> itemPrefabs;
+
+      // Text that shows we are using guild inventory
+      public GameObject guildInventoryText = null;
+
+      // Load blocker
+      public GameObject loadBlocker = null;
 
       #endregion
 
@@ -46,16 +51,23 @@ namespace MapCustomization
       private void Update () {
          if (!_isShowing || isLoading) return;
 
+         if (!MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+            ensureHidden();
+            return;
+         }
+
          Vector2 pointerPos = Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition);
 
+
+
          if (!KeyUtils.GetButton(MouseButton.Left)) {
-            MapCustomizationManager.pointerHover(pointerPos);
+            manager.pointerHover(pointerPos);
          } else {
-            MapCustomizationManager.pointerDrag(pointerPos - _lastPointerPos);
+            manager.pointerDrag(pointerPos - _lastPointerPos);
          }
 
          if (KeyUtils.GetButton(MouseButton.Right)) {
-            MapCustomizationManager.rightClick();
+            manager.rightClick();
          }
 
          _lastPointerPos = pointerPos;
@@ -71,33 +83,41 @@ namespace MapCustomization
          }
 
          if (KeyUtils.GetKeyDown(Key.Delete)) {
-            MapCustomizationManager.keyDeleteAt(pointerPos);
+            manager.keyDeleteAt(pointerPos);
          }
       }
 
       public void pointerEnter (BaseEventData eventData) {
-         PointerEventData pointerData = eventData as PointerEventData;
-         MapCustomizationManager.pointerEnter(Camera.main.ScreenToWorldPoint(pointerData.position));
+         if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+            PointerEventData pointerData = eventData as PointerEventData;
+            manager.pointerEnter(Camera.main.ScreenToWorldPoint(pointerData.position));
+         }
       }
 
       public void pointerExit (BaseEventData eventData) {
-         PointerEventData pointerData = eventData as PointerEventData;
-         MapCustomizationManager.pointerExit(Camera.main.ScreenToWorldPoint(pointerData.position));
+         if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+            PointerEventData pointerData = eventData as PointerEventData;
+            manager.pointerExit(Camera.main.ScreenToWorldPoint(pointerData.position));
+         }
       }
 
       public void pointerUp (BaseEventData eventData) {
-         PointerEventData pointerData = eventData as PointerEventData;
-         if (pointerData.button == PointerEventData.InputButton.Left) {
-            MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerData.position));
+         if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+            PointerEventData pointerData = eventData as PointerEventData;
+            if (pointerData.button == PointerEventData.InputButton.Left) {
+               manager.pointerUp(Camera.main.ScreenToWorldPoint(pointerData.position));
+            }
          }
       }
 
       public void pointerDown (BaseEventData eventData) {
-         PointerEventData pointerData = eventData as PointerEventData;
-         if (pointerData.button == PointerEventData.InputButton.Left) {
-            MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
-         } else if (pointerData.button == PointerEventData.InputButton.Right) {
-            selectEntry(null);
+         if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+            PointerEventData pointerData = eventData as PointerEventData;
+            if (pointerData.button == PointerEventData.InputButton.Left) {
+               manager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
+            } else if (pointerData.button == PointerEventData.InputButton.Right) {
+               selectEntry(null);
+            }
          }
       }
 
@@ -114,9 +134,11 @@ namespace MapCustomization
 
          if (_selectedPrefabEntry != null) {
             _selectedPrefabEntry.setSelected(true);
-            MapCustomizationManager.selectPrefab(null);
 
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectObject);
+            if (MapCustomizationManager.tryGetCurentLocalManager(out MapCustomizationManager manager)) {
+               manager.selectPrefab(null);
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectObject);
+            }
          }
       }
 
@@ -140,9 +162,11 @@ namespace MapCustomization
          _isShowing = false;
       }
 
-      // Non-static method used to assign to UI button
       public void hideCustomizationPanel () {
-         ensureHidden();
+         // Unequip hammer to exit customization
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestSetWeaponId(0);
+         }
       }
 
       public static PlaceablePrefabData? getSelectedPrefabData () {
@@ -151,12 +175,16 @@ namespace MapCustomization
       }
 
       public static void setLoading (bool loading) {
+         if (loading == isLoading) {
+            return;
+         }
+
          isLoading = loading;
-         self.titleText.text = loading ? "Loading..." : "Customization";
          self.prefabSelection.gameObject.SetActive(!loading);
+         self.loadBlocker.SetActive(loading);
       }
 
-      public static void setPlaceablePrefabData (ICollection<PlaceablePrefabData> dataCollection) {
+      public static void setPlaceablePrefabData (MapCustomizationManager manager, ICollection<PlaceablePrefabData> dataCollection, IList<ItemTypeCount> itemsLeft) {
          // Clear the current entries
          _selectedPrefabEntry = null;
          foreach (PrefabSelectionEntry entry in self.prefabSelectEntryParent.GetComponentsInChildren<PrefabSelectionEntry>(true)) {
@@ -165,21 +193,37 @@ namespace MapCustomization
          _prefabEntries.Clear();
 
          // Group prefabs by their item id
-         itemPrefabs = dataCollection.GroupBy(d => d.prefab.propDefinitionId);
+         itemPrefabs = dataCollection.GroupBy(d => (d.prefab.propDefinitionId, d.prefab.propItemCategory));
 
-         foreach (IGrouping<int, PlaceablePrefabData> itemPrefab in itemPrefabs) {
+         foreach (var itemPrefab in itemPrefabs) {
             PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
-            entry.setData(itemPrefab.Key, itemPrefab.ToArray());
-            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, itemPrefab.Key);
-            entry.setCount(count);
+            entry.setData(itemPrefab.Key.itemTypeId, itemPrefab.Key.itemCategory, itemPrefab.ToArray());
             _prefabEntries.Add(entry);
          }
+
+         updatePropCount(itemsLeft);
       }
 
-      public static void updatePropCount (Item prop) {
+      public static void updatePropCount (IList<ItemTypeCount> items) {
          foreach (PrefabSelectionEntry entry in _prefabEntries) {
-            if (entry.propDefinitionId == prop.itemTypeId) {
-               entry.setCount(prop.count);
+            bool found = false;
+            foreach (ItemTypeCount item in items) {
+               if (entry.propDefinitionId == item.itemTypeId && entry.propItemCategory == item.category) {
+                  found = true;
+
+                  if (entry.getCount() != item.count) {
+                     entry.setCount(item.count);
+                  }
+
+                  break;
+               }
+            }
+
+            if (!found) {
+               if (entry.getCount() != 0) {
+                  entry.setCount(0);
+
+               }
             }
          }
       }

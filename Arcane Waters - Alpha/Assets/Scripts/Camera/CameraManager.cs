@@ -244,14 +244,9 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera.getPixelFadeEffect().fadeOut();
       battleCamera.getPixelFadeEffect().fadeOut();
 
-      // Play a sound effect
-      //SoundEffectManager.self.playFmod2D(SoundEffectManager.BATTLE_INTRO);
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRANSITION_IN);
-      //SoundManager.play2DClip(SoundManager.Type.Battle_Intro, 0f);
-
       // Play the Battle music
-      //SoundManager.setBackgroundMusic(SoundManager.Type.Battle_Music);
-      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Land_Battle);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRANSITION_IN);
+      SoundEffectManager.self.playBgMusic(SoundEffectManager.BgType.Land_Battle, SoundEffectManager.AmbType.Farm);
 
       // Wait for it to finish
       yield return new WaitForSeconds(defaultCamera.getPixelFadeEffect().getFadeOutDuration());
@@ -271,13 +266,9 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera.getPixelFadeEffect().fadeOut();
       battleCamera.getPixelFadeEffect().fadeOut();
 
-      // Play a sound effect
-      //SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRANSITION_OUT);
-
       // End the Battle music
-      //SoundManager.setBackgroundMusic(SoundManager.previousMusicType);
-      SoundEffectManager.self.playBackgroundMusic(Global.player.areaKey);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRANSITION_OUT);
+      SoundEffectManager.self.playBgMusic(SoundEffectManager.BgType.Previous, SoundEffectManager.AmbType.Previous);
 
       // Wait for it to finish
       yield return new WaitForSeconds(battleCamera.getPixelFadeEffect().getFadeOutDuration());

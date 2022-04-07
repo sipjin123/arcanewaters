@@ -35,12 +35,8 @@ public class AmbienceManager : ClientMonoBehaviour
       }
    }
 
-   //public void setTitleScreenAmbience () {
-   //   SoundEffectManager.self.playAmbienceMusic(ambienceMusicType: SoundEffectManager.AmbienceMusicType.Title_Screen);
-   //}
-
    protected void updateAmbienceForArea (string newAreaKey) {
-      SoundEffectManager.self.playAmbienceMusic(newAreaKey);
+      //SoundEffectManager.self.playAmbienceMusic(newAreaKey);
    }
 
    #region Private Variables

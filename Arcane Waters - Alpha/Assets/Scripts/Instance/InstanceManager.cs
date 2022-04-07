@@ -194,6 +194,12 @@ public class InstanceManager : MonoBehaviour
       return instance;
    }
 
+   public void addCustomizationManagerToInstance (MapCustomizationManager mapCustomizationManager, Instance instance) {
+      instance.entities.Add(instance);
+      instance.mapCustomizationManager = mapCustomizationManager;
+      mapCustomizationManager.instanceId = instance.id;
+   }
+
    public void addDroppedItemToInstance (DroppedItem item, Instance instance) {
       instance.entities.Add(item);
       item.instanceId = instance.id;

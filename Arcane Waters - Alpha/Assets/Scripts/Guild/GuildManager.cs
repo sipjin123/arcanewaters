@@ -145,6 +145,7 @@ public class GuildManager : MonoBehaviour {
             recipient.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
             recipient.guildMapBaseId = guildInfo.guildMapBaseId;
             recipient.guildHouseBaseId = guildInfo.guildHouseBaseId;
+            recipient.guildInventoryId = guildInfo.inventoryId;
             recipient.Rpc_UpdateGuildIconSprites(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
             recipient.rpc.refreshPvpStateForUser(userInfo, recipient);
          });

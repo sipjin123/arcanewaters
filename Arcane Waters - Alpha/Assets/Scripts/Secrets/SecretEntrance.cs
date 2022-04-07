@@ -275,6 +275,11 @@ public class SecretEntrance : MonoBehaviour {
    }
 
    private void playSubSpriteAnimation () {
+      // Play sound effect
+      if (subSpriteComponent.currentIndex == 0) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.WATERFALL_SECRET, warp.transform.position);
+      }
+
       if (subSpriteComponent.currentIndex < subSpriteComponent.maxIndex / 2) {
          subSpriteComponent.currentIndex++;
          subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.currentIndex];

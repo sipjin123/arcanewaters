@@ -49,8 +49,22 @@ public class VisitListTemplate : MonoBehaviour {
          offlineIcon.SetActive(true);
       }
 
-      visitButtonObj.SetActive(isCustomMapSet);
-      disabledVisitButtonObj.SetActive(!isCustomMapSet);
+      // Can't visit if user hasn't picked his maps
+      if (!isCustomMapSet) {
+         visitButtonObj.SetActive(false);
+         disabledVisitButtonObj.SetActive(true);
+
+         disabledVisitButtonObj.name = "Visit Button Disabled No Maps";
+      } else if (entry.friendHouseMapId <= 0 || entry.friendFarmMapId <= 0) {
+         // Can't visit if friend hasn't picked his maps
+         visitButtonObj.SetActive(false);
+         disabledVisitButtonObj.SetActive(true);
+
+         disabledVisitButtonObj.name = "Visit Button Disabled No Target Maps";
+      } else {
+         visitButtonObj.SetActive(true);
+         disabledVisitButtonObj.SetActive(false);
+      }
 
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
       if (entry.friendGuildId > 0) {

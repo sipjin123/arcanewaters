@@ -71,6 +71,10 @@ public class CustomGuildHouseManager : CustomMapManager
       return GROUP_AREA_KEY + "_guild" + guildId;
    }
 
+   public override int Bkg_GetBaseMapIdFromDB (int ownerId, int guildId) {
+      return DB_Main.getCustomGuildHouseBaseId(guildId);
+   }
+
    #region Private Variables
 
    #endregion

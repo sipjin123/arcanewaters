@@ -41,6 +41,9 @@ public class GuildInfo
    // The base id of the custom guild house for this guild
    public int guildHouseBaseId;
 
+   // The custom item collection (inventory) id for this guild
+   public int inventoryId;
+
    #endregion
 
    public GuildInfo () { }
@@ -59,6 +62,7 @@ public class GuildInfo
          this.creationTime = DataUtil.getDateTime(dataReader, "gldCreationTime").ToBinary();
          this.guildMapBaseId = DataUtil.getInt(dataReader, "gldMapBaseId");
          this.guildHouseBaseId = DataUtil.getInt(dataReader, "gldHouseBaseId");
+         this.inventoryId = DataUtil.getInt(dataReader, "gldInventoryId");
       } catch {
          D.debug("Error in parsing MySqlData for GuildInfo!");
       }

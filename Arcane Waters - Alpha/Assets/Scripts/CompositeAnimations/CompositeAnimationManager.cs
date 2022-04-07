@@ -35,6 +35,9 @@
    // The sitting animation (South)
    public CompositeAnimation SittingS;
 
+   // The sitting animation (North)
+   public CompositeAnimation SittingN;
+
    // Reference to self
    public static CompositeAnimationManager self;
 

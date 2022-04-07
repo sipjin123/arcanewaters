@@ -69,6 +69,8 @@ public class RestartManager : GenericGameManager
          }
       }
       
+      DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
+      
       // Quit application
       Invoke("QuitWithDelay", 10);
    }
@@ -156,6 +158,9 @@ public class RestartManager : GenericGameManager
                // Update schedule_date to -1 to let jenkins job know that server release job can be started
                DB_Main.finishDeploySchedule();
                
+               // Update stop date
+               DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
+
                // Quit application
                // Invoke("QuitWithDelay", 10);
             }

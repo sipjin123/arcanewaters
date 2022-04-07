@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class CraftableItemRequirements
-{
+public class CraftableItemRequirements {
    public CraftableItemRequirements () { }
 
    // The xml id
@@ -15,4 +14,7 @@ public class CraftableItemRequirements
 
    // The item requirements of the crafting
    public Item[] combinationRequirements;
+
+   // Determines if this is enabled in the database
+   public bool isEnabled;
 }

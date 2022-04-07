@@ -19,10 +19,6 @@ public class Prop : Item
       this.durability = durability;
    }
 
-   public static Prop createNewItem (int definitionId, int count = 1) {
-      return new Prop(0, definitionId, "", "", 100, count);
-   }
-
    public override string getDescription () {
       if (!cacheData()) {
          return base.getDescription();

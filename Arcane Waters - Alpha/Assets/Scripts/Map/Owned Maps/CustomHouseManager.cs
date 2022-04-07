@@ -17,6 +17,10 @@ public class CustomHouseManager : CustomMapManager
    public override string mapTypeAreaKey => GROUP_AREA_KEY;
    public override string typeDisplayName => "House";
 
+   public override int Bkg_GetBaseMapIdFromDB (int ownerId, int guildId) {
+      return DB_Main.getCustomHouseBaseId(ownerId);
+   }
+
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {
       // Check if user is trying to warp into his house
       if (areaKey.Equals(mapTypeAreaKey) || areaKey.Equals(getUserSpecificAreaKey(user.userId))) {

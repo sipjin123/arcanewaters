@@ -155,12 +155,18 @@ public class SeaHarpoon : SeaProjectile {
          }
       }
 
-      float ropeAlpha = 1.0f - Mathf.Clamp01(_lineStressTime / lineStressBreakTime);
+      if (_lineStressTime > 0.0f) {
+         float stressAmount = Mathf.Clamp01(_lineStressTime / lineStressBreakTime);
+         float STRESS_MULTIPLIER_CONSTANT = 0.25f;
 
-      Gradient ropeGradient = harpoonRope.colorGradient;
-      ropeGradient.SetKeys(new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(Color.white, 0.0f) },
-         new GradientAlphaKey[] { new GradientAlphaKey(ropeAlpha, 0.0f), new GradientAlphaKey(ropeAlpha, 0.0f) });
-      harpoonRope.colorGradient = ropeGradient;
+         // Rope flash speed is proportional to stress amount
+         float stressMultiplier = STRESS_MULTIPLIER_CONSTANT * stressAmount;
+         float flashAmount = (Mathf.Sin(Time.time * stressMultiplier) + 1.0f) / 2.0f;
+
+         harpoonRope.material.SetFloat("_FlashAmount", flashAmount);
+      } else {
+         harpoonRope.material.SetFloat("_FlashAmount", 0.0f);
+      }
    }
 
    protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
@@ -220,9 +226,14 @@ public class SeaHarpoon : SeaProjectile {
    }
 
    private void OnDisable () {
-      if (isServer) {
-         _sourceEntity.attachedByHarpoonNetIds.Remove(_attachedEntityNetId);
-         _attachedEntity.attachedByHarpoonNetIds.Remove(_sourceEntityNetId);
+      if (isServer || Util.isHost()) {
+         if (_sourceEntity != null) {
+            _sourceEntity.attachedByHarpoonNetIds.Remove(_attachedEntityNetId);
+         }
+         
+         if (_attachedEntity != null) {
+            _attachedEntity.attachedByHarpoonNetIds.Remove(_sourceEntityNetId);
+         }
       }
    }
 

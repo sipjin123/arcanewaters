@@ -8,7 +8,6 @@ using Crosstales.BWF.Manager;
 using System;
 using System.Text;
 using Random = UnityEngine.Random;
-using MapCustomization;
 using NubisDataHandling;
 using MapCreationTool.Serialization;
 using MapCreationTool;
@@ -20,6 +19,7 @@ using Steam.Purchasing;
 using Steam;
 using Api;
 using Rewards;
+using MapCustomization;
 
 public class RPCManager : NetworkBehaviour
 {
@@ -9172,69 +9172,6 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
-   [Command]
-   public async void Cmd_RequestEnterMapCustomization (string areaKey) {
-      // Find the player
-      if (_player == null) {
-         Target_DenyEnterMapCustomization("Player doesn't exist");
-         return;
-      }
-
-      // Check if player is in the area
-      if (!areaKey.Equals(_player.areaKey)) {
-         Target_DenyEnterMapCustomization("Player must be in the area to customize it");
-         return;
-      }
-
-      // Get the instance
-      Instance instance = _player.getInstance();
-
-      // Don't check if somone is already customising for guild maps
-      if (!CustomMapManager.isGuildSpecificAreaKey(areaKey) && !CustomMapManager.isGuildHouseAreaKey(areaKey)) {
-         // Check if someone is already customizing
-         if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != _player.userId) {
-            Target_DenyEnterMapCustomization("Someone else is already customizing the area");
-            return;
-         }
-
-         // Allow player to enter customization
-         instance.playerMakingCustomizations = _player;
-      }
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Item> items = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_AllowEnterMapCustomization(items.ToArray());
-         });
-      });
-   }
-
-   [TargetRpc]
-   private void Target_AllowEnterMapCustomization (Item[] remainingProps) {
-      MapCustomizationManager.serverAllowedEnterCustomization(remainingProps);
-   }
-
-   [TargetRpc]
-   private void Target_DenyEnterMapCustomization (string message) {
-      MapCustomizationManager.serverDeniedEnterCustomization(message);
-   }
-
-   [Command]
-   public void Cmd_ExitMapCustomization (string areaKey) {
-      if (_player != null) {
-         // Check if player is in the area
-         if (areaKey.Equals(_player.areaKey)) {
-            // Get the instance
-            Instance instance = _player.getInstance();
-
-            // Check if someone is already customizing
-            if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId == _player.userId) {
-               instance.playerMakingCustomizations = null;
-            }
-         }
-      }
-   }
-
    [TargetRpc]
    public void Target_ShowCustomMapPanel (string customMapType, bool warpAfterSelecting, Map[] baseMaps) {
       // If we received information about base maps that will be required by the panel, store it
@@ -9364,87 +9301,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_BaseMapUpdated (string customMapKey, int baseMapId) {
       PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).baseMapUpdated(customMapKey, baseMapId);
-   }
-
-   [Command]
-   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, int areaGuildId) {
-      Area area = AreaManager.self.getArea(areaKey);
-      Instance instance = _player.getInstance();
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Item> items = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Check if changes are valid
-            if (!MapCustomizationManager.validatePrefabChanges(area, instance.biome, items, changes, true, out string errorMessage)) {
-               Target_FailAddPrefabCustomization(changes, errorMessage);
-               return;
-            }
-
-            // Figure out the base map of area
-            AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
-            int baseMapId;
-
-            // If the area has a valid owner id
-            if (areaOwnerId != -1) {
-               NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
-               baseMapId = customMapManager.getBaseMapId(areaOwner);
-
-               // If the area has a valid guild owner id
-            } else if (areaGuildId != -1) {
-               baseMapId = customMapManager.getBaseMapId(_player);
-            } else {
-               string errorString = "Couldn't find the 'owner' of the map we are customising. OwnerId: " + areaOwnerId + ", GuildId: " + areaGuildId;
-               D.error(errorString);
-               Target_FailAddPrefabCustomization(changes, errorString);
-               return;
-            }
-
-            // Find the customizable prefab that is being targeted
-            if (!AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, instance.biome, out CustomizablePrefab prefab)) {
-               Target_FailAddPrefabCustomization(changes, "Could not find associated object " + changes.serializationId);
-               return;
-            }
-
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               // Set changes in the database
-               PrefabState currentState = DB_Main.exec((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
-               bool createdByUser = currentState.created;
-               currentState = currentState.id == -1 ? changes : currentState.add(changes);
-               DB_Main.exec((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
-
-               // If creating a new prefab, remove an item from the inventory
-               if (changes.created) {
-                  int itemId = items.FirstOrDefault(i => i.itemTypeId == prefab.propDefinitionId)?.id ?? -1;
-                  if (itemId != -1) {
-                     DB_Main.decreaseQuantityOrDeleteItem(_player.userId, itemId, 1);
-                  }
-               }
-
-               // If deleting a prefab and it's not placed in map editor, return to inventory
-               if (changes.deleted && createdByUser) {
-                  DB_Main.createItemOrUpdateItemCount(_player.userId, Prop.createNewItem(prefab.propDefinitionId, 1));
-               }
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  // Set changes in the server
-                  MapManager.self.addCustomizations(area, instance.biome, changes);
-
-                  // Notify all clients about them
-                  Rpc_AddPrefabCustomizationSuccess(areaKey, instance.biome, changes);
-               });
-            });
-         });
-      });
-   }
-
-   [TargetRpc]
-   public void Target_FailAddPrefabCustomization (PrefabState failedChanges, string message) {
-      MapCustomizationManager.serverAddPrefabChangeFail(failedChanges, message);
-   }
-
-   [ClientRpc]
-   public void Rpc_AddPrefabCustomizationSuccess (string areaKey, Biome.Type biome, PrefabState changes) {
-      MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, biome, changes);
    }
 
    [Command]

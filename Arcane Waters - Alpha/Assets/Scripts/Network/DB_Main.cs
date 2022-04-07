@@ -12371,6 +12371,36 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region User History
+
+   public static bool createUserHistoryEvent(UserHistoryEventInfo eventInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO users_history(usrId, usrName, accId, eventType) " +
+            "VALUES (@usrId, @usrName, @accId, @eventType)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", eventInfo.userId);
+            cmd.Parameters.AddWithValue("@usrName", eventInfo.userName);
+            cmd.Parameters.AddWithValue("@accId", eventInfo.accountId);
+            cmd.Parameters.AddWithValue("@eventType", eventInfo.eventType);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            return cmd.LastInsertedId > 0;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return false;
+   }
+
+   #endregion
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

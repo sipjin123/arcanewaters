@@ -18,6 +18,8 @@ public abstract class CustomMapManager
    public abstract int getBaseMapId (NetEntity user);
    public abstract int getBaseMapId (UserInfo userInfo);
 
+   public abstract int Bkg_GetBaseMapIdFromDB (int ownerId, int guildId);
+
    // Area key, that is set for a specific instance of a map of this map group
    public string getUserSpecificAreaKey (int userId) {
       return mapTypeAreaKey + "_user" + userId;
@@ -79,6 +81,38 @@ public abstract class CustomMapManager
 
    public static bool isPrivateCustomArea (string areaKey) {
       return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || CustomMapManager.isGuildSpecificAreaKey(areaKey) || isUserSpecificAreaKey(areaKey);
+   }
+
+   /// <summary>
+   /// For guild maps, -guildID (Note the minus at the start),
+   /// for user maps, userId
+   /// returns 0 if can't extract
+   /// </summary>
+   /// <param name="areaKey"></param>
+   /// <returns></returns>
+   public static int getMapChangesOwnerId (string areaKey) {
+      if (isUserSpecificAreaKey(areaKey)) {
+         int id = getUserId(areaKey);
+         if (id < 0) {
+            return 0;
+         }
+         return id;
+      }
+      if (isGuildSpecificAreaKey(areaKey)) {
+         int id = getGuildId(areaKey);
+         if (id < 0) {
+            return 0;
+         }
+         return -id;
+      }
+      if (isGuildHouseAreaKey(areaKey)) {
+         int id = getGuildId(areaKey);
+         if (id < 0) {
+            return 0;
+         }
+         return -id;
+      }
+      return 0;
    }
 
    // Gets the main placeholder map and the base maps for this type of custom map

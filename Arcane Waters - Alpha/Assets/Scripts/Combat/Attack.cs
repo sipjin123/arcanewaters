@@ -15,7 +15,7 @@ public class Attack : MonoBehaviour {
       DamageAmplify = 13, SpawnStoneBlocker = 14, Poison_Circle = 15,
       Standard_NoEffect = 16, Standard_Slow = 17, Standard_Stunned = 18,
       Cone_NoEffect = 19, Circle_NoEffect = 20, ArmorBoost = 21, Poison = 22,
-      Mine = 23, Harpoon = 24,
+      Mine = 23, Harpoon = 24, Electric = 25,
    }
 
    public enum ImpactMagnitude

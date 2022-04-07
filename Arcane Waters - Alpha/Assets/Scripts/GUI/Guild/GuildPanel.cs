@@ -18,6 +18,9 @@ public class GuildPanel : Panel {
    // The button that will take a user to their guild map
    public Button guildMapbutton;
 
+   // The button that open the guild inventory
+   public Button guildInventoryButton;
+
    // The button for creating a guild
    public Button createButton;
 
@@ -199,6 +202,7 @@ public class GuildPanel : Panel {
       // Activates buttons depending on user being in guild
       createButton.gameObject.SetActive(!inGuild);
       leaveButton.gameObject.SetActive(inGuild);
+      guildInventoryButton.gameObject.SetActive(inGuild);
       ranksButton.gameObject.SetActive(inGuild);
       bottomDecarationNoLeader.SetActive(inGuild);
       guildMapbutton.gameObject.SetActive(inGuild);
@@ -281,6 +285,10 @@ public class GuildPanel : Panel {
       guildRanksPanel.show();
    }
 
+   public void inventoryPressed () {
+      GuildInventoryPanel.self.show();
+   }
+
    public void leaveGuildPressed () {
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
@@ -319,6 +327,7 @@ public class GuildPanel : Panel {
       base.hide();
       guildRanksPanel.hide();
       guildCreatePanel.hide();
+      GuildInventoryPanel.self.hide();
    }
 
    public void promoteButtonClicked () {

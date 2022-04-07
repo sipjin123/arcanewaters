@@ -49,6 +49,9 @@ public class Instance : NetworkBehaviour
    // The list of pvp monster spawners in this instance (server only)
    public List<PvpMonsterSpawner> pvpMonsterSpawners = new List<PvpMonsterSpawner>();
 
+   // Map customization manager of this instance (null if instance isn't customizable) (server only)
+   public MapCustomizationManager mapCustomizationManager;
+
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -150,9 +153,6 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public bool isNetworkPrefabInstantiationFinished = false;
 
-   // Player that is currently customizing the area
-   public NetEntity playerMakingCustomizations;
-
    // Our network ident
    public NetworkIdentity netIdent;
 
@@ -173,6 +173,7 @@ public class Instance : NetworkBehaviour
       // On clients, set the instance manager as the parent transform
       if (isClient) {
          transform.SetParent(InstanceManager.self.transform);
+         InstanceManager.self.registerClientInstance(this);
       }
 
       // Spawn all the area prefabs that are specific to this instance
@@ -403,11 +404,29 @@ public class Instance : NetworkBehaviour
          yield return null;
       }
 
+      double functionStartTime = NetworkTime.time;
+
       Area area = AreaManager.self.getArea(this.areaKey);
 
       if (!NetworkServer.active || area == null) {
          yield break;
       }
+
+      // Spawn customization manager if needed
+      // Can only customize custom maps
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out var customMapManager)) {
+         MapCustomizationManager manager = Instantiate(PrefabsManager.self.mapCustomizationManagerPrefab);
+         InstanceManager.self.addCustomizationManagerToInstance(manager, this);
+         manager.transform.parent = area.transform;
+
+         manager.areaKey = areaKey;
+         manager.areaBiome = area.biome;
+         manager.areaOwnerId = CustomMapManager.getUserId(areaKey);
+         manager.areaGuildId = CustomMapManager.getGuildId(areaKey);
+
+         NetworkServer.Spawn(manager.gameObject);
+      }
+
 
       if (area.seaMonsterDataFields.Count > 0 && seaMonsterCount < 1) {
          foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
@@ -834,6 +853,9 @@ public class Instance : NetworkBehaviour
       if (BotShipGenerator.shouldGenerateBotShips(areaKey)) {
          InvokeRepeating(nameof(generateBotShips), UnityEngine.Random.Range(10f, 14f), 30f);
       }
+
+      float elapsedTime = (float) (NetworkTime.time - functionStartTime);
+      D.debug("[Timing] Instance CO_SpawnInstanceSpecificPrefabs for area: " + areaKey + " took " + elapsedTime.ToString("F2") + "seconds.");
 
       isNetworkPrefabInstantiationFinished = true;
    }

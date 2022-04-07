@@ -329,7 +329,7 @@ public class ChatManager : GenericGameManager
       }
 
       Direction playerFacingDirection = Global.player.getPlayerBodyEntity().facing;
-      Global.player.getPlayerBodyEntity().Cmd_PlayEmote(emote, playerFacingDirection);
+      Global.player.getPlayerBodyEntity().playEmote(emote, playerFacingDirection);
       sendEmoteMessageToServer(computeEmoteChatMessage(emote, target));
    }
 

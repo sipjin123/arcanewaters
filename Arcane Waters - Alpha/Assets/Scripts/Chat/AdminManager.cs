@@ -26,7 +26,8 @@ public class AdminManager : NetworkBehaviour
    // The key for where we store the message of the day value in PlayerPrefs
    public static readonly string MOTD_KEY = "messageOfTheDay";
 
-   public struct PerformanceInfo {
+   public struct PerformanceInfo
+   {
       public float cpuUsage;
       public float ramUsage;
       public int fps;
@@ -135,6 +136,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("wishlist", "Download wishlist", downloadSteamUserWishlistTest, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
+      cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -217,6 +219,21 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestSetLagMonitor (string parameters) {
+      Cmd_SetLagMonitor(parameters);
+   }
+
+   [Command]
+   private void Cmd_SetLagMonitor (string parameters) {
+      if (parameters == "1" || parameters == "true") {
+         EntityLagMonitor.self.monitoringEnabled = true;
+         D.debug("Enabled lag monitor monitoring.");
+      } else if (parameters == "0" || parameters == "false") {
+         EntityLagMonitor.self.monitoringEnabled = false;
+         D.debug("Disabled lag monitor monitoring.");
+      }
    }
 
    private void requestTestOpenWorld (string parameters) {
@@ -2276,7 +2293,7 @@ public class AdminManager : NetworkBehaviour
             case "h":
                dictionary = AdminManagerSingleton.self.hatNames;
                break;
-            case "c":
+            case "i":
                dictionary = AdminManagerSingleton.self.craftingIngredientNames;
                break;
             case "u":
@@ -2284,6 +2301,12 @@ public class AdminManager : NetworkBehaviour
                break;
             case "b":
                dictionary = AdminManagerSingleton.self.blueprintNames;
+               break;
+            case "c":
+               dictionary = AdminManagerSingleton.self.cropNames;
+               break;
+            case "p":
+               dictionary = AdminManagerSingleton.self.propNames;
                break;
             default:
                return;
@@ -2481,7 +2504,7 @@ public class AdminManager : NetworkBehaviour
          case "h":
             category = Item.Category.Hats;
             break;
-         case "c":
+         case "i":
             category = Item.Category.CraftingIngredients;
             break;
          case "u":
@@ -2489,6 +2512,12 @@ public class AdminManager : NetworkBehaviour
             break;
          case "b":
             category = Item.Category.Blueprint;
+            break;
+         case "p":
+            category = Item.Category.Prop;
+            break;
+         case "c":
+            category = Item.Category.Crop;
             break;
          default:
             ChatManager.self.addChat("Not a valid item category", ChatInfo.Type.Error);
@@ -2547,6 +2576,22 @@ public class AdminManager : NetworkBehaviour
                itemTypeId = AdminManagerSingleton.self.blueprintNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the blueprint " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Crop:
+            if (AdminManagerSingleton.self.cropNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.cropNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the crop " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Prop:
+            if (AdminManagerSingleton.self.propNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.propNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the prop " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
@@ -3567,11 +3612,12 @@ public class AdminManager : NetworkBehaviour
             }
          }
 
-         // Create all item definitions
+         // Create all props
          foreach (ItemDefinition itemDefinition in ItemDefinitionManager.self.getDefinitions()) {
-            ItemInstance itemInstance = new ItemInstance(itemDefinition.id, _player.userId, count);
-            if (createItemIfNotExistOrReplenishStack(itemInstance)) {
-               itemDefinitionCount++;
+            if (itemDefinition.category == ItemDefinition.Category.Prop) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Prop, itemDefinition.id, count)) {
+                  itemDefinitionCount++;
+               }
             }
          }
 
@@ -3640,28 +3686,6 @@ public class AdminManager : NetworkBehaviour
          Item baseItem = ItemGenerator.generate(category, itemTypeId, count).getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
-      }
-
-      return wasItemCreated;
-   }
-
-   [Server]
-   private bool createItemIfNotExistOrReplenishStack (ItemInstance itemInstance) {
-      bool wasItemCreated = false;
-
-      // Retrieve the item from the user inventory, if it exists
-      ItemInstance existingItem = DB_Main.exec((cmd) => DB_Main.getItemInstance(cmd, itemInstance.ownerUserId, itemInstance.itemDefinitionId));
-
-      if (existingItem == null) {
-         // If the item does not exist, create a new one
-         DB_Main.exec((cmd) => DB_Main.createOrAppendItemInstance(cmd, itemInstance));
-         wasItemCreated = true;
-      } else {
-         // If there are less items than what is requested, replenish the stack
-         if (existingItem.count < itemInstance.count) {
-            DB_Main.exec((cmd) => DB_Main.increaseItemInstanceCount(cmd, existingItem.id, itemInstance.count - existingItem.count));
-            wasItemCreated = true;
-         }
       }
 
       return wasItemCreated;

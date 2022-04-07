@@ -88,6 +88,14 @@ public class Item
 
    }
 
+   public static bool shouldAlwaysShowCount (Category category) {
+      return
+         category == Category.CraftingIngredients ||
+         category == Category.Quest_Item ||
+         category == Category.Crop ||
+         category == Category.Prop;
+   }
+
    public static bool isValidItem (Item item) {
       if (item == null) {
          D.debug("Item is null!");

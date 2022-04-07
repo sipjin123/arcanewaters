@@ -538,6 +538,8 @@ public class ChatPanel : MonoBehaviour {
       GuildIcon rowGuildIcon = chatRow.GetComponentInChildren<GuildIcon>();
       chatLine.name = "Chat Message";
       chatLine.chatInfo = chatInfo;
+
+      prepareChatLineText(chatLine);
       setChatLineText(chatLine);
 
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
@@ -633,6 +635,20 @@ public class ChatPanel : MonoBehaviour {
       }
 
       chatLine.setFormattedText(getFormattedChatLine(chatInfo, chatInfo.text));
+   }
+
+   private void prepareChatLineText(SpeakChatLine chatLine) {
+      // If the chat line is displaying geo coords, replace them with a shorter version
+      WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromString(chatLine.chatInfo.text, out int startIndex, out int strLength);
+
+      if (geoCoords == null) {
+         return;
+      }
+
+      string displayGeoCoords = WorldMapManager.self.getDisplayStringFromGeoCoords(geoCoords);
+      chatLine.chatInfo.text = chatLine.chatInfo.text.Remove(startIndex, strLength);
+      chatLine.chatInfo.text = chatLine.chatInfo.text.Insert(startIndex, displayGeoCoords);
+      chatLine.chatInfo.extra = WorldMapManager.self.encodeGeoCoords(geoCoords);
    }
 
    public void refreshChatLines () {

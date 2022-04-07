@@ -57,7 +57,7 @@ public class AuctionRow : MonoBehaviour
       itemCell.hideItemCount();
       itemCell.disablePointerEvents();
 
-      if (auction.itemCount > 1) {
+      if (auction.itemCount > 1 || Item.shouldAlwaysShowCount(auction.itemCategory)) {
          itemCount.text = "(" + auction.itemCount + ")";
       } else {
          itemCount.text = "";
@@ -97,6 +97,7 @@ public class AuctionRow : MonoBehaviour
       } else {
          // Set detailed item data only if the auction is still running (otherwise the item could not exist anymore)
          itemCell.setCellForItem(auction.item);
+         itemCell.hideItemCount();
          tooltip.message = itemCell.getItem().getTooltip();
 
          // Rarity stars
