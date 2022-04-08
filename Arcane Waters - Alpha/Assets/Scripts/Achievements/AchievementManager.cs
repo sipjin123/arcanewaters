@@ -133,7 +133,12 @@ public class AchievementManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          string accountName = DB_Main.getAccountName(userId);
          int steamId = DB_Main.getSteamAccountId(accountName);
-         
+
+         if (!accountName.Contains("@steam")) {
+            D.debug("Not a steam user!: {" + accountName + "} {" + userId + "}");
+            return;
+         }
+
          List<AchievementData> achievementDB = DB_Main.getAchievementData(userId, actionType);
          bool existsInDatabase = true;
 
@@ -146,108 +151,97 @@ public class AchievementManager : MonoBehaviour {
             foreach (AchievementData rawData in achievementDB) {
                int resultCount = rawData.count + count;
                int requirementCount = 99;
+               List<AchievementData> newAchievementData = new List<AchievementData>();
 
                if (rawData.itemCategory == 0 && rawData.itemType == 0) {
-                  AchievementData castData = castedData.Find(_ => _.actionType == rawData.actionType && _.achievementUniqueID == rawData.achievementUniqueID);
+                  newAchievementData = castedData.FindAll(_ => _.actionType == rawData.actionType && _.achievementUniqueID == rawData.achievementUniqueID);
 
-                  if (castData == null) {
+                  if (newAchievementData == null || newAchievementData.Count < 1) {
                      D.debug("The cast data with no item is null!");
                      return;
                   }
-                  requirementCount = castData.count;
                } else {
-                  AchievementData castData = castedData.Find(_ => _.actionType == rawData.actionType &&
-                  _.achievementUniqueID == rawData.achievementUniqueID &&
-                  _.itemCategory == rawData.itemCategory &&
-                  _.itemType == rawData.itemType);
+                  newAchievementData = castedData.FindAll(_ => _.actionType == rawData.actionType &&
+                       _.achievementUniqueID == rawData.achievementUniqueID &&
+                       _.itemCategory == rawData.itemCategory &&
+                       _.itemType == rawData.itemType);
 
-                  if (castData == null) {
+
+                  if (newAchievementData == null || newAchievementData.Count < 1) {
                      D.debug("The cast data with ITEM is null!");
+                     return;
                   }
-                  requirementCount = castData.count;
-               }
-               bool isComplete = false;
-
-               // Marks the achievements as complete
-               if (resultCount >= requirementCount) {
-                  isComplete = true;
                }
 
-               DB_Main.updateAchievementData(rawData, userId, isComplete, count);
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (steamId != -1) {
-                     StartCoroutine(CO_PublishSteamAchievements(actionType, resultCount, steamId.ToString()));
+               foreach (AchievementData achievementDataEntry in newAchievementData) {
+                  requirementCount = achievementDataEntry.count;
+                  bool isComplete = false;
+
+                  // Marks the achievements as complete
+                  if (resultCount >= requirementCount) {
+                     isComplete = true;
                   }
-               });
+
+                  DB_Main.updateAchievementData(achievementDataEntry, userId, isComplete, count);
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     if (steamId != -1) {
+                        StartCoroutine(CO_PublishSteamAchievements(achievementDataEntry.achievementUniqueID, resultCount, accountName.Replace("@steam","").ToString(), isComplete));
+                     }
+                  });
+               }
             }
          } else {
             // Creating new data
             foreach (AchievementData rawData in castedData) {
                bool isComplete = false;
-
                int requirementCount = 99;
-               if (rawData.itemCategory == 0 && rawData.itemType == 0) {
-                  AchievementData castData = castedData.Find(_ => _.actionType == rawData.actionType && _.achievementUniqueID == rawData.achievementUniqueID);
+               List<AchievementData> newAchievementData = new List<AchievementData>();
 
-                  if (castData == null) {
+               if (rawData.itemCategory == 0 && rawData.itemType == 0) {
+                  newAchievementData = castedData.FindAll(_ => _.actionType == rawData.actionType && _.achievementUniqueID == rawData.achievementUniqueID);
+
+                  if (newAchievementData == null || newAchievementData.Count < 1) {
                      D.debug("The cast data with no item is null!");
+                     return;
                   }
-                  requirementCount = castData.count;
                } else {
-                  AchievementData castData = castedData.Find(_ => _.actionType == rawData.actionType &&
+                  newAchievementData = castedData.FindAll(_ => _.actionType == rawData.actionType &&
                   _.achievementUniqueID == rawData.achievementUniqueID &&
                   _.itemCategory == rawData.itemCategory &&
                   _.itemType == rawData.itemType);
 
-                  if (castData == null) {
+                  if (newAchievementData == null || newAchievementData.Count < 1) {
                      D.debug("The cast data with ITEM is null!");
                   }
-                  requirementCount = castData.count;
                }
 
-               if (requirementCount == 1) {
-                  isComplete = true;
+               foreach (AchievementData achievementDataEntry in newAchievementData) {
+                  requirementCount = achievementDataEntry.count;
+
+                  if (requirementCount == 1) {
+                     isComplete = true;
+                  }
+
+                  AchievementData newData = AchievementData.CreateAchievementData(achievementDataEntry);
+                  D.adminLog("Created new entry achievement for user {" + userId + "} {" + newData.achievementName + "} {" + newData.achievementUniqueID + "} {" + newData.count + "}", D.ADMIN_LOG_TYPE.Achievement);
+                  newData.count = 1;
+
+                  DB_Main.updateAchievementData(newData, userId, isComplete);
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     if (steamId != -1) {
+                        StartCoroutine(CO_PublishSteamAchievements(achievementDataEntry.achievementUniqueID, 1, accountName.Replace("@steam", "").ToString(), isComplete));
+                     }
+                  });
                }
-
-               AchievementData newData = AchievementData.CreateAchievementData(rawData);
-               newData.count = 1;
-
-               DB_Main.updateAchievementData(newData, userId, isComplete);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (steamId != -1) {
-                     StartCoroutine(CO_PublishSteamAchievements(actionType, 1, steamId.ToString()));
-                  } 
-               });
             }
          }
       });
       #endif
    }
 
-   private IEnumerator CO_PublishSteamAchievements (ActionType actionType, int progressCount, string steamUserId) {
-      string achievementName = "";
-      switch (actionType) {
-         case ActionType.OpenTreasureChest:
-            achievementName = STEAM_OPENED_TREASURE_CHEST + progressCount;
-            break;
-         case ActionType.KillLandMonster:
-            achievementName = STEAM_SLAY_LAND_MONSTERS + progressCount;
-            break;
-         case ActionType.CombatDie:
-            achievementName = STEAM_DIE + progressCount;
-            break;
-         case ActionType.HarvestCrop:
-            achievementName = STEAM_HARVEST_CROP + progressCount;
-            break;
-         case ActionType.LevelUp:
-            achievementName = STEAM_REACH_LEVEL + progressCount;
-            break;
-         default:
-            yield return null;
-            break;
-      }
-
+   private IEnumerator CO_PublishSteamAchievements (string uniqueAchievementId, int progressCount, string steamUserId, bool isComplete) {
+      string achievementName = uniqueAchievementId;
       if (string.IsNullOrEmpty(steamUserId)) {
          D.debug("Steam Achievement Error! Invalid Steam Id: " + steamUserId);
          yield return null;
@@ -261,12 +255,13 @@ public class AchievementManager : MonoBehaviour {
       form.AddField("name[0]", achievementName);
       form.AddField("value[0]", progressCount);
 
+      D.adminLog("Should post achievement for user {" + steamUserId + "} {" + achievementName + "} {" + progressCount + "} {" + isComplete + "}", D.ADMIN_LOG_TYPE.Achievement);
       if (achievementName.Length > 1) {
-         using (UnityWebRequest www = UnityWebRequest.Post(STEAMWEBAPI_SET_USER_STATS, form)) {
+         using (UnityWebRequest www = UnityWebRequest.Post(Steam.SteamStatics.STEAMWEBAPI_SET_USER_STATS, form)) {
             yield return www.SendWebRequest();
             if (www.isNetworkError || www.isHttpError) {
-               Debug.LogWarning(www.error);
-            } 
+               D.error(www.error);
+            }
          }
       }
    }
@@ -290,8 +285,5 @@ public class AchievementManager : MonoBehaviour {
    private const string STAT_UNLOCKED_TREASURE_CHEST = "unlocked_treasure_chest";
    private const string STAT_DEATH_COUNT = "death_count";
 
-   // The web API post command for altering achievements
-   private const string STEAMWEBAPI_SET_USER_STATS = "https://partner.steam-api.com/ISteamUserStats/SetUserStatsForGame/v1/";
-   
    #endregion
 }

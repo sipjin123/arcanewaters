@@ -51,7 +51,8 @@ public class D : MonoBehaviour {
       OpenWorldPvp = 38,
       Simulation_Sea = 39,
       Warp_To_Town = 40,
-      Battle_Selection = 41
+      Battle_Selection = 41,
+      Achievement = 42
    }
 
    // Any log files older than this will be deleted
