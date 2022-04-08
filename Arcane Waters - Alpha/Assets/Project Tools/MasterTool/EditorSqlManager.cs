@@ -47,7 +47,10 @@ public class EditorSQLManager {
       Consumables = 38,
       Dyes = 39,
       LandPowerups = 40,
-      QuestItems = 41
+      QuestItems = 41,
+      Equipment_Ring = 42,
+      Equipment_Necklace = 43,
+      Equipment_Trinket = 44
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -66,6 +69,18 @@ public class EditorSQLManager {
             case EditorToolType.Equipment_Hat:
                editorType = EditorToolType.Equipment;
                subType = 3;
+               break;
+            case EditorToolType.Equipment_Ring:
+               editorType = EditorToolType.Equipment;
+               subType = 4;
+               break;
+            case EditorToolType.Equipment_Necklace:
+               editorType = EditorToolType.Equipment;
+               subType = 5;
+               break;
+            case EditorToolType.Equipment_Trinket:
+               editorType = EditorToolType.Equipment;
+               subType = 6;
                break;
          }
          tableName = getSQLTableByID(editorType, (EquipmentType) subType);
@@ -101,11 +116,17 @@ public class EditorSQLManager {
          case EditorToolType.Equipment:
             switch (subType) {
                case EquipmentType.Weapon:
-                  return "equipment_weapon_xml_v3";
+                  return XmlVersionManagerServer.WEAPON_TABLE;
                case EquipmentType.Armor:
-                  return "equipment_armor_xml_v3";
+                  return XmlVersionManagerServer.ARMOR_TABLE;
                case EquipmentType.Hat:
-                  return "equipment_hat_xml_v1";
+                  return XmlVersionManagerServer.HAT_TABLE;
+               case EquipmentType.Ring:
+                  return XmlVersionManagerServer.RING_TABLE;
+               case EquipmentType.Necklace:
+                  return XmlVersionManagerServer.NECKLACE_TABLE;
+               case EquipmentType.Trinket:
+                  return XmlVersionManagerServer.TRINKET_TABLE;
                default:
                   return "";
             }

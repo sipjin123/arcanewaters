@@ -177,6 +177,10 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.ARMOR_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.WEAPON_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.HAT_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.RING_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.NECKLACE_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.TRINKET_FILE);
+
       checkStreamingAssetFile(XmlVersionManagerServer.LAND_MONSTER_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.NPC_FILE);
 
@@ -276,6 +280,9 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.Equipment_Armor);
       extractXmlType(EditorToolType.Equipment_Weapon);
       extractXmlType(EditorToolType.Equipment_Hat);
+      extractXmlType(EditorToolType.Equipment_Ring);
+      extractXmlType(EditorToolType.Equipment_Necklace);
+      extractXmlType(EditorToolType.Equipment_Trinket);
       extractXmlType(EditorToolType.Crafting);
 
       extractXmlType(EditorToolType.LandMonster);
@@ -338,6 +345,16 @@ public class XmlVersionManagerClient : GenericGameManager {
          case EditorToolType.Equipment_Hat:
             path = TEXT_PATH + XmlVersionManagerServer.HAT_FILE + ".txt";
             break;
+         case EditorToolType.Equipment_Ring:
+            path = TEXT_PATH + XmlVersionManagerServer.RING_FILE + ".txt";
+            break;
+         case EditorToolType.Equipment_Necklace:
+            path = TEXT_PATH + XmlVersionManagerServer.NECKLACE_FILE + ".txt";
+            break;
+         case EditorToolType.Equipment_Trinket:
+            path = TEXT_PATH + XmlVersionManagerServer.TRINKET_FILE + ".txt";
+            break;
+
          case EditorToolType.LandMonster:
             path = TEXT_PATH + XmlVersionManagerServer.LAND_MONSTER_FILE + ".txt";
             break;
@@ -568,6 +585,90 @@ public class XmlVersionManagerClient : GenericGameManager {
                }
             }
             EquipmentXMLManager.self.receiveHatFromZipData(hatList);
+            break;
+         case EditorToolType.Equipment_Ring:
+            List<RingStatData> ringList = new List<RingStatData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+               try {
+                  // Extract the segregated data and assign to the xml manager
+                  if (xmlSubGroup.Length == 3) {
+                     int dataId = int.Parse(xmlSubGroup[0]);
+                     bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                     if (isActive) {
+                        RingStatData actualData = Util.xmlLoad<RingStatData>(xmlSubGroup[2]);
+                        if (actualData.ringType > 0) {
+                           actualData.sqlId = dataId;
+                           ringList.Add(actualData);
+                           message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.ringType;
+                        } else {
+                           D.debug("WARNING! A ring has no assigned ring type! " + dataId + " : " + actualData.ringType);
+                        }
+                     } else {
+                        D.debug("Skip add entry for ring:" + dataId);
+                     }
+                  }
+               } catch {
+                  D.editorLog("Cant process ring data: " + xmlSubGroup[0] + " : " + xmlSubGroup[2] + " : ", Color.yellow);
+               }
+            }
+            EquipmentXMLManager.self.receiveRingDataFromZipData(ringList);
+            break;
+         case EditorToolType.Equipment_Necklace:
+            List<NecklaceStatData> necklaceList = new List<NecklaceStatData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+               try {
+                  // Extract the segregated data and assign to the xml manager
+                  if (xmlSubGroup.Length == 3) {
+                     int dataId = int.Parse(xmlSubGroup[0]);
+                     bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                     if (isActive) {
+                        NecklaceStatData actualData = Util.xmlLoad<NecklaceStatData>(xmlSubGroup[2]);
+                        if (actualData.necklaceType > 0) {
+                           actualData.sqlId = dataId;
+                           necklaceList.Add(actualData);
+                           message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.necklaceType;
+                        } else {
+                           D.debug("WARNING! A necklace has no assigned necklace type! " + dataId + " : " + actualData.necklaceType);
+                        }
+                     } else {
+                        D.debug("Skip add entry for necklace:" + dataId);
+                     }
+                  }
+               } catch {
+                  D.editorLog("Cant process necklace data: " + xmlSubGroup[0] + " : " + xmlSubGroup[2] + " : ", Color.yellow);
+               }
+            }
+            EquipmentXMLManager.self.receiveNecklaceDataFromZipData(necklaceList);
+            break;
+         case EditorToolType.Equipment_Trinket:
+            List<TrinketStatData> trinketList = new List<TrinketStatData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+               try {
+                  // Extract the segregated data and assign to the xml manager
+                  if (xmlSubGroup.Length == 3) {
+                     int dataId = int.Parse(xmlSubGroup[0]);
+                     bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                     if (isActive) {
+                        TrinketStatData actualData = Util.xmlLoad<TrinketStatData>(xmlSubGroup[2]);
+                        if (actualData.trinketType > 0) {
+                           actualData.sqlId = dataId;
+                           trinketList.Add(actualData);
+                           message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.trinketType;
+                        } else {
+                           D.debug("WARNING! A trinket has no assigned trinket type! " + dataId + " : " + actualData.trinketType);
+                        }
+                     } else {
+                        D.debug("Skip add entry for trinket:" + dataId);
+                     }
+                  }
+               } catch {
+                  D.editorLog("Cant process trinket data: " + xmlSubGroup[0] + " : " + xmlSubGroup[2] + " : ", Color.yellow);
+               }
+            }
+            EquipmentXMLManager.self.receiveTrinketDataFromZipData(trinketList);
             break;
          case EditorToolType.NPC:
             foreach (string subGroup in xmlGroup) {

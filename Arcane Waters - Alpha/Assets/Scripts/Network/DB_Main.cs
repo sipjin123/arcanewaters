@@ -571,7 +571,10 @@ public class DB_Main : DB_MainStub
          addedFields = ", isActive";
       } else if (toolType == EditorSQLManager.EditorToolType.Equipment_Weapon
          || toolType == EditorSQLManager.EditorToolType.Equipment_Armor
-         || toolType == EditorSQLManager.EditorToolType.Equipment_Hat) {
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Hat
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Ring
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Necklace
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Trinket) {
          addedFields = ", is_enabled";
       } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
          || toolType == EditorSQLManager.EditorToolType.Quest
@@ -624,7 +627,10 @@ public class DB_Main : DB_MainStub
                      xmlContent = dataReader.GetString("xmlContent");
                   } else if (toolType == EditorSQLManager.EditorToolType.Equipment_Weapon
                      || toolType == EditorSQLManager.EditorToolType.Equipment_Armor
-                     || toolType == EditorSQLManager.EditorToolType.Equipment_Hat) {
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Hat
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Ring
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Necklace
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Trinket) {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent");
                      addedContent = dataReader.GetInt32("is_enabled") + "[space]";
@@ -4392,13 +4398,22 @@ public class DB_Main : DB_MainStub
 
       switch (equipType) {
          case EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v3";
+            tableName = XmlVersionManagerServer.WEAPON_TABLE;
             break;
          case EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v3";
+            tableName = XmlVersionManagerServer.ARMOR_TABLE;
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_hat_xml_v1";
+            tableName = XmlVersionManagerServer.HAT_TABLE;
+            break;
+         case EquipmentType.Ring:
+            tableName = XmlVersionManagerServer.RING_TABLE;
+            break;
+         case EquipmentType.Necklace:
+            tableName = XmlVersionManagerServer.NECKLACE_TABLE;
+            break;
+         case EquipmentType.Trinket:
+            tableName = XmlVersionManagerServer.TRINKET_TABLE;
             break;
       }
 
@@ -4433,13 +4448,22 @@ public class DB_Main : DB_MainStub
       string tableName = "";
       switch (equipType) {
          case EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v3";
+            tableName = XmlVersionManagerServer.WEAPON_TABLE;
             break;
          case EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v3";
+            tableName = XmlVersionManagerServer.ARMOR_TABLE;
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_hat_xml_v1";
+            tableName = XmlVersionManagerServer.HAT_TABLE;
+            break;
+         case EquipmentType.Ring:
+            tableName = XmlVersionManagerServer.RING_TABLE;
+            break;
+         case EquipmentType.Necklace:
+            tableName = XmlVersionManagerServer.NECKLACE_TABLE;
+            break;
+         case EquipmentType.Trinket:
+            tableName = XmlVersionManagerServer.TRINKET_TABLE;
             break;
       }
 
@@ -4499,13 +4523,22 @@ public class DB_Main : DB_MainStub
       string tableName = "";
       switch (equipType) {
          case EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v3";
+            tableName = XmlVersionManagerServer.WEAPON_TABLE;
             break;
          case EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v3";
+            tableName = XmlVersionManagerServer.ARMOR_TABLE;
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_hat_xml_v1";
+            tableName = XmlVersionManagerServer.HAT_TABLE;
+            break;
+         case EquipmentType.Ring:
+            tableName = XmlVersionManagerServer.RING_TABLE;
+            break;
+         case EquipmentType.Necklace:
+            tableName = XmlVersionManagerServer.NECKLACE_TABLE;
+            break;
+         case EquipmentType.Trinket:
+            tableName = XmlVersionManagerServer.TRINKET_TABLE;
             break;
       }
 

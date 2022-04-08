@@ -30,75 +30,81 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string SERVER_ZIP_FILE = "ServerXmlZip.zip";
 
    // TABLES (Can be changed)
-   public static string ABILITY_TABLE = "ability_xml_v2";
-   public static string CROPS_TABLE = "crops_xml_v1";
+   public const string ABILITY_TABLE = "ability_xml_v2";
+   public const string CROPS_TABLE = "crops_xml_v1";
 
-   public static string ARMOR_TABLE = "equipment_armor_xml_v3";
-   public static string WEAPON_TABLE = "equipment_weapon_xml_v3";
-   public static string HAT_TABLE = "equipment_hat_xml_v1";
-   public static string LAND_MONSTER_TABLE = "land_monster_xml_v3";
-   public static string NPC_TABLE = "npc_xml_v2";
+   public const string RING_TABLE = "equipment_ring_xml_v1";
+   public const string NECKLACE_TABLE = "equipment_necklace_xml_v1";
+   public const string TRINKET_TABLE = "equipment_trinket_xml_v1";
+   public const string ARMOR_TABLE = "equipment_armor_xml_v3";
+   public const string WEAPON_TABLE = "equipment_weapon_xml_v3";
+   public const string HAT_TABLE = "equipment_hat_xml_v1";
+   public const string LAND_MONSTER_TABLE = "land_monster_xml_v3";
+   public const string NPC_TABLE = "npc_xml_v2";
 
-   public static string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
-   public static string CRAFTING_TABLE = "crafting_xml_v2";
+   public const string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
+   public const string CRAFTING_TABLE = "crafting_xml_v2";
 
-   public static string SHIP_TABLE = "ship_xml_v2";
-   public static string SHOP_TABLE = "shop_xml_v2";
-   public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
-   public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
-   public static string TREASURE_DROPS_TABLE = "treasure_drops_xml_v2";
+   public const string SHIP_TABLE = "ship_xml_v2";
+   public const string SHOP_TABLE = "shop_xml_v2";
+   public const string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
+   public const string BACKGROUND_DATA_TABLE = "background_xml_v2";
+   public const string TREASURE_DROPS_TABLE = "treasure_drops_xml_v2";
 
-   public static string PERKS_DATA_TABLE = "perks_config_xml";
-   public static string QUEST_DATA_TABLE = "quest_data_xml_v1";
-   public static string PALETTE_DATA_TABLE = "palette_recolors";
-   public static string ITEM_DEFINITIONS_TABLE = "item_definitions";
-   public static string PROJECTILES_TABLE = "projectiles_xml_v3";
-   public static string TUTORIAL_TABLE = "tutorial_xml_v1";
-   public static string MAP_TABLE = "maps_v2";
-   public static string SFX_TABLE = "soundeffects_v2";
-   public static string HAIRCUTS_TABLE = "haircuts_v2";
-   public static string GEMS_TABLE = "gems_bundles_v1";
-   public static string SHIP_SKINS_TABLE = "ship_skins_v2";
-   public static string CONSUMABLES_TABLE = "consumables_v1";
-   public static string DYES_TABLE = "dyes_v1";
-   public static string LAND_POWERUP_TABLE = "land_powerup_xml_v1";
-   public static string QUEST_ITEMS_TABLE = "quest_items_xml";
+   public const string PERKS_DATA_TABLE = "perks_config_xml";
+   public const string QUEST_DATA_TABLE = "quest_data_xml_v1";
+   public const string PALETTE_DATA_TABLE = "palette_recolors";
+   public const string ITEM_DEFINITIONS_TABLE = "item_definitions";
+   public const string PROJECTILES_TABLE = "projectiles_xml_v3";
+   public const string TUTORIAL_TABLE = "tutorial_xml_v1";
+   public const string MAP_TABLE = "maps_v2";
+   public const string SFX_TABLE = "soundeffects_v2";
+   public const string HAIRCUTS_TABLE = "haircuts_v2";
+   public const string GEMS_TABLE = "gems_bundles_v1";
+   public const string SHIP_SKINS_TABLE = "ship_skins_v2";
+   public const string CONSUMABLES_TABLE = "consumables_v1";
+   public const string DYES_TABLE = "dyes_v1";
+   public const string LAND_POWERUP_TABLE = "land_powerup_xml_v1";
+   public const string QUEST_ITEMS_TABLE = "quest_items_xml";
 
    // TEXT FILE NAMES (Do not Modify)
-   public static string CROPS_FILE = "crops";
-   public static string ABILITIES_FILE = "abilities";
-   public static string CRAFTING_FILE = "crafting";
+   public const string CROPS_FILE = "crops";
+   public const string ABILITIES_FILE = "abilities";
+   public const string CRAFTING_FILE = "crafting";
 
-   public static string ARMOR_FILE = "equipment_armor";
-   public static string WEAPON_FILE = "equipment_weapon";
-   public static string HAT_FILE = "equipment_hat";
-   public static string LAND_MONSTER_FILE = "land_monsters";
-   public static string NPC_FILE = "npc";
+   public const string RING_FILE = "equipment_ring";
+   public const string NECKLACE_FILE = "equipment_necklace";
+   public const string TRINKET_FILE = "equipment_trinket";
+   public const string ARMOR_FILE = "equipment_armor";
+   public const string WEAPON_FILE = "equipment_weapon";
+   public const string HAT_FILE = "equipment_hat";
+   public const string LAND_MONSTER_FILE = "land_monsters";
+   public const string NPC_FILE = "npc";
 
-   public static string SEA_MONSTER_FILE = "sea_monsters";
+   public const string SEA_MONSTER_FILE = "sea_monsters";
 
-   public static string SHIP_FILE = "ships";
-   public static string SHOP_FILE = "shops";
-   public static string SHIP_ABILITY_FILE = "ships_abilities";
-   public static string BACKGROUND_DATA_FILE = "battle_bg_data";
+   public const string SHIP_FILE = "ships";
+   public const string SHOP_FILE = "shops";
+   public const string SHIP_ABILITY_FILE = "ships_abilities";
+   public const string BACKGROUND_DATA_FILE = "battle_bg_data";
 
-   public static string PERKS_FILE = "perks";
-   public static string PALETTE_FILE = "palettes";
-   public static string TREASURE_DROPS_FILE = "treasure_drops";
-   public static string QUEST_DATA_FILE = "quest_data";
-   public static string ITEM_DEFINITIONS_FILE = "item_definitions";
-   public static string TOOL_TIP_FILE = "tool_tip";
-   public static string PROJECTILES_FILE = "projectiles_xml";
-   public static string TUTORIAL_FILE = "tutorial_xml";
-   public static string MAP_FILE = "map_xml";
-   public static string SFX_FILE = "sfx_xml";
-   public static string HAIRCUTS_FILE = "haircuts";
-   public static string GEMS_FILE = "gems";
-   public static string SHIP_SKINS_FILE = "ship_skins";
-   public static string CONSUMABLES_FILE = "consumables";
-   public static string DYES_FILE = "dyes";
-   public static string LAND_POWERUPS_FILE = "land_powerups";
-   public static string QUEST_ITEMS_FILE = "quest_items";
+   public const string PERKS_FILE = "perks";
+   public const string PALETTE_FILE = "palettes";
+   public const string TREASURE_DROPS_FILE = "treasure_drops";
+   public const string QUEST_DATA_FILE = "quest_data";
+   public const string ITEM_DEFINITIONS_FILE = "item_definitions";
+   public const string TOOL_TIP_FILE = "tool_tip";
+   public const string PROJECTILES_FILE = "projectiles_xml";
+   public const string TUTORIAL_FILE = "tutorial_xml";
+   public const string MAP_FILE = "map_xml";
+   public const string SFX_FILE = "sfx_xml";
+   public const string HAIRCUTS_FILE = "haircuts";
+   public const string GEMS_FILE = "gems";
+   public const string SHIP_SKINS_FILE = "ship_skins";
+   public const string CONSUMABLES_FILE = "consumables";
+   public const string DYES_FILE = "dyes";
+   public const string LAND_POWERUPS_FILE = "land_powerups";
+   public const string QUEST_ITEMS_FILE = "quest_items";
 
    // Progress indicators
    public int targetProgress;
@@ -144,6 +150,9 @@ public class XmlVersionManagerServer : GenericGameManager {
       confirmTextFile(ARMOR_FILE);
       confirmTextFile(WEAPON_FILE);
       confirmTextFile(HAT_FILE);
+      confirmTextFile(RING_FILE);
+      confirmTextFile(NECKLACE_FILE);
+      confirmTextFile(TRINKET_FILE);
       confirmTextFile(LAND_MONSTER_FILE);
       confirmTextFile(NPC_FILE);
 
@@ -212,6 +221,9 @@ public class XmlVersionManagerServer : GenericGameManager {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Armor);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Weapon);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Hat);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Ring);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Necklace);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Trinket);
 
          compiledData += DB_Main.getLastUpdate(EditorToolType.Perks);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Palette);
@@ -320,6 +332,9 @@ public class XmlVersionManagerServer : GenericGameManager {
          string armorData = DB_Main.getXmlContent(ARMOR_TABLE, EditorToolType.Equipment_Armor);
          string weaponData = DB_Main.getXmlContent(WEAPON_TABLE, EditorToolType.Equipment_Weapon);
          string hatData = DB_Main.getXmlContent(HAT_TABLE, EditorToolType.Equipment_Hat);
+         string ringData = DB_Main.getXmlContent(RING_TABLE, EditorToolType.Equipment_Ring);
+         string necklaceData = DB_Main.getXmlContent(NECKLACE_TABLE, EditorToolType.Equipment_Necklace);
+         string trinkerData = DB_Main.getXmlContent(TRINKET_TABLE, EditorToolType.Equipment_Trinket);
 
          string shopData = DB_Main.getXmlContent(SHOP_TABLE, EditorToolType.Shop);
          string shipData = DB_Main.getXmlContent(SHIP_TABLE, EditorToolType.Ship);
@@ -360,6 +375,9 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(xmlTextDirectory + "/" + ARMOR_FILE + ".txt", armorData);
          writeAndCache(xmlTextDirectory + "/" + WEAPON_FILE + ".txt", weaponData);
          writeAndCache(xmlTextDirectory + "/" + HAT_FILE + ".txt", hatData);
+         writeAndCache(xmlTextDirectory + "/" + RING_FILE + ".txt", ringData);
+         writeAndCache(xmlTextDirectory + "/" + NECKLACE_FILE + ".txt", necklaceData);
+         writeAndCache(xmlTextDirectory + "/" + TRINKET_FILE + ".txt", trinkerData);
 
          writeAndCache(xmlTextDirectory + "/" + SHOP_FILE + ".txt", shopData);
          writeAndCache(xmlTextDirectory + "/" + LAND_POWERUPS_FILE + ".txt", landPowerupData);
