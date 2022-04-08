@@ -2293,6 +2293,15 @@ public class AdminManager : NetworkBehaviour
             case "h":
                dictionary = AdminManagerSingleton.self.hatNames;
                break;
+            case "r":
+               dictionary = AdminManagerSingleton.self.ringNames;
+               break;
+            case "n":
+               dictionary = AdminManagerSingleton.self.necklaceNames;
+               break;
+            case "t":
+               dictionary = AdminManagerSingleton.self.trinketNames;
+               break;
             case "i":
                dictionary = AdminManagerSingleton.self.craftingIngredientNames;
                break;
@@ -2504,6 +2513,15 @@ public class AdminManager : NetworkBehaviour
          case "h":
             category = Item.Category.Hats;
             break;
+         case "r":
+            category = Item.Category.Ring;
+            break;
+         case "n":
+            category = Item.Category.Necklace;
+            break;
+         case "t":
+            category = Item.Category.Trinket;
+            break;
          case "i":
             category = Item.Category.CraftingIngredients;
             break;
@@ -2552,6 +2570,30 @@ public class AdminManager : NetworkBehaviour
                itemTypeId = AdminManagerSingleton.self.hatNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the hat " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Ring:
+            if (AdminManagerSingleton.self.ringNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.ringNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the Ring " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Necklace:
+            if (AdminManagerSingleton.self.necklaceNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.necklaceNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the Necklace " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Trinket:
+            if (AdminManagerSingleton.self.trinketNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.trinketNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the Trinket " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
@@ -3410,6 +3452,15 @@ public class AdminManager : NetworkBehaviour
             break;
          case Item.Category.Hats:
             itemTypeId = AdminManagerSingleton.self.hatNames[itemName];
+            break;
+         case Item.Category.Ring:
+            itemTypeId = AdminManagerSingleton.self.ringNames[itemName];
+            break;
+         case Item.Category.Necklace:
+            itemTypeId = AdminManagerSingleton.self.necklaceNames[itemName];
+            break;
+         case Item.Category.Trinket:
+            itemTypeId = AdminManagerSingleton.self.trinketNames[itemName];
             break;
       }
 

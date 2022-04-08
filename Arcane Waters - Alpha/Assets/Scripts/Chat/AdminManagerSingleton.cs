@@ -15,6 +15,9 @@ public class AdminManagerSingleton : GenericGameManager
    public Dictionary<string, int> weaponNames = new Dictionary<string, int>();
    public Dictionary<string, int> armorNames = new Dictionary<string, int>();
    public Dictionary<string, int> hatNames = new Dictionary<string, int>();
+   public Dictionary<string, int> ringNames = new Dictionary<string, int>();
+   public Dictionary<string, int> necklaceNames = new Dictionary<string, int>();
+   public Dictionary<string, int> trinketNames = new Dictionary<string, int>();
    public Dictionary<string, int> usableNames = new Dictionary<string, int>();
    public Dictionary<string, int> craftingIngredientNames = new Dictionary<string, int>();
    public Dictionary<string, int> cropNames = new Dictionary<string, int>();
@@ -160,6 +163,9 @@ public class AdminManagerSingleton : GenericGameManager
       weaponNames.Clear();
       armorNames.Clear();
       hatNames.Clear();
+      ringNames.Clear();
+      necklaceNames.Clear();
+      trinketNames.Clear();
       usableNames.Clear();
       craftingIngredientNames.Clear();
       cropNames.Clear();
@@ -178,6 +184,21 @@ public class AdminManagerSingleton : GenericGameManager
       // Set all the hat names
       foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
          addToItemNameDictionary(hatNames, Item.Category.Hats, hatData.sqlId, hatData.equipmentName);
+      }
+
+      // Set all the ring names
+      foreach (RingStatData ringData in EquipmentXMLManager.self.ringStatList) {
+         addToItemNameDictionary(ringNames, Item.Category.Ring, ringData.sqlId, ringData.equipmentName);
+      }
+
+      // Set all the necklace names
+      foreach (NecklaceStatData necklaceData in EquipmentXMLManager.self.necklaceStatList) {
+         addToItemNameDictionary(necklaceNames, Item.Category.Necklace, necklaceData.sqlId, necklaceData.equipmentName);
+      }
+
+      // Set all the trinket names
+      foreach (TrinketStatData trinketData in EquipmentXMLManager.self.trinketStatList) {
+         addToItemNameDictionary(trinketNames, Item.Category.Trinket, trinketData.sqlId, trinketData.equipmentName);
       }
 
       // Set all the usable items names
