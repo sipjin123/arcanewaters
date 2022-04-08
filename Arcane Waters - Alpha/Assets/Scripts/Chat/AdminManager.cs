@@ -868,6 +868,12 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestServerLogs (string parameters) {
+      if (parameters.Contains("clearachievement")) {
+         string message = "All steam achievements have reset!";
+         Steamworks.SteamUserStats.ResetAllStats(true);
+         D.debug(message);
+      }
+
       Cmd_ProcessServerLogs(parameters);
    }
 
@@ -889,6 +895,22 @@ public class AdminManager : NetworkBehaviour
          }
 
          switch (logType) {
+            case "achievement":
+               bool tutorialCompleted;
+               Steamworks.SteamUserStats.GetAchievement("EnterCombat01", out tutorialCompleted);
+               Steamworks.SteamUserStats.SetAchievement("PoisonEnemy01");
+               D.debug("The steam achievement for user {" + _player.userId + ":" + _player.entityName + ":" + _player.steamId + "} is {" + tutorialCompleted + "}");
+               break;
+            case "achievement2":
+               StartCoroutine( AchievementManager.self.CO_GetSteamData());
+               D.debug("The steam achievement for user {" + _player.userId + ":" + _player.entityName + ":" + _player.steamId + "}");
+               break;
+            case "clearachievement":
+               message = "All steam achievements have reset!";
+               Steamworks.SteamUserStats.ResetAllStats(true);
+               D.debug(message);
+               Target_ReceiveServerLogs(message);
+               break;
             case "break":
                message = "----->\n----->\n----->\n----->\n----->\n";
                ServerNetworkingManager.self.logRequest(message);
@@ -2098,6 +2120,10 @@ public class AdminManager : NetworkBehaviour
             break;
          case "quest":
             newLogType = D.ADMIN_LOG_TYPE.Quest;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
+         case "achievement":
+            newLogType = D.ADMIN_LOG_TYPE.Achievement;
             Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "treasure":
