@@ -24,6 +24,11 @@ public class EquipmentXMLManager : MonoBehaviour {
    // References to all the hat data
    public List<HatStatData> hatStatList { get { return _hatStatRegistry.Values.ToList(); } }
 
+   // References to all the gear data
+   public List<RingStatData> ringStatList { get { return _ringStatRegistry.Values.ToList(); } }
+   public List<NecklaceStatData> necklaceStatList { get { return _necklaceStatRegistry.Values.ToList(); } }
+   public List<TrinketStatData> trinketStatList { get { return _trinketStatRegistry.Values.ToList(); } }
+
    // Reference to all the quest item data
    public List<QuestItem> questItemList { get { return _questItemList.ToList(); } }
 
@@ -42,14 +47,22 @@ public class EquipmentXMLManager : MonoBehaviour {
    // The number of equipment types that needs to be set {Weapon/Armor/Hat}
    public const int TOTAL_EQUIPMENT_TYPES = 3;
 
+   // The blank icons if none equipped
+   public Sprite blankWeaponIcon, blankArmorIcon, blankHatIcon, blankRingIcon, blankNecklaceIcon, blankTrinketIcon;
+
    #endregion
 
    private void Awake () {
       _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
       _armorStatRegistry = new Dictionary<int, ArmorStatData>();
       _hatStatRegistry = new Dictionary<int, HatStatData>();
+      _ringStatRegistry = new Dictionary<int, RingStatData>();
+      _necklaceStatRegistry = new Dictionary<int, NecklaceStatData>();
+      _trinketStatRegistry = new Dictionary<int, TrinketStatData>();
       self = this;
    }
+
+   #region Get Data
 
    public WeaponStatData getWeaponData (int weaponSqlId) {
       if (_weaponStatRegistry.ContainsKey(weaponSqlId)) {
@@ -99,6 +112,48 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
+   public RingStatData getRingData (int newSqlId) {
+      if (_ringStatRegistry.ContainsKey(newSqlId)) {
+         RingStatData newStatData = _ringStatRegistry[newSqlId];
+
+         if (String.IsNullOrEmpty(newStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Ring!: {" + newStatData.equipmentName + "} {" + newStatData.equipmentIconPath + "} {" + newStatData.ringType + "}");
+         }
+
+         return newStatData;
+      }
+
+      return null;
+   }
+
+   public NecklaceStatData getNecklaceData (int newSqlId) {
+      if (_necklaceStatRegistry.ContainsKey(newSqlId)) {
+         NecklaceStatData newStatData = _necklaceStatRegistry[newSqlId];
+
+         if (String.IsNullOrEmpty(newStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Necklace: {" + newStatData.equipmentName + "} {" + newStatData.equipmentIconPath + "} {" + newStatData.necklaceType + "}");
+         }
+
+         return newStatData;
+      }
+
+      return null;
+   }
+
+   public TrinketStatData getTrinketData (int newSqlId) {
+      if (_trinketStatRegistry.ContainsKey(newSqlId)) {
+         TrinketStatData newStatData = _trinketStatRegistry[newSqlId];
+
+         if (String.IsNullOrEmpty(newStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Trinket: {" + newStatData.equipmentName + "} {" + newStatData.equipmentIconPath + "} {" + newStatData.trinketType + "}");
+         }
+
+         return newStatData;
+      }
+
+      return null;
+   }
+
    public HatStatData getHatDataByItemType (int hatType) {
       return _hatStatRegistry.Values.FirstOrDefault(_ => _.hatType == hatType);
    }
@@ -116,6 +171,8 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
+   #endregion
+
    private void finishedLoading () {
       equipmentLoadCounter++;
       if (equipmentLoadCounter >= TOTAL_EQUIPMENT_TYPES) {
@@ -129,7 +186,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
       _armorStatRegistry = new Dictionary<int, ArmorStatData>();
       _hatStatRegistry = new Dictionary<int, HatStatData>();
+      _ringStatRegistry = new Dictionary<int, RingStatData>();
+      _necklaceStatRegistry = new Dictionary<int, NecklaceStatData>();
+      _trinketStatRegistry = new Dictionary<int, TrinketStatData>();
+
+      _weaponStatList = new List<WeaponStatData>();
+      _armorStatList = new List<ArmorStatData>();
       _hatStatList = new List<HatStatData>();
+      _ringStatList = new List<RingStatData>();
+      _necklaceStatList = new List<NecklaceStatData>();
+      _trinketStatList = new List<TrinketStatData>();
 
       List<XMLPair> rawQuestItemXml = DB_Main.getQuestItemtXML();
       foreach (XMLPair xmlPair in rawQuestItemXml) {
@@ -212,6 +278,52 @@ public class EquipmentXMLManager : MonoBehaviour {
             }
          }
       }
+
+      List<XMLPair> rawRingXml = DB_Main.getEquipmentXML(EquipmentType.Ring);
+      foreach (XMLPair xmlPair in rawRingXml) {
+         if (xmlPair.isEnabled) {
+            TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+            RingStatData rawData = Util.xmlLoad<RingStatData>(newTextAsset);
+            int uniqueID = xmlPair.xmlId;
+            rawData.sqlId = xmlPair.xmlId;
+
+            // Save the data in the memory cache
+            if (!_ringStatRegistry.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+               _ringStatRegistry.Add(uniqueID, rawData);
+               _ringStatList.Add(rawData);
+            }
+         }
+      }
+      List<XMLPair> rawNecklaceXml = DB_Main.getEquipmentXML(EquipmentType.Necklace);
+      foreach (XMLPair xmlPair in rawNecklaceXml) {
+         if (xmlPair.isEnabled) {
+            TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+            NecklaceStatData rawData = Util.xmlLoad<NecklaceStatData>(newTextAsset);
+            int uniqueID = xmlPair.xmlId;
+            rawData.sqlId = xmlPair.xmlId;
+
+            // Save the data in the memory cache
+            if (!_necklaceStatRegistry.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+               _necklaceStatRegistry.Add(uniqueID, rawData);
+               _necklaceStatList.Add(rawData);
+            }
+         }
+      }
+      List<XMLPair> rawTrinketXml = DB_Main.getEquipmentXML(EquipmentType.Trinket);
+      foreach (XMLPair xmlPair in rawTrinketXml) {
+         if (xmlPair.isEnabled) {
+            TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+            TrinketStatData rawData = Util.xmlLoad<TrinketStatData>(newTextAsset);
+            int uniqueID = xmlPair.xmlId;
+            rawData.sqlId = xmlPair.xmlId;
+
+            // Save the data in the memory cache
+            if (!_trinketStatRegistry.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+               _trinketStatRegistry.Add(uniqueID, rawData);
+               _trinketStatList.Add(rawData);
+            }
+         }
+      }
       equipmentLoadCounter = TOTAL_EQUIPMENT_TYPES;
       finishedLoading();
    }
@@ -235,7 +347,49 @@ public class EquipmentXMLManager : MonoBehaviour {
             _questItemList.Add(newItem);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatList.Count + "} weapon data from {" + questData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _questItemList.Count + "} quest item data from {" + questData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      finishedLoading();
+   }
+
+   public void receiveRingDataFromZipData (List<RingStatData> statData) {
+      foreach (RingStatData rawData in statData) {
+         int uniqueID = rawData.sqlId;
+
+         // Save the data in the memory cache
+         if (!_ringStatRegistry.ContainsKey(uniqueID)) {
+            _ringStatRegistry.Add(uniqueID, rawData);
+            _ringStatList.Add(rawData);
+         }
+      }
+      D.adminLog("EquipmentXML :: Received a total of {" + _ringStatRegistry.Count + "} ring data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      finishedLoading();
+   }
+
+   public void receiveNecklaceDataFromZipData (List<NecklaceStatData> statData) {
+      foreach (NecklaceStatData rawData in statData) {
+         int uniqueID = rawData.sqlId;
+
+         // Save the data in the memory cache
+         if (!_necklaceStatRegistry.ContainsKey(uniqueID)) {
+            _necklaceStatRegistry.Add(uniqueID, rawData);
+            _necklaceStatList.Add(rawData);
+         }
+      }
+      D.adminLog("EquipmentXML :: Received a total of {" + _necklaceStatRegistry.Count + "} necklace data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      finishedLoading();
+   }
+
+   public void receiveTrinketDataFromZipData (List<TrinketStatData> statData) {
+      foreach (TrinketStatData rawData in statData) {
+         int uniqueID = rawData.sqlId;
+
+         // Save the data in the memory cache
+         if (!_trinketStatRegistry.ContainsKey(uniqueID)) {
+            _trinketStatRegistry.Add(uniqueID, rawData);
+            _trinketStatList.Add(rawData);
+         }
+      }
+      D.adminLog("EquipmentXML :: Received a total of {" + _trinketStatRegistry.Count + "} trinket data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -249,7 +403,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _weaponStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatList.Count + "} weapon data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatRegistry.Count + "} weapon data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -263,7 +417,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _armorStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _armorStatList.Count + "} armor data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _armorStatRegistry.Count + "} armor data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -277,7 +431,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _hatStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _hatStatList.Count + "} hat data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _hatStatRegistry.Count + "} hat data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -285,10 +439,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
       _armorStatRegistry = new Dictionary<int, ArmorStatData>();
       _hatStatRegistry = new Dictionary<int, HatStatData>();
+      _ringStatRegistry = new Dictionary<int, RingStatData>();
+      _necklaceStatRegistry = new Dictionary<int, NecklaceStatData>();
+      _trinketStatRegistry = new Dictionary<int, TrinketStatData>();
 
       _weaponStatList.Clear();
       _armorStatList.Clear();
       _hatStatList.Clear();
+      _ringStatList.Clear();
+      _necklaceStatList.Clear();
+      _trinketStatList.Clear();
    }
 
    public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
@@ -383,10 +543,30 @@ public class EquipmentXMLManager : MonoBehaviour {
       return itemData;
    }
 
+   #region Get basic info of item
+
    public string getItemName (Item item) {
       string newName = "";
       
       switch (item.category) {
+         case Item.Category.Ring:
+            RingStatData ringData = getRingData(item.itemTypeId);
+            if (ringData != null) {
+               newName = ringData.equipmentName;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = getNecklaceData(item.itemTypeId);
+            if (necklaceData != null) {
+               newName = necklaceData.equipmentName;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = getTrinketData(item.itemTypeId);
+            if (trinketData != null) {
+               newName = trinketData.equipmentName;
+            }
+            break;
          case Item.Category.Hats:
             HatStatData hatData = getHatData(item.itemTypeId);
             if (hatData != null) {
@@ -465,17 +645,41 @@ public class EquipmentXMLManager : MonoBehaviour {
       string newDescription = "";
 
       switch (item.category) {
+         case Item.Category.Ring:
+            RingStatData ringData = getRingData(item.itemTypeId);
+            if (ringData != null) {
+               newDescription = ringData.equipmentDescription;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = getNecklaceData(item.itemTypeId);
+            if (necklaceData != null) {
+               newDescription = necklaceData.equipmentDescription;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = getTrinketData(item.itemTypeId);
+            if (trinketData != null) {
+               newDescription = trinketData.equipmentDescription;
+            }
+            break;
          case Item.Category.Hats:
             HatStatData hatData = getHatData(item.itemTypeId);
-            newDescription = hatData.equipmentDescription;
+            if (hatData != null) {
+               newDescription = hatData.equipmentDescription;
+            }
             break;
          case Item.Category.Armor:
             ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
-            newDescription = armorData.equipmentDescription;
+            if (armorData != null) {
+               newDescription = armorData.equipmentDescription;
+            }
             break;
          case Item.Category.Weapon:
             WeaponStatData weaponData = getWeaponData(item.itemTypeId);
-            newDescription = weaponData.equipmentDescription;
+            if (weaponData != null) {
+               newDescription = weaponData.equipmentDescription;
+            }
             break;
          case Item.Category.CraftingIngredients:
             CraftingIngredients newItem = new CraftingIngredients();
@@ -519,17 +723,41 @@ public class EquipmentXMLManager : MonoBehaviour {
       string iconPath = "";
 
       switch (item.category) {
+         case Item.Category.Ring:
+            RingStatData ringData = getRingData(item.itemTypeId);
+            if (ringData != null) {
+               iconPath = ringData.equipmentIconPath;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = getNecklaceData(item.itemTypeId);
+            if (necklaceData != null) {
+               iconPath = necklaceData.equipmentIconPath;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = getTrinketData(item.itemTypeId);
+            if (trinketData != null) {
+               iconPath = trinketData.equipmentIconPath;
+            }
+            break;
          case Item.Category.Hats:
             HatStatData hatData = getHatData(item.itemTypeId);
-            iconPath = hatData.equipmentIconPath;
+            if (hatData != null) {
+               iconPath = hatData.equipmentIconPath;
+            }
             break;
          case Item.Category.Armor:
             ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
-            iconPath = armorData.equipmentIconPath;
+            if (armorData != null) {
+               iconPath = armorData.equipmentIconPath;
+            }
             break;
          case Item.Category.Weapon:
             WeaponStatData weaponData = getWeaponData(item.itemTypeId);
-            iconPath = weaponData.equipmentIconPath;
+            if (weaponData != null) {
+               iconPath = weaponData.equipmentIconPath;
+            }
             break;
          case Item.Category.CraftingIngredients:
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
@@ -572,6 +800,8 @@ public class EquipmentXMLManager : MonoBehaviour {
       return iconPath;
    }
 
+   #endregion
+
    private CraftableItemRequirements getCraftingItem (Item item) {
       Item.Category blueprintCategory = Item.Category.None;
       switch (item.data) {
@@ -592,6 +822,8 @@ public class EquipmentXMLManager : MonoBehaviour {
       CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
       return craftingItem;
    }
+
+   #region Translate equipment to items
 
    public List<Item> translateWeaponItemsToItems (List<Weapon> weaponList) {
       List<Item> newWeaponList = new List<Item>();
@@ -650,6 +882,8 @@ public class EquipmentXMLManager : MonoBehaviour {
       }
       return newArmorList;
    }
+   
+   #endregion
 
    #region Private Variables
 
@@ -660,6 +894,12 @@ public class EquipmentXMLManager : MonoBehaviour {
    private List<ArmorStatData> _armorStatList = new List<ArmorStatData>();
    [SerializeField]
    private List<HatStatData> _hatStatList = new List<HatStatData>();
+   [SerializeField]
+   private List<RingStatData> _ringStatList = new List<RingStatData>();
+   [SerializeField]
+   private List<NecklaceStatData> _necklaceStatList = new List<NecklaceStatData>();
+   [SerializeField]
+   private List<TrinketStatData> _trinketStatList = new List<TrinketStatData>();
 
    // Stores the list of all weapon data
    private Dictionary<int, WeaponStatData> _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
@@ -669,6 +909,15 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    // Stores the list of all hat data
    private Dictionary<int, HatStatData> _hatStatRegistry = new Dictionary<int, HatStatData>();
+
+   // Stores the list of all ring data
+   private Dictionary<int, RingStatData> _ringStatRegistry = new Dictionary<int, RingStatData>();
+
+   // Stores the list of all necklace data
+   private Dictionary<int, NecklaceStatData> _necklaceStatRegistry = new Dictionary<int, NecklaceStatData>();
+
+   // Stores the list of all trinked data
+   private Dictionary<int, TrinketStatData> _trinketStatRegistry = new Dictionary<int, TrinketStatData>();
 
    // Stores the list of all quest item data
    public List<QuestItem> _questItemList = new List<QuestItem>();

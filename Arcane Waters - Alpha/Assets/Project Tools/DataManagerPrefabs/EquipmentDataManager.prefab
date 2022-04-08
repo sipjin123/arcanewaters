@@ -43,41 +43,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 220cd6910168f1748b1848ff822c26e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponDataAssets:
-  - {fileID: 4900000, guid: f6eb7e327496aba438a731ad134bda05, type: 3}
-  - {fileID: 4900000, guid: 803b8f56001d91e4d9b09d1407a24be7, type: 3}
-  - {fileID: 4900000, guid: 6f49065fc8962d9449f9570d99c15a10, type: 3}
-  - {fileID: 4900000, guid: e14a83ea68f64374a90fc78ef47f44de, type: 3}
-  - {fileID: 4900000, guid: fb552c1163115404ca0830d5dd776c6c, type: 3}
-  - {fileID: 4900000, guid: d1347cc0cfbd82b428842f78b74d7ae9, type: 3}
-  - {fileID: 4900000, guid: c7e53f50dac92594b8280cb4a0d9ec46, type: 3}
-  - {fileID: 4900000, guid: 2e7bcf6a94c1ce44699acff05d4e61d2, type: 3}
-  - {fileID: 4900000, guid: b360471c9b68d3a4a9d5825b155040dc, type: 3}
-  - {fileID: 4900000, guid: cd3ceb2e088f23e4d8f59a8943eebae6, type: 3}
-  - {fileID: 4900000, guid: c1b6ee3247bf7bd408bc500e268ffbca, type: 3}
-  - {fileID: 4900000, guid: ff3b2057479ae604ea7f4506dc76b330, type: 3}
-  - {fileID: 4900000, guid: 53a32ce194ffc9544ac1bdd3cdc7b69a, type: 3}
-  - {fileID: 4900000, guid: 2c16838235e141848b7d7a9be5195f32, type: 3}
-  - {fileID: 4900000, guid: 7830f6b494a9eae4db7ed73502573752, type: 3}
-  - {fileID: 4900000, guid: 2eda752255319cd45bd632a0e56e7892, type: 3}
-  - {fileID: 4900000, guid: 2f4ecc006f46a494e99aa6b184f3691e, type: 3}
-  - {fileID: 4900000, guid: e72ed1b416a5030498dc8c6aa1b1c5b5, type: 3}
-  - {fileID: 4900000, guid: dc29af95365935a42bdea89f48704f5d, type: 3}
-  - {fileID: 4900000, guid: 17be9ba99f54d6a408d28285451d4f71, type: 3}
-  armorDataAssets:
-  - {fileID: 4900000, guid: 6fc924cdaef9b8e4085341b6d0a1091e, type: 3}
-  - {fileID: 4900000, guid: 08daaf15dd20ad74fa828b4df60f4cb1, type: 3}
-  - {fileID: 4900000, guid: 29a06900287e281478ade765bc320f97, type: 3}
-  - {fileID: 4900000, guid: 71607c31a5683144887e686099290536, type: 3}
-  - {fileID: 4900000, guid: 40fd57729cfbda14d8339de8446f124c, type: 3}
-  - {fileID: 4900000, guid: 612944ba525f75e4eb8d67ad84e87880, type: 3}
-  - {fileID: 4900000, guid: d99c9625e35e1e0428855e7bd00e2838, type: 3}
-  - {fileID: 4900000, guid: b70bf546fd643e843a072d0e088da845, type: 3}
-  - {fileID: 4900000, guid: 33c3dc6ec42bd9c4095556b105d53bd0, type: 3}
-  - {fileID: 4900000, guid: 7d4b7877679bbff47b704b82bde7e068, type: 3}
-  - {fileID: 4900000, guid: e8d744da02003664fa40631ec9539cc0, type: 3}
-  helmDataAssets:
-  - {fileID: 4900000, guid: 7796f71f3f0209a4ca7dec47e423ed94, type: 3}
-  - {fileID: 4900000, guid: cd8e3b574d0490345b6ca2eeab2ca7db, type: 3}
-  - {fileID: 4900000, guid: c7fa3c9fd6c431a4a870eebf24fcef99, type: 3}
-  - {fileID: 4900000, guid: 375507a106456d445be9546bf9b00c00, type: 3}
+  equipmentLoadCounter: 0
+  loadedAllEquipment: 0
+  finishedDataSetup:
+    m_PersistentCalls:
+      m_Calls: []
+  blankWeaponIcon: {fileID: 6996011933337811453, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  blankArmorIcon: {fileID: 4188015837399509461, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  blankHatIcon: {fileID: 2391906187212165794, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  blankRingIcon: {fileID: 673146652599771332, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  blankNecklaceIcon: {fileID: 7569164514917732360, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  blankTrinketIcon: {fileID: 5556849661754102370, guid: c13cdac2dbd8a214d88418199ac6f638,
+    type: 3}
+  _weaponStatList: []
+  _armorStatList: []
+  _hatStatList: []
+  _questItemList: []
