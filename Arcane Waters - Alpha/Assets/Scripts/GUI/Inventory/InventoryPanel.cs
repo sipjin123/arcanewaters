@@ -120,7 +120,7 @@ public class InventoryPanel : Panel
 
       // Update cached user object equipment
       if (overrideEquipmentCache) {
-         Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat);
+         Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
       }
 
       // Select the correct tab
@@ -142,14 +142,24 @@ public class InventoryPanel : Panel
       int equippedWeaponId = 0;
       int equippedHatId = 0;
       int equippedArmorId = 0;
+      int equippedRingId = 0;
+      int equippedNecklaceId = 0;
+      int equippedTrinketId = 0;
       if (Global.player is PlayerBodyEntity) {
+         GearManager gearMngr = (Global.player as PlayerBodyEntity).gearManager;
          equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
          equippedHatId = (Global.player as PlayerBodyEntity).hatsManager.hatType;
          equippedArmorId = (Global.player as PlayerBodyEntity).armorManager.armorType;
+         equippedRingId = gearMngr.ringSpriteId;
+         equippedNecklaceId = gearMngr.necklaceSpriteId;
+         equippedTrinketId = gearMngr.trinketSpriteId;
       } else if (Global.player is PlayerShipEntity) {
          equippedWeaponId = (Global.player as PlayerShipEntity).weaponType;
          equippedHatId = (Global.player as PlayerShipEntity).hatType;
          equippedArmorId = (Global.player as PlayerShipEntity).armorType;
+         equippedRingId = (Global.player as PlayerShipEntity).ringType;
+         equippedNecklaceId = (Global.player as PlayerShipEntity).necklaceType;
+         equippedTrinketId = (Global.player as PlayerShipEntity).trinketType;
       }
 
       if (equippedWeaponId != 0) {
@@ -162,6 +172,18 @@ public class InventoryPanel : Panel
 
       if (equippedHatId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedHatCell);
+      }
+
+      if (equippedRingId != 0) {
+         subscribeClickEventsForCell(characterInfoSection.equippedRingCell);
+      }
+
+      if (equippedNecklaceId != 0) {
+         subscribeClickEventsForCell(characterInfoSection.equippedNecklaceCell);
+      }
+
+      if (equippedTrinketId!= 0) {
+         subscribeClickEventsForCell(characterInfoSection.equippedTrinketCell);
       }
 
       // Trigger the tutorial

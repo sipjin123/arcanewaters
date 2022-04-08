@@ -479,7 +479,7 @@ public class CraftingPanel : Panel
       refinementIngredientsHolder.gameObject.DestroyChildren();
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
-         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
+         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats, Item.Category.Ring, Item.Category.Necklace, Item.Category.Trinket
       }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
    }
 
@@ -505,7 +505,7 @@ public class CraftingPanel : Panel
       }
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
-         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
+         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats, Item.Category.Ring, Item.Category.Necklace, Item.Category.Trinket
       }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
    }
 

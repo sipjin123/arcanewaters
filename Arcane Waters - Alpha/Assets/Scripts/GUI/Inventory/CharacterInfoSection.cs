@@ -15,6 +15,9 @@ public class CharacterInfoSection : MonoBehaviour
    public ItemCellInventory equippedWeaponCell;
    public ItemCellInventory equippedArmorCell;
    public ItemCellInventory equippedHatCell;
+   public ItemCellInventory equippedRingCell;
+   public ItemCellInventory equippedNecklaceCell;
+   public ItemCellInventory equippedTrinketCell;
 
    // The text components
    public Text characterNameText;
@@ -35,6 +38,9 @@ public class CharacterInfoSection : MonoBehaviour
       equippedArmorCell.clear();
       equippedWeaponCell.clear();
       equippedHatCell.clear();
+      equippedRingCell.clear();
+      equippedNecklaceCell.clear();
+      equippedTrinketCell.clear();
 
       characterNameText.text = "";
    }
@@ -93,18 +99,54 @@ public class CharacterInfoSection : MonoBehaviour
       if (weapon.itemTypeId != 0) {
          equippedWeaponCell.setCellForItem(weapon);
          equippedWeaponCell.show();
+      } else {
+         equippedWeaponCell.icon.sprite = EquipmentXMLManager.self.blankWeaponIcon;
+         equippedWeaponCell.iconShadow.sprite = EquipmentXMLManager.self.blankWeaponIcon;
       }
 
       Item armor = userObjects.armor;
       if (armor.itemTypeId != 0) {
          equippedArmorCell.setCellForItem(armor);
          equippedArmorCell.show();
+      } else {
+         equippedArmorCell.icon.sprite = EquipmentXMLManager.self.blankArmorIcon;
+         equippedArmorCell.iconShadow.sprite = EquipmentXMLManager.self.blankArmorIcon;
       }
 
       Item hat = userObjects.hat;
       if (hat.itemTypeId != 0) {
          equippedHatCell.setCellForItem(hat);
          equippedHatCell.show();
+      } else {
+         equippedHatCell.icon.sprite = EquipmentXMLManager.self.blankHatIcon;
+         equippedHatCell.iconShadow.sprite = EquipmentXMLManager.self.blankHatIcon;
+      }
+
+      Item ring = userObjects.ring;
+      if (ring != null && ring.itemTypeId != 0) {
+         equippedRingCell.setCellForItem(ring);
+         equippedRingCell.show();
+      } else {
+         equippedRingCell.icon.sprite = EquipmentXMLManager.self.blankRingIcon;
+         equippedRingCell.iconShadow.sprite = EquipmentXMLManager.self.blankRingIcon;
+      }
+
+      Item necklace = userObjects.necklace;
+      if (necklace != null && necklace.itemTypeId != 0) {
+         equippedNecklaceCell.setCellForItem(necklace);
+         equippedNecklaceCell.show();
+      } else {
+         equippedNecklaceCell.icon.sprite = EquipmentXMLManager.self.blankNecklaceIcon;
+         equippedNecklaceCell.iconShadow.sprite = EquipmentXMLManager.self.blankNecklaceIcon;
+      }
+
+      Item trinket = userObjects.trinket;
+      if (trinket != null && trinket.itemTypeId != 0) {
+         equippedTrinketCell.setCellForItem(trinket);
+         equippedTrinketCell.show();
+      } else {
+         equippedTrinketCell.icon.sprite = EquipmentXMLManager.self.blankTrinketIcon;
+         equippedTrinketCell.iconShadow.sprite = EquipmentXMLManager.self.blankTrinketIcon;
       }
    }
 

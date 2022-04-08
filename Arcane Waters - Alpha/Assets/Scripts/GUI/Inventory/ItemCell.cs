@@ -207,6 +207,93 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                itemTypeId = item.itemTypeId;
             }
             break;
+         case Item.Category.Ring:
+            RingStatData ringData = EquipmentXMLManager.self.getRingData(item.itemTypeId);
+            if (ringData == null) {
+               D.debug("Failed to process ring data of item type: " + item.itemTypeId);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
+               return;
+            } else {
+               Ring newRing = RingStatData.translateDataToRing(ringData);
+               newRing.id = item.id;
+               newRing.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newRing.paletteNames = PaletteSwapManager.extractPalettes(ringData.defaultPalettes);
+               }
+
+               newRing.durability = item.durability;
+               item = newRing;
+               item.data = rawItemData;
+
+               icon.sprite = ImageManager.getSprite(ringData.equipmentIconPath);
+               itemSpriteId = ringData.ringType;
+               itemTypeId = item.itemTypeId;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = EquipmentXMLManager.self.getNecklaceData(item.itemTypeId);
+            if (necklaceData == null) {
+               D.debug("Failed to process necklace data of item type: " + item.itemTypeId);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
+               return;
+            } else {
+               Necklace newNecklace = NecklaceStatData.translateDataToNecklace(necklaceData);
+               newNecklace.id = item.id;
+               newNecklace.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newNecklace.paletteNames = PaletteSwapManager.extractPalettes(necklaceData.defaultPalettes);
+               }
+
+               newNecklace.durability = item.durability;
+               item = newNecklace;
+               item.data = rawItemData;
+
+               icon.sprite = ImageManager.getSprite(necklaceData.equipmentIconPath);
+               itemSpriteId = necklaceData.necklaceType;
+               itemTypeId = item.itemTypeId;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(item.itemTypeId);
+            if (trinketData == null) {
+               D.debug("Failed to process trinket data of item type: " + item.itemTypeId);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
+               return;
+            } else {
+               Trinket newTrinket = TrinketStatData.translateDataToTrinket(trinketData);
+               newTrinket.id = item.id;
+               newTrinket.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newTrinket.paletteNames = PaletteSwapManager.extractPalettes(trinketData.defaultPalettes);
+               }
+
+               newTrinket.durability = item.durability;
+               item = newTrinket;
+               item.data = rawItemData;
+
+               icon.sprite = ImageManager.getSprite(trinketData.equipmentIconPath);
+               itemSpriteId = trinketData.trinketType;
+               itemTypeId = item.itemTypeId;
+            }
+            break;
          case Item.Category.Potion:
             item = item.getCastItem();
             icon.sprite = foodIcon;

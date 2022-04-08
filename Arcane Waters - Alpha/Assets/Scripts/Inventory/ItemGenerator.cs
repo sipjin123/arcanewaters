@@ -20,6 +20,21 @@
                   itemTemplatePalette = EquipmentXMLManager.self.getHatData(itemTypeId).palettes;
                }
             }
+            if (category == Item.Category.Ring) {
+               if (EquipmentXMLManager.self.getRingData(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getRingData(itemTypeId).palettes;
+               }
+            }
+            if (category == Item.Category.Necklace) {
+               if (EquipmentXMLManager.self.getNecklaceData(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getNecklaceData(itemTypeId).palettes;
+               }
+            }
+            if (category == Item.Category.Trinket) {
+               if (EquipmentXMLManager.self.getTrinketData(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getTrinketData(itemTypeId).palettes;
+               }
+            }
          }
       }
 

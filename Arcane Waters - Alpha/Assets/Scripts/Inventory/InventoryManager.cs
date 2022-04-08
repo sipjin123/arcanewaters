@@ -69,6 +69,36 @@ public class InventoryManager : MonoBehaviour
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
+      } else if (castedItem.category == Item.Category.Ring) {
+         if (inventoryPanel.isShowing()) {
+            inventoryPanel.showBlocker(large: true);
+         }
+
+         // Check if it's currently equipped or not
+         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
+
+         // Equip or unequip the item
+         Global.player.rpc.Cmd_RequestSetRingId(itemIdToSend);
+      } else if (castedItem.category == Item.Category.Necklace) {
+         if (inventoryPanel.isShowing()) {
+            inventoryPanel.showBlocker(large: true);
+         }
+
+         // Check if it's currently equipped or not
+         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
+
+         // Equip or unequip the item
+         Global.player.rpc.Cmd_RequestSetNecklaceId(itemIdToSend);
+      } else if (castedItem.category == Item.Category.Trinket) {
+         if (inventoryPanel.isShowing()) {
+            inventoryPanel.showBlocker(large: true);
+         }
+
+         // Check if it's currently equipped or not
+         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
+
+         // Equip or unequip the item
+         Global.player.rpc.Cmd_RequestSetTrinketId(itemIdToSend);
       }
    }
 
@@ -130,14 +160,18 @@ public class InventoryManager : MonoBehaviour
             return false;
          }
 
-         if (itemId == playerBody.weaponManager.equippedWeaponId || itemId == playerBody.armorManager.equippedArmorId || itemId == playerBody.hatsManager.equippedHatId) {
+         if (itemId == playerBody.weaponManager.equippedWeaponId || itemId == playerBody.armorManager.equippedArmorId || itemId == playerBody.hatsManager.equippedHatId
+            || itemId == playerBody.gearManager.equippedRingDbId || itemId == playerBody.gearManager.equippedNecklaceDbId || itemId == playerBody.gearManager.equippedTrinketDbId) {
             return true;
          }
       }
 
       if (Global.player is PlayerShipEntity) {
          UserObjects playerUserObj = Global.getUserObjects();
-         if (itemId == playerUserObj.weapon.id || itemId == playerUserObj.armor.id || itemId == playerUserObj.hat.id) {
+         if (itemId == playerUserObj.weapon.id || itemId == playerUserObj.armor.id || itemId == playerUserObj.hat.id
+            || (playerUserObj.ring != null && itemId == playerUserObj.ring.id) 
+            || (playerUserObj.necklace != null && itemId == playerUserObj.necklace.id) 
+            || (playerUserObj.trinket != null && itemId == playerUserObj.trinket.id)) {
             return true;
          }
       }

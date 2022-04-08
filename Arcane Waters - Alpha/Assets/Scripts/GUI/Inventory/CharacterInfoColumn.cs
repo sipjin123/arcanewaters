@@ -14,6 +14,9 @@ public class CharacterInfoColumn : MonoBehaviour {
    public ItemCellInventory equippedWeaponCell;
    public ItemCellInventory equippedArmorCell;
    public ItemCellInventory equippedHatCell;
+   public ItemCellInventory equippedRingCell;
+   public ItemCellInventory equippedNecklaceCell;
+   public ItemCellInventory equippedTrinketCell;
 
    // The text components
    public Text characterNameText;
@@ -49,6 +52,15 @@ public class CharacterInfoColumn : MonoBehaviour {
       equippedArmorCell.clear();
       equippedWeaponCell.clear();
       equippedHatCell.clear();
+      if (equippedRingCell != null) {
+         equippedRingCell.clear();
+      }
+      if (equippedNecklaceCell != null) {
+         equippedNecklaceCell.clear();
+      }
+      if (equippedTrinketCell != null) {
+         equippedTrinketCell.clear();
+      }
 
       equipmentStats.clearAll();
             
