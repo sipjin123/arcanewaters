@@ -92,6 +92,14 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void Start () {
       if (actionName == WARP_TO_LEAGUE_ACTION) {
+         spriteRender.enabled = false;
+         alternativeCanvasGroup.alpha = 0;
+         canvasGroup.alpha = 0;
+         if (circleVoyageCollider != null) {
+            circleVoyageCollider.enabled = true;
+         }
+         _collider.enabled = false;
+         /* Old method where sprite displays in world
          if (biomeType != Biome.Type.None) {
             spriteRender.gameObject.SetActive(true);
             GenericBiomeSpritePair spritePairData = biomeSpritePair.Find(_ => _.biomeType == biomeType);
@@ -104,11 +112,12 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
                circleVoyageCollider.enabled = true;
             }
             _collider.enabled = false;
-         }
+         }*/
       }
    }
 
    private void Update () {
+      /* Old method where sprite displays in world
       if (actionName == WARP_TO_LEAGUE_ACTION) {
          Color currColor = spriteRender.color;
          float alphaValue = isSpriteBase ? currColor.a : canvasGroup.alpha;
@@ -129,10 +138,11 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
                canvasGroup.alpha -= Time.deltaTime * FADE_SPEED;
             }
          }
-      }
+      }*/
    }
 
    public void receiveData (DataField[] dataFields) {
+      float newWidthKey = 0, newHeightKey = 0;
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.GENERIC_ACTION_TRIGGER_INTERACTION_TYPE:
@@ -149,12 +159,15 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
                }
                break;
             case DataField.GENERIC_ACTION_TRIGGER_WIDTH_KEY:
-               _collider.size = new Vector2(field.floatValue, _collider.size.y);
+               newHeightKey = field.floatValue;
                break;
             case DataField.GENERIC_ACTION_TRIGGER_HEIGHT_KEY:
-               _collider.size = new Vector2(_collider.size.x, field.floatValue);
+               newHeightKey = field.floatValue;
                break;
          }
+      }
+      if (actionName != WARP_TO_LEAGUE_ACTION) {
+         _collider.size = new Vector2(newWidthKey, newHeightKey);
       }
 
       // Configure the optional arrow
@@ -190,7 +203,9 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
          D.warning("Could not find sprite for warp arrow. Target sprite name: " + spriteName);
       }
 
-      voyageArrow.transform.localPosition = -DirectionUtil.getVectorForDirection(arrowDirection);
+      if (actionName != WARP_TO_LEAGUE_ACTION) {
+         voyageArrow.transform.localPosition = -DirectionUtil.getVectorForDirection(arrowDirection);
+      }
    }
 
    public bool hasCollider () {
@@ -202,12 +217,25 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
-      // Warping to league uses GUI button to trigger
-      if (actionName == WARP_TO_LEAGUE_ACTION) {
-         return;
+      NetEntity entity = collision.GetComponent<NetEntity>();
+      if (entity != null && Global.player == entity) {
+         // Warping to league uses GUI button to trigger
+         if (actionName == WARP_TO_LEAGUE_ACTION) {
+            GenericBiomeSpritePair spritePairData = biomeSpritePair.Find(_ => _.biomeType == biomeType);
+            VoyageTriggerPopup.self.enableVoyageGUI(true, spritePairData == null ? null : spritePairData.sprite);
+            VoyageTriggerPopup.self.voyageStatusConfirm.onClick.RemoveAllListeners();
+            VoyageTriggerPopup.self.voyageStatusConfirm.onClick.AddListener(() => {
+               VoyageTriggerPopup.self.enableVoyageGUI(false);
+               if (canActivateTrigger(entity)) {
+                  if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
+                     action.Invoke(entity);
+                  }
+               }
+            });
+            return;
+         }
       }
       
-      NetEntity entity = collision.GetComponent<NetEntity>();
       if (entity != null && interactionType == InteractionType.Enter && actionName != WARP_TO_LEAGUE_ACTION && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
@@ -223,6 +251,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
       // Warping to league uses GUI button to trigger
       if (actionName == WARP_TO_LEAGUE_ACTION) {
+         VoyageTriggerPopup.self.enableVoyageGUI(false);
          return;
       }
       if (entity != null && interactionType == InteractionType.Exit && canActivateTrigger(entity)) {
@@ -237,6 +266,16 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
       float distanceBetweenPlayer = entity == null ? 0 : Vector2.Distance(transform.position, entity.transform.position);
 
       if (entity != null && (interactionType == InteractionType.Stay || (interactionType == InteractionType.Enter && actionName == WARP_TO_LEAGUE_ACTION))) {
+         // Warping to league uses GUI button to trigger
+         if (actionName != WARP_TO_LEAGUE_ACTION) {
+            if (canActivateTrigger(entity)) {
+               if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
+                  action.Invoke(entity);
+               }
+            }
+         }
+
+         /* Old method where sprite displays in world
          if (distanceBetweenPlayer < INTERACT_DIST) {
             // Warping to league uses GUI button to trigger
             if (actionName == WARP_TO_LEAGUE_ACTION) {
@@ -252,7 +291,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
             if (distanceBetweenPlayer < VISIBLITY_DIST && actionName == WARP_TO_LEAGUE_ACTION) {
                withinRenderBounds = true;
             }
-         }
+         }*/
       }
    }
 

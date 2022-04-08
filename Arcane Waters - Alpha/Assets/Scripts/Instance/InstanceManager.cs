@@ -642,6 +642,30 @@ public class InstanceManager : MonoBehaviour
       return total;
    }
 
+   public void registerClientInstance (Instance instance) {
+      if (!NetworkServer.active) {
+         // Register or overwrite instance
+         if (!_instances.ContainsKey(instance.id)) {
+            _instances.Add(instance.id, instance);
+         } else {
+            _instances[instance.id] = instance;
+         }
+
+         // Cache all empty instances
+         List<int> instanceToClear = new List<int>();
+         foreach (KeyValuePair<int, Instance> existingInstance in _instances) {
+            if (existingInstance.Value == null) {
+               instanceToClear.Add(existingInstance.Key);
+            }
+         }
+
+         // Remove all empty instances
+         foreach (int instId in instanceToClear) {
+            _instances.Remove(instId);
+         }
+      }
+   }
+
    public List<InstanceOverview> createOverviewForAllInstances () {
       return _instances
          .Select(kv => new InstanceOverview { area = kv.Value.areaKey, count = getPlayerCountInInstance(kv.Key) })
