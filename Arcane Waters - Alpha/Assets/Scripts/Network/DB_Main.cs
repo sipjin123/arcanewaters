@@ -233,7 +233,7 @@ public class DB_Main : DB_MainStub
       if (mustExcludeEquippedItems) {
          clause.Append("AND itmId NOT IN (" +
             "SELECT itmId FROM items RIGHT JOIN users ON " +
-            "(items.itmId = users.armId OR items.itmId = users.wpnId OR items.itmId = users.hatId) " +
+            "(items.itmId = users.armId OR items.itmId = users.wpnId OR items.itmId = users.hatId OR items.itmId = users.ringId OR items.itmId = users.necklaceId OR items.itmId = users.trinketId) " +
             "WHERE items.usrId = " + userId + ") ");
       }
 
@@ -432,8 +432,8 @@ public class DB_Main : DB_MainStub
             using (MySqlCommand command = new MySqlCommand(
                "SELECT itmId, itmCategory, itmType, itmPalettes, durability, itmCount, itmData " +
                "FROM items " +
-               "left join users on armId = itmId or wpnId = itmId or hatId = itmId " +
-               "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
+               "left join users on ringId = itmId or necklaceId = itmId or trinketId = itmId or armId = itmId or wpnId = itmId or hatId = itmId " +
+               "where(ringId = itmId or necklaceId = itmId or trinketId = itmId or armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
                DebugQuery(command);
@@ -7012,13 +7012,19 @@ public class DB_Main : DB_MainStub
             "SELECT *, " +
             "armor.itmId AS armorId, armor.durability AS armorDurability, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
             "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, weapon.itmCount AS weaponCount, " +
-            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
+            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData, " +
+            "ring.itmId AS ringId, ring.itmType AS ringType, ring.itmPalettes AS ringPalettes, ring.itmData AS ringData, " +
+            "necklace.itmId AS necklaceId, necklace.itmType AS necklaceType, necklace.itmPalettes AS necklacePalettes, necklace.itmData AS necklaceData, " +
+            "trinket.itmId AS trinketId, trinket.itmType AS trinketType, trinket.itmPalettes AS trinketPalettes, trinket.itmData AS trinketData " +
             "FROM users JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
             "LEFT JOIN guild_ranks ON(users.gldRankId = guild_ranks.id)" +
             "LEFT JOIN items AS armor ON(users.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
             "LEFT JOIN items AS hat ON(users.hatId = hat.itmId) " +
+            "LEFT JOIN items AS ring ON(users.ringId = ring.itmId) " +
+            "LEFT JOIN items AS necklace ON(users.necklaceId = necklace.itmId) " +
+            "LEFT JOIN items AS trinket ON(users.trinketId = trinket.itmId) " +
             "WHERE users.usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -7078,6 +7084,9 @@ public class DB_Main : DB_MainStub
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
                      userObjects.hat = getHat(dataReader);
+                     userObjects.ring = getRing(dataReader);
+                     userObjects.necklace = getNecklace(dataReader);
+                     userObjects.trinket = getTrinket(dataReader);
                      userObjects.armorPalettes = userObjects.armor.paletteNames;
                      userObjects.weaponPalettes = userObjects.weapon.paletteNames;
 
@@ -7104,13 +7113,19 @@ public class DB_Main : DB_MainStub
             "SELECT *, " +
             "armor.itmId AS armorId, armor.durability AS armorDurability, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
             "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, weapon.itmCount AS weaponCount, " +
-            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
+            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData, " +
+            "ring.itmId AS ringId, ring.itmType AS ringType, ring.itmPalettes AS ringPalettes, ring.itmData AS ringData, " +
+            "necklace.itmId AS necklaceId, necklace.itmType AS necklaceType, necklace.itmPalettes AS necklacePalettes, necklace.itmData AS necklaceData, " +
+            "trinket.itmId AS trinketId, trinket.itmType AS trinketType, trinket.itmPalettes AS trinketPalettes, trinket.itmData AS trinketData " +
             "FROM users_deleted JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users_deleted.gldId = guilds.gldId)" +
             "LEFT JOIN guild_ranks ON(users_deleted.gldRankId = guild_ranks.id)" +
             "LEFT JOIN items AS armor ON(users_deleted.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users_deleted.wpnId = weapon.itmId) " +
             "LEFT JOIN items AS hat ON(users_deleted.hatId = hat.itmId) " +
+            "LEFT JOIN items AS ring ON(users_deleted.ringId = ring.itmId) " +
+            "LEFT JOIN items AS necklace ON(users_deleted.necklaceId = necklace.itmId) " +
+            "LEFT JOIN items AS trinket ON(users_deleted.trinketId = trinket.itmId) " +
             "WHERE users_deleted.usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -7170,6 +7185,9 @@ public class DB_Main : DB_MainStub
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
                      userObjects.hat = getHat(dataReader);
+                     userObjects.ring = getRing(dataReader);
+                     userObjects.necklace = getNecklace(dataReader);
+                     userObjects.trinket = getTrinket(dataReader);
                      userObjects.armorPalettes = userObjects.armor.paletteNames;
                      userObjects.weaponPalettes = userObjects.weapon.paletteNames;
 
@@ -12490,6 +12508,33 @@ public class DB_Main : DB_MainStub
    }
 
    #region Equipment Translation
+
+   protected static Ring getRing (MySqlDataReader dataReader) {
+      int itemId = DataUtil.getInt(dataReader, "ringId");
+      int itemTypeId = DataUtil.getInt(dataReader, "ringType");
+      string palettes = DataUtil.getString(dataReader, "ringPalettes");
+      string itemData = DataUtil.getString(dataReader, "ringData");
+
+      return new Ring(itemId, itemTypeId, palettes, itemData, 100, 1);
+   }
+
+   protected static Necklace getNecklace (MySqlDataReader dataReader) {
+      int itemId = DataUtil.getInt(dataReader, "necklaceId");
+      int itemTypeId = DataUtil.getInt(dataReader, "necklaceType");
+      string palettes = DataUtil.getString(dataReader, "necklacePalettes");
+      string itemData = DataUtil.getString(dataReader, "necklaceData");
+
+      return new Necklace(itemId, itemTypeId, palettes, itemData, 100, 1);
+   }
+
+   protected static Trinket getTrinket (MySqlDataReader dataReader) {
+      int itemId = DataUtil.getInt(dataReader, "trinketId");
+      int itemTypeId = DataUtil.getInt(dataReader, "trinketType");
+      string palettes = DataUtil.getString(dataReader, "trinketPalettes");
+      string itemData = DataUtil.getString(dataReader, "trinketData");
+
+      return new Trinket(itemId, itemTypeId, palettes, itemData, 100, 1);
+   }
 
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");

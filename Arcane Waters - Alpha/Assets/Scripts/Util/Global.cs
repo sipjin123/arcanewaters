@@ -125,10 +125,13 @@ public class Global
 
    #endregion
 
-   public static void setUserEquipment (Item weapon, Item armor, Item hat) {
+   public static void setUserEquipment (Item weapon, Item armor, Item hat, Item ring, Item necklace, Item trinket) {
       userObjects.weapon = weapon;
       userObjects.armor = armor;
       userObjects.hat = hat;
+      userObjects.ring = ring;
+      userObjects.necklace = necklace;
+      userObjects.trinket = trinket;
    }
 
    public static void setUserObject (UserObjects newUserObj) {

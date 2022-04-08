@@ -715,7 +715,7 @@ public class NetEntity : NetworkBehaviour
       this.adminFlag = newAdminFlag;
    }
 
-   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat,
+   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, Item ring, Item necklace, Item trinket,
       ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;
@@ -761,6 +761,31 @@ public class NetEntity : NetworkBehaviour
             hat.data = HatStatData.serializeHatStatData(hatStatData);
          } else {
             D.debug("Hat was null {" + hat.itemTypeId + "}. User equipped hat is not available");
+         }
+      }
+
+      if (ring.itemTypeId > 0) {
+         RingStatData ringStatData = EquipmentXMLManager.self.getRingData(ring.itemTypeId);
+         if (ringStatData != null) {
+            ring.data = RingStatData.serializeRingStatData(ringStatData);
+         } else {
+            D.debug("Ring was null {" + ring.itemTypeId + "}. User equipped ring is not available");
+         }
+      }
+      if (necklace.itemTypeId > 0) {
+         NecklaceStatData necklaceStatData = EquipmentXMLManager.self.getNecklaceData(necklace.itemTypeId);
+         if (necklaceStatData != null) {
+            necklace.data = NecklaceStatData.serializeNecklaceStatData(necklaceStatData);
+         } else {
+            D.debug("Necklace was null {" + necklace.itemTypeId + "}. User equipped necklace is not available");
+         }
+      }
+      if (trinket.itemTypeId > 0) {
+         TrinketStatData trinketStatData = EquipmentXMLManager.self.getTrinketData(trinket.itemTypeId);
+         if (trinketStatData != null) {
+            trinket.data = TrinketStatData.serializeTrinketStatData(trinketStatData);
+         } else {
+            D.debug("Trinket was null {" + trinket.itemTypeId + "}. User equipped trinket is not available");
          }
       }
    }

@@ -12,6 +12,9 @@ public enum EquipmentType
    Weapon = 1,
    Armor = 2,
    Hat = 3,
+   Ring = 4,
+   Necklace = 5,
+   Trinket = 6
 }
 
 namespace NubisDataHandling {
@@ -80,6 +83,33 @@ namespace NubisDataHandling {
                            hatData.equipmentIconPath);
                      } else {
                         D.editorLog("Failed to gather data for hat: " + itmType + " : " + hatData + " : " + itmId, Color.red);
+                     }
+                     break;
+                  case Item.Category.Ring:
+                     RingStatData ringData = EquipmentXMLManager.self.getRingData(itmType);
+                     if (ringData != null) {
+                        otherItem.setBasicInfo(ringData.equipmentName, ringData.equipmentDescription,
+                           ringData.equipmentIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for ring: " + itmType + " : " + ringData + " : " + itmId, Color.red);
+                     }
+                     break;
+                  case Item.Category.Necklace:
+                     NecklaceStatData necklaceData = EquipmentXMLManager.self.getNecklaceData(itmType);
+                     if (necklaceData != null) {
+                        otherItem.setBasicInfo(necklaceData.equipmentName, necklaceData.equipmentDescription,
+                           necklaceData.equipmentIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for necklace: " + itmType + " : " + necklaceData + " : " + itmId, Color.red);
+                     }
+                     break;
+                  case Item.Category.Trinket:
+                     TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(itmType);
+                     if (trinketData != null) {
+                        otherItem.setBasicInfo(trinketData.equipmentName, trinketData.equipmentDescription,
+                           trinketData.equipmentIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for trinket: " + itmType + " : " + trinketData + " : " + itmId, Color.red);
                      }
                      break;
                   case Item.Category.Haircut:

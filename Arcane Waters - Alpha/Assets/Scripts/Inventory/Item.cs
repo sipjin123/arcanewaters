@@ -15,7 +15,7 @@ public class Item
    {
       None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6,
       Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Dye = 13,
-      Pet = 14, Consumable = 15, Crop = 16, Prop = 17
+      Pet = 14, Consumable = 15, Crop = 16, Prop = 17, Necklace = 18, Ring = 19, Trinket = 20
    }
 
    // The durability filter being used by the item
@@ -175,6 +175,12 @@ public class Item
             return new CropItem(id, itemTypeId, paletteNames, data, durability, count);
          case Category.Prop:
             return new Prop(id, itemTypeId, paletteNames, data, durability, count);
+         case Category.Necklace:
+            return new Necklace(id, itemTypeId, paletteNames, data, durability, count);
+         case Category.Ring:
+            return new Ring(id, itemTypeId, paletteNames, data, durability, count);
+         case Category.Trinket:
+            return new Trinket(id, itemTypeId, paletteNames, data, durability, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;
@@ -339,7 +345,7 @@ public class Item
    }
 
    public static bool isUsingEquipmentXML (Item.Category category) {
-      if (category == Category.Armor || category == Category.Weapon || category == Category.Hats) {
+      if (category == Category.Armor || category == Category.Weapon || category == Category.Hats || category == Category.Ring || category == Category.Necklace || category == Category.Trinket) {
          return true;
       }
 
@@ -422,6 +428,9 @@ public class Item
    public static bool isEquippable (Category category) {
       return category == Category.Weapon ||
          category == Category.Armor ||
+         category == Category.Ring ||
+         category == Category.Trinket ||
+         category == Category.Necklace ||
          category == Category.Hats;
    }
 
@@ -429,6 +438,9 @@ public class Item
       return category == Item.Category.Weapon ||
          category == Item.Category.Armor ||
          category == Item.Category.Hats ||
+         category == Category.Ring ||
+         category == Category.Trinket ||
+         category == Category.Necklace ||
          category == Item.Category.Haircut ||
          category == Item.Category.ShipSkin;
    }

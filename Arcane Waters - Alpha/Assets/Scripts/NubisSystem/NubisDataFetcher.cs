@@ -34,6 +34,11 @@ namespace NubisDataHandling {
       // The equipped hat.
       public Item equippedHat;
 
+      // The equipped gear.
+      public Item equippedRing;
+      public Item equippedNecklace;
+      public Item equippedTrinket;
+
       // The item count.
       public int totalItemCount;
 
@@ -284,7 +289,7 @@ namespace NubisDataHandling {
          }
 
          if (inventoryBundle == null) {
-            D.debug("Inventory bundle is not existing!"+ " : " + inventoryBundleString);
+            D.debug("Inventory bundle is not existing!" + " : " + inventoryBundleString);
             return;
          }
 
@@ -310,9 +315,30 @@ namespace NubisDataHandling {
                inventoryBundle.equippedHat.itemTypeId = 0;
             }
          }
+         if (inventoryBundle.equippedRing.itemTypeId != 0) {
+            RingStatData xmlRingData = EquipmentXMLManager.self.getRingData(inventoryBundle.equippedRing.itemTypeId);
+            if (xmlRingData == null) {
+               D.debug("NUBIS DATA FETCHER :: Ring data missing! ID:" + inventoryBundle.equippedRing.itemTypeId + " RingDataContent: " + EquipmentXMLManager.self.ringStatList.Count);
+               inventoryBundle.equippedRing.itemTypeId = 0;
+            }
+         }
+         if (inventoryBundle.equippedNecklace.itemTypeId != 0) {
+            NecklaceStatData xmlNecklaceData = EquipmentXMLManager.self.getNecklaceData(inventoryBundle.equippedNecklace.itemTypeId);
+            if (xmlNecklaceData == null) {
+               D.debug("NUBIS DATA FETCHER :: Necklace data missing! ID:" + inventoryBundle.equippedNecklace.itemTypeId + " NecklaceDataContent: " + EquipmentXMLManager.self.necklaceStatList.Count);
+               inventoryBundle.equippedNecklace.itemTypeId = 0;
+            }
+         }
+         if (inventoryBundle.equippedTrinket.itemTypeId != 0) {
+            TrinketStatData xmlTrinketData = EquipmentXMLManager.self.getTrinketData(inventoryBundle.equippedTrinket.itemTypeId);
+            if (xmlTrinketData == null) {
+               D.debug("NUBIS DATA FETCHER :: Trinket data missing! ID:" + inventoryBundle.equippedTrinket.itemTypeId + " TrinketDataContent: " + EquipmentXMLManager.self.trinketStatList.Count);
+               inventoryBundle.equippedTrinket.itemTypeId = 0;
+            }
+         }
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
-        
+
          // Filter inventory items here
          itemList.RemoveAll(_ => _.category == Item.Category.Usable);
 
@@ -329,7 +355,8 @@ namespace NubisDataHandling {
             }
             inventoryPanel.clearPanel();
 
-            UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
+            UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat,
+            ring = inventoryBundle.equippedRing, necklace = inventoryBundle.equippedNecklace, trinket = inventoryBundle.equippedTrinket };
             inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
          } else if (panelType == Panel.Type.Craft) {
             // Get the crafting panel

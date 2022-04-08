@@ -566,7 +566,7 @@ public class MyNetworkManager : NetworkManager
 
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
-            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, shipInfo, guildInfo, guildRankInfo);
             player.steamId = steamUserId;
 
             if (guildAllies.Count > 0) {

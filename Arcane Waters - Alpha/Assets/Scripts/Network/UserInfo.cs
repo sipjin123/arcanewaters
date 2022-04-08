@@ -64,6 +64,11 @@ public class UserInfo {
    // The hat ID
    public int hatId;
 
+   // The gear ID used
+   public int ringId;
+   public int necklaceId;
+   public int trinketId;
+
    // The hair type
    [XmlElement(Namespace = "HairType")]
    public HairLayer.Type hairType;
@@ -139,6 +144,9 @@ public class UserInfo {
       this.adminFlag = dataReader.GetInt32("usrAdminFlag");
       this.armorId = dataReader.GetInt32("armId");
       this.weaponId = dataReader.GetInt32("wpnId");
+      this.ringId = dataReader.GetInt32("ringId");
+      this.necklaceId = dataReader.GetInt32("necklaceId");
+      this.trinketId = dataReader.GetInt32("trinketId");
       this.hatId = dataReader.GetInt32("hatId");
       this.hairType = (HairLayer.Type)dataReader.GetInt32("hairType");
       this.hairPalettes = dataReader.GetString("hairPalettes");
@@ -212,6 +220,9 @@ public class UserInfo {
       serialized[18] = this.flagshipId;
       serialized[19] = this.gems;
       serialized[20] = this.charSpot;
+      serialized[21] = this.ringId;
+      serialized[22] = this.necklaceId;
+      serialized[22] = this.trinketId;
 
       return serialized;
    }
@@ -240,6 +251,9 @@ public class UserInfo {
       userInfo.flagshipId = (int) serialized[18];
       userInfo.gems = (int) serialized[19];
       userInfo.charSpot = (int) serialized[20];
+      userInfo.ringId = (int) serialized[21];
+      userInfo.necklaceId = (int) serialized[22];
+      userInfo.trinketId = (int) serialized[23];
 
       return userInfo;
    }

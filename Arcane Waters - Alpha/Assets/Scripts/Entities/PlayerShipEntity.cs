@@ -52,6 +52,10 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public string hatColors;
 
+   // The gears equippped that may update the stats of the user
+   [SyncVar]
+   public int ringType = 0, necklaceType = 0, trinketType = 0;
+
    // The effect that indicates this ship is speeding up
    public SpriteRenderer[] speedUpEffectHolders;
    public Canvas speedupGUI;
@@ -1297,8 +1301,8 @@ public class PlayerShipEntity : ShipEntity
       NetworkServer.Spawn(netBall.gameObject);
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo, guildRankInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, Item ring, Item necklace, Item trinket, ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, hat, ring, necklace, trinket, shipInfo, guildInfo, guildRankInfo);
 
       // Ship stuff
       shipId = shipInfo.shipId;
