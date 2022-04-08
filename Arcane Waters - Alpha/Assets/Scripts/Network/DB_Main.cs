@@ -5842,6 +5842,93 @@ public class DB_Main : DB_MainStub
       return success;
    }
 
+   public static new void setRingId (int userId, int newId) {
+      if (newId != 0 && !hasItem(userId, newId, (int) Item.Category.Ring)) {
+         D.warning(string.Format("User {0} does not have ring {1} to equip.", userId, newId));
+         return;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET ringId=@ringId WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ringId", newId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setNecklaceId (int userId, int newId) {
+      if (newId != 0 && !hasItem(userId, newId, (int) Item.Category.Necklace)) {
+         D.warning(string.Format("User {0} does not have necklace {1} to equip.", userId, newId));
+         return;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET necklaceId=@necklaceId WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@necklaceId", newId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setTrinketId (int userId, int newId) {
+      if (newId != 0 && !hasItem(userId, newId, (int) Item.Category.Trinket)) {
+         D.warning(string.Format("User {0} does not have trinket {1} to equip.", userId, newId));
+         return;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET trinketId=@trinketId WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@trinketId", newId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void setArmorId (int userId, int newArmorId) {
       if (newArmorId != 0 && !hasItem(userId, newArmorId, (int) Item.Category.Armor)) {
          D.warning(string.Format("User {0} does not have armor {1} to equip.", userId, newArmorId));

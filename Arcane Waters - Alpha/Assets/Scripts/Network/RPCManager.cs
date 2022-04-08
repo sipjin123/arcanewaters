@@ -1005,9 +1005,9 @@ public class RPCManager : NetworkBehaviour
          exploringEntries, tradingEntries, craftingEntries, miningEntries, badgesEntries);
    }
 
-   private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
+   private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket, Item soulBoundItem) {
       // Update the equipped items cache
-      Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
+      Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket);
 
       // Refresh the inventory panel
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
@@ -1031,13 +1031,13 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_OnEquipSoulBoundItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
-      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, soulBoundItem);
+   public void Target_OnEquipSoulBoundItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket, Item soulBoundItem) {
+      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket, soulBoundItem);
    }
 
    [TargetRpc]
-   public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
-      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, null);
+   public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket) {
+      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket, null);
    }
 
    [TargetRpc]
@@ -1847,6 +1847,21 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_RequestSetRingId (int newId) {
+      requestSetRingId(newId);
+   }
+
+   [Command]
+   public void Cmd_RequestSetNecklaceId (int newId) {
+      requestSetNecklaceId(newId);
+   }
+
+   [Command]
+   public void Cmd_RequestSetTrinketId (int newId) {
+      requestSetTrinketId(newId);
+   }
+
+   [Command]
    public void Cmd_DeleteItem (int itemId) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -2626,7 +2641,7 @@ public class RPCManager : NetworkBehaviour
                   _player.hairPalettes = paletteToolData.paletteName;
 
                   // Refresh local store
-                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
 
                   // Update the hair color but keep the style
                   Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
@@ -2668,7 +2683,7 @@ public class RPCManager : NetworkBehaviour
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // Refresh local store
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
 
                // Report other clients
                ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
@@ -8931,11 +8946,125 @@ public class RPCManager : NetworkBehaviour
             D.debug("Null user objects!");
          } else {
             if (justSoulBound) {
-               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.armor);
+               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.armor);
             } else {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
             }
          }
+      });
+   }
+   
+   [Server]
+   public void requestSetRingId (int newId) {
+      D.adminLog("Requesting new Ring: " + newId, D.ADMIN_LOG_TYPE.Equipment);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setRingId(_player.userId, newId);
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Ring ring = Ring.castItemToRing(userObjects.ring);
+
+            // Assign translated data
+            if (ring.data.Length < 1 && ring.itemTypeId > 0 && ring.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               ring.data = RingStatData.serializeRingStatData(EquipmentXMLManager.self.getRingData(ring.itemTypeId));
+               userObjects.ring.data = ring.data;
+            }
+
+            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+            if (body != null) {
+               body.gearManager.updateRingSyncVars(ring.itemTypeId, ring.id);
+            }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+            if (ship != null) {
+               RingStatData data = EquipmentXMLManager.self.getRingData(ring.itemTypeId);
+               ship.ringType = data != null ? data.ringType : 0;
+            }
+
+            if (userObjects == null) {
+               D.debug("Null user objects!");
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
+            }
+         });
+      });
+   }
+
+   [Server]
+   public void requestSetNecklaceId (int newId) {
+      D.adminLog("Requesting new Necklace: " + newId, D.ADMIN_LOG_TYPE.Equipment);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setNecklaceId(_player.userId, newId);
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Necklace necklace = Necklace.castItemToNecklace(userObjects.necklace);
+
+            // Assign translated data
+            if (necklace.data.Length < 1 && necklace.itemTypeId > 0 && necklace.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               necklace.data = NecklaceStatData.serializeNecklaceStatData(EquipmentXMLManager.self.getNecklaceData(necklace.itemTypeId));
+               userObjects.necklace.data = necklace.data;
+            }
+
+            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+            if (body != null) {
+               body.gearManager.updateNecklaceSyncVars(necklace.itemTypeId, necklace.id);
+            }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+            if (ship != null) {
+               NecklaceStatData data = EquipmentXMLManager.self.getNecklaceData(necklace.itemTypeId);
+               ship.necklaceType = data != null ? data.necklaceType : 0;
+            }
+
+            if (userObjects == null) {
+               D.debug("Null user objects!");
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
+            }
+         });
+      });
+   }
+
+   [Server]
+   public void requestSetTrinketId (int newId) {
+      D.adminLog("Requesting new Trinket: " + newId, D.ADMIN_LOG_TYPE.Equipment);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setTrinketId(_player.userId, newId);
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Trinket trinket = Trinket.castItemToTrinket(userObjects.trinket);
+
+            // Assign translated data
+            if (trinket.data.Length < 1 && trinket.itemTypeId > 0 && trinket.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               trinket.data = TrinketStatData.serializeTrinketStatData(EquipmentXMLManager.self.getTrinketData(trinket.itemTypeId));
+               userObjects.trinket.data = trinket.data;
+            }
+
+            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+            if (body != null) {
+               body.gearManager.updateTrinketSyncVars(trinket.itemTypeId, trinket.id);
+            }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+            if (ship != null) {
+               TrinketStatData data = EquipmentXMLManager.self.getTrinketData(trinket.itemTypeId);
+               ship.trinketType = data != null ? data.trinketType : 0;
+            }
+
+            if (userObjects == null) {
+               D.debug("Null user objects!");
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
+            }
+         });
       });
    }
 
@@ -8993,9 +9122,9 @@ public class RPCManager : NetworkBehaviour
             D.debug("Null user objects!");
          } else {
             if (justSoulBound) {
-               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.hat);
+               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.hat);
             } else {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
             }
          }
       });
@@ -9054,9 +9183,9 @@ public class RPCManager : NetworkBehaviour
                D.debug("Null user objects!");
             } else {
                if (justSoulBound) {
-                  Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.weapon);
+                  Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.weapon);
                } else {
-                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
                }
             }
          } else {
@@ -9595,6 +9724,9 @@ public class RPCManager : NetworkBehaviour
       Item equippedWeapon = equippedItemData.weaponItem;
       Item equippedArmor = equippedItemData.armorItem;
       Item equippedHat = equippedItemData.hatItem;
+      Item equippedRing = equippedItemData.ringItem;
+      Item equippedNecklace = equippedItemData.necklaceItem;
+      Item equippedTrinket = equippedItemData.trinketItem;
 
       // Create an empty item id filter
       int[] itemIdsToExclude = new int[0];
@@ -9609,6 +9741,9 @@ public class RPCManager : NetworkBehaviour
          equippedHat = equippedHat,
          equippedArmor = equippedArmor,
          equippedWeapon = equippedWeapon,
+         equippedRing = equippedRing,
+         equippedNecklace = equippedNecklace,
+         equippedTrinket = equippedTrinket,
          user = newUserInfo,
          guildInfo = guildInfo,
          totalItemCount = itemCount

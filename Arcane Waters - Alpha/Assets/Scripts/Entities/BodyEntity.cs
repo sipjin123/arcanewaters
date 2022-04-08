@@ -12,6 +12,7 @@ public class BodyEntity : NetEntity
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
    public HatManager hatsManager;
+   public GearManager gearManager;
 
    #endregion
 
@@ -51,6 +52,9 @@ public class BodyEntity : NetEntity
       this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability, true);
       this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, weapon.durability, weapon.count, true);
       this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id, hat.paletteNames, true);
+      this.gearManager.updateRingSyncVars(ring.itemTypeId, ring.id, true);
+      this.gearManager.updateNecklaceSyncVars(necklace.itemTypeId, necklace.id, true);
+      this.gearManager.updateTrinketSyncVars(trinket.itemTypeId, trinket.id, true);
    }
 
    public override Armor getArmorCharacteristics () {

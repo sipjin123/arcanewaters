@@ -16,6 +16,11 @@ namespace NubisDataHandling {
 
       // The current hat of the player
       public Item hatItem;
+
+      // The gear items of the player
+      public Item ringItem;
+      public Item necklaceItem;
+      public Item trinketItem;
    }
 
    [Serializable]
@@ -29,6 +34,9 @@ namespace NubisDataHandling {
          Item weaponItem = new Item();
          Item armorItem = new Item();
          Item hatItem = new Item();
+         Item ringItem = new Item();
+         Item necklaceItem = new Item();
+         Item trinketItem = new Item();
 
          string splitter = "[next]";
          string[] rawItemGroup = contentData.Split(new string[] { splitter }, StringSplitOptions.None);
@@ -96,6 +104,39 @@ namespace NubisDataHandling {
                            count = itemCount
                         };
                         break;
+                     case Item.Category.Ring:
+                        ringItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Ring,
+                           itemTypeId = itemTypeID,
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability,
+                           count = itemCount
+                        };
+                        break;
+                     case Item.Category.Necklace:
+                        necklaceItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Necklace,
+                           itemTypeId = itemTypeID,
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability,
+                           count = itemCount
+                        };
+                        break;
+                     case Item.Category.Trinket:
+                        trinketItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Trinket,
+                           itemTypeId = itemTypeID,
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability,
+                           count = itemCount
+                        };
+                        break;
                   }
                }
             }
@@ -104,6 +145,9 @@ namespace NubisDataHandling {
          equippedItemData.weaponItem = weaponItem;
          equippedItemData.armorItem = armorItem;
          equippedItemData.hatItem = hatItem;
+         equippedItemData.ringItem = ringItem;
+         equippedItemData.necklaceItem = necklaceItem;
+         equippedItemData.trinketItem = trinketItem;
 
          return equippedItemData;
       }
