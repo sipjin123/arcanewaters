@@ -27,6 +27,9 @@ public class TreasureDropsData {
    // The min and max drops 
    public int dropMinCount = 1;
    public int dropMaxCount = 1;
+
+   // The xml id for empty drops
+   public const int EMPTY_DROPS = 15;
 }
 
 [Serializable]

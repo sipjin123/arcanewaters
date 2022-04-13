@@ -295,16 +295,25 @@ public class TreasureChest : NetworkBehaviour {
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
       Biome.Type biome = instance.biome;
-      List<TreasureDropsData> treasureDropsList = lootGroupId > 0 ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
+      List<TreasureDropsData> treasureDropsList = (lootGroupId != TreasureDropsData.EMPTY_DROPS || lootGroupId > 0) 
+         ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) 
+         : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
       D.adminLog("Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items", D.ADMIN_LOG_TYPE.Treasure);
-      
+
+      // Try to fetch biome based drops if no treasure content is found
       if (treasureDropsList.Count < 1) {
+         treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
+      }
+
+      if (treasureDropsList.Count < 1) {
+         // If no treasure content was fetched still, find the next viable content
          D.error("There are no treasure drops generated for user {" + userId + "} Biome:{" + biome + "} Checking alternative item: G:{" + lootGroupId + "} R:{" + rarity + "}");
          Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
          if (nextAvailableItem != null) {
             return nextAvailableItem;
          }
       } else {
+         // Process random entry between the fetched content
          TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
          if (randomEntry.item != null) {
             randomEntry.item.count = assignItemCount(randomEntry);
