@@ -178,6 +178,7 @@ public class Battle : NetworkBehaviour {
                         damagePerTick = (int) (battler.getStartingHealth() * BURN_DAMAGE_PER_TICK_PERCENTAGE);
                         battler.health -= damagePerTick;
                         battler.displayedHealth -= damagePerTick;
+                        battler.damageTicks += damagePerTick;
                         Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Fire);
                         if (battler.health < 1) {
                            // Register burn achievement
@@ -193,6 +194,7 @@ public class Battle : NetworkBehaviour {
                         damagePerTick = (int) (battler.health * (POISON_DAMAGE_PER_TICK_PERCENTAGE * bossDamageMultiplier));
                         battler.health -= damagePerTick;
                         battler.displayedHealth -= damagePerTick;
+                        battler.damageTicks += damagePerTick;
                         Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
                         if (battler.health < 1) {
                            // Register poison achievement

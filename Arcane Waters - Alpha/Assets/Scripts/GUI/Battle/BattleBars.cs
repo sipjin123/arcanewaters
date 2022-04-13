@@ -133,7 +133,7 @@ public class BattleBars : MonoBehaviour {
 
       // Figure out how full our bars should be
       timerBar.fillAmount = _battler.getActionTimerPercent();
-      _healthBar.fillAmount = ((float) _battler.displayedHealth / _battler.getStartingHealth());
+      _healthBar.fillAmount = (((float) _battler.displayedHealth - _battler.damageTicks) / _battler.getStartingHealth());
 
       // Hide our bars while we're doing an attack
       if ((_battler != BattleSelectionManager.self.selectedBattler && !_battler.isLocalBattler()) || _battler.isAttacking) {                                              

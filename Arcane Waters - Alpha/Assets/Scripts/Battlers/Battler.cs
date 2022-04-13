@@ -89,6 +89,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int health = 1;
 
+   // The damage ticks inflicted on this unit
+   [SyncVar]
+   public int damageTicks;
+
    // The amount of health displayed by the client
    public int displayedHealth;
 
