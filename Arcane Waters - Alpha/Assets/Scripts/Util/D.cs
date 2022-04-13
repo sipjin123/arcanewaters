@@ -52,7 +52,8 @@ public class D : MonoBehaviour {
       Simulation_Sea = 39,
       Warp_To_Town = 40,
       Battle_Selection = 41,
-      Achievement = 42
+      Achievement = 42,
+      DeathAnimDelay = 43
    }
 
    // Any log files older than this will be deleted

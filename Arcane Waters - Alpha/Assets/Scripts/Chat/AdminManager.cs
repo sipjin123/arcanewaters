@@ -2239,7 +2239,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    private static void interactAnvil () {
-      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);
+      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE, new List<Item.Category>());
    }
 
    public void cycleCommandHistory (int amount) {

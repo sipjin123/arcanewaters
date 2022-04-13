@@ -33,10 +33,8 @@ public class ScreenLogger : GenericGameManager {
       isEnabled = false;
       canvasObj.SetActive(false);
 
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Quest);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Battle_Selection);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Redirecting);
-      D.debug("Screen Logger v5.0.5 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
+      //Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.DeathAnimDelay);
+      D.debug("Screen Logger v5.0.6 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
       if (!Util.isCloudBuild()) {
          isEnabled = true;
