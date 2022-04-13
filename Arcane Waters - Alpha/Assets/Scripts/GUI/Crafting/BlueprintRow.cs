@@ -32,6 +32,12 @@ public class BlueprintRow : MonoBehaviour
    // The ID of the blueprint being displayed
    public int blueprintItemId;
 
+   // The item type
+   public int itemType;
+
+   // The item category
+   public Item.Category itemCategory;
+
    #endregion Public Variables
 
    public void highlightTemplate (bool isHighlighted) {
@@ -44,6 +50,8 @@ public class BlueprintRow : MonoBehaviour
 
    public void setRowForBlueprint (Item resultItem, bool isSelected, Blueprint.Status status) {
       blueprintItemId = resultItem.id;
+      itemCategory = resultItem.category;
+      itemType = resultItem.itemTypeId;
 
       // Set the 'blueprint selected' background
       if (isSelected) {
@@ -99,7 +107,7 @@ public class BlueprintRow : MonoBehaviour
    }
 
    public void onRowButtonPress () {
-      CraftingPanel.self.displayBlueprint(blueprintItemId);
+      CraftingPanel.self.displayBlueprint(blueprintItemId, itemCategory, itemType);
    }
 
    #region Private Variables

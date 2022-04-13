@@ -62,6 +62,13 @@ public class CraftingPanel : Panel
    public CraftingStatColumn airStatColumn;
    public CraftingStatColumn waterStatColumn;
 
+   // Category buttons
+   public Button allCategoryButton, weaponCategoryButton, armorCategoryButton, gearCategoryButton, ingredientButton;
+   public GameObject allCategoryActive, weaponCategoryActive, armorCategoryActive, gearCategoryActive, ingredientActive;
+
+   // The category tabs
+   public GameObject categoryTabs;
+
    // The refine button
    public Button refineButton;
 
@@ -110,6 +117,9 @@ public class CraftingPanel : Panel
    // An event triggered when receiving refinement data
    public UnityEvent receiveRefinementData = new UnityEvent();
 
+   // The current category
+   public static List<Item.Category> craftingCategoryList = new List<Item.Category>();
+
    // Tab types
    public enum TabType
    {
@@ -128,6 +138,54 @@ public class CraftingPanel : Panel
    public override void Awake () {
       base.Awake();
       self = this;
+
+      allCategoryButton.onClick.AddListener(() => {
+         craftingCategoryList.Clear();
+         craftingCategoryList.Add(Item.Category.None);
+         disableAllCategoryTabs();
+         allCategoryActive.SetActive(true);
+         NubisDataFetcher.self.fetchCraftableData(0, ROWS_PER_PAGE, craftingCategoryList);
+      });
+      armorCategoryButton.onClick.AddListener(() => {
+         craftingCategoryList.Clear();
+         craftingCategoryList.Add(Item.Category.Armor);
+         craftingCategoryList.Add(Item.Category.Hats);
+         disableAllCategoryTabs();
+         armorCategoryActive.SetActive(true);
+         NubisDataFetcher.self.fetchCraftableData(0, ROWS_PER_PAGE, craftingCategoryList);
+      });
+      weaponCategoryButton.onClick.AddListener(() => {
+         craftingCategoryList.Clear();
+         craftingCategoryList.Add(Item.Category.Weapon);
+         disableAllCategoryTabs();
+         weaponCategoryActive.SetActive(true);
+         NubisDataFetcher.self.fetchCraftableData(0, ROWS_PER_PAGE, craftingCategoryList);
+      });
+      gearCategoryButton.onClick.AddListener(() => {
+         craftingCategoryList.Clear();
+         craftingCategoryList.Add(Item.Category.Trinket);
+         craftingCategoryList.Add(Item.Category.Necklace);
+         craftingCategoryList.Add(Item.Category.Ring);
+         disableAllCategoryTabs();
+         gearCategoryActive.SetActive(true);
+         NubisDataFetcher.self.fetchCraftableData(0, ROWS_PER_PAGE, craftingCategoryList);
+      });
+      ingredientButton.onClick.AddListener(() => {
+         craftingCategoryList.Clear();
+         craftingCategoryList.Add(Item.Category.CraftingIngredients);
+         disableAllCategoryTabs();
+         ingredientActive.SetActive(true);
+         NubisDataFetcher.self.fetchCraftableData(0, ROWS_PER_PAGE, craftingCategoryList);
+      });
+      allCategoryButton.onClick.Invoke();
+   }
+
+   private void disableAllCategoryTabs () {
+      allCategoryActive.SetActive(false);
+      armorCategoryActive.SetActive(false);
+      weaponCategoryActive.SetActive(false);
+      gearCategoryActive.SetActive(false);
+      ingredientActive.SetActive(false);
    }
 
    #region Common
@@ -231,7 +289,7 @@ public class CraftingPanel : Panel
    public void refreshBlueprintList () {
       selectCraftingTab();
       toggleBlockers(true);
-      NubisDataFetcher.self.fetchCraftableData(_currentPageIndex, ROWS_PER_PAGE);
+      NubisDataFetcher.self.fetchCraftableData(_currentPageIndex, ROWS_PER_PAGE, craftingCategoryList);
    }
 
    public void updateCraftButton () {
@@ -243,6 +301,7 @@ public class CraftingPanel : Panel
    }
 
    public void selectCraftingTab () {
+      categoryTabs.SetActive(true);
       refineableItemsHolder.gameObject.DestroyChildren();
       refinementIngredientsHolder.gameObject.DestroyChildren();
       refineAbleItemSelection.gameObject.DestroyChildren();
@@ -264,14 +323,14 @@ public class CraftingPanel : Panel
       }
    }
 
-   public void displayBlueprint (int itemId) {
+   public void displayBlueprint (int itemId, Item.Category category, int itemType) {
       toggleBlockers(true);
-      NubisDataFetcher.self.checkCraftingInfo(itemId);
+      NubisDataFetcher.self.checkCraftingInfo(itemId, category, itemType);
    }
 
    public void refreshCurrentlySelectedBlueprint () {
       toggleBlockers(true);
-      NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
+      NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId, _selectedCategory, _selectedItemTypeId);
    }
 
    public void clearSelectedBlueprint () {
@@ -326,6 +385,8 @@ public class CraftingPanel : Panel
 
    public void updatePanelWithSingleBlueprintWebRequest (Item resultItem, List<Item> equippedItems, List<Item> inventoryIngredients, Item[] requiredIngredients) {
       _selectedBlueprintId = resultItem.id;
+      _selectedCategory = resultItem.category;
+      _selectedItemTypeId = resultItem.itemTypeId;
 
       // Configure the panel
       configurePanelForMode(Mode.BlueprintSelected);
@@ -484,6 +545,7 @@ public class CraftingPanel : Panel
    }
 
    public void selectRefinementTab () {
+      categoryTabs.SetActive(false);
       loadBlockerRefinementList.SetActive(true);
       loadBlockerRefinementIngredients.SetActive(true);
       blueprintRowsContainer.DestroyChildren();
@@ -621,6 +683,12 @@ public class CraftingPanel : Panel
 
    // The item id of the currently displayed blueprint
    private int _selectedBlueprintId = -1;
+
+   // The item type of currently displayed blueprint
+   private int _selectedItemTypeId = -1;
+
+   // The category type of currently displayed blueprint
+   private Item.Category _selectedCategory;
 
    // Gets set to true when the item can be crafted
    private bool _canSelectedBlueprintBeCrafted = false;

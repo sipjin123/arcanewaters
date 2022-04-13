@@ -53,7 +53,7 @@ public class CraftingAnvil : MonoBehaviour
          return;
       }
 
-      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);
+      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE, CraftingPanel.craftingCategoryList);
    }
 
    public void handleSpriteOutline () {
