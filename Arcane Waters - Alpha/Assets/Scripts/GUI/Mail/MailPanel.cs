@@ -352,6 +352,12 @@ public class MailPanel : Panel
    }
 
    public void deleteMail (int mailId) {
+      // Don't require delete confirmation if all items are collected
+      if (!retrieveAttachedItemsButton.interactable) {
+         confirmDeleteMail(mailId);
+         return;
+      }
+   
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmDeleteMail(mailId));

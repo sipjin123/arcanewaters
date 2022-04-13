@@ -470,7 +470,7 @@ public class VoyageManager : GenericGameManager {
          }
       }
 
-      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyage) => warpPlayerToLeagueInstance(player, voyage), randomSeed, areaKey, exitAreaKey, exitSpawnKey, exitFacingDirection));
+      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available", false), (voyage) => warpPlayerToLeagueInstance(player, voyage), randomSeed, areaKey, exitAreaKey, exitSpawnKey, exitFacingDirection));
    }
 
    [Server]

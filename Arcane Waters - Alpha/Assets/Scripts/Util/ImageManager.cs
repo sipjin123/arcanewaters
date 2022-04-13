@@ -132,6 +132,11 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    public static List<ImageData> getSpritesInDirectory (string path) {
+      if (string.IsNullOrEmpty(path)) {
+         D.debug("Sprite path was empty. Returning an empty ImageData list.");
+         return new List<ImageData>();
+      }
+      
       path = self.getResourcePath(path);
 
       if (_dataByPath.ContainsKey(path)) {
@@ -187,6 +192,13 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    public static Sprite[] getSprites (string path) {
+      Sprite[] blankSpriteArray = new Sprite[] { self.blankSprite };
+
+      if (string.IsNullOrEmpty(path)) {
+         D.debug("Sprite path was empty. Returning a blank sprite array");
+         return blankSpriteArray;
+      }
+
       Sprite[] fetchedSprites = self.getSpritesFromPath(path);
 
       // Returns a blank sprite if the fetched data from the path is null
@@ -194,12 +206,17 @@ public class ImageManager : ClientMonoBehaviour {
          if (!Util.isBatch()) {
             D.debug("Could not find sprites at path(" + path + "). Returning a blank sprite array");
          }
-         return new Sprite[] { self.blankSprite };
+         return blankSpriteArray;
       }
       return fetchedSprites;
    }
 
    protected Sprite getSpriteFromPath (string path, bool skipLogs = false) {
+      if (string.IsNullOrEmpty(path)) {
+         D.debug("Received a null / empty path string. Returning a blank sprite.");
+         return self.blankSprite;
+      }
+      
       // Avoid using Resources.Load() on batch server
       if (Util.isBatch()) {
          return self.blankSprite;
@@ -260,6 +277,13 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    protected Sprite[] getSpritesFromPath (string path) {
+      Sprite[] blankSpriteArray = new Sprite[] { self.blankSprite };
+
+      if (string.IsNullOrEmpty(path)) {
+         D.debug("Sprite path was empty. Returning a blank sprite array");
+         return blankSpriteArray;
+      }
+
       // Avoid using Resources.Load() on batch server
       if (Util.isBatch()) {
          return new Sprite[10] { blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite };

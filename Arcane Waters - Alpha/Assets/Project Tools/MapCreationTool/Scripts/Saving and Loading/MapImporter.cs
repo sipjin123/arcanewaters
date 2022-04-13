@@ -124,7 +124,7 @@ namespace MapCreationTool
                      // For north effectors, increase the drag so player moves slower
                      AreaEffector2D effector = stairs.GetComponentInChildren<AreaEffector2D>();
                      if (effector != null) {
-                        effector.drag *= 2.5f;
+                        effector.drag *= 10f;
                      }
                   }
                   break;

@@ -300,6 +300,9 @@ public class ClientMessageManager : MonoBehaviour {
 
             return;
          case ConfirmMessage.Type.ShipBought:
+            // Play sound effect
+            SoundEffectManager.self.playBuySellSfx();
+
             // Hide the ship panel
             PanelManager.self.unlinkPanel();
 

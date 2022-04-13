@@ -14,7 +14,8 @@ public enum XmlSlotIndex
    Default = 3,
 }
 
-namespace NubisDataHandling {
+namespace NubisDataHandling
+{
 
    public class InventoryBundle
    {
@@ -48,10 +49,12 @@ namespace NubisDataHandling {
       #endregion
    }
 
-   public class XmlVersionEvent : UnityEvent<int> { 
+   public class XmlVersionEvent : UnityEvent<int>
+   {
    }
 
-   public class NubisDataFetcher : GenericGameManager {
+   public class NubisDataFetcher : GenericGameManager
+   {
 
       #region Public Variables
 
@@ -160,7 +163,7 @@ namespace NubisDataHandling {
          EquippedItemData equippedItemData = new EquippedItemData();
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
-         
+
          string rawBlueprintData = await NubisClient.call<string>(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
          string craftingIngredientData = await NubisClient.call<string>(nameof(DB_Main.fetchCraftingIngredients), userId);
          string equippedItemContent = await NubisClient.call<string>(nameof(DB_Main.fetchEquippedItems), userId);
@@ -262,6 +265,41 @@ namespace NubisDataHandling {
       #endregion
 
       #region Equipment Features
+
+      public async void getGuildInventory (Item.Category[] categoryFilter, int pageIndex = 1, int itemsPerPage = 42, Item.DurabilityFilter itemDurabilityFilter = Item.DurabilityFilter.None) {
+         if (Global.player == null) {
+            return;
+         }
+
+         int guildInventoryId = Global.player.guildInventoryId;
+         int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
+         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
+
+         List<Item> result = new List<Item>();
+         int totalItems = 0;
+
+         if (Global.player.guildId > 0 && Global.player.guildInventoryId > 0) {
+            int[] itemIdsToExclude = new int[0];
+
+            // Request the inventory to Nubis
+            string inventoryData = await NubisClient.call<string>(nameof(DB_Main.userInventory), -guildInventoryId, categoryFilter, itemIdsToExclude, true,
+               pageIndex, itemsPerPage, itemDurabilityFilter);
+
+            if (!string.IsNullOrWhiteSpace(inventoryData)) {
+               totalItems = await NubisClient.call<int>(nameof(DB_Main.userInventoryCount), -guildInventoryId, categoryFilter, itemIdsToExclude, true, itemDurabilityFilter);
+
+               List<Item> itemList = UserInventory.processUserInventory(inventoryData);
+
+               if (itemList == null) {
+                  D.debug("Failed to fetch Nubis abilities");
+               } else {
+                  result = itemList;
+               }
+            }
+         }
+
+         GuildInventoryPanel.self.receiveItemForDisplay(result, categoryFilter, pageIndex, totalItems);
+      }
 
       public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42, Item.DurabilityFilter itemDurabilityFilter = Item.DurabilityFilter.None, Panel.Type panelType = Panel.Type.Inventory) {
          if (Global.player == null) {

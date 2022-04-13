@@ -39,6 +39,7 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
          WorldMapPanelPin newPin = createPin(spot);
          positionPin(newPin);
          texturePin(newPin);
+         nudgePin(newPin);
          newPin.setTooltip(spot.displayName);
       }
 
@@ -65,6 +66,24 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       float computedY = (mapDimensions.y - 1 - pin.spot.worldY) * cellSize.y - pin.spot.areaY / pin.spot.areaHeight * cellSize.y;
 
       pin.transform.localPosition = new Vector3(computedX, -computedY);
+   }
+
+   private void nudgePin (WorldMapPanelPin pin) {
+      // Check if the pin is overlapping any of the pins already placed
+      foreach (WorldMapPanelPin p in _pins) {
+         if (p == pin) {
+            continue;
+         }
+
+         for (int attempt = 0; attempt < 10; attempt++) {
+            if (!arePinsOverlapping(pin, p, 10)) {
+               break;
+            }
+
+            Util.setLocalX(pin.transform, pin.transform.localPosition.x - 10.0f);
+            attempt++;
+         }
+      }
    }
 
    private void texturePin (WorldMapPanelPin pin) {
@@ -111,6 +130,18 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       if (pin != null && pin.rect != null) {
          pin.rect.localScale += show ? Vector3.one * 0.5f : -Vector3.one * 0.5f;
       }
+   }
+
+   private static bool arePinsOverlapping (WorldMapPanelPin pinA, WorldMapPanelPin pinB, float maxDistance) {
+      if (pinA == null || pinB == null) {
+         return false;
+      }
+
+      // If the pins are within maxDistance from each other, they are considered to be overlapping
+      Vector3 bLocalPosition = pinB.transform.localPosition;
+      Vector3 aLocalPosition = pinA.transform.localPosition;
+
+      return (bLocalPosition - aLocalPosition).sqrMagnitude < (maxDistance * maxDistance);
    }
 
    #region Private Variables

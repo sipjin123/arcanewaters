@@ -205,6 +205,7 @@ public class AreaManager : MonoBehaviour
    }
 
    public bool tryGetArea (string areaKey, out Area area) => _areas.TryGetValue(areaKey, out area);
+   public bool tryGetAreaInfo (string areaKey, out Map map) => _areaKeyToMapInfo.TryGetValue(areaKey, out map);
 
    public bool hasArea (string areaKey) {
       return _areas.ContainsKey(areaKey);

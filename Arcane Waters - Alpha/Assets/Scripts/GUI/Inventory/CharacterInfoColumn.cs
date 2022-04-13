@@ -232,6 +232,7 @@ public class CharacterInfoColumn : MonoBehaviour {
       info.guildId = player.guildId;
       info.guildMapBaseId = player.guildMapBaseId;
       info.guildHouseBaseId = player.guildHouseBaseId;
+      info.inventoryId = player.guildInventoryId;
 
       return info;
    }

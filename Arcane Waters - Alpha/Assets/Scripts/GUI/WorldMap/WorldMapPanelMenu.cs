@@ -6,11 +6,8 @@ public class WorldMapPanelMenu : MonoBehaviour
 {
    #region Public Variables
 
-   // Prefab used to create warp menuitems
-   public GameObject spotMenuItemPrefab;
-
-   // Prefab used to create waypoint menuitems
-   public GameObject waypointMenuItemPrefab;
+   // Prefab used to create menuitems
+   public GameObject menuItemPrefab;
 
    // Reference to the control that will hold the menuitems
    public Transform menuItemsContainer;
@@ -39,49 +36,50 @@ public class WorldMapPanelMenu : MonoBehaviour
       initializeTabs();
    }
 
-   public void clearWarps () {
-      _warpsSpots.Clear();
-   }
+   #region Menu Items
 
-   public void addWarps (List<WorldMapSpot> spots) {
-      foreach (WorldMapSpot spot in spots) {
-         _warpsSpots.Add(spot);
+   public void clearMenuItems () {
+      foreach (WorldMapPanelMenuItem menuItem in _menuItems) {
+         Destroy(menuItem.gameObject);
       }
+
+      _menuItems.Clear();
    }
 
-   public void createWarpsMenuItems () {
-      foreach (WorldMapSpot spot in _warpsSpots) {
-         GameObject menuItemGO = Instantiate(spotMenuItemPrefab);
+   public void addMenuItems (IEnumerable<WorldMapSpot> spots) {
+      foreach (WorldMapSpot spot in spots) {
+         GameObject menuItemGO = Instantiate(menuItemPrefab);
          WorldMapPanelMenuItem menuItem = menuItemGO.GetComponent<WorldMapPanelMenuItem>();
          menuItem.transform.SetParent(menuItemsContainer);
          menuItem.menu = this;
          menuItem.spot = spot;
-         menuItem.setTitle(spot.displayName);
-         _warpsMenuItems.Add(menuItem);
+
+         // Temporarily hide the action buttons
+         menuItem.warpActionButton.gameObject.SetActive(false);
+         menuItem.waypointDeleteButton.gameObject.SetActive(false);
+
+         // Set title of the menu item
+         if (menuItem.isDestination()) {
+            menuItem.setTitle(spot.displayName);
+            menuItem.warpActionButton.gameObject.SetActive(spot.type == WorldMapSpot.SpotType.Warp);
+         } else if (menuItem.isWaypoint()) {
+            menuItem.setTitle(WorldMapManager.self.getDisplayStringFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(spot)));
+            menuItem.waypointDeleteButton.gameObject.SetActive(true);
+         }
+
+         // Ensure the title is valid
+         if (Util.isEmpty(menuItem.getTitle())) {
+            menuItem.setTitle(menuItem.spot.type.ToString());
+         }
+
+         // Register menu item
+         _menuItems.Add(menuItem);
       }
    }
 
-   public void clearWaypoints () {
-      _waypointsSpots.Clear();
-   }
+   #endregion
 
-   public void addWaypoints (List<WorldMapSpot> spots) {
-      foreach (WorldMapSpot spot in spots) {
-         _waypointsSpots.Add(spot);
-      }
-   }
-
-   public void createWaypointMenuItems () {
-      foreach (WorldMapSpot spot in _waypointsSpots) {
-         GameObject menuItemGO = Instantiate(waypointMenuItemPrefab);
-         WorldMapPanelMenuItem menuItem = menuItemGO.GetComponent<WorldMapPanelMenuItem>();
-         menuItem.transform.SetParent(menuItemsContainer);
-         menuItem.menu = this;
-         menuItem.spot = spot;
-         menuItem.setTitle(WorldMapManager.self.getDisplayStringFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(spot)));
-         _waypointsMenuItems.Add(menuItem);
-      }
-   }
+   #region Tabs
 
    private void initializeTabs () {
       if (tabs == null) {
@@ -96,33 +94,38 @@ public class WorldMapPanelMenu : MonoBehaviour
    }
 
    private void onTabPressed (int tabIndex) {
+      // Store the new index
       _currentTabIndex = tabIndex;
 
-      foreach (WorldMapPanelMenuItem menuItem in _waypointsMenuItems) {
-         Destroy(menuItem.gameObject);
-      }
-
-      foreach (WorldMapPanelMenuItem menuItem in _warpsMenuItems) {
-         Destroy(menuItem.gameObject);
-      }
-
-      _waypointsMenuItems.Clear();
-      _warpsMenuItems.Clear();
-
+      // Set the title
       if (_currentTabIndex == 0) {
-         createWarpsMenuItems();
          txtTitle.text = warpsTitle;
       } else {
-         createWaypointMenuItems();
          txtTitle.text = waypointsTitle;
       }
+
+      // Filter the menu items
+      filterMenuItems();
    }
+
+   private void filterMenuItems () {
+      foreach (WorldMapPanelMenuItem menuItem in _menuItems) {
+         if (_currentTabIndex == 0) {
+            menuItem.gameObject.SetActive(menuItem.isDestination());
+         } else {
+            menuItem.gameObject.SetActive(menuItem.isWaypoint());
+         }
+      }
+   }
+
+   public int getCurrentTab () {
+      return _currentTabIndex;
+   }
+
+   #endregion
 
    public void shift (bool toLeftSide = true) {
       panelContainer.transform.localPosition = new Vector3(toLeftSide ? -255 : 255, panelContainer.transform.localPosition.y);
-   }
-
-   public void toggle (bool show, int tabIndex = 0) {
    }
 
    public void show (int tabIndex = 0) {
@@ -153,13 +156,7 @@ public class WorldMapPanelMenu : MonoBehaviour
       return canvasGroup.alpha > 0.1f;
    }
 
-   public bool isWaypointMenuItem (WorldMapPanelMenuItem menuItem) {
-      return _waypointsSpots.Contains(menuItem.spot);
-   }
-
-   public bool isWarpMenuItem (WorldMapPanelMenuItem menuItem) {
-      return _warpsSpots.Contains(menuItem.spot);
-   }
+   #region Events
 
    public void onMenuItemClicked (WorldMapPanelMenuItem menuItem) {
       WorldMapSpot spot = menuItem.spot;
@@ -174,23 +171,12 @@ public class WorldMapPanelMenu : MonoBehaviour
       WorldMapPanel.self.onMenuItemPointerExit(menuItem);
    }
 
-   public int getCurrentTab () {
-      return _currentTabIndex;
-   }
+   #endregion
 
    #region Private Variables
 
-   // The current set of menu items (warps)
-   private List<WorldMapPanelMenuItem> _warpsMenuItems = new List<WorldMapPanelMenuItem>();
-
-   // The current set of menu items (waypoints)
-   private List<WorldMapPanelMenuItem> _waypointsMenuItems = new List<WorldMapPanelMenuItem>();
-
-   // The current set of spots (warps)
-   private List<WorldMapSpot> _warpsSpots = new List<WorldMapSpot>();
-
-   // The current set of spots (waypoints)
-   private List<WorldMapSpot> _waypointsSpots = new List<WorldMapSpot>();
+   // The current set of menu items
+   private List<WorldMapPanelMenuItem> _menuItems = new List<WorldMapPanelMenuItem>();
 
    // The current tab index
    private int _currentTabIndex = 0;

@@ -10,6 +10,7 @@ using DG.Tweening;
 using UnityEngine.InputSystem;
 using Assets.Scripts.Map;
 using TMPro.Examples;
+using MapCreationTool.Serialization;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -162,6 +163,9 @@ public class PlayerShipEntity : ShipEntity
    // The xp rewarded to attackers when being killed, in pvp
    public const int REWARDED_XP = 10;
 
+   // The minimum value of mouse scroll to switch ship abilities
+   public const int BASE_SCROLL_VALUE = 120;
+
    // Reference to the level up effect
    public LevelUpEffect levelUpEffect;
 
@@ -246,6 +250,7 @@ public class PlayerShipEntity : ShipEntity
       _targetCircle = Instantiate(targetCirclePrefab, transform.parent).GetComponent<TargetCircle>();
       _targetCone = Instantiate(targetConePrefab, transform.parent).GetComponent<TargetCone>();
       _cannonTargeter = Instantiate(cannonTargeterPrefab, transform.parent).GetComponent<CannonTargeter>();
+      _healEffect = Instantiate(PrefabsManager.self.healPrefab, abilityEffectHolder).GetComponent<Animator>();
 
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
@@ -479,10 +484,10 @@ public class PlayerShipEntity : ShipEntity
 
             // Read input mouse scroll value and divide it to scroll magnitude to get the target ability index
             float scrollVal = InputManager.self.inputMaster.Sea.AbilitySwitch.ReadValue<float>();
-            if (scrollVal != 0.0f) {
+            if (scrollVal >= BASE_SCROLL_VALUE || scrollVal <= -BASE_SCROLL_VALUE) {
                // The base scroll value is 120, multiply it with scroll magnitude and divide the result with scroll value to get switch value
-               int switchValue = (int) (scrollVal / (abilitySwitchMagnitude * 120));
-               int targetAbility = Mathf.Clamp(selectedShipAbilityIndex + switchValue, 0, 4);
+               int switchValue = scrollVal < 0 ? -1 : 1;
+               int targetAbility = Mathf.Clamp(_currentAbilitySlotIndex + switchValue, 0, 4);
                selectAbility(targetAbility);
             }
          }
@@ -589,8 +594,8 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void FixedUpdate () {
       base.FixedUpdate();
-
-      if (NetworkServer.active) {
+      
+      if (NetworkServer.active && InputManager.isInputEnabled()) {
          // If the player wants to stop the ship, we let the linear drag handle the slowdown
          if (!isDead() && _movementInputDirection != Vector2.zero) {
             float increaseAdditive = 1.0f;
@@ -610,13 +615,21 @@ public class PlayerShipEntity : ShipEntity
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
             movementForce = _movementInputDirection * targetSpeed * _body.mass;
             D.adminLog("4) Server velocity has now been declared to do this: V:{" + _body.velocity + "} " +
-               "MF:{" + movementForce + "} MID:{"+ _movementInputDirection + "} TS:{"+targetSpeed+"}", D.ADMIN_LOG_TYPE.Simulation_Sea);
+               "MF:{" + movementForce + "} MID:{" + _movementInputDirection + "} TS:{" + targetSpeed + "}", D.ADMIN_LOG_TYPE.Simulation_Sea);
 
             // In ghost mode, clamp the position to the area bounds
             clampToMapBoundsInGhost();
          } else {
             movementForce = Vector2.zero;
          }
+      }
+   }
+
+   // Enable and trigger animator to play the heal effect animation
+   protected override void showHealEffect (bool isEnable) {
+      _healEffect.gameObject.SetActive(isEnable);
+      if (isEnable) {
+         _healEffect.SetTrigger(SHOW_HEAL);
       }
    }
 
@@ -646,7 +659,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void pressBoost () {
-      if (!isBoostCoolingDown() && !isDead()) {
+      if (!isBoostCoolingDown() && !isDead() && InputManager.isInputEnabled()) {
          _boostChargeStartTime = NetworkTime.time;
          //boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
@@ -847,6 +860,7 @@ public class PlayerShipEntity : ShipEntity
       }
       _isChargingCannon = false;
 
+      _currentAbilitySlotIndex = 0;
       Cmd_AbilityUsed(selectedShipAbilityIndex);
    }
 
@@ -1633,7 +1647,7 @@ public class PlayerShipEntity : ShipEntity
       yield return new WaitForSeconds(delay);
 
       // Apply the damage
-      int finalDamage = applyDamage(damage, source.netId);
+      int finalDamage = applyDamage(damage, source.netId, attackType);
       target.Rpc_ShowExplosion(source.netId, target.transform.position, finalDamage, attackType, false);
    }
 
@@ -2196,7 +2210,7 @@ public class PlayerShipEntity : ShipEntity
          _currentAbilityCooldowns[abilityIndex] += _abilityCooldownDurations[shipAbilities[abilityIndex]];
       }
 
-      changeAttackOption(0);
+      changeAttackOption(_currentAbilitySlotIndex);
    }
 
    [TargetRpc]
@@ -2327,6 +2341,17 @@ public class PlayerShipEntity : ShipEntity
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
 
       if (WorldMapManager.self.getNextArea(areaKey, direction, out string nextAreaKey)) {
+         // Prevent demo account from warping outside Forest and Desert biomes
+         if (isDemoUser) {
+            if (!AreaManager.self.tryGetAreaInfo(nextAreaKey, out Map nextMap)) {
+               return;
+            }
+
+            if (nextMap.biome != Biome.Type.Forest && nextMap.biome != Biome.Type.Desert) {
+               return;
+            }
+         }
+
          setupForWarpClient();
          Cmd_SpawnInNewMapSpawn(nextAreaKey, spawn: null, direction);
       }
@@ -2489,8 +2514,14 @@ public class PlayerShipEntity : ShipEntity
    // A list of references to any active sea mines
    private List<SeaMine> _seaMines = new List<SeaMine>();
 
+   // A reference to the player's heal effect
+   private Animator _healEffect;
+
    // The maximum number of active sea mines the player can have at a time
    private const int SEA_MINE_LIMIT = 4;
+
+   // Trigger parameter for the heal animation
+   private const string SHOW_HEAL = "Show";
 
    #endregion
 }

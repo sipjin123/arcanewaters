@@ -135,7 +135,6 @@ public class AchievementManager : MonoBehaviour {
          int steamId = DB_Main.getSteamAccountId(accountName);
 
          if (!accountName.Contains("@steam")) {
-            D.debug("Not a steam user!: {" + accountName + "} {" + userId + "}");
             return;
          }
 

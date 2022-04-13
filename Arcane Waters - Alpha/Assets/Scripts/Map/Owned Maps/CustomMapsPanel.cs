@@ -70,6 +70,11 @@ public class CustomMapsPanel : Panel
 
       if (_warpAfterSelecting) {
          PanelManager.self.unlinkPanel();
+
+         if (customMapKey.Equals(_customMapManager?.mapTypeAreaKey)) {
+            GuildPanel.self.hide();
+         }
+
       } else {
          foreach (BaseMapEntry entry in mapBaseContainer.GetComponentsInChildren<BaseMapEntry>()) {
             entry.setInteractable(true);

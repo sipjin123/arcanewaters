@@ -21,7 +21,7 @@ public class ItemCellIngredient : ItemCell
       base.setCellForItem(item, availableCount);
 
       // Set a custom item count
-      itemCountText.gameObject.SetActive(true);
+      itemCountText.transform.parent.gameObject.SetActive(true);
       itemCountText.SetText(availableCount + "/" + requiredCount);
       
       // Set the color of the item count

@@ -93,6 +93,14 @@ public class ClientManager : GenericGameManager {
       versionGameObject.SetActive(true);
    }
 
+   public void setDemoSuffixInVersionText (bool enabled) {
+      versionNumberText.text = versionNumberText.text.Replace("-demo", "");
+
+      if (enabled) {
+         versionNumberText.text += "-demo";
+      }
+   }
+
    public static void sendAccountNameAndUserId () {
       string machineIdentifier = SystemInfo.deviceName;
       int deploymentId = Util.getDeploymentId();

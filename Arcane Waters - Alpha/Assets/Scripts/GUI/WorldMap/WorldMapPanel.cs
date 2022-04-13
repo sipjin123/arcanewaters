@@ -141,14 +141,14 @@ public class WorldMapPanel : Panel
       menu.hide();
 
       // Register the pins with the menu
-      IEnumerable<WorldMapPanelPin> pins = pinsContainer.getPinsWithinArea(areaCoords).Where(pin => pin.spot.type == WorldMapSpot.SpotType.Warp);
-      menu.clearWarps();
-      menu.addWarps(pins.Select(_ => _.spot).ToList());
+      menu.clearMenuItems();
+
+      IEnumerable<WorldMapPanelPin> pins = pinsContainer.getPinsWithinArea(areaCoords);
+      menu.addMenuItems(pins.Select(_ => _.spot));
 
       // Register the waypoints with the menu
       IEnumerable<WorldMapPanelWaypoint> waypoints = waypointsContainer.getWaypointsWithinArea(areaCoords);
-      menu.clearWaypoints();
-      menu.addWaypoints(waypoints.Select(_ => _.spot).ToList());
+      menu.addMenuItems(waypoints.Select(_ => _.spot));
 
       // Show the menu and optionally specify the tab to display
       menu.show(menuTabIndex);
@@ -160,12 +160,12 @@ public class WorldMapPanel : Panel
    public void onMenuItemPressed (WorldMapPanelMenuItem menuItem) {
       WorldMapSpot spot = menuItem.spot;
 
-      if (menu.isWarpMenuItem(menuItem)) {
+      if (menuItem.isDestination()) {
          // Ensure the spot is a warp spot
          if (spot != null && spot.type == WorldMapSpot.SpotType.Warp) {
             tryWarp(spot.target, spot.spawnTarget);
          }
-      } else if (menu.isWaypointMenuItem(menuItem)) {
+      } else if (menuItem.isWaypoint()) {
          // Delete the waypoint at spot from the scene
          WorldMapWaypointsManager.self.removeWaypoint(spot);
 
@@ -181,9 +181,9 @@ public class WorldMapPanel : Panel
    public void onMenuItemPointerEnter (WorldMapPanelMenuItem menuItem) {
       WorldMapSpot spot = menuItem.spot;
 
-      if (menu.isWaypointMenuItem(menuItem)) {
+      if (menuItem.isWaypoint()) {
          waypointsContainer.highlightWaypoint(spot, show: true);
-      } else if (menu.isWarpMenuItem(menuItem)) {
+      } else if (menuItem.isDestination()) {
          pinsContainer.highlightPin(spot, show: true);
       }
    }
@@ -191,9 +191,9 @@ public class WorldMapPanel : Panel
    public void onMenuItemPointerExit (WorldMapPanelMenuItem menuItem) {
       WorldMapSpot spot = menuItem.spot;
 
-      if (menu.isWaypointMenuItem(menuItem)) {
+      if (menuItem.isWaypoint()) {
          waypointsContainer.highlightWaypoint(spot, show: false);
-      } else if (menu.isWarpMenuItem(menuItem)) {
+      } else if (menuItem.isDestination()) {
          pinsContainer.highlightPin(spot, show: false);
       }
    }

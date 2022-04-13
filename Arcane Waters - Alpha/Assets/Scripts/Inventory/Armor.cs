@@ -101,7 +101,11 @@ public class Armor : EquippableItem {
    }
 
    public override string getName () {
-      return itemName;
+      if (getArmorData() == null) {
+         return itemName;
+      }
+
+      return getArmorData().equipmentName;
    }
 
    public int getArmorValue () {

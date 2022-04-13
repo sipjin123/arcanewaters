@@ -158,6 +158,7 @@ public class UserInfo {
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.guildId = dataReader.GetInt32("gldId");
+
       try {
          this.pvpState = dataReader.GetInt32("pvpState");
       } catch {

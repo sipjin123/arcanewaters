@@ -73,6 +73,7 @@ public class WorldMapWaypointsManager : MonoBehaviour
       // Set the details on the new waypoint
       waypoint.transform.localPosition = WorldMapManager.self.getPositionFromSpot(Global.player.areaKey, spot);
       waypoint.spot = spot;
+      waypoint.spot.type = WorldMapSpot.SpotType.Waypoint;
       waypoint.displayName = $"Waypoint {_waypoints.Count}";
 
       // Add a minimap icon for the waypoint

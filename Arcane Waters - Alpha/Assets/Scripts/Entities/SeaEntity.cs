@@ -229,7 +229,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public virtual int applyDamage (int amount, uint damageSourceNetId) {
+   public virtual int applyDamage (int amount, uint damageSourceNetId, Attack.Type attackType) {
       float damageMultiplier = 1.0f;
 
       // Apply damage reduction, if there is any
@@ -304,8 +304,95 @@ public class SeaEntity : NetEntity
          }
       }
 
+      tryTriggerDamageAchievements(damageSourceNetId, attackType);
+
       // Return the final amount of damage dealt
       return amount;
+   }
+
+   private void tryTriggerDamageAchievements (uint damageSourceNetId, Attack.Type attackType) {
+      NetEntity sourceNetEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
+      if (!(sourceNetEntity is SeaEntity)) {
+         return;
+      }
+
+      SeaEntity sourceEntity = sourceNetEntity as SeaEntity;
+      SeaEntity targetEntity = this;
+
+      // Register achievements for player damaging things
+      if (sourceEntity is PlayerShipEntity) {
+
+         tryRegisterAttackTypeAchievement(attackType, sourceEntity, false);
+         if (targetEntity is SeaMonsterEntity) {
+            if (targetEntity.currentHealth <= 0) {
+               AchievementManager.registerUserAchievement(sourceEntity, ActionType.KillSeaMonster);
+            }
+
+            AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitSeaMonster);
+         } else if (targetEntity is BotShipEntity) {
+            if (targetEntity.currentHealth <= 0) {
+               AchievementManager.registerUserAchievement(sourceEntity, ActionType.SinkedShips);
+            }
+
+            AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitEnemyShips);
+         } else if (targetEntity is PlayerShipEntity) {
+            if (targetEntity.currentHealth <= 0) {
+               AchievementManager.registerUserAchievement(sourceEntity, ActionType.SinkedShips);
+            }
+
+            AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitPlayerWithCannon);
+            AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitEnemyShips);
+         }
+
+         if (attackType == Attack.Type.Ice) {
+            AchievementManager.registerUserAchievement(sourceEntity, ActionType.Frozen);
+         }
+      }
+
+      // Register achievements for player getting damaged by things
+      if (targetEntity is PlayerShipEntity) {
+         if (targetEntity.currentHealth <= 0) {
+            AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
+         }
+
+         tryRegisterAttackTypeAchievement(attackType, targetEntity, true);
+         if (attackType is Attack.Type.Ice) {
+            AchievementManager.registerUserAchievement(targetEntity, ActionType.Frozen);
+         }
+      }
+   }
+
+   private void tryRegisterAttackTypeAchievement (Attack.Type attackType, NetEntity achievementEarner, bool wasDamageReceiver) {
+      
+      // Register achievements for being hit by various attack types
+      if (wasDamageReceiver) {
+         switch (attackType) {
+            case Attack.Type.Ice:
+               AchievementManager.registerUserAchievement(achievementEarner, ActionType.Frozen);
+               break;
+            case Attack.Type.Poison:
+            case Attack.Type.Poison_Circle:
+            case Attack.Type.Venom:
+               AchievementManager.registerUserAchievement(achievementEarner, ActionType.Poisoned);
+               break;
+            case Attack.Type.Electric:
+               AchievementManager.registerUserAchievement(achievementEarner, ActionType.Electrocuted);
+               break;
+         }
+
+      // Register achievements for hitting entities with various attack types
+      } else {
+         switch (attackType) {
+            case Attack.Type.Ice:
+               AchievementManager.registerUserAchievement(achievementEarner, ActionType.FreezeEnemy);
+               break;
+            case Attack.Type.Poison:
+            case Attack.Type.Poison_Circle:
+            case Attack.Type.Venom:
+               AchievementManager.registerUserAchievement(achievementEarner, ActionType.PoisonEnemy);
+               break;
+         }
+      }
    }
 
    [Server]
@@ -687,11 +774,8 @@ public class SeaEntity : NetEntity
                   float distanceToTarget = Vector2.Distance(sourcePos, newPosition);
                   if (distanceToTarget <= 1.1f) {
                      lightningTargets.Add(seaEntity.netId);
-                     int finalDamage = seaEntity.applyDamage(damage, attackerNetId);
-                     seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.None, false);
-
-                     // Registers the action electrocuted to the userID to the achievement database for recording
-                     AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
+                     int finalDamage = seaEntity.applyDamage(damage, attackerNetId, Attack.Type.Electric);
+                     seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.Electric, false);
 
                      collidedEntities.Add(seaEntity, collidedEntity.transform);
                      targetIDList.Add(seaEntity.netId);
@@ -714,7 +798,7 @@ public class SeaEntity : NetEntity
       List<uint> lightningTargets = new List<uint>();
       foreach (SeaEntity enemy in enemiesInRange) {
          if (this.isEnemyOf(enemy) && !collidedEntities.ContainsKey(enemy) && !enemy.isDead() && enemy.instanceId == this.instanceId && enemy.netId != primaryTargetNetID) {
-            int finalDamage = enemy.applyDamage(damageInt, attackerNetId);
+            int finalDamage = enemy.applyDamage(damageInt, attackerNetId, Attack.Type.Electric);
             enemy.Rpc_ShowDamage(Attack.Type.None, enemy.transform.position, finalDamage);
             if (enemy.spritesContainer == null) {
                D.debug("Sprite container for chain lighting is missing!");
@@ -1332,7 +1416,7 @@ public class SeaEntity : NetEntity
                            + " Projectile ID: " + projectileData.projectileId, D.ADMIN_LOG_TYPE.Sea);
                      }
 
-                     int finalDamage = targetEntity.applyDamage(damage, attacker.netId);
+                     int finalDamage = targetEntity.applyDamage(damage, attacker.netId, attackType);
                      int targetHealthAfterDamage = targetEntity.currentHealth - finalDamage;
 
                      if (this is PlayerShipEntity) {
@@ -1534,7 +1618,7 @@ public class SeaEntity : NetEntity
                   tickDamage = (int) (currentHealth * Battle.POISON_DAMAGE_PER_TICK_PERCENTAGE);
                   break;
             }
-            int finalTickDamage = applyDamage(tickDamage, attackerNetId);
+            int finalTickDamage = applyDamage(tickDamage, attackerNetId, attackType);
 
             Rpc_ShowDamage(attackType, transform.position, finalTickDamage);
 

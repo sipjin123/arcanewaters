@@ -124,6 +124,9 @@ public class OptionsPanel : Panel
 
    // Admin tooltip to display active players
    public ToolTipComponent activePlayersAdminTooltip;
+
+   // Text indicating if we are using demo user or not
+   public GameObject demoUserText = null;
    
    #endregion
 
@@ -456,6 +459,8 @@ public class OptionsPanel : Panel
       if (isAdmin) {
          Global.player.admin.Cmd_GetServerLogString();
       }
+
+      demoUserText.SetActive(Global.player != null && Global.player.isDemoUser);
 
       refreshDisplaySettingsControls();
 

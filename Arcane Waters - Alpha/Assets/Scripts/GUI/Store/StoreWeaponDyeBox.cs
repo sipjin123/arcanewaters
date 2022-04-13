@@ -27,6 +27,8 @@ public class StoreWeaponDyeBox : StoreDyeBox
       }
 
       setupWeaponLayer(front: true, weaponImage, palette.paletteName);
+
+      setupBanner();
    }
 
    private bool setupWeaponLayer (bool front, Image weaponImage, string weaponPalette) {

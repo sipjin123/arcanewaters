@@ -437,14 +437,23 @@ public class Area : MonoBehaviour
    public static string getName (string areaKey) {
       // If this is a custom map, figure out the special display name
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
-         // Check if it is someone else's farm, prepend the name if so
-         int userId = CustomMapManager.getUserId(areaKey);
-         if (Global.player != null && userId != Global.player.userId) {
-            string userName = EntityManager.self.getEntity(userId)?.entityName ?? "Unknown";
-            return $"{ userName }'s { customMapManager.typeDisplayName }";
+
+         string ownerName = "Unknown";
+         if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
+            if (Global.player != null) {
+               ownerName = Global.player.guildName;
+            }
+         } else if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
+            // Check if it is someone else's farm, prepend the name if so
+            int userId = CustomMapManager.getUserId(areaKey);
+            if (Global.player != null && userId != Global.player.userId) {
+               ownerName = EntityManager.self.getEntity(userId)?.entityName ?? "Unknown";
+            }
+         } else {
+            return customMapManager.typeDisplayName;
          }
 
-         return customMapManager.typeDisplayName;
+         return $"{ ownerName }'s { customMapManager.typeDisplayName }";
       }
 
       // Check if we have this map cached

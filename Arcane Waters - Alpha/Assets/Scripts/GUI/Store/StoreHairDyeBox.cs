@@ -9,6 +9,9 @@ public class StoreHairDyeBox : StoreDyeBox
    public Image hairBack;
    public Image hairFront;
 
+   // The body layer
+   public Image bodyImage;
+
    #endregion
 
    public void initialize () {
@@ -24,11 +27,33 @@ public class StoreHairDyeBox : StoreDyeBox
          return;
       }
 
+      // Setup body
+      setupBodyLayer();
+
       // Front Hair
       setupHairLayer(hairFront, palette.paletteName);
 
       // Back Hair
       setupHairLayer(hairBack, palette.paletteName);
+
+      setupBanner();
+   }
+
+   private bool setupBodyLayer () {
+      if (Global.player == null) {
+         return false;
+      }
+
+      Sprite bodySprite = ImageManager.getBodySprite(Global.player.gender, Global.player.bodyType, frame: 8);
+
+      if (bodySprite == null) {
+         return false;
+      }
+
+      bodyImage.sprite = bodySprite;
+      bodyImage.material = new Material(this.bodyImage.material);
+
+      return true;
    }
 
    private bool setupHairLayer (Image hairLayer, string hairColorPalette) {

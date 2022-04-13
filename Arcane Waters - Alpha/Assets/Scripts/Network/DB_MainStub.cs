@@ -243,7 +243,7 @@ public class DB_MainStub : MonoBehaviour
 
    public static void deleteEquipmentXML (int type, EquipmentType equipType) {
    }
-   
+
    public static List<XMLPair> getQuestItemtXML () {
       return new List<XMLPair>();
    }
@@ -488,6 +488,22 @@ public class DB_MainStub : MonoBehaviour
 
    public static void setCustomGuildHouseBase (object command, int guildId, int baseMapId) {
 
+   }
+
+   public static int getCustomHouseBaseId (int userId) {
+      return 0;
+   }
+
+   public static int getCustomFarmBaseId (int userId) {
+      return 0;
+   }
+
+   public static int getCustomGuildMapBaseId (int guildId) {
+      return 0;
+   }
+
+   public static int getCustomGuildHouseBaseId (int guildId) {
+      return 0;
    }
 
    public static void updateGuildName (int gldId, string newGuildName) {
@@ -876,6 +892,19 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void setRingId (int userId, int newId) {
+
+   }
+
+   public static void setNecklaceId (int userId, int newId) {
+
+   }
+
+
+   public static void setTrinketId (int userId, int newId) {
+
+   }
+
    public static bool hasItem (int userId, int itemId, int itemCategory) {
       return false;
    }
@@ -902,7 +931,7 @@ public class DB_MainStub : MonoBehaviour
    public static int getDeletedUserId (string username) {
       return 0;
    }
-   
+
    public static void addGold (int userId, int amount) {
 
    }
@@ -1139,12 +1168,20 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+   public static bool decreaseQuantityOrDeleteItem (int userId, Item.Category itemCategory, int itemTypeId, int deductedValue) {
+      return false;
+   }
 
+   public static bool decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+      return false;
    }
 
    public static int getItemCountByType (int userId, int itemCategory, int itemType) {
       return 0;
+   }
+
+   public static List<ItemTypeCount> getItemTypeCounts (int userId) {
+      return new List<ItemTypeCount>();
    }
 
    public static int getItemCountByCategory (int userId, Item.Category[] categories) {
@@ -1237,6 +1274,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static int setGuildInventoryIfNotExists (int guildId, int inventoryId) {
+      return default;
+   }
+
    public static Jobs getJobXP (int userId) {
       return null;
    }
@@ -1244,7 +1285,7 @@ public class DB_MainStub : MonoBehaviour
    public static bool isGuildAlly (int guildId, int allyId) {
       return false;
    }
-   
+
    public static GuildInfo getGuildInfo (int guildId) {
       return null;
    }
@@ -1424,6 +1465,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static CustomItemCollection createCustomItemCollection () {
+      return default;
+   }
+
    public static int createMail (MailInfo mailInfo) {
       return 0;
    }
@@ -1470,10 +1515,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static string [] getPlayersNames (int [] userIds) {
+   public static string[] getPlayersNames (int[] userIds) {
       return Array.Empty<string>();
-   }     
-   
+   }
+
    public static int getMinimumClientGameVersionForMac () {
       return 0;
    }
@@ -1797,7 +1842,7 @@ public class DB_MainStub : MonoBehaviour
    }
 
    #endregion
-   
+
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;
    }

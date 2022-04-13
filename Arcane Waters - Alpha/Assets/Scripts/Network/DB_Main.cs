@@ -2213,6 +2213,98 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
+   public static new int getCustomHouseBaseId (int userId) {
+      int result = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT customHouseBase FROM users WHERE usrId = @userId;", conn)) {
+            cmd.Parameters.AddWithValue("@userId", userId);
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result = dataReader.GetInt32("customHouseBase");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return result;
+   }
+
+   public static new int getCustomFarmBaseId (int userId) {
+      int result = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT customFarmBase FROM users WHERE usrId = @userId;", conn)) {
+            cmd.Parameters.AddWithValue("@userId", userId);
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result = dataReader.GetInt32("customFarmBase");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return result;
+   }
+
+   public static new int getCustomGuildMapBaseId (int guildId) {
+      int result = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT gldMapBaseId FROM guilds WHERE gldId = @guildId;", conn)) {
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result = dataReader.GetInt32("gldMapBaseId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return result;
+   }
+
+   public static new int getCustomGuildHouseBaseId (int guildId) {
+      int result = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT gldHouseBaseId FROM guilds WHERE gldId = @guildId;", conn)) {
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result = dataReader.GetInt32("gldHouseBaseId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return result;
+   }
+
    public static new void updateGuildName (int gldId, string newGuildName) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2237,11 +2329,11 @@ public class DB_Main : DB_MainStub
 
    #region Map Customization
 
-   public static new MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
+   public static new MapCustomizationData getMapCustomizationData (object command, int mapId, int ownerId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
       cmd.Parameters.AddWithValue("@map_id", mapId);
-      cmd.Parameters.AddWithValue("@user_id", userId);
+      cmd.Parameters.AddWithValue("@user_id", ownerId);
       DebugQuery(cmd);
 
       List<PrefabState> changes = new List<PrefabState>();
@@ -2253,16 +2345,16 @@ public class DB_Main : DB_MainStub
 
       return new MapCustomizationData {
          mapId = mapId,
-         userId = userId,
+         ownerId = ownerId,
          prefabChanges = changes.ToArray()
       };
    }
 
-   public static new PrefabState getMapCustomizationChanges (object command, int mapId, int userId, int prefabId) {
+   public static new PrefabState getMapCustomizationChanges (object command, int mapId, int ownerId, int prefabId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id AND prefab_id = @prefab_id;";
       cmd.Parameters.AddWithValue("@map_id", mapId);
-      cmd.Parameters.AddWithValue("@user_id", userId);
+      cmd.Parameters.AddWithValue("@user_id", ownerId);
       cmd.Parameters.AddWithValue("@prefab_id", prefabId);
       DebugQuery(cmd);
 
@@ -2275,12 +2367,12 @@ public class DB_Main : DB_MainStub
       return new PrefabState { id = -1 };
    }
 
-   public static new void setMapCustomizationChanges (object command, int mapId, int userId, PrefabState changes) {
+   public static new void setMapCustomizationChanges (object command, int mapId, int ownerId, PrefabState changes) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "INSERT INTO map_customization_changes(user_id, map_id, prefab_id, data) Values(@user_id, @map_id, @prefab_id, @data) " +
          "ON DUPLICATE KEY UPDATE data = @data;";
       cmd.Parameters.AddWithValue("@map_id", mapId);
-      cmd.Parameters.AddWithValue("@user_id", userId);
+      cmd.Parameters.AddWithValue("@user_id", ownerId);
       cmd.Parameters.AddWithValue("@prefab_id", changes.id);
       cmd.Parameters.AddWithValue("@data", changes.serialize());
       DebugQuery(cmd);
@@ -7707,8 +7799,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairPalettes, eyesType, eyesPalettes, armId, areaKey, charSpot) VALUES " +
-             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairPalettes, @eyesType, @eyesPalettes, @armId, @areaKey, @charSpot);", conn)) {
+            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairPalettes, eyesType, eyesPalettes, armId, areaKey, charSpot, isDemo) VALUES " +
+             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairPalettes, @eyesType, @eyesPalettes, @armId, @areaKey, @charSpot, @isDemo);", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -8124,6 +8216,34 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new bool decreaseQuantityOrDeleteItem (int userId, Item.Category itemCategory, int itemTypeId, int deductedValue) {
+      // First query deletes the entry which has only 1 of item left
+      // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
+      string cmdText = "BEGIN;" +
+         "DELETE FROM items WHERE usrId=@usrId AND itmType=@itemType AND itmCategory = @itemCategory AND itmCount<=@deductBy; " +
+         "UPDATE items SET itmCount = itmCount - @deductBy WHERE usrId=@usrId AND itmType=@itemType AND itmCategory = @itemCategory;" +
+         "COMMIT;";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itemCategory", (int) itemCategory);
+            cmd.Parameters.AddWithValue("@itemType", itemTypeId);
+            cmd.Parameters.AddWithValue("@deductBy", deductedValue);
+            DebugQuery(cmd);
+
+            int affectedRows = cmd.ExecuteNonQuery();
+            return affectedRows > 0;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return false;
+   }
+
    public static new bool decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
       // First query deletes the entry which has only 1 of item left
       // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
@@ -8333,6 +8453,49 @@ public class DB_Main : DB_MainStub
       }
 
       return itemCount;
+   }
+
+   public static new List<ItemTypeCount> getItemTypeCounts (int userId) {
+      List<ItemTypeCount> result = new List<ItemTypeCount>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT itmCount, itmCategory, itmType FROM items WHERE usrId=@usrId;", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result.Add(new ItemTypeCount {
+                     category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory"),
+                     itemTypeId = DataUtil.getInt(dataReader, "itmType"),
+                     count = DataUtil.getInt(dataReader, "itmCount")
+                  });
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      // Combine same type of items
+      for (int i = 0; i < result.Count; i++) {
+         for (int j = i + 1; j < result.Count; j++) {
+            if (result[i].sameTypeAs(result[j])) {
+               ItemTypeCount c = result[i];
+               c.count += result[j].count;
+               result[i] = c;
+               result.RemoveAt(j);
+               j--;
+            }
+         }
+      }
+
+      return result;
    }
 
    public static new int getItemCountByCategory (int userId, Item.Category[] categories) {
@@ -9281,6 +9444,35 @@ public class DB_Main : DB_MainStub
    #endregion
 
    #region Jobs Features / Guild Features
+
+   public static new int setGuildInventoryIfNotExists (int guildId, int inventoryId) {
+      // Set inventory ID if inventory ID is 0, otherwise return that existing ID
+      string query =
+         "UPDATE guilds set gldInventoryId = @inventoryId WHERE gldId = @guildId AND gldInventoryId = 0;" +
+         "SELECT gldInventoryId FROM guilds WHERE gldId = @guildId;";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            cmd.Parameters.AddWithValue("@inventoryId", inventoryId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return DataUtil.getInt(dataReader, "gldInventoryId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return 0;
+   }
 
    public static new Jobs getJobXP (int userId) {
       Jobs jobs = new Jobs(userId);
@@ -10936,6 +11128,16 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Custom Item Collection
+
+   public static new CustomItemCollection createCustomItemCollection () {
+      CustomItemCollection col = new CustomItemCollection(0);
+      col.id = createMail(col);
+      return col;
+   }
+
+   #endregion
+
    #region Mail
 
    public static new int createMail (MailInfo mailInfo) {
@@ -12511,7 +12713,7 @@ public class DB_Main : DB_MainStub
 
    #region User History
 
-   public static bool createUserHistoryEvent(UserHistoryEventInfo eventInfo) {
+   public static bool createUserHistoryEvent (UserHistoryEventInfo eventInfo) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(

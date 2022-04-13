@@ -102,6 +102,9 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.steamAppId == SteamStatics.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
             }
+            if (logInUserMessage.steamAppId == SteamStatics.NEXTFEST_DEMO_APPID && !logInUserMessage.accountName.Contains("@demo")) {
+               logInUserMessage.accountName = logInUserMessage.accountName + "@demo";
+            }
             D.adminLog("Account Log: Is Steam Login as account:{" + logInUserMessage.accountName + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
             // Get steam account id without requiring password since it is already authenticated by the server
@@ -235,9 +238,9 @@ public class ServerMessageManager : MonoBehaviour
 
             foreach (UserInfo u in users) {
                UserObjects uObjects = DB_Main.getUserObjects(u.userId);
-               armorList.Add((Armor)uObjects.armor);
-               weaponList.Add((Weapon)uObjects.weapon);
-               hatList.Add((Hat)uObjects.hat);
+               armorList.Add((Armor) uObjects.armor);
+               weaponList.Add((Weapon) uObjects.weapon);
+               hatList.Add((Hat) uObjects.hat);
             }
 
             List<UserInfo> deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, selectedUserId);
@@ -564,7 +567,7 @@ public class ServerMessageManager : MonoBehaviour
                DB_Main.forgetUserBySpot(accountId, userInfo.charSpot);
                DB_Main.deactivateUser(accountId, userInfo.userId);
                DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userInfo.userId, userInfo.username, UserHistoryEventInfo.EventType.Delete, DateTime.UtcNow));
-            } 
+            }
          }
 
          // Send confirmation to the client, so that they can request their user list again

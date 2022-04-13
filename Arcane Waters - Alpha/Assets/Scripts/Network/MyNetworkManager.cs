@@ -77,24 +77,24 @@ public class MyNetworkManager : NetworkManager
       D.adminLog("MyNetworkManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
-   #if FORCE_AMAZON_SERVER
+#if FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-   #endif
-   #if FORCE_AMAZON_SERVER_PROD
+#endif
+#if FORCE_AMAZON_SERVER_PROD
       Debug.Log("FORCE_AMAZON_SERVER_PROD is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-   #endif
-   #if FORCE_SYDNEY
+#endif
+#if FORCE_SYDNEY
       this.serverOverride = ServerType.AmazonSydney;
-   #endif
-   #if FORCE_LOCALHOST
+#endif
+#if FORCE_LOCALHOST
       this.serverOverride = ServerType.Localhost;
-   #endif
+#endif
 
-   #if !FORCE_AMAZON_SERVER
+#if !FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is not defined.");
-   #endif
+#endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {
@@ -302,7 +302,7 @@ public class MyNetworkManager : NetworkManager
       EquipmentXMLManager.self.initializeDataCache();
 
       //SoundEffectManager.self.initializeDataCache();
-      
+
       XmlVersionManagerServer.self.initializeServerData();
       TreasureDropsDataManager.self.initializeServerDataCache();
       NPCQuestManager.self.initializeServerDataCache();
@@ -314,7 +314,7 @@ public class MyNetworkManager : NetworkManager
       GemsXMLManager.self.initializeDataCache();
       ShipSkinXMLManager.self.initializeDataCache();
       ConsumableXMLManager.self.initializeDataCache();
-      
+
       LandPowerupManager.self.initializeDataCache();
    }
 
@@ -370,11 +370,11 @@ public class MyNetworkManager : NetworkManager
          string baseMapAreaKey = previousAreaKey;
          bool isUserSpecificArea = CustomMapManager.isUserSpecificAreaKey(previousAreaKey);
          bool isGuildSpecificArea = CustomMapManager.isGuildSpecificAreaKey(previousAreaKey) || CustomMapManager.isGuildHouseAreaKey(previousAreaKey);
-         
+
          // If the map is owned by a user, get their info
-         int mapOwnerId = isUserSpecificArea ? CustomMapManager.getUserId(previousAreaKey) : -1;
-         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapOwnerId));
-         
+         int mapUserOwnerId = isUserSpecificArea ? CustomMapManager.getUserId(previousAreaKey) : -1;
+         UserInfo userOwnerInfo = mapUserOwnerId < 0 ? null : (mapUserOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapUserOwnerId));
+
          // If the map is owned by a guild, get their info
          int owningGuildId = isGuildSpecificArea ? CustomMapManager.getGuildId(previousAreaKey) : -1;
          GuildInfo owningGuildInfo = owningGuildId < 0 ? null : DB_Main.getGuildInfo(owningGuildId);
@@ -430,13 +430,13 @@ public class MyNetworkManager : NetworkManager
             // Check if this is a custom map
             if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
-                  
+
                   // If the guild exists
                   if (owningGuildInfo != null && userInfo.guildId == owningGuildInfo.guildId) {
                      // If this is a guild map, get the base key
                      int mapBaseId = (customMapManager is CustomGuildMapManager) ? owningGuildInfo.guildMapBaseId : owningGuildInfo.guildHouseBaseId;
                      baseMapAreaKey = AreaManager.self.getAreaName(mapBaseId);
-                     
+
                   } else {
                      // If the guild doesn't exist, or the user isn't in the guild, warp the player back to the tutorial town
                      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -450,17 +450,17 @@ public class MyNetworkManager : NetworkManager
                      return;
                   }
                }
-               
-               if (ownerInfo != null) {
-                  baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
+
+               if (userOwnerInfo != null) {
+                  baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(userOwnerInfo));
 
                   D.adminLog("Successfully Added User: {" + userObjects.userInfo.userId + ":" + userObjects.userInfo.username + "} fetched custom map: " +
-                     "ID:{" + customMapManager.getBaseMapId(ownerInfo) + "} " +
+                     "ID:{" + customMapManager.getBaseMapId(userOwnerInfo) + "} " +
                      "Base:{" + baseMapAreaKey + "} " +
                      "Prev:{" + previousAreaKey + "} " +
                      "Farm:{" + (customMapManager is CustomFarmManager) + "} " +
                      "House:{" + (customMapManager is CustomHouseManager) + "}" +
-                     "Info:{" + (ownerInfo == null ? "null" : ownerInfo.userId + " " + ownerInfo.customHouseBaseId) + "}", D.ADMIN_LOG_TYPE.Visit);
+                     "Info:{" + (userOwnerInfo == null ? "null" : userOwnerInfo.userId + " " + userOwnerInfo.customHouseBaseId) + "}", D.ADMIN_LOG_TYPE.Visit);
                }
             } else {
                D.adminLog("Failed to fetch custom map: {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
@@ -479,6 +479,23 @@ public class MyNetworkManager : NetworkManager
                });
 
                return;
+            }
+
+            // If user is a demo account, restrict biomes
+            if (userInfo.accountName.Contains("@demo")) {
+               Biome.Type targetType = AreaManager.self.getMapInfo(baseMapAreaKey).biome;
+               if (targetType != Biome.Type.Forest && targetType != Biome.Type.Desert) {
+                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                     DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
+
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, conn.connectionId, "Area is restricted for demo accounts!");
+                     });
+                  });
+
+                  return;
+               }
             }
 
             // Check if the player disconnected a few seconds ago and its object is still in the server
@@ -516,6 +533,7 @@ public class MyNetworkManager : NetworkManager
             player.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
             player.guildMapBaseId = guildInfo.guildMapBaseId;
             player.guildHouseBaseId = guildInfo.guildHouseBaseId;
+            player.guildInventoryId = guildInfo.inventoryId;
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
@@ -612,9 +630,10 @@ public class MyNetworkManager : NetworkManager
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                // Get map customizations if needed
                MapCustomizationData customizationData = new MapCustomizationData();
-               if (mapOwnerId != -1 || CustomMapManager.isGuildSpecificAreaKey(previousAreaKey)) {
+               int customizationsOwner = CustomMapManager.getMapChangesOwnerId(previousAreaKey);
+               if (customizationsOwner != 0) {
                   int baseMapId = DB_Main.getMapId(baseMapAreaKey);
-                  customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, mapOwnerId) ?? customizationData);
+                  customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, customizationsOwner) ?? customizationData);
                }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -676,7 +695,7 @@ public class MyNetworkManager : NetworkManager
             // Players in open world pvp can attack each other without waiting for triggers
             if (pvpGameMode != PvpGameMode.None && WorldMapManager.self.isWorldMapArea(player.areaKey) && guildInfo.guildId > 0) {
                player.hasEnteredPvP = true;
-               
+
                player.openWorldGameMode = pvpGameMode;
                if (player is PlayerShipEntity) {
                   PlayerShipEntity playerShip = (PlayerShipEntity) player;
@@ -1004,7 +1023,7 @@ public class MyNetworkManager : NetworkManager
          D.debug($"The ClientConnectionData is not authenticated, so not removing account {data.accountId} from this server's connectedAccountIds.");
       }
    }
-   
+
    public override void OnApplicationQuit () {
       base.OnApplicationQuit();
       DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());

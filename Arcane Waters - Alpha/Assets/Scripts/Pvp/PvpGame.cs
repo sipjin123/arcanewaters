@@ -6,11 +6,13 @@ using Mirror;
 using System.Linq;
 using System;
 
-public class PvpGame : MonoBehaviour {
+public class PvpGame : MonoBehaviour
+{
    #region Public Variables
 
    // A PvpTeam is a list of users in the team, by userId
-   public class PvpTeam : List<int> {
+   public class PvpTeam : List<int>
+   {
       // What type of pvp team this is
       public PvpTeamType teamType = PvpTeamType.None;
    };
@@ -686,23 +688,33 @@ public class PvpGame : MonoBehaviour {
                continue;
             }
 
-            // Go to background thread to award gold and xp
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.addGoldAndXP(userId, goldAwarded, xpAwarded);
-
                if (playerWon) {
                   DB_Main.addGems(player.accountId, gameGemRewards);
                }
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  // Show battle xp to player
-                  player.Target_ReceiveBattleExp(player.connectionToClient, xpAwarded);
-
-                  // Update xp value on player object
-                  player.onGainedXP(player.XP, player.XP + xpAwarded);
-                  player.XP += xpAwarded;
-               });
             });
+
+            if (player.canGainXP(xpAwarded)) {
+               // Go to background thread to award gold and xp
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.addGoldAndXP(userId, goldAwarded, xpAwarded);
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     // Show battle xp to player
+                     player.Target_ReceiveBattleExp(player.connectionToClient, xpAwarded);
+
+                     // Update xp value on player object
+                     player.onGainedXP(player.XP, player.XP + xpAwarded);
+                     player.XP += xpAwarded;
+                  });
+               });
+            } else {
+               // Go to background thread to award gold and xp
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.addGoldAndXP(userId, goldAwarded, 0);
+               });
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "No XP gained - max demo level reached.");
+            }
          }
       }
 
@@ -720,7 +732,7 @@ public class PvpGame : MonoBehaviour {
 
    private int getGameGemRewards () {
 
-      float timeSinceGameStart = (float)NetworkTime.time - _startTime;
+      float timeSinceGameStart = (float) NetworkTime.time - _startTime;
       PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
 
       // Check that the teams have enough stats to count as a valid game
@@ -838,7 +850,7 @@ public class PvpGame : MonoBehaviour {
    public int getMaxPlayerCount () {
       int maxPlayerCount = AreaManager.self.getAreaMaxPlayerCount(areaKey);
 
-      if (maxPlayerCount <= 0) { 
+      if (maxPlayerCount <= 0) {
          maxPlayerCount = _numTeams * Voyage.MAX_PLAYERS_PER_GROUP_PVP;
       }
 
@@ -866,7 +878,7 @@ public class PvpGame : MonoBehaviour {
    }
 
    private string getSpawnForTeam (PvpTeamType teamType) {
-      int teamIndex = (int)(teamType) - 1;
+      int teamIndex = (int) (teamType) - 1;
       SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
 
       return mapSpawnData.spawns.Values.ElementAt(teamIndex).name;
@@ -876,13 +888,13 @@ public class PvpGame : MonoBehaviour {
       Vector3 spawnPosition;
 
       // If base positions haven't been setup, or if this is a CTF game
-      if ((int)teamType > _basePositions.Count || gameMode == PvpGameMode.CaptureTheFlag) {
+      if ((int) teamType > _basePositions.Count || gameMode == PvpGameMode.CaptureTheFlag) {
          // Use map editor spawn
          int teamIndex = (int) (teamType) - 1;
          SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
          spawnPosition = mapSpawnData.spawns.Values.ElementAt(teamIndex).localPosition;
 
-      // Otherwise, base positions have been setup, use the position of the team's base
+         // Otherwise, base positions have been setup, use the position of the team's base
       } else {
          spawnPosition = _basePositions[(int) teamType];
       }
@@ -898,7 +910,7 @@ public class PvpGame : MonoBehaviour {
 
       spawnPositionOffset = Quaternion.Euler(0.0f, 0.0f, numTeamSpawns * spawnRotationSpacing) * spawnPositionOffset;
       spawnPosition += (Vector3) spawnPositionOffset;
-      
+
       return spawnPosition;
    }
 
@@ -1061,7 +1073,7 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   public void noteDeath(int userId) {
+   public void noteDeath (int userId) {
       if (_deathsRegistry == null) {
          _deathsRegistry = new Dictionary<int, PvPGameDeathInfo>();
       }
@@ -1085,14 +1097,14 @@ public class PvpGame : MonoBehaviour {
       return _startTime;
    }
 
-   public float computeRespawnTimeoutFor(int userId) {
+   public float computeRespawnTimeoutFor (int userId) {
       float timeout = RESPAWN_TIMEOUT;
 
       if (_startTime <= 0) {
          return timeout;
       }
 
-      float gameSecondsSoFar = (float)NetworkTime.time - _startTime;
+      float gameSecondsSoFar = (float) NetworkTime.time - _startTime;
       float minutesSoFar = gameSecondsSoFar / 60.0f;
       float timeUnits = Mathf.Ceil(minutesSoFar / RESPAWN_TIMEOUT_TIME_UNIT);
 
@@ -1115,7 +1127,7 @@ public class PvpGame : MonoBehaviour {
 
       for (int i = 0; i < _numTeams; i++) {
          Faction.Type assignedFaction = allTypes.ChooseRandom();
-         
+
          // Add one to account for 'None' type in PvpTeamType
          PvpTeamType teamType = (PvpTeamType) i + 1;
          _teamFactions[teamType] = assignedFaction;

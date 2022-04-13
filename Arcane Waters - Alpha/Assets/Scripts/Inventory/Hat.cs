@@ -101,7 +101,11 @@ public class Hat : EquippableItem
    }
 
    public override string getName () {
-      return itemName;
+      if (getHatData() == null) {
+         return itemName;
+      }
+
+      return getHatData().equipmentName;
    }
 
    public int getHatDefense () {

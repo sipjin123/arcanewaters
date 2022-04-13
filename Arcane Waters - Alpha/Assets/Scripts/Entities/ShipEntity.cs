@@ -389,6 +389,14 @@ public class ShipEntity : SeaEntity
       List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
       float value = shipAbilityData.damageModifier;
       float refreshDuration = 0.5f;
+
+      // TODO: Jose setup sfx here
+      // Handle start sfx trigger here            
+      Rpc_PlaySFXTrigger(false, "Play Start AOE SFX HERE");
+      Rpc_TriggerHealEffect(true);
+      D.debug("---- Casting ability now: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
+
+      // Retain the buffs within the allies status while within proximity and time duration
       while (NetworkTime.time < endTimeVal) {
          yield return new WaitForSeconds(refreshDuration);
          foreach (NetEntity allyEntity in allyEntities) {
@@ -404,6 +412,9 @@ public class ShipEntity : SeaEntity
                   case Attack.Type.Heal:
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) == null) {
                         allyShip.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
+
+                        // TODO: If ally should have local sfx playing, should start here
+                        // Rpc_PlaySFXTrigger(true, "Play Start AOE SFX HERE");
                      }
                      break;
                   case Attack.Type.SpeedBoost:
@@ -415,6 +426,9 @@ public class ShipEntity : SeaEntity
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
                         SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
                         allyShip._buffs.Remove(healBuff);
+
+                        // TODO: If ally should have local sfx playing, should stop here
+                        // Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
                      }
                      break;
                   case Attack.Type.SpeedBoost:
@@ -423,6 +437,21 @@ public class ShipEntity : SeaEntity
             }
          }
       }
+
+      // TODO: Jose setup sfx here
+      // Handle stop sfx trigger here
+      Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
+      Rpc_TriggerHealEffect(false);
+      D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
+   }
+
+   [ClientRpc]
+   private void Rpc_TriggerHealEffect (bool isEnable) {
+      showHealEffect(isEnable);
+   }
+
+   protected virtual void showHealEffect (bool isEnable) {
+      // Override this method to implement heal effect on inheriting class
    }
 
    [ClientRpc]
@@ -459,6 +488,11 @@ public class ShipEntity : SeaEntity
             damageText.notificationText.text = shipAbilityData.abilityName;
          }
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_PlaySFXTrigger (bool isPlay, string temp) {
+      // TODO: Insert broadcast client sfx trigger here
    }
 
    [Command]

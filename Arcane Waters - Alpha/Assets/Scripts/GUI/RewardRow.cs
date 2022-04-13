@@ -46,7 +46,7 @@ public class RewardRow : MonoBehaviour {
       ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
       Sprite newSprite = ImageManager.getSprite(iconPath);
       cell.icon.sprite = newSprite;
-      cell.itemCountText.gameObject.SetActive(false);
+      cell.itemCountText.transform.parent.gameObject.SetActive(false);
       cell.iconShadow.sprite = newSprite; 
       cell.tooltip.message = name;
    }

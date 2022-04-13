@@ -64,14 +64,15 @@ public class EffectManager : MonoBehaviour {
    }
 
    public static void createBuffEffect (string spritePath, Vector2 pos, Transform parent, bool setLocalPosition = false) {
-      Sprite[] sprites = ImageManager.getSprites(spritePath);
+      Sprite sprite = ImageManager.getSprite(spritePath);
 
-      //If we do not have any effect sprites we cancel
-      if (sprites.Length <= 0) {
+      //If we did not find a sprite, we cancel
+      if (sprite == null) {
          return;
       }
 
       SeaBuffEffect effect = Instantiate(self.seaBuffEffectPrefab, Vector3.zero, Quaternion.identity, parent);
+      effect.buffSpriteRenderer.sprite = sprite;
 
       if (setLocalPosition) {
          effect.transform.localPosition = pos;

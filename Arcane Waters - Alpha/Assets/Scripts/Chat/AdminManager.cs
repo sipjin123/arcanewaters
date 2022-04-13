@@ -715,7 +715,7 @@ public class AdminManager : NetworkBehaviour
             // Make sure that this is called on the server
             if (NetworkServer.active) {
 
-               int finalDamage = targetEntity.applyDamage(int.MaxValue, _player.netId);
+               int finalDamage = targetEntity.applyDamage(int.MaxValue, _player.netId, Attack.Type.None);
 
                // Apply the status effect
                StatusManager.self.create(Status.Type.Slowed, 1.0f, 3f, targetEntity.netId);
@@ -900,10 +900,6 @@ public class AdminManager : NetworkBehaviour
                Steamworks.SteamUserStats.GetAchievement("EnterCombat01", out tutorialCompleted);
                Steamworks.SteamUserStats.SetAchievement("PoisonEnemy01");
                D.debug("The steam achievement for user {" + _player.userId + ":" + _player.entityName + ":" + _player.steamId + "} is {" + tutorialCompleted + "}");
-               break;
-            case "achievement2":
-               StartCoroutine( AchievementManager.self.CO_GetSteamData());
-               D.debug("The steam achievement for user {" + _player.userId + ":" + _player.entityName + ":" + _player.steamId + "}");
                break;
             case "clearachievement":
                message = "All steam achievements have reset!";
@@ -3911,6 +3907,8 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      _player.XP += xp;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.addGoldAndXP(_player.userId, 0, xp);
 
@@ -3961,6 +3959,7 @@ public class AdminManager : NetworkBehaviour
          DB_Main.addGoldAndXP(_player.userId, 0, deltaXP);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.XP += deltaXP;
             Target_OnSetPlayerLevel(level);
          });
       });

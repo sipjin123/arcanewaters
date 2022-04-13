@@ -251,6 +251,14 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildHouseBaseId;
 
+   // The id of the inventory of the guild
+   [SyncVar]
+   public int guildInventoryId;
+
+   // The demo status of account
+   [SyncVar]
+   public bool isDemoUser;
+
    [Header("Warping")]
 
    // Gets set to true when we're about to execute a warp on the server or client
@@ -455,6 +463,10 @@ public class NetEntity : NetworkBehaviour
 
          if (Global.player == getPlayerBodyEntity() && getPlayerBodyEntity() != null) {
             getPlayerBodyEntity().recolorNameText();
+         }
+
+         if (isLocalPlayer) {
+            ClientManager.self.setDemoSuffixInVersionText(isDemoUser);
          }
       }
    }
@@ -722,9 +734,13 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
+      this.isDemoUser = userInfo.accountName.Contains("@demo");
+
       this.guildName = guildInfo.guildName;
       this.guildMapBaseId = guildInfo.guildMapBaseId;
       this.guildHouseBaseId = guildInfo.guildHouseBaseId;
+      this.guildInventoryId = guildInfo.inventoryId;
+
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
       }
@@ -961,7 +977,7 @@ public class NetEntity : NetworkBehaviour
                // Play jumping sound effect
                SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform.position);
             }
-            
+
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -1009,7 +1025,7 @@ public class NetEntity : NetworkBehaviour
                // Play jump landing sound effect
                SoundEffectManager.self.playJumpLandSfx(this.sortPoint.transform.position, this.areaKey);
             }
-            
+
             break;
       }
 
@@ -1385,7 +1401,7 @@ public class NetEntity : NetworkBehaviour
             }
          }
       }
-      
+
       // If both entities are on a pvp team, check if they're on our team
       if (pvpTeam != PvpTeamType.None && otherEntity.pvpTeam != PvpTeamType.None) {
          return (pvpTeam != otherEntity.pvpTeam);
@@ -1697,6 +1713,15 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_GainedXP (NetworkConnection conn, int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
       onGainedJobXP(xpGained, jobs, jobType, cropNumber, showFloatingXp);
+   }
+
+   public bool canGainXP (int xp) {
+      if (!isDemoUser) {
+         return true;
+      }
+
+      // Restrict user level to max 5
+      return LevelUtil.levelForXp(this.XP) < 5;
    }
 
    protected void onGainedJobXP (int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
@@ -2167,7 +2192,7 @@ public class NetEntity : NetworkBehaviour
             string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(guildMember));
             targetLocalPos = (spawn == null) ? SpawnManager.self.getDefaultLocalPosition(baseMapKey) : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
 
-         } else if (customMapManager is CustomGuildHouseManager) { 
+         } else if (customMapManager is CustomGuildHouseManager) {
             // Make a guild-specific area key for this user, if it is not a guild-specific key already
             if (newArea == CustomGuildHouseManager.GROUP_AREA_KEY) {
                newArea = CustomGuildHouseManager.getGuildSpecificAreaKey(guildId);
@@ -2390,10 +2415,6 @@ public class NetEntity : NetworkBehaviour
             yield return null;
          }
 
-         // Set the music according to our Area
-         //SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
-         SoundEffectManager.self.playBackgroundMusic(this.areaKey);
-
          // Show the Area name
          if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
             LocationBanner.self.setText("League " + Voyage.getLeagueAreaName(getInstance().leagueIndex));
@@ -2424,6 +2445,19 @@ public class NetEntity : NetworkBehaviour
 
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
+         float timeSinceRedirectMessage = (float) NetworkTime.time - ClientMessageManager.lastRedirectMessageTime;
+         D.debug("[Timing] Client: from receiving redirection message to loading in area: " + areaKey + " took " + timeSinceRedirectMessage.ToString("F2") + "seconds.");
+
+         // Check instance biome and play voyage sfx based on the biome
+         while (InstanceManager.self.getInstance(instanceId) == null) {
+            yield return 0;
+         }
+
+         Instance instanceReference = InstanceManager.self.getInstance(instanceId);
+
+         SoundEffectManager.BgType bgParam = SoundEffectManager.self.getAreaBasedBgMusic(area.areaKey, instanceReference.biome);
+         SoundEffectManager.AmbType ambienceParam = SoundEffectManager.self.getAreaBasedAmbience(area.areaKey, instanceReference.biome);
+         SoundEffectManager.self.playBgMusic(bgParam, ambienceParam);
       }
    }
 

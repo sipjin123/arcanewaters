@@ -61,6 +61,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The icon indicating this item is a blueprint
    public GameObject blueprintIcon;
 
+   // The icon which is shown when item is a prop
+   public GameObject propIcon;
+
    // If the item is disabled
    public bool isDisabledItem;
 
@@ -93,7 +96,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       icon.enabled = false;
       iconShadow.enabled = false;
 
-      itemCountText.gameObject.SetActive(false);
+      itemCountText.transform.parent.gameObject.SetActive(false);
 
       disablePointerEvents();
    }
@@ -119,7 +122,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process weapon data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -148,7 +151,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process armor data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -184,7 +187,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process hat data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -213,7 +216,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process ring data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -242,7 +245,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process necklace data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -271,7 +274,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Failed to process trinket data of item type: " + item.itemTypeId);
                icon.sprite = disabledItemIcon;
                isDisabledItem = true;
-               itemCountText.gameObject.SetActive(false);
+               itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
                return;
             } else {
@@ -457,6 +460,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             }
             break;
          case Item.Category.Prop:
+            propIcon.SetActive(true);
             if (item.tryGetCastItem(out Prop propItem)) {
                item = propItem;
                icon.sprite = ImageManager.getSprite(propItem.getIconPath());
@@ -481,9 +485,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       // Show the item count when relevant
       if (count > 1 || Item.shouldAlwaysShowCount(item.category)) {
          itemCountText.SetText(count.ToString());
-         itemCountText.gameObject.SetActive(true);
+         itemCountText.transform.parent.gameObject.SetActive(true);
       } else {
-         itemCountText.gameObject.SetActive(false);
+         itemCountText.transform.parent.gameObject.SetActive(false);
       }
 
       // Set the tooltip
@@ -569,7 +573,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    }
 
    public void hideItemCount () {
-      itemCountText.gameObject.SetActive(false);
+      itemCountText.transform.parent.gameObject.SetActive(false);
    }
 
    public void LeftClick () {

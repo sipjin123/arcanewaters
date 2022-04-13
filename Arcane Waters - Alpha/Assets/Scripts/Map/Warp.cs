@@ -59,7 +59,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       if (player.isLocalPlayer && canPlayerUseWarp(player) && !player.isAboutToWarpOnClient) {
-                 
+
          // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
          if (!string.IsNullOrEmpty(areaTarget) && AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
             if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> denyWarpHandler)) {
@@ -212,8 +212,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                player.spawnInBiomeHomeTown();
             } else {
                if (areaTarget == CustomGuildMapManager.GROUP_AREA_KEY) {
-                  areaTarget = CustomGuildMapManager.getGuildSpecificAreaKey(player.guildId);
-                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+                  string targetArea = CustomGuildMapManager.getGuildSpecificAreaKey(player.guildId);
+                  player.spawnInNewMap(targetArea, spawnTarget, newFacingDirection);
                } else {
                   player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
                }
@@ -225,8 +225,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                player.spawnInBiomeHomeTown();
             } else {
                if (areaTarget == CustomGuildHouseManager.GROUP_AREA_KEY) {
-                  areaTarget = CustomGuildHouseManager.getGuildSpecificAreaKey(player.guildId);
-                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+                  string targetArea = CustomGuildHouseManager.getGuildSpecificAreaKey(player.guildId);
+                  player.spawnInNewMap(targetArea, spawnTarget, newFacingDirection);
                } else {
                   player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
                }
@@ -445,6 +445,17 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       // If the warp has a static destination, it must be defined
       if (string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
          return false;
+      }
+
+      // Don't let Demo users warp outside Forest or Desert
+      if (player.isDemoUser) {
+         if (!AreaManager.self.tryGetAreaInfo(areaTarget, out Map map)) {
+            return false;
+         }
+
+         if (map.biome != Biome.Type.Forest && map.biome != Biome.Type.Desert) {
+            return false;
+         }
       }
 
       return true;

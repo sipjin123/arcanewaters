@@ -47,6 +47,8 @@ public class StoreHatDyeBox : StoreDyeBox
       if (hatData != null) {
          setupHat(Global.player.gender, hatData.hatType, palette.paletteName);
       }
+
+      setupBanner();
    }
 
    private bool setupBody (Gender.Type gender) {

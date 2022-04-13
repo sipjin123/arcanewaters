@@ -163,6 +163,7 @@ public class SoundEffectManager : GenericGameManager
    public const string TREE_CUTTER = "event:/SFX/Player/Interactions/Diegetic/TreeCutter";
 
    public const string WATERFALL_SECRET = "event:/SFX/Player/Interactions/Diegetic/WF_Secret";
+   public const string CURTAIN = "event:/SFX/Player/Interactions/Diegetic/Curtain";
 
    #endregion
 

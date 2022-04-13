@@ -11,7 +11,8 @@ using System.Text;
 
 namespace SteamLoginSystem
 {
-   public class SteamLoginManager : MonoBehaviour {
+   public class SteamLoginManager : MonoBehaviour
+   {
       #region Public Variables
 
       // Self
@@ -87,12 +88,14 @@ namespace SteamLoginSystem
             steamState += "Steam : ";
             if (SteamUtils.GetAppID().ToString() == Steam.SteamStatics.GAMEPLAYTEST_APPID) {
                steamState += "Playtest : Production";
+            } else if (SteamUtils.GetAppID().ToString().Equals(Steam.SteamStatics.NEXTFEST_DEMO_APPID)) {
+               steamState += "Demo : Production";
             } else {
                steamState += "Main : " + clientBuildState;
             }
          }
 
-         return (String.IsNullOrEmpty(steamState) ? "Non-Steam : " + clientBuildState: steamState);
+         return (String.IsNullOrEmpty(steamState) ? "Non-Steam : " + clientBuildState : steamState);
       }
 
       #region Private Variables

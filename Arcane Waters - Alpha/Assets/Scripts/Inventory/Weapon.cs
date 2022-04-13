@@ -133,7 +133,11 @@ public class Weapon : EquippableItem {
    }
 
    public override string getName () {
-      return itemName;
+      if (getWeaponData() == null) {
+         return itemName;
+      }
+
+      return getWeaponData().equipmentName;
    }
 
    public override bool isEquipped () {

@@ -1449,7 +1449,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations, Biome.Type biome) {
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomization.MapCustomizationData customizations, Biome.Type biome) {
       // Check if we already have the Area created
       Area area = AreaManager.self.getArea(areaKey);
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.LeaveVoyageGroup);
@@ -1859,6 +1859,89 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_RequestSetTrinketId (int newId) {
       requestSetTrinketId(newId);
+   }
+
+   [Command]
+   public void Cmd_ContributeItemToGuildInventory (int itemId, int amount) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (itemId <= 0) {
+         D.warning("Invalid item id: " + itemId);
+         return;
+      }
+
+      int userId = _player.userId;
+      int guildId = _player.guildId;
+      int guildInventoryId = _player.guildInventoryId;
+
+      // Player has no guild
+      if (guildId <= 0) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Create guild inventory if that's needed
+         if (guildInventoryId <= 0) {
+            guildInventoryId = Bkg_CreateGuildInventory(guildId);
+         }
+
+         if (guildInventoryId <= 0) {
+            D.error("Failed to create guild inventory!");
+            return;
+         }
+
+         // Check that user owns enough of that type of item
+         Item existing = DB_Main.getItem(_player.userId, itemId);
+         if (existing == null || existing.count < amount) {
+            return;
+         }
+
+         // Transfer
+         DB_Main.transferItem(existing, userId, -guildInventoryId, amount);
+
+         // Notify player that transfer is complete
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Rpc_UpdateGuildInventoryPanel();
+
+            // Update remaining items in any map customization managers that need it
+            foreach (MapCustomizationManager manager in MapCustomizationManager.allManagers.Values) {
+               if (CustomMapManager.isGuildSpecificAreaKey(manager.areaKey) || CustomMapManager.isGuildHouseAreaKey(manager.areaKey)) {
+                  if (CustomMapManager.getGuildId(manager.areaKey) == guildId) {
+                     manager.refreshItemSourceFromDB();
+                  }
+               }
+            }
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Rpc_UpdateGuildInventoryPanel () {
+      if (GuildInventoryPanel.self.isShowing()) {
+         GuildInventoryPanel.self.refreshPanel();
+      }
+   }
+
+   [Server]
+   private int Bkg_CreateGuildInventory (int guildId) {
+      CustomItemCollection col = DB_Main.createCustomItemCollection();
+      int newInventoryId = DB_Main.setGuildInventoryIfNotExists(guildId, col.id);
+      GuildInfo playerGuildInfo = DB_Main.exec((cmd) => DB_Main.getGuildInfo(guildId));
+
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         // Update the inventory id for any members online
+         foreach (UserInfo memberInfo in playerGuildInfo.guildMembers) {
+            NetEntity playerEntity = EntityManager.self.getEntity(memberInfo.userId);
+            if (playerEntity != null) {
+               playerEntity.guildInventoryId = newInventoryId;
+            }
+         }
+      });
+
+      return newInventoryId;
    }
 
    [Command]
@@ -4725,6 +4808,8 @@ public class RPCManager : NetworkBehaviour
             } else {
                window.openWindow();
             }
+
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.CURTAIN, window.transform.position);
          }
       }
    }
@@ -5466,6 +5551,7 @@ public class RPCManager : NetworkBehaviour
             _player.guildIconSigilPalettes = null;
             _player.guildMapBaseId = 0;
             _player.guildHouseBaseId = 0;
+            _player.guildInventoryId = 0;
             _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
             refreshPvpStateForUser(userInfo, _player);
 
@@ -5727,6 +5813,7 @@ public class RPCManager : NetworkBehaviour
                   kickedUserEntity.guildIconSigilPalettes = null;
                   kickedUserEntity.guildMapBaseId = 0;
                   kickedUserEntity.guildHouseBaseId = 0;
+                  kickedUserEntity.guildInventoryId = 0;
                   kickedUserEntity.Rpc_UpdateGuildIconSprites(kickedUserEntity.guildIconBackground, kickedUserEntity.guildIconBackPalettes,
                      kickedUserEntity.guildIconBorder, kickedUserEntity.guildIconSigil, kickedUserEntity.guildIconSigilPalettes);
                }

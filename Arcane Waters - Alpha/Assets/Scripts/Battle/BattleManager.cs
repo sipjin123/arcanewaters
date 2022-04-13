@@ -1119,25 +1119,36 @@ public class BattleManager : MonoBehaviour {
       // Calculate how much gold to give the winners
       int goldWon = getGoldForDefeated(defeatedBattlers);
 
-      // Calculate how much XP to give the winners
-      int xpWon = getXPForDefeated(defeatedBattlers);
+      // Calculate how much base XP to give the winners
+      int baseXpWon = getXPForDefeated(defeatedBattlers);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the gold and XP in the database for the winners
          foreach (Battler participant in battle.getParticipants()) {
             if (participant.teamType == battle.teamThatWon) {
-               DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (participant.enemyType == Enemy.Type.PlayerBattler) {
-                     // If user has exp boost, add experience here
-                     if (LandPowerupManager.self.hasPowerup(participant.userId, LandPowerupType.ExperienceBoost)) {
-                        float experienceValue = .2f; // Add 20% exp for now
-                        xpWon = (int) (xpWon + (xpWon * experienceValue));
-                     }
-                     participant.player.Target_ReceiveBattleExp(participant.player.connectionToClient, xpWon);
+               int xpWon = baseXpWon;
+
+               // If user has exp boost, add experience here
+               if (LandPowerupManager.self.hasPowerup(participant.userId, LandPowerupType.ExperienceBoost)) {
+                  float experienceValue = .2f; // Add 20% exp for now
+                  xpWon = (int) (xpWon + (xpWon * experienceValue));
+               }
+
+               if (participant.enemyType == Enemy.Type.PlayerBattler && participant.player != null) {
+                  if (participant.player.canGainXP(xpWon)) {
+                     DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        participant.player.Target_ReceiveBattleExp(participant.player.connectionToClient, xpWon);
+                     });
+                  } else {
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        if (participant.player != null) {
+                           ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, participant.player, "No XP gained - max demo level reached.");
+                        }
+                     });
                   }
-               });
+               }
             }
          }
       });
@@ -1147,10 +1158,19 @@ public class BattleManager : MonoBehaviour {
          if (!battler.isMonster()) {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
-               bool isLeveledUp = LevelUtil.gainedLevel(body.XP, body.XP + xpWon);
-               body.onGainedXP(body.XP, body.XP + xpWon);
 
-               body.XP += xpWon;
+               int xpWon = baseXpWon;
+               // If user has exp boost, add experience here
+               if (LandPowerupManager.self.hasPowerup(body.userId, LandPowerupType.ExperienceBoost)) {
+                  float experienceValue = .2f; // Add 20% exp for now
+                  xpWon = (int) (xpWon + (xpWon * experienceValue));
+               }
+
+               if (body.canGainXP(xpWon)) {
+                  body.onGainedXP(body.XP, body.XP + xpWon);
+
+                  body.XP += xpWon;
+               }
 
                foreach (Battler companionBattlers in winningBattlers) {
                   if (companionBattlers.companionId > 0) {

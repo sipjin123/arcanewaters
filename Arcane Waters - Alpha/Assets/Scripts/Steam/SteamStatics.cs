@@ -23,6 +23,7 @@
       // The arcane waters steam app id
       public const string GAMEPLAYTEST_APPID = "1489170";
       public const string GAME_APPID = "1266340";
+      public const string NEXTFEST_DEMO_APPID = "1960130";
 
       // The various parameters used for the web api requests
       public const string PARAM_STEAM_ID = "steamid=";

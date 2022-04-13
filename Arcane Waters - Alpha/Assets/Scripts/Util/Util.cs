@@ -705,6 +705,10 @@ public class Util : MonoBehaviour
       return MyNetworkManager.isHost;
    }
 
+   public static bool forceDemoUserCreation () {
+      return true;
+   }
+
    public static bool isPlayer (int userId) {
       if (Global.player != null && Global.player.userId > 0 && Global.player.userId == userId) {
          return true;

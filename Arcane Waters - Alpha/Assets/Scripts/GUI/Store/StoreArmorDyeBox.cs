@@ -48,6 +48,8 @@ public class StoreArmorDyeBox : StoreDyeBox
       if (armorData != null) {
          setupArmor(Global.player.gender, armorData.armorType, palette.paletteName);
       }
+
+      setupBanner();
    }
 
    private bool setupBody (Gender.Type gender) {
