@@ -545,6 +545,50 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    #region Get basic info of item
 
+   public bool isLevelValid (int userLevel, Item item) {
+      int equipmentLevelRequirement = 0;
+      switch (item.category) {
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = getWeaponData(item.itemTypeId);
+            if (weaponData != null) {
+               equipmentLevelRequirement = weaponData.levelRequirement;
+            }
+            break;
+         case Item.Category.Armor:
+            ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
+            if (armorData != null) {
+               equipmentLevelRequirement = armorData.levelRequirement;
+            }
+            break;
+         case Item.Category.Hats:
+            HatStatData hatData = getHatData(item.itemTypeId);
+            if (hatData != null) {
+               equipmentLevelRequirement = hatData.levelRequirement;
+            }
+            break;
+         case Item.Category.Ring:
+            RingStatData ringData = getRingData(item.itemTypeId);
+            if (ringData != null) {
+               equipmentLevelRequirement = ringData.levelRequirement;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = getNecklaceData(item.itemTypeId);
+            if (necklaceData != null) {
+               equipmentLevelRequirement = necklaceData.levelRequirement;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = getTrinketData(item.itemTypeId);
+            if (trinketData != null) {
+               equipmentLevelRequirement = trinketData.levelRequirement;
+            }
+            break;
+      }
+
+      return userLevel >= equipmentLevelRequirement;
+   }
+
    public string getItemName (Item item) {
       string newName = "";
       

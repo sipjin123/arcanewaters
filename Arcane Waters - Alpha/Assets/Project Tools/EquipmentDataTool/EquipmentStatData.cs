@@ -15,6 +15,9 @@ public class EquipmentStatData
    // Description of the item
    public string equipmentDescription;
 
+   // The level requiremetn to use this item
+   public int levelRequirement;
+
    // The id of the item
    public int sqlId = 0;
 

@@ -17,6 +17,12 @@ public class InventoryManager : MonoBehaviour
    #endregion
 
    public static void tryEquipOrUseItem (Item castedItem) {
+      // If level requirements are met
+      int level = LevelUtil.levelForXp(Global.player.XP);
+      if (!EquipmentXMLManager.self.isLevelValid(level, castedItem)) {
+         return;
+      }
+
       // Equip the item if it is equippable
       if (castedItem.canBeEquipped()) {
          equipOrUnequipItem(castedItem);
