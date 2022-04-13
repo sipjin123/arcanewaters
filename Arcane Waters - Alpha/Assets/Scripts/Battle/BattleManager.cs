@@ -1089,7 +1089,8 @@ public class BattleManager : MonoBehaviour {
 
    protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {
       // Wait for action end time
-      while (NetworkTime.time < attackAction.actionEndTime) {
+      double startTime = NetworkTime.time;
+      while (NetworkTime.time < attackAction.actionEndTime - .1f) {
          yield return 0;
       }
 
@@ -1103,6 +1104,9 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Declare target as dead using the syncvar which will be read by the clients
+      if (target.enemyType != Enemy.Type.PlayerBattler) {
+         D.adminLog("Setting the target as dead! Waiting time was {" + (NetworkTime.time - startTime) + "} TargetTime was: {" + attackAction.actionEndTime + "}", D.ADMIN_LOG_TYPE.DeathAnimDelay);
+      }
       target.isAlreadyDead = true;
    }
 

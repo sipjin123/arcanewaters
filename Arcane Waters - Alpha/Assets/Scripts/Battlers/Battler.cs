@@ -533,7 +533,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Trigger the death animation coroutine
          if (enemyType != Enemy.Type.PlayerBattler) {
-            D.adminLog("Battle Log: This unit {" + enemyType + "} is now playing Death Animation! Animation Frames Should not be stuck!", D.ADMIN_LOG_TYPE.AnimationFreeze);
+            D.adminLog("Battle Log: This unit {" + enemyType + "} is now playing Death Animation! Animation Frames Should not be stuck!", D.ADMIN_LOG_TYPE.DeathAnimDelay);
          }
          StartCoroutine(animateDeath());
          deathAnimPlayed = true;
@@ -1115,10 +1115,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public IEnumerator animateDeath () {
       // Do not proceed to animate death yet if this unit is still attacking
-      while (isAttacking) {
+      while (Vector2.Distance(battleSpot.transform.position, transform.position) > .115f) {
          yield return 0;
       }
-      
+
+      if (enemyType != Enemy.Type.PlayerBattler) {
+         D.adminLog("Starting death animation trigger! previous animation was {" + _anims[0].currentAnimation + "} Speed:{" + (SimpleAnimation.DEFAULT_TIME_PER_FRAME / 2) + "}", D.ADMIN_LOG_TYPE.DeathAnimDelay);
+      }
+
       if (_anims[0].currentAnimation == Anim.Type.Death_East) {
          yield break;
       }
@@ -1381,6 +1385,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Default all abilities to display as attacks
             if (!(battleAction is AttackAction)) {
                D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
+               isAttacking = false;
                yield break;
             }
 
@@ -1406,10 +1411,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the source and target battler is still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               isAttacking = false;
                yield break;
             }
 
             if (sourceBattler.isDisabledByStatus()) {
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1680,10 +1687,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               isAttacking = false;
                yield break;
             }
 
             if (sourceBattler.isDisabledByStatus()) {
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1835,10 +1844,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               isAttacking = false;
                yield break;
             }
 
             if (sourceBattler.isDisabledByStatus()) {
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1991,6 +2002,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the battle has ended, no problem
             if (battle == null) {
+               isAttacking = false;
                yield break;
             }
 
@@ -2006,6 +2018,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             break;
          default:
+            isAttacking = false;
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
