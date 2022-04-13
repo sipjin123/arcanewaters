@@ -218,9 +218,10 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void OnTriggerEnter2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
-      if (entity != null && Global.player == entity) {
-         // Warping to league uses GUI button to trigger
-         if (actionName == WARP_TO_LEAGUE_ACTION) {
+
+      // Warping to league uses GUI button to trigger
+      if (actionName == WARP_TO_LEAGUE_ACTION) {
+         if (entity != null && Global.player == entity) {
             GenericBiomeSpritePair spritePairData = biomeSpritePair.Find(_ => _.biomeType == biomeType);
             VoyageTriggerPopup.self.enableVoyageGUI(true, spritePairData == null ? null : spritePairData.sprite);
             VoyageTriggerPopup.self.voyageStatusConfirm.onClick.RemoveAllListeners();
@@ -230,15 +231,17 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
                   if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
                      action.Invoke(entity);
                   }
+               } else {
+                  D.debug("Cannot active this trigger");
                }
             });
             return;
          }
-      }
-      
-      if (entity != null && interactionType == InteractionType.Enter && actionName != WARP_TO_LEAGUE_ACTION && canActivateTrigger(entity)) {
-         if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
-            action.Invoke(entity);
+      } else {
+         if (entity != null && interactionType == InteractionType.Enter && actionName != WARP_TO_LEAGUE_ACTION && canActivateTrigger(entity)) {
+            if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
+               action.Invoke(entity);
+            }
          }
       }
    }

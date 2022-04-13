@@ -6475,7 +6475,7 @@ public class RPCManager : NetworkBehaviour
 
       // Check if the user has already joined a voyage
       if (_player.tryGetVoyage(out Voyage voyage)) {
-         Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately");
+         Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately", false);
 
          // Display a panel with the current voyage map details
          Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
@@ -6511,7 +6511,7 @@ public class RPCManager : NetworkBehaviour
                   }
                   allNames = allNames.Substring(0, allNames.Length - 2);
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
-                  Target_OnWarpFailed("Missing group members");
+                  Target_OnWarpFailed("Missing group members", true);
                   return;
                }
 
@@ -9564,9 +9564,12 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_OnWarpFailed (string msg) {
+   public void Target_OnWarpFailed (string msg, bool showPanel) {
       D.debug("Warp failed: " + msg);
       _player.onWarpFailed();
+      if (showPanel) {
+         VoyageTriggerPopup.self.toggleWarningPanel(msg);
+      }
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }
 
@@ -9576,7 +9579,7 @@ public class RPCManager : NetworkBehaviour
 
       if (_player == null || _player.connectionToClient == null) {
          D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing reference", D.ADMIN_LOG_TYPE.Warp);
-         Target_OnWarpFailed("Missing player or player connection");
+         Target_OnWarpFailed("Missing player or player connection", false);
       }
 
       StartCoroutine(CO_WaitForAreaLoad(areaTarget, spawnTarget));
@@ -9595,7 +9598,7 @@ public class RPCManager : NetworkBehaviour
          } else {
             D.debug("Area failed to load: " + _player.areaKey + " wait time was " + currentLoadTime + " seconds");
             D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Warp);
-            Target_OnWarpFailed("Missing Area: " + _player.areaKey);
+            Target_OnWarpFailed("Missing Area: " + _player.areaKey, false);
             yield break;
          }
       }
@@ -9636,7 +9639,7 @@ public class RPCManager : NetworkBehaviour
       D.adminLog("Player {" + _player.userId + "} Failed to warp since there is no warp nearby!", D.ADMIN_LOG_TYPE.Warp);
 
       // If no valid warp was found, let the player know so at least they're not stuck
-      Target_OnWarpFailed("No valid warp nearby");
+      Target_OnWarpFailed("No valid warp nearby", false);
    }
 
    [Command]
