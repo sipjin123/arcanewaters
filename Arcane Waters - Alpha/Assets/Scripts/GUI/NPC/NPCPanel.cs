@@ -203,22 +203,23 @@ public class NPCPanel : Panel
       NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
       if (questData != null) {
          int lastQuestDataNodeIndex = questData.questDataNodes.Length - 1;
-         if (questData.questDataNodes.Length > 0 && questNodeId + 1 > questData.questDataNodes[lastQuestDataNodeIndex].questDataNodeId) {
+         if (questData.questDataNodes.Length > 0 && questNodeId > questData.questDataNodes[lastQuestDataNodeIndex].questDataNodeId) {
             // End the dialogue if the quest node is greater than the quest list
             npcDialogueText.enabled = true;
             _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
             if (isShowing()) {
                AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
             }
-            D.debug("Step4-B: Dialogue node being Ended now {" + questId + ":" + questData.questGroupName + "}{" + questNodeId + "}{" + dialogueId + "} " +
-               "{" + (questNodeId + 1) + ":" + questData.questDataNodes.Length + "}");
+            D.adminLog("Step4-B: Dialogue node being Ended now QID:{" + questId + ":" + questData.questGroupName + "}NID:{" + questNodeId + "}DID:{" + dialogueId + "} " +
+               "{" + (questNodeId) + "/" + questData.questDataNodes.Length + "} : {" + questData.questDataNodes[questNodeId].questNodeTitle + "} " +
+               "{" + questData.questDataNodes[lastQuestDataNodeIndex].questDataNodeId + "}", D.ADMIN_LOG_TYPE.Quest);
 
             addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
             () => dialogueEndClickedOn(), true);
          } else {
             QuestDataNode questDataNode = new List<QuestDataNode>(questData.questDataNodes).Find(_ => _.questDataNodeId == questNodeId);
             QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
-            D.adminLog("Step4-A: Dialogue node being fetched is from {" + questId + "}{" + questNodeId + ":" + questDataNode.questNodeTitle + "}" +
+            D.adminLog("Step4-A: Dialogue node being fetched is from QUID:{" + questId + "}NID:{" + questNodeId + ":" + questDataNode.questNodeTitle + "}" +
                "{" + dialogueId + ":" + dialogueNode.playerDialogue + "}", D.ADMIN_LOG_TYPE.Quest);
             if (dialogueNode != null) {
                npcDialogueText.enabled = true;
@@ -306,11 +307,13 @@ public class NPCPanel : Panel
          cell.icon.GetComponentInParent<ToolTipComponent>().message = EquipmentXMLManager.self.getItemName(itemRequirement);
          cell.transform.SetParent(questObjectivesContainer.transform);
          cell.updateCellContent(itemRequirement, itemRequirement.count, itemStock.Length > itemIndexCount ? itemStock[itemIndexCount] : 0);
-         if (itemStock[itemIndexCount] >= itemRequirement.count) {
-            // Add logic here if item reaches requirement
-         } else {
-            hasCompleteIngredients = false;
-            D.editorLog("Not enough ingredients! {" + itemRequirement.category + " : " + itemRequirement.itemTypeId + "} : " + itemStock[itemIndexCount] + " / " + itemRequirement.count, Color.red);
+         if (itemStock.Length > itemIndexCount) {
+            if (itemStock[itemIndexCount] >= itemRequirement.count) {
+               // Add logic here if item reaches requirement
+            } else {
+               hasCompleteIngredients = false;
+               D.editorLog("Not enough ingredients! {" + itemRequirement.category + " : " + itemRequirement.itemTypeId + "} : " + itemStock[itemIndexCount] + " / " + itemRequirement.count, Color.red);
+            }
          }
          itemIndexCount++;
       }

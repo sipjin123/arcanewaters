@@ -3145,7 +3145,7 @@ public class RPCManager : NetworkBehaviour
                      // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
                      if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
                         removeNodeList.Add(xmlQuestNode);
-                        D.adminLog("Removed quest node {" + xmlQuestNode.questDataNodeId + "} due to quest already completed " +
+                        D.adminLog("Removed quest node {" + xmlQuestNode.questDataNodeId + ":" + xmlQuestNode.questNodeTitle + "} due to quest already completed " +
                            "{" + databaseQuestStatus.questDialogueId + "/ " + xmlQuestNode.questDialogueNodes.Length + "}", D.ADMIN_LOG_TYPE.Quest);
                      }
 
@@ -3201,7 +3201,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       D.adminLog("Step1: Quest NPC Quest Title is now selected: {" + (questData == null ? "NULL" : questData.questGroupName) + "} " +
-         "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+         "QID:{" + questId + "}NID:{" + questNodeId + "}DID:{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3232,35 +3232,33 @@ public class RPCManager : NetworkBehaviour
                }
 
                D.adminLog("Step2: Quest Title Currently is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} {" + questTitleName + "}" +
-                  "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+                  "QID:{" + questId + "}NID:{" + questNodeId + "}DID:{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
 
                if (statusInfo != null) {
                   questNodeId = statusInfo.questNodeId;
                   dialogueId = statusInfo.questDialogueId;
 
-                  if (questData.questDataNodes.Length > questNodeId) {
-                     D.adminLog("Quest Title selected is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} " +
-                        "{" + (questDataNode == null ? "NULL" : questDataNode.questNodeTitle) + "} " +
-                        "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+                  D.adminLog("Quest Title selected is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} " +
+                     "{" + (questDataNode == null ? "NULL" : questDataNode.questNodeTitle) + "} " +
+                     "QID:{" + questId + "}NID:{" + questNodeId + "}DID:{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
 
-                     if (questDataNode.questDialogueNodes.Length > dialogueId) {
-                        // When the user selects a quest, we show again the dialogues up to the previously completed reward or quest node
-                        for (dialogueId--; dialogueId >= 0; dialogueId--) {
-                           if (questDataNode.questDialogueNodes[dialogueId].hasItemRequirements()
-                              || questDataNode.questDialogueNodes[dialogueId].hasItemRewards()
-                              || questDataNode.questDialogueNodes[dialogueId].friendshipRewardPts > 0) {
-                              // This node has already been rewarded/completed, so we continue from the next
-                              dialogueId++;
-                              break;
-                           }
+                  if (questDataNode.questDialogueNodes.Length > dialogueId) {
+                     // When the user selects a quest, we show again the dialogues up to the previously completed reward or quest node
+                     for (dialogueId--; dialogueId >= 0; dialogueId--) {
+                        if (questDataNode.questDialogueNodes[dialogueId].hasItemRequirements()
+                           || questDataNode.questDialogueNodes[dialogueId].hasItemRewards()
+                           || questDataNode.questDialogueNodes[dialogueId].friendshipRewardPts > 0) {
+                           // This node has already been rewarded/completed, so we continue from the next
+                           dialogueId++;
+                           break;
                         }
-                        dialogueId = dialogueId < 0 ? 0 : dialogueId;
+                     }
+                     dialogueId = dialogueId < 0 ? 0 : dialogueId;
 
-                        QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
-                        if (questDialogue.itemRequirements != null) {
-                           foreach (Item item in questDialogue.itemRequirements) {
-                              itemRequirementList.Add(item);
-                           }
+                     QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
+                     if (questDialogue.itemRequirements != null) {
+                        foreach (Item item in questDialogue.itemRequirements) {
+                           itemRequirementList.Add(item);
                         }
                      }
                   }
@@ -3473,7 +3471,7 @@ public class RPCManager : NetworkBehaviour
                   foreach (QuestStatusInfo questStat in totalQuestStatus) {
                      QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
                      if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
-                        D.adminLog("-->This quest is not complete yet", D.ADMIN_LOG_TYPE.Quest);
+                        D.adminLog("-->This quest is not complete yet {" + questStat.questNodeId + ":" + questNodeReference.questNodeTitle + "}", D.ADMIN_LOG_TYPE.Quest);
                         if (friendshipLevel >= questNodeReference.friendshipLevelRequirement) {
                            incompleteQuestList.Add(questStat);
                         } else {
@@ -3489,6 +3487,8 @@ public class RPCManager : NetworkBehaviour
                      hasCompletedAllQuests = false;
                   }
                }
+               
+               // TODO: Add reduce items here if need be
 
                if (hasCompletedAllQuests) {
                   D.adminLog("Player has completed all quests, no more remaining:{" + incompleteQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
