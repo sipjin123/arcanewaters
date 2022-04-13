@@ -308,25 +308,28 @@ public class EnemyManager : MonoBehaviour {
        }
 
        foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
-          // Create an Enemy in this instance
-          Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-          enemy.transform.localPosition = spawner.transform.localPosition;
-          enemy.enemyType = spawner.getEnemyType(instance.biome);
-          enemy.areaKey = instance.areaKey;
-          enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+         Enemy.Type enemyType = spawner.getEnemyType(instance.biome);
+         if (enemyType != Enemy.Type.PlayerBattler) {
+            // Create an Enemy in this instance
+            Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+            enemy.transform.localPosition = spawner.transform.localPosition;
+            enemy.enemyType = enemyType;
+            enemy.areaKey = instance.areaKey;
+            enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
 
-          BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
-          if (battlerData != null) {
-             enemy.isBossType = battlerData.isBossType;
-             enemy.isSupportType = battlerData.isSupportType;
-             enemy.animGroupType = battlerData.animGroup;
-             enemy.facing = Direction.South;
-             enemy.displayNameText.text = battlerData.enemyName;
-          }
+            BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+            if (battlerData != null) {
+               enemy.isBossType = battlerData.isBossType;
+               enemy.isSupportType = battlerData.isSupportType;
+               enemy.animGroupType = battlerData.animGroup;
+               enemy.facing = Direction.South;
+               enemy.displayNameText.text = battlerData.enemyName;
+            }
 
-          // Add it to the Instance
-          InstanceManager.self.addEnemyToInstance(enemy, instance);
-          NetworkServer.Spawn(enemy.gameObject);
+            // Add it to the Instance
+            InstanceManager.self.addEnemyToInstance(enemy, instance);
+            NetworkServer.Spawn(enemy.gameObject);
+         }
        }
     }
 

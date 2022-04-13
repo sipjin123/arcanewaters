@@ -3395,7 +3395,9 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      EnemyManager.self.spawnEnemyAtLocation(enemyType, _player.getInstance(), _player.transform.localPosition);
+      if (enemyType != Enemy.Type.PlayerBattler) {
+         EnemyManager.self.spawnEnemyAtLocation(enemyType, _player.getInstance(), _player.transform.localPosition);
+      }
    }
 
    [Command]

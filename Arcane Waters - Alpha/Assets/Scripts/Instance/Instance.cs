@@ -456,35 +456,41 @@ public class Instance : NetworkBehaviour
          foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
-            // Add it to the Instance
-            Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+            Enemy.Type newEnemyType = Enemy.Type.None;
+            bool newIsStationary = false;
             foreach (DataField field in dataField.d) {
                if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
                   // Get ID from npc data field
                   if (field.tryGetIntValue(out int id)) {
-                     enemy.enemyType = (Enemy.Type) id;
+                     newEnemyType = (Enemy.Type) id;
                   }
                }
                if (field.k.CompareTo(DataField.NPC_STATIONARY_KEY) == 0) {
                   string isStationaryData = field.v.Split(':')[0];
-                  enemy.isStationary = isStationaryData.ToLower() == "true" ? true : false;
+                  newIsStationary = isStationaryData.ToLower() == "true" ? true : false;
                }
             }
-            enemy.areaKey = area.areaKey;
-            enemy.transform.localPosition = targetLocalPos;
-            enemy.setAreaParent(area, false);
-            BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
-            if (battlerData != null) {
-               enemy.isBossType = battlerData.isBossType;
-               enemy.isSupportType = battlerData.isSupportType;
-               enemy.animGroupType = battlerData.animGroup;
-               enemy.facing = Direction.South;
-               enemy.displayNameText.text = battlerData.enemyName;
+
+            if (newEnemyType != Enemy.Type.PlayerBattler) {
+               // Add it to the Instance
+               Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+               enemy.enemyType = newEnemyType;
+               enemy.isStationary = newIsStationary;
+               enemy.areaKey = area.areaKey;
+               enemy.transform.localPosition = targetLocalPos;
+               enemy.setAreaParent(area, false);
+               BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+               if (battlerData != null) {
+                  enemy.isBossType = battlerData.isBossType;
+                  enemy.isSupportType = battlerData.isSupportType;
+                  enemy.animGroupType = battlerData.animGroup;
+                  enemy.facing = Direction.South;
+                  enemy.displayNameText.text = battlerData.enemyName;
+               }
+
+               InstanceManager.self.addEnemyToInstance(enemy, this);
+               NetworkServer.Spawn(enemy.gameObject);
             }
-
-            InstanceManager.self.addEnemyToInstance(enemy, this);
-
-            NetworkServer.Spawn(enemy.gameObject);
          }
       }
 
@@ -506,25 +512,27 @@ public class Instance : NetworkBehaviour
 
          if (bossToSpawn != Enemy.Type.None) {
             foreach (ExportedPrefab001 dataField in area.bossSpawnerDataFields) {
-               // Add it to the Instance
-               Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-               enemy.enemyType = bossToSpawn;
-               enemy.isStationary = true;
-               enemy.areaKey = area.areaKey;
-               Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-               enemy.transform.localPosition = targetLocalPos;
-               enemy.setAreaParent(area, false);
-               BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
-               if (battlerData != null) {
-                  enemy.isBossType = battlerData.isBossType;
-                  enemy.isSupportType = battlerData.isSupportType;
-                  enemy.animGroupType = battlerData.animGroup;
-                  enemy.facing = Direction.South;
-                  enemy.displayNameText.text = battlerData.enemyName;
-               }
+               if (bossToSpawn != Enemy.Type.PlayerBattler) {
+                  // Add it to the Instance
+                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+                  enemy.enemyType = bossToSpawn;
+                  enemy.isStationary = true;
+                  enemy.areaKey = area.areaKey;
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+                  enemy.transform.localPosition = targetLocalPos;
+                  enemy.setAreaParent(area, false);
+                  BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+                  if (battlerData != null) {
+                     enemy.isBossType = battlerData.isBossType;
+                     enemy.isSupportType = battlerData.isSupportType;
+                     enemy.animGroupType = battlerData.animGroup;
+                     enemy.facing = Direction.South;
+                     enemy.displayNameText.text = battlerData.enemyName;
+                  }
 
-               InstanceManager.self.addEnemyToInstance(enemy, this);
-               NetworkServer.Spawn(enemy.gameObject);
+                  InstanceManager.self.addEnemyToInstance(enemy, this);
+                  NetworkServer.Spawn(enemy.gameObject);
+               }
             }
          }
       }
