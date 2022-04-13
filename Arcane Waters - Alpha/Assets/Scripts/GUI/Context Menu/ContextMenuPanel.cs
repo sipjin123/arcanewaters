@@ -154,7 +154,7 @@ public class ContextMenuPanel : MonoBehaviour
             }
             // If clicked user is already in the group and the player is group leader then allow kicking group members. Only make the button interactable if the player can be kicked from the group.
             else if (isInSameGroup && VoyageGroupPanel.self.isGroupLeader(Global.player.userId)) {
-               if ((targetEntity && !targetEntity.hasAttackers()) || !targetEntity) {
+               if ((targetEntity != null && !targetEntity.hasAttackers()) || targetEntity == null) {
                   addButton("Kick player", () => VoyageGroupPanel.self.OnKickPlayerButtonClickedOn(targetUserId));
                }
             }
@@ -196,15 +196,21 @@ public class ContextMenuPanel : MonoBehaviour
          if (Global.player.canInviteGuild(targetEntity)) {
             addButton("Guild Invite", () => {
                D.debug("Successfully Sent Guild Invite to user {" + targetEntity == null ? "NULL" : (targetEntity.entityName + ":" + targetEntity.userId) + "}");
-               Global.player.rpc.Cmd_InviteToGuild(targetUserId);
+               Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
             });
          } else {
+            addButton("Guild Invite", () => {
+               D.debug("Successfully Sent Guild Invite to user {" + targetUserId + "}");
+               Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
+            });
+
             string targetEntityInfo = (targetEntity == null ? "Null" : (targetEntity.entityName + ":" + targetEntity.userId));
-            if (Global.player.guildId < 1 || targetEntity.guildId < 1) {
+            if (Global.player.guildId < 1 || (targetEntity != null && targetEntity.guildId < 1)) {
                D.debug("GuildInviteFailed! Invalid Guild parameters! {" + targetEntityInfo + "}");
-            }
-            if (targetEntity != null && targetEntity.canPerformAction(GuildPermission.Invite)) {
+            } else if (targetEntity != null && targetEntity.canPerformAction(GuildPermission.Invite)) {
                D.debug("GuildInviteFailed! No permission to invite! {" + targetEntityInfo + "}");
+            } else {
+               D.debug("Cant invite the user to guild, all conditions failed!");
             }
          }
 

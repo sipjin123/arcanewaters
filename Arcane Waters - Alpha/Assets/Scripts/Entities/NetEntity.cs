@@ -1890,6 +1890,22 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveGuildInvitationNotification (NetworkConnection conn, int guildId, string inviterName, int inviterUserId, string guildName) {
+      // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptInviteOnClient(guildId, inviterName, inviterUserId, entityName, userId, guildName));
+
+      // Show a confirmation panel with the user name
+      string message = "The player " + inviterName + " has invited you to join the guild " + guildName + "!";
+      PanelManager.self.confirmScreen.show(message);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGuildAcceptNotification (NetworkConnection conn, int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName, GuildInfo guildInfo) {
+      D.debug("Player {" + invitedUserName + "} has accepted the guild invitation");
+   }
+
+   [TargetRpc]
    public void Target_ReceiveGroupInvitationNotification (NetworkConnection conn, int voyageGroupId, string inviterName) {
       VoyageGroupManager.self.receiveGroupInvitation(voyageGroupId, inviterName);
    }
@@ -2682,7 +2698,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool canInviteGuild (NetEntity targetEntity) {
-      return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildPermission.Invite);
+      return this.guildId > 0 && (targetEntity == null || (targetEntity != null && targetEntity.guildId == 0)) && canPerformAction(GuildPermission.Invite);
    }
 
    public bool canInvitePracticeDuel (NetEntity targetEntity) {

@@ -87,19 +87,6 @@ public class SpeakChatLine : ChatLine, IScrollHandler
    }
 
    public void chatlineButtonClick () {
-      if (isValidInteraction()) {
-         if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
-            ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
-         } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
-            if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {
-               BottomBar.self.toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.InvitesReceived);
-            }
-         } else {
-            D.adminLog("ContextMenu: Interact was performed via chat line button CMD-2:" +
-            "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
-            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
-         }
-      }
    }
 
    public void OnScroll (PointerEventData eventData) {

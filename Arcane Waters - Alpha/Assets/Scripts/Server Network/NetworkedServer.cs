@@ -639,6 +639,26 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_SendGuildInvitationNotification (int guildId, int inviterUserId, string inviterName, int invitedUserId, string guildName) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(invitedUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveGuildInvitationNotification, guildId, inviterUserId, inviterName, invitedUserId, guildName);
+      } else {
+         D.debug("Could not find player: " + invitedUserId);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_SendGuildAcceptNotification (int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(inviterUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveGuildAcceptNotification, guildId, inviterUserId, inviterName, invitedUserId, invitedUserName, guildName);
+      } else {
+         D.debug("Could not find player: " + inviterUserId);
+      }
+   }
+   
+   [ServerRPC]
    public void MasterServer_SendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(inviteeUserId);
       if (targetServer != null) {
@@ -647,6 +667,31 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ClientRPC]
+   public void Server_ReceiveGuildInvitationNotification (int guildId, int inviterUserId, string inviterName, int inviteeUserId, string guildName) {
+      NetEntity player = EntityManager.self.getEntity(inviteeUserId);
+      if (player != null) {
+         player.Target_ReceiveGuildInvitationNotification(player.connectionToClient, guildId, inviterName, inviterUserId, guildName);
+      } else {
+         D.debug("Could not find player: " + inviteeUserId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveGuildAcceptNotification (int guildId, int inviterUserId, string inviterName, int invitedUserId, string invitedUserName, string guildName) {
+      NetEntity player = EntityManager.self.getEntity(inviterUserId);
+      if (player != null) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            GuildInfo info = DB_Main.getGuildInfo(guildId);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               player.Target_ReceiveGuildAcceptNotification(player.connectionToClient, guildId, inviterName, inviterUserId, invitedUserName, invitedUserId, guildName, info);
+            });
+         });
+      } else {
+         D.debug("Could not find player: " + inviterUserId);
+      }
+   }
+   
+   [ClientRPC]
    public void Server_ReceiveGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
       NetEntity player = EntityManager.self.getEntity(inviteeUserId);
       if (player != null) {
@@ -654,7 +699,7 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
-   [ServerRPC]
+  [ServerRPC]
    public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, Voyage parameters) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
       if (targetServer != null) {

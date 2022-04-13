@@ -777,17 +777,6 @@ public class RPCManager : NetworkBehaviour
       store.gemsText.text = newGemsTotal + "";
    }
 
-   [TargetRpc]
-   public void Target_ReceiveGuildInvite (NetworkConnection connection, GuildInvite invite) {
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptInviteOnClient(invite));
-
-      // Show a confirmation panel with the user name
-      string message = "The player " + invite.senderName + " has invited you to join the guild " + invite.guildName + "!";
-      PanelManager.self.confirmScreen.show(message);
-   }
-
    [Command]
    public void Cmd_OpenLootBag (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
@@ -5574,14 +5563,26 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_InviteToGuild (int recipientId) {
+   public void Cmd_InviteToGuild (int recipientId, string recipientName) {
       // Look up the guild info
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          GuildInfo info = DB_Main.getGuildInfo(_player.guildId);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            GuildManager.self.handleInvite(_player, recipientId, info);
+            GuildManager.self.handleInvite(_player, recipientId, recipientName, info);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_AcceptGuildInvite (int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            GuildInvite newInvite = GuildManager.self.createInvite(guildId, inviterUserId, inviterName, _player.userId, guildInfo);
+            GuildManager.self.acceptInviteOnServer(_player, newInvite, false);
+            ServerNetworkingManager.self.sendGuildAcceptNotification(guildId, inviterName, inviterUserId, invitedUserName, invitedUserId, guildName);
          });
       });
    }

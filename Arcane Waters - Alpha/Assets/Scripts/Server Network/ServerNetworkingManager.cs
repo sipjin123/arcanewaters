@@ -356,6 +356,14 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_UpdateUserGuildId, userId, newGuildId);
    }
 
+   public void sendGuildInvitationNotification (int guildId, int inviterUserId, string inviterName, int invitedUserId, string guildName) {
+      server.InvokeServerRpc(server.MasterServer_SendGuildInvitationNotification, guildId, inviterUserId, inviterName, invitedUserId, guildName);
+   }
+
+   public void sendGuildAcceptNotification (int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName) {
+      server.InvokeServerRpc(server.MasterServer_SendGuildAcceptNotification, guildId, inviterName, inviterUserId, invitedUserName, invitedUserId, guildName);
+   }
+   
    public void sendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
       server.InvokeServerRpc(server.MasterServer_SendGroupInvitationNotification, groupId, inviterUserId, inviterName, inviteeUserId);
    }

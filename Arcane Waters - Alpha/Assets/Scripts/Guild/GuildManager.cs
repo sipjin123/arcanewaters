@@ -52,19 +52,7 @@ public class GuildManager : MonoBehaviour {
       }
    }
 
-   public void handleInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
-      NetEntity recipient = EntityManager.self.getEntity(recipientId);
-      if (recipient == null) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "Guild invite recipient couldn't be found");
-         return;
-      }
-
-      // Make sure the sender is in a guild and the recipient is not
-      if (sender.guildId == 0 || recipient.guildId != 0) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "Invalid guild invite from " + sender + " to: " + recipientId);
-         return;
-      }
-
+   public void handleInvite (NetEntity sender, int recipientId, string recipientName, GuildInfo guildInfo) {
       // Make sure the sender isn't spamming
       if (getRecentInviteCount(sender.userId) > 3) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "You sent too many guild invites recently to send another.");
@@ -84,10 +72,10 @@ public class GuildManager : MonoBehaviour {
       _pastInvites.Add(invite);
 
       // Send the confirmation to all online guild members
-      ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, sender.guildId, sender.entityName + " has sent guild invitation to " + recipient.entityName + "!");
+      ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, sender.guildId, sender.entityName + " has sent guild invitation to " + recipientName + "!");
 
-      // Send the invite to the target
-      recipient.rpc.Target_ReceiveGuildInvite(recipient.connectionToClient, invite);
+      // Send the invitation
+      ServerNetworkingManager.self.sendGuildInvitationNotification(sender.guildId, sender.userId, sender.entityName, recipientId, guildInfo.guildName);
    }
 
    public void removePastInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
@@ -95,9 +83,9 @@ public class GuildManager : MonoBehaviour {
       _pastInvites.Remove(invite);
    }
 
-   public void acceptInviteOnClient (GuildInvite invite) {
-      Global.player.rpc.Cmd_AcceptInvite(invite);
-
+   public void acceptInviteOnClient (int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName) {
+      Global.player.rpc.Cmd_AcceptGuildInvite(guildId, inviterName, inviterUserId, invitedUserName, invitedUserId, guildName);
+      
       // Hide the confirm panel
       PanelManager.self.confirmScreen.hide();
    }
@@ -109,16 +97,18 @@ public class GuildManager : MonoBehaviour {
       PanelManager.self.confirmScreen.hide();
    }
 
-   public void acceptInviteOnServer (NetEntity recipient, GuildInvite invite) {
+   public void acceptInviteOnServer (NetEntity recipient, GuildInvite invite, bool withinLocalServer = true) {
       // Make sure the player isn't already in a guild
       if (recipient.guildId != 0) {
          return;
       }
 
       // Make sure the invite hasn't expired
-      if (!_pastInvites.Contains(invite)) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, recipient, "This invite no longer exists.");
-         return;
+      if (withinLocalServer) {
+         if (!_pastInvites.Contains(invite)) {
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, recipient, "This invite no longer exists.");
+            return;
+         }
       }
 
       // Update the guild
@@ -157,6 +147,18 @@ public class GuildManager : MonoBehaviour {
       invite.guildId = sender.guildId;
       invite.senderId = sender.userId;
       invite.senderName = sender.entityName;
+      invite.guildName = guildInfo.guildName;
+      invite.recipientId = recipientId;
+      invite.inviteTime = DateTime.Now.ToBinary();
+
+      return invite;
+   }
+
+   public GuildInvite createInvite (int guildId, int senderId, string senderName, int recipientId, GuildInfo guildInfo) {
+      GuildInvite invite = new GuildInvite();
+      invite.guildId = guildId;
+      invite.senderId = senderId;
+      invite.senderName = senderName;
       invite.guildName = guildInfo.guildName;
       invite.recipientId = recipientId;
       invite.inviteTime = DateTime.Now.ToBinary();
