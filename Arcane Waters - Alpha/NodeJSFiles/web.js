@@ -41,6 +41,20 @@ var dataReadSteamBuildEventHandler = function (result) {
 var dataReadJenkinsEventHandler = function (result) {
 	console.log('Jenkins build complete: Results are: '+ result);
 	try {
+		// Migrated to text file
+		/*
+		for (var i = 0 ; i < result.length ; i ++){
+			console.log('write complete: '+ result[i].buildId+ " : " +result[i].buildComment);
+
+			var dataEntry = {
+				buildId: result[i].buildId,
+				message: result[i].buildComment
+			};
+			newCloudBuildData.push(dataEntry);
+
+			postUpdates(newCloudBuildData);
+		}*/
+
 		console.log('Patchnote text files are: ('+ patchNoteMessage.length + ") From: " + logTextFile);
 		if (patchNoteMessage.length > 1) {
 			postUpdates(result);
@@ -48,6 +62,15 @@ var dataReadJenkinsEventHandler = function (result) {
 			console.log('no new updates');
     		process.exit();
 		}
+
+		// Migrated to text file
+		/*
+		if (newCloudBuildData.length > 0) {
+			postUpdates(newCloudBuildData);
+		} else {
+			console.log('no new updates');
+    		process.exit();
+		}*/
 	} catch {
 		console.log('Failed to fetch json data');
 	}
@@ -91,6 +114,9 @@ if (process.argv[3]) {
 }
 
 console.log('------------------------------ Read End');
+// TODO: Remove after investigation
+    //process.exit();
+    
 //========================================================
 
 // Assign the event handler to an event
@@ -189,27 +215,31 @@ const postUpdates = async (buildIdDeployed) => {
 			// Select Main Category
 			console.log("Select announcement Button");
 			await page2.waitFor(actionInterval);
-			await page2.evaluate(() => {
-			  var nameOfClass = 'partnereventeditor_EventCategory_Title_16pAy';
-			  document.querySelector('.' + nameOfClass).click();
-			});
 
-			// New way of skipping new UI request steam award nomination
-			if (buildType == "playtest") {
+			// This handles the category selection of community home page 
+			// (NOTE: This may vary depending if steam has events, normally first selection will be an event button)
+ 			if (buildType == "playtest") {
 				await page2.evaluate(() => {
-				  var nameOfClass = 'partnereventeditor_EventCategory_Desc_S7Pze';
+				  var nameOfClass = 'partnereventeditor_EventCategory_Title_16pAy';
 
-				  document.querySelector('.' + nameOfClass).click();
+					document.querySelectorAll('.' + nameOfClass)[0].click();
+				  //document.querySelector('.' + nameOfClass).click();
 				});
 			} else {
 				await page2.evaluate(() => {
 				  var nameOfClass = 'partnereventeditor_EventCategory_Title_16pAy';
 
-				  document.querySelector('.' + nameOfClass).click();
+				  //document.querySelector('.' + nameOfClass).click();
+					document.querySelectorAll('.' + nameOfClass)[1].click();
 				});
 			}
 
 			// Select Sub category
+			if (buildType == "playtest")
+					console.log('PlayTest');
+			if (buildType != "playtest")
+					console.log('Default');
+			
 			console.log("Select patch Button");
 			await page2.waitFor(actionInterval);
 			await page2.evaluate(() => {
@@ -217,6 +247,7 @@ const postUpdates = async (buildIdDeployed) => {
 			  document.querySelector('.' + nameOfClass).click();
 			});
 
+			console.log("Add Data");
 			// Register text field content
 			await page2.waitFor(actionInterval);
 			var patchName = "";
@@ -233,11 +264,11 @@ const postUpdates = async (buildIdDeployed) => {
 
 			await page2.waitFor(typingInterval);
 			
-      	  await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', patchNoteMessage + '\n');
+            await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', patchNoteMessage + '\n');
 			await page2.waitFor(actionInterval);
 
-			// =======================================================================
-			// Non playtest patch updater does not have option to select build attachment
+		// =======================================================================
+
 			if (buildType != "playtest") {
 				// Select the build target
 				await page2.waitFor(actionInterval);
@@ -264,12 +295,6 @@ const postUpdates = async (buildIdDeployed) => {
 						Array.from(document.querySelectorAll("div[data-dropdown-index]").values())[1].click();
 						document.querySelector("button.Primary").click();
 					});
-				} else if (buildType == "playtest") {
-					await page2.evaluate(() => {
-						document.querySelector("div.DialogDropDown_Arrow").click();
-						Array.from(document.querySelectorAll("div[data-dropdown-index]").values())[3].click();
-						document.querySelector("button.Primary").click();
-					});
 				} else {
 						const [button] = await page2.$x("//button[contains(., 'Confirm')]");
 						if (button) {
@@ -278,6 +303,11 @@ const postUpdates = async (buildIdDeployed) => {
 				}
 			}
 			// =======================================================================
+
+			// Take screen shot
+			//console.log("Taking screenshot");
+    		//await page2.screenshot(options);
+
 			// Navigate to Graphic Assets Tab
 			console.log("Navigate to Graphic Assets Tab");
 			await page2.waitFor(actionInterval);
@@ -400,7 +430,7 @@ const postUpdates = async (buildIdDeployed) => {
 				elHandleArray[0].click();
 				
 				// Navigate to Publish Tab
-				console.log("Select publish Button Phase 1");
+				console.log("Select publish Button 1");
 				await page2.waitFor(actionInterval);
 				await page2.waitFor(actionInterval);
 				await page2.waitFor(actionInterval);
@@ -433,6 +463,7 @@ const postUpdates = async (buildIdDeployed) => {
 				await page2.waitFor(actionInterval);
 				await page2.evaluate(() => {
 				  var nameOfClass = 'partnereventshared_EventPublishButton_3nIAe';
+				  //var nameOfClass = 'partnereventshared_EventPublishButton_3nIAe DialogButton Primary';
 				  document.querySelector('.' + nameOfClass).click();
 				});
 

@@ -38,15 +38,20 @@ const postUpdates = async () => {
 	await page.goto(steamUrl, { waitUntil: 'networkidle2'}); 
 
     // Login Credentials
-    /*
+   
 	console.log("Entering Credentials");
-  	await page.type('#steamAccountName', config.userName, {delay:100});
-	await page.type('#steamPassword', config.password, {delay: 100});
+	try {
+	    await page.type('#steamAccountName', config.userName, {delay:100});
+		await page.type('#steamPassword', config.password, {delay: 100});
+		await page.waitFor(actionInterval);
+		await page.keyboard.press('Enter');
+		console.log("Pressed Enter");
+		await page.waitForNavigation()
+	} catch{
+		console.log("No input fields");
+	}
+
 	await page.waitFor(actionInterval);
-	await page.keyboard.press('Enter');
-	console.log("Pressed Enter");
-	await page.waitForNavigation()
-	await page.waitFor(actionInterval);*/
 
 	// Navigate to Steam Community
 	console.log("Go to announcement page");
@@ -64,7 +69,7 @@ const postUpdates = async () => {
 	})
 
 	// Extract fetched table array
-	var indexCategory = 5;
+	var indexCategory = 9;//6;
 	var fetchedData = data1[indexCategory];
 	var currentBranch = fetchedData[0];
 	var buildId = fetchedData[1];
@@ -73,35 +78,51 @@ const postUpdates = async () => {
 	var dropDownKey = preString + buildId + postString;
 	console.log(dropDownKey);
 
-	// Select dropdown key
-    console.log('Click on Dropdown');
-	await page.select(dropDownKey, 'default');
-	const selectElem = await page.$(dropDownKey);
-	await selectElem.type('default');
-  	console.log(fetchedData);
-
-	// Simulate submit and next page
-    console.log('Click on Submit');
-	await page.keyboard.press('Tab');
-	await page.waitFor(actionInterval);
-	await page.keyboard.press('Enter');
-	await page.waitFor(actionInterval);
-
-	// Select the publish
-	try {
-	    console.log('Finalize Page');
-		await page.waitFor(actionInterval);
-		page.on('dialog', async dialog => {
-		    console.log(dialog.message());
-			await page.waitFor(actionInterval);
-		    await dialog.accept();
-		});
-	    await page.click('button[type=button]');
-	} catch { 
-		await page.waitFor(actionInterval);
-   		console.log('Failed to process page');
+	// Enable for Logging
+	var scapeLog = false;
+	if (scapeLog) {
+		for (var i = 6 ; i < 30; i++ ) {
+			var testLog = data1[i];
+				console.log(i); // Shows Index
+				console.log(testLog[1]); // Shows First Element
+				console.log(testLog[2]); // Shows Second Element
+				console.log("--------------------------------");
+		}
 	}
 
+	if (currentBranch.includes('production')) {
+		// Select dropdown key
+	    console.log('Click on Dropdown');
+		await page.select(dropDownKey, 'default');
+		const selectElem = await page.$(dropDownKey);
+		await selectElem.type('default');
+	  	console.log(fetchedData);
+
+		// Simulate submit and next page
+	    console.log('Click on Submit');
+		await page.keyboard.press('Tab');
+		await page.waitFor(actionInterval);
+		await page.keyboard.press('Enter');
+		await page.waitFor(actionInterval);
+
+		// Select the publish
+		try {
+		    console.log('Finalize Page');
+			await page.waitFor(actionInterval);
+			page.on('dialog', async dialog => {
+			    console.log(dialog.message());
+				await page.waitFor(actionInterval);
+			    await dialog.accept();
+			});
+		    await page.click('button[type=button]');
+		} catch { 
+			await page.waitFor(actionInterval);
+	   		console.log('Failed to process page');
+		}
+	} else {
+   		console.log('This is not a production branch!');
+   		console.log(currentBranch);
+	}
 	await page.waitFor(5000);
     await browser.close();
     process.exit();
