@@ -22,7 +22,8 @@ public class AdminManagerSingleton : GenericGameManager
    public Dictionary<string, int> craftingIngredientNames = new Dictionary<string, int>();
    public Dictionary<string, int> cropNames = new Dictionary<string, int>();
    public Dictionary<string, int> propNames = new Dictionary<string, int>();
-
+   public Dictionary<string, int> questNames = new Dictionary<string, int>();
+   
    // The dictionary of blueprint names
    public Dictionary<string, int> blueprintNames = new Dictionary<string, int>();
 
@@ -170,6 +171,7 @@ public class AdminManagerSingleton : GenericGameManager
       craftingIngredientNames.Clear();
       cropNames.Clear();
       propNames.Clear();
+      questNames.Clear();
 
       // Set all the weapon names
       foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
@@ -222,6 +224,13 @@ public class AdminManagerSingleton : GenericGameManager
       foreach (ItemDefinition def in ItemDefinitionManager.self.getDefinitions()) {
          if (def.category == ItemDefinition.Category.Prop) {
             addToItemNameDictionary(propNames, Item.Category.Prop, def.id, def.name);
+         }
+      }
+
+      // Set all the quest item names
+      foreach (QuestItem questItem in EquipmentXMLManager.self.questItemList) {
+         if (questItem.category == Item.Category.Quest_Item) {
+            addToItemNameDictionary(questNames, Item.Category.Quest_Item, questItem.itemTypeId, questItem.itemName);
          }
       }
    }

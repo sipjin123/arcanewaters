@@ -2350,6 +2350,9 @@ public class AdminManager : NetworkBehaviour
             case "p":
                dictionary = AdminManagerSingleton.self.propNames;
                break;
+            case "q":
+               dictionary = AdminManagerSingleton.self.questNames;
+               break;
             default:
                return;
          }
@@ -2570,6 +2573,9 @@ public class AdminManager : NetworkBehaviour
          case "c":
             category = Item.Category.Crop;
             break;
+         case "q":
+            category = Item.Category.Quest_Item;
+            break;
          default:
             ChatManager.self.addChat("Not a valid item category", ChatInfo.Type.Error);
             D.error("Could not parse the category " + categoryStr);
@@ -2667,6 +2673,14 @@ public class AdminManager : NetworkBehaviour
                itemTypeId = AdminManagerSingleton.self.propNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the prop " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Quest_Item:
+            if (AdminManagerSingleton.self.questNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.questNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the quest " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
