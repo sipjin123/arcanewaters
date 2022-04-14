@@ -2394,6 +2394,11 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
+   protected void Rpc_TriggerHealEffect (bool isEnable) {
+      showHealEffect(isEnable);
+   }
+   
+   [ClientRpc]
    public void Rpc_ShowReceivedAbilityBuff (uint buffSourceNetId, ShipAbilityData shipAbilityData) {
       // Don't show an icon for buffs received from self
       if (this.netId == buffSourceNetId) {
@@ -2401,6 +2406,10 @@ public class SeaEntity : NetEntity
       }
 
       EffectManager.createBuffEffect(shipAbilityData.skillIconPath, new Vector2(0.0f, 0.025f), transform, true);
+   }
+   
+   protected virtual void showHealEffect (bool isEnable) {
+      // Override this method to implement heal effect on inheriting class
    }
 
    public float getBuffValue (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
@@ -2493,6 +2502,11 @@ public class SeaEntity : NetEntity
       }
 
       foreach (SeaBuffData buffData in buffs) {
+         // Exclude heal from buffs where orbs will spawn
+         if (buffData.buffType == SeaBuff.Type.Heal) {
+            continue;
+         }
+
          // Only count one buff of each type
          if (!buffTypes.Contains(buffData.buffType)) {
             serverBuffs.Add(buffData);

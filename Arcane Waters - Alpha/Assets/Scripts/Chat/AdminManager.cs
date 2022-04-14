@@ -137,6 +137,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
       cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
+      cm.addCommand(new CommandData("set_input_debugger", "Enables/disables the input debugger", requestSetInputDebugger, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -219,6 +220,16 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestSetInputDebugger (string parameters) {
+      if (parameters == "1" || parameters == "true") {
+         InputDebugger.debuggingEnabled = true;
+         D.debug("Enabled input debugging.");
+      } else if (parameters == "0" || parameters == "false") {
+         InputDebugger.debuggingEnabled = false;
+         D.debug("Disabled input debugging.");
+      }
    }
 
    private void requestSetLagMonitor (string parameters) {

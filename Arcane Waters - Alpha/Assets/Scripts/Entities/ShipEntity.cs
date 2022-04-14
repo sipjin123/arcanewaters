@@ -412,7 +412,8 @@ public class ShipEntity : SeaEntity
                   case Attack.Type.Heal:
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) == null) {
                         allyShip.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
-
+                        allyShip.Rpc_TriggerHealEffect(true);
+                        
                         // TODO: If ally should have local sfx playing, should start here
                         // Rpc_PlaySFXTrigger(true, "Play Start AOE SFX HERE");
                      }
@@ -426,6 +427,7 @@ public class ShipEntity : SeaEntity
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
                         SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
                         allyShip._buffs.Remove(healBuff);
+                        allyShip.Rpc_TriggerHealEffect(false);
 
                         // TODO: If ally should have local sfx playing, should stop here
                         // Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
@@ -438,6 +440,23 @@ public class ShipEntity : SeaEntity
          }
       }
 
+      // After the buff time duration check all ally entity for existing heal buff and remove it
+      foreach (NetEntity allyEntity in allyEntities) {
+         // Skip self
+         if (allyEntity.userId == userId) {
+            continue;
+         }
+         
+         PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+         if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+            if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
+               SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+               allyShip._buffs.Remove(healBuff);
+               allyShip.Rpc_TriggerHealEffect(false);
+            }
+         }
+      }
+
       // TODO: Jose setup sfx here
       // Handle stop sfx trigger here
       Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
@@ -445,14 +464,7 @@ public class ShipEntity : SeaEntity
       D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
    }
 
-   [ClientRpc]
-   private void Rpc_TriggerHealEffect (bool isEnable) {
-      showHealEffect(isEnable);
-   }
 
-   protected virtual void showHealEffect (bool isEnable) {
-      // Override this method to implement heal effect on inheriting class
-   }
 
    [ClientRpc]
    public void Rpc_CastSkill (int abilityId, ShipAbilityData shipAbilityData, Vector2 pos, int displayValue, bool showCastVfx, bool showValue, bool showIcon, uint netId) {
@@ -473,7 +485,7 @@ public class ShipEntity : SeaEntity
       // We get the source entity to attach the sound effect to it
       SoundEffectManager.self.playSeaAbilitySfx(shipAbilityData.sfxType, netId);
 
-      if (showValue) {
+      if (showValue && Global.showHealText) {
          // Show the damage text
          ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipAbilityData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
          if (showIcon) {

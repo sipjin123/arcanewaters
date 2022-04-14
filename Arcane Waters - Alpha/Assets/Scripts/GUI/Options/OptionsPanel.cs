@@ -64,6 +64,9 @@ public class OptionsPanel : Panel
 
    // Ignores guild alliance invites
    public Toggle ignoreGuildAllianceInviteToggle;
+   
+   // Reference to show heal text toggle
+   public Toggle showHealTextToggle;
 
    // The constantly sprinting toggle
    public Toggle sprintConstantlyToggle;
@@ -240,6 +243,14 @@ public class OptionsPanel : Panel
       autoFarmToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_AUTO_FARM, value ? 1 : 0);
          Global.autoFarm = value;
+      });
+
+      bool showHealText = Global.showHealText;
+      showHealTextToggle.isOn = showHealText;
+      Global.showHealText = showHealText;
+      showHealTextToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.SHOW_HEAL_TEXT, value ? 1 : 0);
+         Global.showHealText = value;
       });
 
       // Build string and show version number

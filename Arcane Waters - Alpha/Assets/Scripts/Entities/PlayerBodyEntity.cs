@@ -901,6 +901,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             tryInteractAnimation(false, true);
             return true;
          }
+
+         // If we clicked on an interactable object, interact with it
+         VaryingStateObject varyingStateObject = hit.GetComponent<VaryingStateObject>();
+         if (varyingStateObject != null && varyingStateObject.clientTriesInteracting()) {
+            return true;
+         }
       }
 
       return false;
@@ -978,7 +984,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
 
          if (farmingTrigger.tryGetTreesInChopRange(out List<PlantableTree> trees)) {
-            foreach(PlantableTree tree in trees) {
+            foreach (PlantableTree tree in trees) {
                if (PlantableTreeManager.self.canPlayerChop(this, tree)) {
                   // Check if this hit will destroy the tree
                   if (!tree.isOneHitAwayFromDestroy()) {

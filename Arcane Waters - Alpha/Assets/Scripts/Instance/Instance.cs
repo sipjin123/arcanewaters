@@ -6,6 +6,7 @@ using Mirror;
 using MapCreationTool.Serialization;
 using System;
 using System.Linq;
+using MapObjectStateVariables;
 
 [Serializable]
 public class Instance : NetworkBehaviour
@@ -51,6 +52,12 @@ public class Instance : NetworkBehaviour
 
    // Map customization manager of this instance (null if instance isn't customizable) (server only)
    public MapCustomizationManager mapCustomizationManager;
+
+   // The list of varying state objects in this instance, indexed by their id (server only)
+   public Dictionary<int, VaryingStateObject> varyingStateObjects = new Dictionary<int, VaryingStateObject>();
+
+   // The list of varying state objects' state models in this instance, indexed by their id (server only)
+   public Dictionary<int, ObjectStateModel> varyingStateModels = new Dictionary<int, ObjectStateModel>();
 
    // For debugging in the Editor
    [SyncVar]
@@ -724,6 +731,41 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      foreach (ExportedPrefab001 dataField in area.varyingStatePrefabs) {
+         GameObject goPrefab = AssetSerializationMaps.tryGetPrefabGame(dataField.i, biome);
+         if (goPrefab == null || !goPrefab.TryGetComponent(out VaryingStateObject bPrefab)) {
+            D.error("Could not find prefab for instance object " + dataField.i + " " + biome);
+            continue;
+         }
+
+         VaryingStateObject newObject = Instantiate(bPrefab);
+
+         newObject.transform.SetParent(area.transform, false);
+         Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 5) * 0.16f;
+         newObject.transform.localPosition = targetLocalPos;
+
+         if (dataField.d != null) {
+            newObject.receiveData(dataField.d);
+         }
+
+         newObject.initializeState();
+         InstanceManager.self.addVaryingStateObjectToInstance(newObject, this);
+
+         int id = newObject.mapEditorId;
+         if (id <= 0) {
+            D.error("State object " + newObject.name + " has incorrect ID " + id);
+         } else if (varyingStateObjects.ContainsKey(id)) {
+            D.error("State object " + newObject.name + " has duplicate ID " + id);
+         } else {
+            varyingStateObjects.Add(id, newObject);
+            varyingStateModels.Add(id, newObject.getStateModel());
+         }
+
+         NetworkServer.Spawn(newObject.gameObject);
+      }
+
+      recalculateVaryingObjectRelations();
+
       if (pvpStructuresSpawned > 0) {
          area.rescanGraph();
       }
@@ -1064,6 +1106,55 @@ public class Instance : NetworkBehaviour
 
       InstanceManager.self.addDroppedItemToInstance(droppedItem, this);
       NetworkServer.Spawn(droppedItem.gameObject);
+   }
+
+   [Server]
+   private void recalculateVaryingObjectRelations () {
+      foreach (VaryingStateObject ob in varyingStateObjects.Values) {
+         ob.triggersObjects.Clear();
+      }
+
+      foreach (VaryingStateObject ob in varyingStateObjects.Values) {
+         ob.reactsTo.Clear();
+         ob.reactsTo.AddRange(ob.findDependantObjectIds());
+
+         foreach (int i in ob.reactsTo) {
+            if (varyingStateObjects.TryGetValue(i, out VaryingStateObject other)) {
+               other.triggersObjects.Add(ob.mapEditorId);
+            }
+         }
+      }
+   }
+
+   [Server]
+   public void requestChangeStateCascading (VaryingStateObject ob, string newState) {
+      // Set the new state
+      ob.state = newState;
+      ob.getStateModel().state = newState;
+
+      Queue<int> objectsToResolve = new Queue<int>(ob.triggersObjects);
+
+      for (int i = 0; objectsToResolve.Count > 0; i++) {
+         // We'll cascade state changes to other objects, but we don't want to do it forever,
+         // in case there are dependancy loops
+         if (i > 256) {
+            D.error("Exceeded object state evaluation iteration count in map " + areaKey +
+               ". Consider checking the map to make sure there are no dependancy loops.");
+            break;
+         }
+
+         int next = objectsToResolve.Dequeue();
+         if (varyingStateObjects.TryGetValue(next, out VaryingStateObject target)) {
+            // Add dependancies of this object as well, making it cascade
+            foreach (int id in target.triggersObjects) {
+               objectsToResolve.ElementAtOrDefault(id);
+            }
+
+            // Evaluate the state of this object
+            target.state = target.getStateModel().stateExpression.evaluate(varyingStateModels);
+            target.getStateModel().state = target.state;
+         }
+      }
    }
 
    #region Private Variables

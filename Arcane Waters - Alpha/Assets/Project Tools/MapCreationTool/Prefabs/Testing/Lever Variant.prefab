@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5328541649102217590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9067119174520840369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoredRenderers: []
+  _renderers: []
+--- !u!114 &8916755871722585201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9067119174520840369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: 2 Stage Lever
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
+  hasVariableObjectState: 1
+  objectStateDescription: State should always be either 'left' or 'right'
+--- !u!1001 &2632434088844406620
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6439206294669856749, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_Name
+      value: Lever Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -758.7219
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 423.30728
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.671007
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474090104526203168, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8546097930523993066, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_AssetId
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 48bf00faaabf4b945b1c0bfd494bd991, type: 3}
+--- !u!1 &9067119174520840369 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6439206294669856749, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+    type: 3}
+  m_PrefabInstance: {fileID: 2632434088844406620}
+  m_PrefabAsset: {fileID: 0}

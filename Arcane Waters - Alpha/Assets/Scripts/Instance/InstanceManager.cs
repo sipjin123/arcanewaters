@@ -194,6 +194,11 @@ public class InstanceManager : MonoBehaviour
       return instance;
    }
 
+   public void addVaryingStateObjectToInstance (VaryingStateObject ob, Instance instance) {
+      instance.entities.Add(instance);
+      ob.instanceId = instance.id;
+   }
+
    public void addCustomizationManagerToInstance (MapCustomizationManager mapCustomizationManager, Instance instance) {
       instance.entities.Add(instance);
       instance.mapCustomizationManager = mapCustomizationManager;

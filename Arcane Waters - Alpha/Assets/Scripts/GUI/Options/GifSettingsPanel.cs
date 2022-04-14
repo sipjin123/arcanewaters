@@ -14,7 +14,7 @@ public class GifSettingsPanel : Panel
       base.Start();
 
       // Initialize controls
-      _gifEnabledToggle.SetIsOnWithoutNotify(GIFReplayManager.self.getIsRecording());
+      _gifEnabledToggle.SetIsOnWithoutNotify(GIFReplayManager.self.getIsAlwaysRecording());
       _gifEnabledToggle.onValueChanged.AddListener(isRecordingChanged);
 
       _resolutionSlider.SetValueWithoutNotify(GIFReplayManager.self.getDownscaleFactor());
@@ -31,7 +31,7 @@ public class GifSettingsPanel : Panel
    }
 
    private void isRecordingChanged (bool val) {
-      GIFReplayManager.self.setIsRecording(_gifEnabledToggle.isOn, true);
+      GIFReplayManager.self.setIsAlwaysRecording(_gifEnabledToggle.isOn, true);
       updateSliderVisualValues();
    }
 

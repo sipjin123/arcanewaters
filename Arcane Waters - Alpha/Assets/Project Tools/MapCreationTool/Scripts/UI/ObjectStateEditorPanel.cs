@@ -158,7 +158,7 @@ namespace MapCreationTool.MapObjectStateVariables
 
       private void expressionReferenceFieldChanged (Expression exp, ExpressionField field) {
          // Check that our model hasn't changed and we still have the expression
-         if (field != null && hasExpressionRecursive(exp, _model.stateExpression)) {
+         if (field != null && Expression.hasExpressionRecursive(exp, _model.stateExpression)) {
             if (field.referenceDropdown.value < field.referenceDropdownIds.Length) {
                exp.referenceId = field.referenceDropdownIds[field.referenceDropdown.value];
 
@@ -184,7 +184,7 @@ namespace MapCreationTool.MapObjectStateVariables
 
       private void expressionConstantFieldChanged (Expression exp, InputField field) {
          // Check that our model hasn't changed and we still have the expression
-         if (field != null && hasExpressionRecursive(exp, _model.stateExpression)) {
+         if (field != null && Expression.hasExpressionRecursive(exp, _model.stateExpression)) {
             exp.constant = field.text;
 
             // Notify that our value has changed
@@ -196,7 +196,7 @@ namespace MapCreationTool.MapObjectStateVariables
 
       private void expressionTypeDropdownChanged (Expression exp, Dropdown dropdown) {
          // Check that our model hasn't changed and we still have the expression
-         if (dropdown != null && hasExpressionRecursive(exp, _model.stateExpression)) {
+         if (dropdown != null && Expression.hasExpressionRecursive(exp, _model.stateExpression)) {
             // Change expression accordingly
             Expression.Type newType = getDropdownExpressionType(dropdown);
 
@@ -295,34 +295,6 @@ namespace MapCreationTool.MapObjectStateVariables
                _openedBy.mapObjectStateEditor_valueChanged(_model.serialize());
             }
          }
-      }
-
-      private bool hasExpressionRecursive (Expression target, Expression searchIn, int searchDepth = 0) {
-         if (searchDepth > 100) {
-            throw new System.Exception("CRITICAL ERROR: Exceeded expression search depth!");
-         }
-
-         if (target == searchIn) {
-            return true;
-         }
-
-         if (searchIn == null || searchIn.type == Expression.Type.None) {
-            return false;
-         }
-
-         if (hasExpressionRecursive(target, searchIn.conditionExpression, searchDepth + 1)) {
-            return true;
-         }
-
-         if (hasExpressionRecursive(target, searchIn.leftSideExpression, searchDepth + 1)) {
-            return true;
-         }
-
-         if (hasExpressionRecursive(target, searchIn.rightSideExpression, searchDepth + 1)) {
-            return true;
-         }
-
-         return false;
       }
 
       private Expression.Type getDropdownExpressionType (Dropdown dropdown) {

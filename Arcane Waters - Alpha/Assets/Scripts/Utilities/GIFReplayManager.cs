@@ -57,7 +57,7 @@ public class GIFReplayManager : ClientMonoBehaviour
       _tempRenderTexture = new RenderTexture(0, 0, 0);
 
       // Load settings
-      setIsRecording(PlayerPrefs.GetInt(GIF_RECORDING_ENABLED_KEY, 0) == 1, false);
+      setIsAlwaysRecording(PlayerPrefs.GetInt(GIF_RECORDING_ENABLED_KEY, 0) == 1, false);
       setDownscaleFactor(PlayerPrefs.GetInt(GIF_RECORDING_RESOLUTION_KEY, 1), false);
       setFPS(PlayerPrefs.GetInt(GIF_RECORDING_FPS_KEY, 10), false);
       setDuration(PlayerPrefs.GetInt(GIF_RECORDING_DURATION_KEY, 10), false);
@@ -85,7 +85,7 @@ public class GIFReplayManager : ClientMonoBehaviour
             }
          }
 
-         if (!_isRecording || isEncoding()) {
+         if ((!_isAlwaysRecording && !_isSpecificRecording) || isEncoding()) {
             continue;
          }
 
@@ -105,7 +105,7 @@ public class GIFReplayManager : ClientMonoBehaviour
    }
 
    private void captureComplete (AsyncGPUReadbackRequest request) {
-      if (!_isRecording || isEncoding()) {
+      if ((!_isAlwaysRecording && !_isSpecificRecording) || isEncoding()) {
          return;
       }
 
@@ -153,6 +153,13 @@ public class GIFReplayManager : ClientMonoBehaviour
          }
 
          _currentFrames.Add(frame);
+
+         if (_isSpecificRecording && _currentFrames.Count == _maxFrames) {
+            _isSpecificRecording = false;
+            if (!isEncoding()) {
+               encode();
+            }
+         }
       }
    }
 
@@ -310,16 +317,16 @@ public class GIFReplayManager : ClientMonoBehaviour
       currentProgress.progress = 0.6f + ((float) _encodingFramesFinished / _encodingTotalFrames) * 0.4f;
    }
 
-   public bool isRecording () {
-      return _isRecording;
+   public bool isAlwaysRecording () {
+      return _isAlwaysRecording;
    }
 
-   public void setIsRecording (bool isRecording, bool saveToPrefs) {
-      if (_isRecording == isRecording) {
+   public void setIsAlwaysRecording (bool isRecording, bool saveToPrefs) {
+      if (_isAlwaysRecording == isRecording) {
          return;
       }
 
-      _isRecording = isRecording;
+      _isAlwaysRecording = isRecording;
 
       _currentFrames.Clear();
       if (saveToPrefs) {
@@ -363,7 +370,7 @@ public class GIFReplayManager : ClientMonoBehaviour
          return;
       }
 
-      duration = Mathf.Clamp(duration, 5, 30);
+      duration = Mathf.Clamp(duration, 1, 30);
 
       _recordDuration = duration;
       _maxFrames = _recordFPS * duration;
@@ -374,8 +381,8 @@ public class GIFReplayManager : ClientMonoBehaviour
       }
    }
 
-   public bool getIsRecording () {
-      return _isRecording;
+   public bool getIsAlwaysRecording () {
+      return _isAlwaysRecording;
    }
 
    public int getFPS () {
@@ -405,12 +412,34 @@ public class GIFReplayManager : ClientMonoBehaviour
    }
 
    public void userRequestedGIF () {
-      if (!_isRecording) {
-         ChatManager.self.addChat("GIF replays are currently disabled", ChatInfo.Type.System);
+      if (_isSpecificRecording) {
+         _isSpecificRecording = false;
+         if (!isEncoding()) {
+            encode();
+         } else {
+            ChatManager.self.addChat("Busy with another GIF right now...", ChatInfo.Type.System);
+         }
+         return;
+      }
+
+      if (!_isAlwaysRecording) {
+         ChatManager.self.addChat("Automatic GIF replays are currently disabled", ChatInfo.Type.System);
       } else if (!isEncoding()) {
          encode();
       } else {
          ChatManager.self.addChat("Busy with another GIF right now...", ChatInfo.Type.System);
+      }
+   }
+
+   public void userRequestedRecord () {
+      if (_isSpecificRecording) {
+         ChatManager.self.addChat("Already recording.", ChatInfo.Type.System);
+      } else if (isEncoding()) {
+         ChatManager.self.addChat("Saving another GIF right now...", ChatInfo.Type.System);
+      } else {
+         ChatManager.self.addChat("Recording. Max duration - " + _recordDuration + "s. Use /gif to stop early.", ChatInfo.Type.System);
+         _isSpecificRecording = true;
+         _currentFrames.Clear();
       }
    }
 
@@ -441,13 +470,14 @@ public class GIFReplayManager : ClientMonoBehaviour
    private float _lastRecordTime = 0f;
 
    // Recording settings
-   private bool _isRecording = false;
+   private bool _isAlwaysRecording = false;
+   private bool _isSpecificRecording = false;
    private int _resolutionDownscaleFactor = 1;
    private int _recordFPS = 10;
    private int _recordDuration = 10;
 
    // Maximum number of frames we can record
-   private float _maxFrames = 300;
+   private float _maxFrames = 100;
 
    // Status of current encoding process
    private int _encodingTotalFrames = 0;

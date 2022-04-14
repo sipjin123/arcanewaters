@@ -23,6 +23,9 @@ public class OptionsManager : GenericGameManager {
    // The pref to be saved to determine if guild alliance is to be ignored
    public static string PREF_GUILD_ALLIANCE_INVITE = "pref_guild_alliance_invite";
 
+   // Player pref key for show heal text toggle
+   public static string SHOW_HEAL_TEXT = "show_heal_text";
+   
    // Player Prefs key for auto-farming
    public const string PREF_AUTO_FARM = "AUTO_FARM";
 
@@ -65,8 +68,9 @@ public class OptionsManager : GenericGameManager {
       PlayerPrefs.SetInt(PREF_GUI_SCALE, Mathf.RoundToInt(GUIScale));
       PlayerPrefs.SetInt(PREF_MINIMAP_SCALE, Mathf.RoundToInt(minimapScale));
 
-      Global.sprintConstantly = PlayerPrefs.GetInt(PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
-      Global.ignoreGuildAllianceInvites = PlayerPrefs.GetInt(PREF_GUILD_ALLIANCE_INVITE, 0) == 1 ? true : false;
+      Global.sprintConstantly = PlayerPrefs.GetInt(PREF_SPRINT_CONSTANTLY, 0) == 1;
+      Global.ignoreGuildAllianceInvites = PlayerPrefs.GetInt(PREF_GUILD_ALLIANCE_INVITE, 0) == 1;
+      Global.showHealText = PlayerPrefs.GetInt(SHOW_HEAL_TEXT, 0) == 1;
    }
 
    private void Start () {

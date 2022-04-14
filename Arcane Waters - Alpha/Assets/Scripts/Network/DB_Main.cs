@@ -7799,8 +7799,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairPalettes, eyesType, eyesPalettes, armId, areaKey, charSpot, isDemo) VALUES " +
-             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairPalettes, @eyesType, @eyesPalettes, @armId, @areaKey, @charSpot, @isDemo);", conn)) {
+            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairPalettes, eyesType, eyesPalettes, armId, areaKey, charSpot) VALUES " +
+             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairPalettes, @eyesType, @eyesPalettes, @armId, @areaKey, @charSpot);", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);

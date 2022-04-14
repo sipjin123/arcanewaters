@@ -59,6 +59,9 @@ public class Global
    // If the guild alliance invites are to be ignored
    public static bool ignoreGuildAllianceInvites = false;
 
+   // If the heal text must be showed
+   public static bool showHealText = false;
+   
    // Keeps track of the last account name we provided
    public static string lastUsedAccountName;
 

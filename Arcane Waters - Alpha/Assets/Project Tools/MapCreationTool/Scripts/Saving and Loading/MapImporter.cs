@@ -7,6 +7,7 @@ using System;
 using MapCustomization;
 using FMODUnity;
 using Assets.Scripts.Map;
+using MapObjectStateVariables;
 
 namespace MapCreationTool
 {
@@ -257,6 +258,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpMonsterSpawnerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpLootSpawnData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpCaptureTargetHolderData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> varyingStateObjectData = new List<ExportedPrefab001>();
          OpenWorldController openWorldController = null;
          OreNodeMapController oreController = null;
 
@@ -320,6 +322,10 @@ namespace MapCreationTool
                   } else {
                      windowInteractData.Add(prefab);
                   }
+               }
+            } else if (original.GetComponent<VaryingStateObject>()) {
+               if (prefab.d != null) {
+                  varyingStateObjectData.Add(prefab);
                }
             } else if (original.GetComponent<NPC>() != null) {
                if (prefab.d != null) {
@@ -464,7 +470,7 @@ namespace MapCreationTool
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
             pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController,
-            windowInteractData, largeWindowInteractData);
+            windowInteractData, largeWindowInteractData, varyingStateObjectData);
       }
    }
 }

@@ -75,6 +75,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
       _commandData.Add(new CommandData("/gif", "Make a GIF of what just happened in game", GIFReplayManager.self.userRequestedGIF));
+      _commandData.Add(new CommandData("/record", "Start record a GIF", GIFReplayManager.self.userRequestedRecord));
       _commandData.Add(new CommandData("/e", "Lists the available emotes", requestEmoteList));
       _commandData.Add(new CommandData("/dance", "Dance!", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Dance), parameterNames: new List<string>() { "target" }));
       _commandData.Add(new CommandData("/greet", "Wave your hand", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Greet), parameterNames: new List<string>() { "target" }));

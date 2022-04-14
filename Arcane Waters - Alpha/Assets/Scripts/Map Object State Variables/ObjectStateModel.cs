@@ -9,9 +9,6 @@ namespace MapObjectStateVariables
    [Serializable]
    public class ObjectStateModel
    {
-      // Unique ID for a prefab (only within it's area) provided by map editor
-      public string mapEditorId;
-
       // The current or initial state of an object
       public string state;
 
