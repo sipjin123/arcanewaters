@@ -3470,15 +3470,19 @@ public class RPCManager : NetworkBehaviour
                   // If any of the quest is in progress (dialogue current index less than total dialogues in a Quest Node)
                   foreach (QuestStatusInfo questStat in totalQuestStatus) {
                      QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
-                     if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
-                        D.adminLog("-->This quest is not complete yet {" + questStat.questNodeId + ":" + questNodeReference.questNodeTitle + "}", D.ADMIN_LOG_TYPE.Quest);
-                        if (friendshipLevel >= questNodeReference.friendshipLevelRequirement) {
-                           incompleteQuestList.Add(questStat);
-                        } else {
-                           insufficientQuestList.Add(questStat);
-                           D.adminLog("Will not mark as incomplete, level requirement is not enough! " +
-                              "Current: {" + friendshipLevel + "} " +
-                              "Required: {" + questNodeReference.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
+                     if (questNodeReference == null) {
+                        D.debug("Missing quest node! {" + questStat.questNodeId + "}");
+                     } else {
+                        if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
+                           D.adminLog("-->This quest is not complete yet {" + questStat.questNodeId + ":" + questNodeReference.questNodeTitle + "}", D.ADMIN_LOG_TYPE.Quest);
+                           if (friendshipLevel >= questNodeReference.friendshipLevelRequirement) {
+                              incompleteQuestList.Add(questStat);
+                           } else {
+                              insufficientQuestList.Add(questStat);
+                              D.adminLog("Will not mark as incomplete, level requirement is not enough! " +
+                                 "Current: {" + friendshipLevel + "} " +
+                                 "Required: {" + questNodeReference.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
+                           }
                         }
                      }
                   }
