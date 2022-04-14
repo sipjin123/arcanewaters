@@ -61,6 +61,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static string fetchCategorizedItem (int usrId, int categorizedItem) {
+      return "";
+   }
+   
    public static string fetchEquippedItems (int usrId) {
       return "";
    }
