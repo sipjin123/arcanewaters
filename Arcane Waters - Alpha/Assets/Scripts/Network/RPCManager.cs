@@ -6056,7 +6056,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CraftItem (int blueprintItemId) {
+   public void Cmd_CraftItem (int blueprintItemId, Item.Category category, int itemTypeId) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -6067,41 +6067,56 @@ public class RPCManager : NetworkBehaviour
          // Retrieve the blueprint from the player's inventory
          Blueprint blueprint = (Blueprint) DB_Main.getItem(_player.userId, blueprintItemId);
 
-         // Verify if the player has the blueprint in his inventory
-         if (blueprint == null) {
-            sendError("The blueprint is not present in your inventory!");
-            return;
-         }
-
          // Get the resulting item
          Item resultItem = new Item();
-         if (blueprint.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(blueprint.itemTypeId);
-            resultItem = WeaponStatData.translateDataToWeapon(weaponData);
-            resultItem.data = "";
-         } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(blueprint.itemTypeId);
-            resultItem = ArmorStatData.translateDataToArmor(armorData);
-            resultItem.data = "";
-         } else if (blueprint.data.StartsWith(Blueprint.HAT_DATA_PREFIX)) {
-            HatStatData hatData = EquipmentXMLManager.self.getHatData(blueprint.itemTypeId);
-            resultItem = HatStatData.translateDataToHat(hatData);
-            resultItem.data = "";
-         } else if (blueprint.data.StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
-            resultItem = new CraftingIngredients {
-               id = 0,
-               itemTypeId = blueprint.itemTypeId,
-               category = Item.Category.CraftingIngredients,
-               paletteNames = "",
-               data = ""
-            };
-            resultItem.itemName = resultItem.getName();
-            resultItem.itemDescription = resultItem.getDescription();
-            resultItem.iconPath = resultItem.getIconPath();
-         }
 
-         // Blueprint ID is now same to a craftable equipment ID
-         resultItem.itemTypeId = blueprint.itemTypeId;
+         if (category == Item.Category.CraftingIngredients || category == Item.Category.Crop) {
+            // Crops and ingredients are available immediately for players
+            switch (category) {
+               case Item.Category.Crop:
+                  resultItem.category = category;
+                  resultItem.itemTypeId = itemTypeId;
+                  break;
+               case Item.Category.CraftingIngredients:
+                  resultItem.category = category;
+                  resultItem.itemTypeId = itemTypeId;
+                  break;
+            }
+         } else {
+            // Verify if the player has the blueprint in his inventory
+            if (blueprint == null) {
+               sendError("The blueprint is not present in your inventory!");
+               return;
+            }
+
+            if (blueprint.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(blueprint.itemTypeId);
+               resultItem = WeaponStatData.translateDataToWeapon(weaponData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(blueprint.itemTypeId);
+               resultItem = ArmorStatData.translateDataToArmor(armorData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.HAT_DATA_PREFIX)) {
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(blueprint.itemTypeId);
+               resultItem = HatStatData.translateDataToHat(hatData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
+               resultItem = new CraftingIngredients {
+                  id = 0,
+                  itemTypeId = blueprint.itemTypeId,
+                  category = Item.Category.CraftingIngredients,
+                  paletteNames = "",
+                  data = ""
+               };
+               resultItem.itemName = resultItem.getName();
+               resultItem.itemDescription = resultItem.getDescription();
+               resultItem.iconPath = resultItem.getIconPath();
+            }
+
+            // Blueprint ID is now same to a craftable equipment ID
+            resultItem.itemTypeId = blueprint.itemTypeId;
+         }
 
          // Initialize pallete names to empty string
          resultItem.paletteNames = "";
@@ -6119,12 +6134,21 @@ public class RPCManager : NetworkBehaviour
 
          // Build the list of ingredients
          List<CraftingIngredients.Type> requiredIngredients = new List<CraftingIngredients.Type>();
+         List<Item> requiredOtherItems = new List<Item>();
          foreach (Item item in craftingRequirements.combinationRequirements) {
-            requiredIngredients.Add((CraftingIngredients.Type) item.itemTypeId);
+            if (item.category == Item.Category.CraftingIngredients) {
+               requiredIngredients.Add((CraftingIngredients.Type) item.itemTypeId);
+            } else {
+               requiredOtherItems.Add(item.Clone());
+            }
          }
 
          // Get the ingredients present in the user inventory
          List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, requiredIngredients);
+         List<Item> currentUserCropItems = DB_Main.getRequiredItems(requiredOtherItems, _player.userId);
+         foreach (Item cropItem in currentUserCropItems) {
+            inventoryIngredients.Add(cropItem);
+         }
 
          // Compare the ingredients present in the inventory with the requisites
          foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {

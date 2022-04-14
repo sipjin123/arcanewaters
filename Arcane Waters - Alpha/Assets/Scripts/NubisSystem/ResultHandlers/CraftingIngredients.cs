@@ -10,6 +10,9 @@ namespace NubisDataHandling {
 
    public class CraftingIngredients {
       public static List<Item> processCraftingIngredients (string stringContent) {
+         if (stringContent == null || stringContent.Length < 1) {
+            return new List<Item>();
+         }
          string rawData = stringContent;
          string splitter = "[next]";
          string[] rawItemGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);

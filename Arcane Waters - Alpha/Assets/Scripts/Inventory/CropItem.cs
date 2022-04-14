@@ -23,6 +23,15 @@ public class CropItem : Item
       return new CropItem(0, cropDataId, "", "", 100, count);
    }
 
+   public CropItem (Item item) {
+      this.category = Category.Crop;
+      this.id = item.id;
+      this.count = item.count;
+      this.itemTypeId = item.itemTypeId;
+      this.paletteNames = item.paletteNames;
+      this.data = item.data;
+   }
+
    public bool tryGetCropType (out Crop.Type cropType) {
       if (!cacheData()) {
          cropType = Crop.Type.None;

@@ -282,7 +282,7 @@ public class CraftingPanel : Panel
    public void craft () {
       if (_selectedBlueprintId != -1) {
          toggleBlockers(true);
-         Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId);
+         Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId, _selectedCategory, _selectedItemTypeId);
       }
    }
 
@@ -397,9 +397,16 @@ public class CraftingPanel : Panel
       }
 
       // Highlights the currently selected template
-      BlueprintRow blueprintRow = blueprintRowList.Find(_ => _.blueprintItemId == _selectedBlueprintId);
-      if (blueprintRow != null) {
-         blueprintRow.highlightTemplate(true);
+      if (resultItem.category == Item.Category.Crop || resultItem.category == Item.Category.CraftingIngredients) {
+         BlueprintRow blueprintRow = blueprintRowList.Find(_ => _.itemType == resultItem.itemTypeId);
+         if (blueprintRow != null) {
+            blueprintRow.highlightTemplate(true);
+         }
+      } else {
+         BlueprintRow blueprintRow = blueprintRowList.Find(_ => _.blueprintItemId == _selectedBlueprintId);
+         if (blueprintRow != null) {
+            blueprintRow.highlightTemplate(true);
+         }
       }
 
       // Keep track of the equipped weapon and armor
@@ -483,7 +490,7 @@ public class CraftingPanel : Panel
 
          // Get the inventory ingredient, if there is any
          Item inventoryIngredient = inventoryIngredients.Find(s =>
-            s.itemTypeId == requiredIngredient.itemTypeId);
+            s.itemTypeId == requiredIngredient.itemTypeId && s.category == requiredIngredient.category);
 
          // Get the ingredient count present in the user inventory
          int inventoryCount = 0;

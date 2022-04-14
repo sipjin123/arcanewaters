@@ -81,6 +81,10 @@ public class BlueprintRow : MonoBehaviour
          CraftingIngredients ingredientReference = new CraftingIngredients(resultItem);
          itemNameText.text = ingredientReference.getName();
          icon.sprite = ImageManager.getSprite(ingredientReference.getBorderlessIconPath());
+      } else if (resultItem.category == Item.Category.Crop) {
+         CropItem cropItemReference = new CropItem(resultItem);
+         itemNameText.text = cropItemReference.getName();
+         icon.sprite = ImageManager.getSprite(cropItemReference.getBorderlessIconPath());
       } else {
          icon.sprite = null;
       }
