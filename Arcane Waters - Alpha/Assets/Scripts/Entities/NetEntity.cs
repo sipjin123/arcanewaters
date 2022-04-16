@@ -1385,7 +1385,7 @@ public class NetEntity : NetworkBehaviour
             } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
                if (otherEntity.guildId != guildId) {
                   // Proceed to alliance check
-                  if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
+                  if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId) || otherEntity.voyageGroupId == voyageGroupId) {
                      // If guilds are allied to each other, they are not enemies
                      return false;
                   } else {
@@ -1467,7 +1467,7 @@ public class NetEntity : NetworkBehaviour
          } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
             if (otherEntity.guildId != guildId) {
                // Proceed to alliance check
-               if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId)) {
+               if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId) || otherEntity.voyageGroupId == voyageGroupId) {
                   // If guilds are allied to each other, they are not enemies
                   return true;
                } else {

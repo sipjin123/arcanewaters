@@ -253,7 +253,7 @@ public class EnemyManager : MonoBehaviour {
                            spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
                         } else {
                            if (mapInfo.spawnsSeaMonsters) {
-                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
+                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, guildId, difficulty);
                            } else {
                               spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
                            }
@@ -363,7 +363,7 @@ public class EnemyManager : MonoBehaviour {
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
                if (mapInfo.spawnsSeaMonsters) {
-                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false);
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId);
                } else {
                   spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false);
                }
@@ -426,7 +426,7 @@ public class EnemyManager : MonoBehaviour {
       NetworkServer.Spawn(botShip.gameObject);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
 
@@ -448,11 +448,12 @@ public class EnemyManager : MonoBehaviour {
                break;
          }
       } else {
-         SeaMonsterEntityData randomShipByDifficulty = randomizeMonsterByDifficulty(difficulty, instance.biome);
-         if (randomShipByDifficulty != null) {
-            seaMonsterType = randomShipByDifficulty.seaMonsterType;
+         SeaMonsterEntityData randomEnemyByDifficulty = randomizeMonsterByDifficulty(difficulty, instance.biome);
+         if (randomEnemyByDifficulty != null) {
+            seaMonsterType = randomEnemyByDifficulty.seaMonsterType;
          } else {
-            seaMonsterType = SeaMonsterEntity.Type.Fishman;
+            spawnBotShip(instance, area, localPosition, guildId, false, true, difficulty);
+            return;
          }
       }
 
