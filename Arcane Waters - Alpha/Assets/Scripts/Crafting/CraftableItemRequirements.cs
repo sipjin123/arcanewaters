@@ -17,4 +17,7 @@ public class CraftableItemRequirements {
 
    // Determines if this is enabled in the database
    public bool isEnabled;
+
+   // Determines if this is always available to the player
+   public bool isAlwaysAvailable;
 }

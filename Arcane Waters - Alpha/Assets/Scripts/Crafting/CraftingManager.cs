@@ -70,7 +70,6 @@ public class CraftingManager : MonoBehaviour {
       if (_craftingData.ContainsKey(key)) {
          return _craftingData[key];
       } else {
-         D.debug("No existing Crafting key found: " + key + " : RawData is: " + itemCategory + " : " + itemTypeId);
          return null;
       }
    }
@@ -108,12 +107,14 @@ public class CraftingManager : MonoBehaviour {
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
                craftingData.xmlId = xmlData.xmlId;
                string keyName = getKey(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
-               
-               // Save the Crafting data in the memory cache
-               if (!_craftingData.ContainsKey(keyName)) {
-                  _craftingData.Add(keyName, craftingData);
-                  craftingDataList.Add(craftingData);
-               } 
+
+               if (craftingData.isEnabled) {
+                  // Save the Crafting data in the memory cache
+                  if (!_craftingData.ContainsKey(keyName)) {
+                     _craftingData.Add(keyName, craftingData);
+                     craftingDataList.Add(craftingData);
+                  }
+               }
             }
          });
       });

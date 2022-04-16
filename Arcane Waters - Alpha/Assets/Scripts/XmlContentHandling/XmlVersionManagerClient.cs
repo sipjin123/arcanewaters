@@ -900,14 +900,16 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int uniqueId = int.Parse(xmlSubGroup[0]);
                   CraftableItemRequirements craftData = Util.xmlLoad<CraftableItemRequirements>(xmlSubGroup[1]);
                   string keyName = CraftingManager.getKey(craftData.resultItem.category, craftData.resultItem.itemTypeId);
-                  if (_craftingData.ContainsKey(keyName)) {
-                     D.editorLog("Duplicate Crafting Key: " + keyName, Color.red);
-                  } else {
-                     craftData.xmlId = uniqueId;
-                     _craftingData.Add(keyName, craftData);
-                  }
+                  if (craftData.isEnabled) {
+                     if (_craftingData.ContainsKey(keyName)) {
+                        D.editorLog("Duplicate Crafting Key: " + keyName, Color.red);
+                     } else {
+                        craftData.xmlId = uniqueId;
+                        _craftingData.Add(keyName, craftData);
+                     }
 
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                  }
                }
             }
             CraftingManager.self.receiveZipData(_craftingData);

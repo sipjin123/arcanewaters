@@ -184,7 +184,7 @@ namespace NubisDataHandling
          if (craftableItems.Count < 1 && (category == Item.Category.CraftingIngredients || category == Item.Category.Crop)) {
             CraftableItemRequirements craftableData = CraftingManager.self.getCraftableData(category, itemType);
 
-            if (craftableData != null) {
+            if (craftableData != null && craftableData.isAlwaysAvailable) {
                // Determine the status of this craftable Item depending on the available ingredients
                Blueprint.Status newStatus = getBlueprintStatus(craftableData, craftingIngredients);
 
@@ -277,16 +277,18 @@ namespace NubisDataHandling
             // Craftable ingredients are hard coded for now, remove this block if it will be limited to unlocking
             IEnumerable<CraftableItemRequirements> unlockedIngredientList = CraftingManager.self.getAllCraftableData().Where(_ => _.resultItem.category == Item.Category.CraftingIngredients);
             foreach (CraftableItemRequirements unlockedRequirements in unlockedIngredientList) {
-               // Determine the status of this craftable Item depending on the available ingredients
-               Blueprint.Status status = getBlueprintStatus(unlockedRequirements, craftingIngredients);
-               CraftableItemData newCraftableData = new CraftableItemData {
-                  craftableItem = unlockedRequirements.resultItem,
-                  craftingStatus = status,
-                  craftableRequirements = unlockedRequirements
-               };
+               if (unlockedRequirements.isEnabled && unlockedRequirements.isAlwaysAvailable) {
+                  // Determine the status of this craftable Item depending on the available ingredients
+                  Blueprint.Status status = getBlueprintStatus(unlockedRequirements, craftingIngredients);
+                  CraftableItemData newCraftableData = new CraftableItemData {
+                     craftableItem = unlockedRequirements.resultItem,
+                     craftingStatus = status,
+                     craftableRequirements = unlockedRequirements
+                  };
 
-               craftableItems.Add(newCraftableData.craftableItem);
-               blueprintStatus.Add(status);
+                  craftableItems.Add(newCraftableData.craftableItem);
+                  blueprintStatus.Add(status);
+               }
             }
          }
 
@@ -294,16 +296,18 @@ namespace NubisDataHandling
             // Crops are hard coded for now, remove this block if it will be limited to unlocking
             IEnumerable<CraftableItemRequirements> unlockedIngredientList = CraftingManager.self.getAllCraftableData().Where(_ => _.resultItem.category == Item.Category.Crop);
             foreach (CraftableItemRequirements unlockedRequirements in unlockedIngredientList) {
-               // Determine the status of this craftable Item depending on the available ingredients
-               Blueprint.Status status = getBlueprintStatus(unlockedRequirements, craftingIngredients);
-               CraftableItemData newCraftableData = new CraftableItemData {
-                  craftableItem = unlockedRequirements.resultItem,
-                  craftingStatus = status,
-                  craftableRequirements = unlockedRequirements
-               };
+               if (unlockedRequirements.isEnabled && unlockedRequirements.isAlwaysAvailable) {
+                  // Determine the status of this craftable Item depending on the available ingredients
+                  Blueprint.Status status = getBlueprintStatus(unlockedRequirements, craftingIngredients);
+                  CraftableItemData newCraftableData = new CraftableItemData {
+                     craftableItem = unlockedRequirements.resultItem,
+                     craftingStatus = status,
+                     craftableRequirements = unlockedRequirements
+                  };
 
-               craftableItems.Add(newCraftableData.craftableItem);
-               blueprintStatus.Add(status);
+                  craftableItems.Add(newCraftableData.craftableItem);
+                  blueprintStatus.Add(status);
+               }
             }
          }
 
