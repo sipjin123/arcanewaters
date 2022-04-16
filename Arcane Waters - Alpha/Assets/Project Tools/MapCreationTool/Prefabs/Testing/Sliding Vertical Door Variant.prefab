@@ -46,7 +46,10 @@ MonoBehaviour:
   selectDataFields: []
   customDataFields: []
   hasVariableObjectState: 1
-  objectStateDescription: State should always be either 'up' or 'down'
+  objectStateDescription: State defines if door is lifted up or down
+  validObjectStateValues:
+  - up
+  - down
 --- !u!114 &7005673174597153966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,6 +71,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5062332866443429284, guid: 8a4941ce907290c4492bb78ff631f824,
+        type: 3}
+      propertyPath: m_AssetId
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5516471189641307731, guid: 8a4941ce907290c4492bb78ff631f824,
         type: 3}
       propertyPath: m_Name

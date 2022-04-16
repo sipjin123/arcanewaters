@@ -33,9 +33,12 @@ namespace MapCreationTool
       [Space(10), Tooltip("Can object have state that can be manipulated by players")]
       public bool hasVariableObjectState = false;
 
-      [Header("If hasVariableObjectState, this should describe what values are valid for an object")]
+      [Header("If hasVariableObjectState, this should describe what values mean what")]
       // Ex. 'An example object should have one of three values: 0 - off, 1 - on, 2 - on at double speed'
       public string objectStateDescription = "";
+
+      [Header("if hasVariableObjectState, what are the valid values for it")]
+      public string[] validObjectStateValues = new string[0];
 
 
       /// <summary>
@@ -261,7 +264,7 @@ namespace MapCreationTool
          TreasureType,
          PvpTeamType,
          PvpLane,
-         PvpMonsterPowerup, 
+         PvpMonsterPowerup,
          LootGroup,
          PvpShopName
       }

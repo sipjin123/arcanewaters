@@ -4,6 +4,7 @@ using MapCreationTool.UndoSystem;
 using UnityEngine;
 using System.Collections.Generic;
 using MapCreationTool.Serialization;
+using MapObjectStateVariables;
 
 namespace MapCreationTool
 {
@@ -64,10 +65,30 @@ namespace MapCreationTool
             // Find out the type of prefab
             Type type = group.getPrefab().GetComponent<IPrefabDataListener>()?.GetType();
 
+            Dictionary<string, string> result = new Dictionary<string, string>();
+
             // Get the data for this type
             if (type != null && defaultPrefabData.TryGetValue(type, out var data)) {
-               return data.Clone();
+               result = data.Clone();
             }
+
+            // Special default data for map state variables
+            if (group.getPrefab().TryGetComponent(out PrefabDataDefinition pdd)) {
+               if (pdd.hasVariableObjectState) {
+                  string state = "ERROR";
+                  if (pdd.validObjectStateValues.Length > 0) {
+                     state = pdd.validObjectStateValues[0];
+                  }
+
+                  ObjectStateModel model = new ObjectStateModel {
+                     state = state,
+                     stateExpression = new Expression { type = Expression.Type.Constant, constant = state }
+                  };
+                  result.Add(DataField.MAP_OBJECT_STATE_MODEL_KEY, model.serialize());
+               }
+            }
+
+            return result;
          } catch (Exception ex) {
             D.warning("Unable to get default prefab data: " + ex);
          }
@@ -76,8 +97,8 @@ namespace MapCreationTool
       }
 
       public static void setDefaultData (GameObject prefab, string key, string value) {
-         // We do not want a default value for the ID of the prefab
-         if (key.Equals(DataField.PLACED_PREFAB_ID)) return;
+         // We do not want a default value for some of the fields
+         if (key.Equals(DataField.PLACED_PREFAB_ID) || key.Equals(DataField.MAP_OBJECT_STATE_MODEL_KEY)) return;
 
          try {
             // Find out the type of prefab

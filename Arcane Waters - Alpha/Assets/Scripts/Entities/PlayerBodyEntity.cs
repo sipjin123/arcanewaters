@@ -348,21 +348,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          base.FixedUpdate();
       }
 
-      // If the player is sitting down and tries to move or jump, get up
-      if (sittingInfo.isSitting) {
-         if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-            exitChair();
+      if (isLocalPlayer) {
+         // If the player is sitting down and tries to move or jump, get up
+         if (sittingInfo.isSitting) {
+            if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+               exitChair();
+            }
          }
-      }
 
-      // If the player is emoting and tries to move or jump, stop
-      if (isEmoting()) {
-         if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-            stopEmote();
+         // If the player is emoting and tries to move or jump, stop
+         if (isEmoting()) {
+            if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+               stopEmote();
+            }
          }
-      }
 
-      checkIfPlayerIsStuck();
+         checkIfPlayerIsStuck();
+      }
    }
 
    protected override void Update () {

@@ -60,6 +60,9 @@ public class ShipEntity : SeaEntity
    public Texture2D spritesOverride = null;
 
    // A reference to the transform that will hold visual effects created by casting abilities
+   public Transform abilityCastEffectHolder;
+
+   // A reference to the transform that will hold visual effects for active abilities
    public Transform abilityEffectHolder;
 
    // A list of directional colliders, indexed by ship size
@@ -479,7 +482,7 @@ public class ShipEntity : SeaEntity
 
       // Play The effect of the buff
       if (showCastVfx) {
-         EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, Vector2.zero, shipAbilityData.abilitySpriteFXPerFrame, abilityEffectHolder, true);
+         EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, Vector2.zero, shipAbilityData.abilitySpriteFXPerFrame, abilityCastEffectHolder, true);
       }
 
       // We get the source entity to attach the sound effect to it

@@ -638,7 +638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 7906939757615313883, guid: ef0b7a8d1a41b7f4e95d447e4e1fce5d, type: 3}
-  inUnityEditorOnly: 1
+  inUnityEditorOnly: 0
 --- !u!1 &1725195138690607738
 GameObject:
   m_ObjectHideFlags: 0
@@ -17704,7 +17704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 9067119174520840369, guid: 3957f0fec925199468a8ec5bd5cf76d5, type: 3}
-  inUnityEditorOnly: 1
+  inUnityEditorOnly: 0
 --- !u!1 &6133486463552484482
 GameObject:
   m_ObjectHideFlags: 0
@@ -21545,7 +21545,7 @@ Tilemap:
       - {fileID: 21300242, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300244, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300246, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 17, y: 8, z: 0}
@@ -21645,7 +21645,7 @@ Tilemap:
       - {fileID: 21300488, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300494, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300500, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 9, z: 0}
@@ -21735,7 +21735,7 @@ Tilemap:
       - {fileID: 21300464, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300470, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300476, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 10, z: 0}

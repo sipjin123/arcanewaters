@@ -427,7 +427,7 @@ public class PlayerShipEntity : ShipEntity
          toggleShipDisplayInfo(isLocalPlayer || isMouseOver());
 
          float barsTargetAlpha = 1.0f;
-         if (abilityEffectHolder != null && abilityEffectHolder.transform.childCount > 0) {
+         if (abilityCastEffectHolder != null && abilityCastEffectHolder.transform.childCount > 0) {
             barsTargetAlpha = 0.0f;
          }
 
@@ -2292,7 +2292,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void toggleShipDisplayInfo (bool show) {
-      if (abilityEffectHolder != null && abilityEffectHolder.transform.childCount > 0) {
+      if (abilityCastEffectHolder != null && abilityCastEffectHolder.transform.childCount > 0) {
          shipInformationDisplay.alpha = NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
       } else {
          shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;

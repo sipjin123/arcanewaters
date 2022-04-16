@@ -97,8 +97,16 @@ namespace MapCreationTool
             valueDropdown.SetValueWithoutNotify(index);
          }
          if (hasVariableObjectState) {
+            D.error("Missing prefab data definition");
+         }
+      }
+
+      public void setValue (string value, PrefabDataDefinition pdd) {
+         if (hasVariableObjectState) {
             mapObjectStateValue = value;
-            UI.objectStateEditorPanel.setValue(value);
+            UI.objectStateEditorPanel.setValue(value, pdd);
+         } else {
+            setValue(value);
          }
       }
 

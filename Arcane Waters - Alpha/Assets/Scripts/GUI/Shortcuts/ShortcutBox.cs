@@ -53,12 +53,9 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler, IPointerDownHand
    }
 
    private void Update () {
-      if (_itemCell == null || _itemCell.getItem() == null) {
-         return;
-      }
-
       // Make the box highlighted if we've equipped the associated weapon
-      _containerImage.sprite = InventoryManager.isEquipped(_itemCell.getItem().id) ? selectedSprite : ImageManager.self.blankSprite;
+      _containerImage.sprite = _itemCell != null && _itemCell.getItem() != null && InventoryManager.isEquipped(_itemCell.getItem().id) 
+         ? selectedSprite : ImageManager.self.blankSprite;
    }
 
    public void onShortcutPress () {

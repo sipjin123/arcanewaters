@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: 2 Stage Lever
+  title: Two Stage Lever
   canInheritPosition: 0
   canControlPosition: 0
   positionStep: {x: 0, y: 0}
@@ -34,7 +34,10 @@ MonoBehaviour:
   selectDataFields: []
   customDataFields: []
   hasVariableObjectState: 1
-  objectStateDescription: State should always be either 'left' or 'right'
+  objectStateDescription: State defines if the lever is turned left or right
+  validObjectStateValues:
+  - left
+  - right
 --- !u!1001 &2632434088844406620
 PrefabInstance:
   m_ObjectHideFlags: 0

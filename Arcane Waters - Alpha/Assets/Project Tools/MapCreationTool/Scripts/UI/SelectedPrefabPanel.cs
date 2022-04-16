@@ -155,7 +155,9 @@ namespace MapCreationTool
             string id = prefab.getData(DataField.PLACED_PREFAB_ID).ToLower().Trim();
             UI.objectStateEditorPanel.nameText.text =
                id + ": " + (string.IsNullOrWhiteSpace(data.title) ? data.gameObject.name : data.title);
-            UI.objectStateEditorPanel.descriptionText.text = data.objectStateDescription;
+
+            UI.objectStateEditorPanel.descriptionText.text = data.objectStateDescription + System.Environment.NewLine +
+               "Valid states: " + string.Join(", ", data.validObjectStateValues);
          }
       }
 
@@ -165,18 +167,18 @@ namespace MapCreationTool
                // Overwrite default ship value into the first entry upon selecting object in the drawing board
                if (placedPrefab.getData(f.Key) == "None") {
                   D.debug("Value set to" + " : " + SeaMonsterEntityData.DEFAULT_SHIP_ID);
-                  f.Value.setValue(SeaMonsterEntityData.DEFAULT_SHIP_ID.ToString());
+                  f.Value.setValue(SeaMonsterEntityData.DEFAULT_SHIP_ID.ToString(), data);
                } else {
-                  f.Value.setValue(placedPrefab.getData(f.Key));
+                  f.Value.setValue(placedPrefab.getData(f.Key), data);
                }
             } else {
-               f.Value.setValue(placedPrefab.getData(f.Key));
+               f.Value.setValue(placedPrefab.getData(f.Key), data);
             }
          }
 
          if (hasWarpLogic) {
             fields["target map"].setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
-            fields["target map"].setValue(placedPrefab.getData("target map"));
+            fields["target map"].setValue(placedPrefab.getData("target map"), data);
             string mapValue = fields["target map"].value;
 
             if (int.TryParse(mapValue, out int mapId)) {
@@ -185,7 +187,7 @@ namespace MapCreationTool
                fields["target spawn"].setFieldProperties(new SelectOption("-1", "").toArray());
             }
 
-            fields["target spawn"].setValue(placedPrefab.getData("target spawn"));
+            fields["target spawn"].setValue(placedPrefab.getData("target spawn"), data);
          }
       }
 

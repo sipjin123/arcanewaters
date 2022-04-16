@@ -6,6 +6,7 @@ using Mirror;
 using MapObjectStateVariables;
 using System.Linq;
 using MapCreationTool.Serialization;
+using System;
 
 namespace MapCreationTool.MapObjectStateVariables
 {
@@ -33,6 +34,9 @@ namespace MapCreationTool.MapObjectStateVariables
       // Object's default state input field
       public InputField defaultStateInputField = null;
 
+      // Button which we click to see warnings
+      public Button warningsButton = null;
+
       #endregion
 
       private void Start () {
@@ -41,7 +45,7 @@ namespace MapCreationTool.MapObjectStateVariables
          });
       }
 
-      public void setValue (string value) {
+      public void setValue (string value, PrefabDataDefinition pdd) {
          // Get the model
          _model = ObjectStateModel.deserializeOrDefault(value);
 
@@ -50,49 +54,116 @@ namespace MapCreationTool.MapObjectStateVariables
             Destroy(stateExpressionContainer.GetChild(i).gameObject);
          }
 
+         // Analyze current model
+         Dictionary<int, PrefabDataDefinition> existingPrefabs = new Dictionary<int, PrefabDataDefinition>();
+         foreach (PlacedPrefab p in DrawBoard.instance.getPlacedPrefabs()) {
+            if (p.original.TryGetComponent(out PrefabDataDefinition def)) {
+               if (def.hasVariableObjectState) {
+                  if (int.TryParse(p.getData(DataField.PLACED_PREFAB_ID).ToLower().Trim(), out int id)) {
+                     existingPrefabs.Add(id, def);
+                  }
+               }
+            }
+         }
+         Expression.AnalysisResult analysis = _model.stateExpression.analizeExpression(existingPrefabs);
+
+         // Set warnings based on analysis
+         _warningsText = formStateWarnings(analysis, pdd, _model);
+         warningsButton.gameObject.SetActive(!string.IsNullOrWhiteSpace(_warningsText));
+
          // Instantiate all the controls based on given model
-         instantiateExpression(_model.stateExpression, stateExpressionContainer, 0);
+         instantiateExpression(_model.stateExpression, stateExpressionContainer, 0, analysis);
 
          // Set the default state value 
          defaultStateInputField.SetTextWithoutNotify(_model.state);
       }
 
-      private void instantiateExpression (Expression expression, Transform container, int expressionDepth) {
+      private string formStateWarnings (Expression.AnalysisResult analysis, PrefabDataDefinition pdd, ObjectStateModel model) {
+         string result = "";
+
+         bool hasInvalidValues = false;
+         string invalidValue = "";
+         foreach (string v in analysis.possibleEvaluations) {
+            if (!pdd.validObjectStateValues.Contains(v)) {
+               hasInvalidValues = true;
+               invalidValue = v;
+               break;
+            }
+         }
+
+         if (!pdd.validObjectStateValues.Contains(model.state)) {
+            result += "Default state has an invalid value" + Environment.NewLine;
+         }
+
+         if (hasInvalidValues) {
+            result += "Expression may return invalid values, such as '" + invalidValue + "'" + Environment.NewLine;
+         }
+
+         if (analysis.infiniteLoopPossible) {
+            result += "An infinite loop might be possible" + Environment.NewLine;
+         }
+
+         if (analysis.booleanParsingWarning) {
+            result += "Some [ true | false ] value types may be used incorrectly" + Environment.NewLine;
+         }
+
+         if (analysis.equalsNeverTrue) {
+            result += "Some EQUALS fields might never be 'true'" + Environment.NewLine;
+         }
+
+         if (analysis.equalsAlwaysTrue) {
+            result += "Some EQUALS fields might never be 'false'" + Environment.NewLine;
+         }
+
+         if (analysis.missingReference) {
+            result += "Some objects from a reference may be missing" + Environment.NewLine;
+         }
+
+         return result;
+      }
+
+      private void instantiateExpression (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          switch (expression.type) {
             case Expression.Type.Constant:
-               instatiateExpression_Constant(expression, container, expressionDepth);
+               instatiateExpression_Constant(expression, container, expressionDepth, analysis);
                break;
             case Expression.Type.Reference:
-               instantiateExpression_Reference(expression, container, expressionDepth);
+               instantiateExpression_Reference(expression, container, expressionDepth, analysis);
                break;
             case Expression.Type.Operation_IF:
-               instantiateExpression_IfElse(expression, container, expressionDepth);
+               instantiateExpression_IfElse(expression, container, expressionDepth, analysis);
                break;
             case Expression.Type.Operation_EQUALS:
             case Expression.Type.Operation_AND:
             case Expression.Type.Operation_OR:
-               instatiateExpression_2MemberExpression(expression, container, expressionDepth);
+               instatiateExpression_2MemberExpression(expression, container, expressionDepth, analysis);
                break;
             case Expression.Type.Operation_NOT:
-               instantiateExpression_Not(expression, container, expressionDepth);
+               instantiateExpression_Not(expression, container, expressionDepth, analysis);
                break;
          }
       }
 
-      private void instatiateExpression_Constant (Expression expression, Transform container, int expressionDepth) {
+      private void instatiateExpression_Constant (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          ExpressionField field = Instantiate(expressionConstantPrefab, container);
-         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth);
+         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth, analysis.warningExpressions.Contains(expression));
          instatiateExpression_SetTypeDropdown(field.expressionTypeDropdown, expression);
 
          field.constantInputField.SetTextWithoutNotify(expression.constant);
          field.constantInputField.onEndEdit.AddListener((i) => {
             expressionConstantFieldChanged(expression, field.constantInputField);
          });
+
+         // If this is of depth 0, it should just match the default state
+         if (expressionDepth == 0) {
+            field.constantInputField.readOnly = true;
+            field.constantInputField.interactable = false;
+         }
       }
 
-      private void instantiateExpression_Reference (Expression expression, Transform container, int expressionDepth) {
+      private void instantiateExpression_Reference (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          ExpressionField field = Instantiate(expressionReferencePrefab, container);
-         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth);
+         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth, analysis.warningExpressions.Contains(expression));
          instatiateExpression_SetTypeDropdown(field.expressionTypeDropdown, expression);
 
          // Fetch all prefabs that are placed and can have state
@@ -128,32 +199,32 @@ namespace MapCreationTool.MapObjectStateVariables
          });
       }
 
-      private void instantiateExpression_IfElse (Expression expression, Transform container, int expressionDepth) {
+      private void instantiateExpression_IfElse (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          ExpressionField field = Instantiate(expressionIfElsePrefab, container);
-         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth);
+         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth, analysis.warningExpressions.Contains(expression));
          instatiateExpression_SetTypeDropdown(field.expressionTypeDropdown, expression);
 
-         instantiateExpression(expression.conditionExpression, field.childExpressionContainers[0], expressionDepth + 1);
-         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[1], expressionDepth + 1);
-         instantiateExpression(expression.rightSideExpression, field.childExpressionContainers[2], expressionDepth + 1);
+         instantiateExpression(expression.conditionExpression, field.childExpressionContainers[0], expressionDepth + 1, analysis);
+         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[1], expressionDepth + 1, analysis);
+         instantiateExpression(expression.rightSideExpression, field.childExpressionContainers[2], expressionDepth + 1, analysis);
       }
 
-      private void instantiateExpression_Not (Expression expression, Transform container, int expressionDepth) {
+      private void instantiateExpression_Not (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          ExpressionField field = Instantiate(expressionNotPrefab, container);
-         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth);
+         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth, analysis.warningExpressions.Contains(expression));
          instatiateExpression_SetTypeDropdown(field.expressionTypeDropdown, expression);
 
-         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[0], expressionDepth + 1);
+         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[0], expressionDepth + 1, analysis);
       }
 
-      private void instatiateExpression_2MemberExpression (Expression expression, Transform container, int expressionDepth) {
+      private void instatiateExpression_2MemberExpression (Expression expression, Transform container, int expressionDepth, Expression.AnalysisResult analysis) {
          ExpressionField field = Instantiate(expression2MemberPrefab, container);
-         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth);
+         field.GetComponent<Image>().color = getExpressionBackgroundColor(expressionDepth, analysis.warningExpressions.Contains(expression));
          instatiateExpression_SetTypeDropdown(field.expressionTypeDropdown, expression);
 
          field.operatorLabel.text = getOperatorLabel(expression.type);
-         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[0], expressionDepth + 1);
-         instantiateExpression(expression.rightSideExpression, field.childExpressionContainers[1], expressionDepth + 1);
+         instantiateExpression(expression.leftSideExpression, field.childExpressionContainers[0], expressionDepth + 1, analysis);
+         instantiateExpression(expression.rightSideExpression, field.childExpressionContainers[1], expressionDepth + 1, analysis);
       }
 
       private void expressionReferenceFieldChanged (Expression exp, ExpressionField field) {
@@ -174,6 +245,10 @@ namespace MapCreationTool.MapObjectStateVariables
          // Check that our model hasn't changed and we still have the expression
          if (_model != null) {
             _model.state = defaultStateInputField.text;
+
+            if (_model.stateExpression.type == Expression.Type.Constant) {
+               _model.stateExpression.constant = _model.state;
+            }
 
             // Notify that our value has changed
             if (_openedBy != null) {
@@ -214,6 +289,12 @@ namespace MapCreationTool.MapObjectStateVariables
             exp.rightSideExpression = null;
 
             switch (newType) {
+               case Expression.Type.Constant:
+                  // If it is root
+                  if (exp == _model.stateExpression) {
+                     exp.constant = _model.state;
+                  }
+                  break;
                case Expression.Type.Operation_IF:
                   exp.conditionExpression = new Expression {
                      type = Expression.Type.Constant,
@@ -373,12 +454,16 @@ namespace MapCreationTool.MapObjectStateVariables
          return "ERR";
       }
 
-      private Color getExpressionBackgroundColor (int depth) {
+      private Color getExpressionBackgroundColor (int depth, bool warning) {
          return new Color(
             1 - (depth % 4) * 0.2f,
             1 - (depth % 4) * 0.2f,
-            1 - (depth % 4) * 0.2f,
+            warning ? 0 : 1 - (depth % 4) * 0.2f,
             1f);
+      }
+
+      public void warningsButtonClick () {
+         UI.messagePanel.displayWarning("Object State Warnings", _warningsText);
       }
 
       public void open (Field openedBy) {
@@ -398,7 +483,9 @@ namespace MapCreationTool.MapObjectStateVariables
       // Which field has opened us
       private Field _openedBy = null;
 
+      // Current warnings we have to display
+      private string _warningsText = "";
+
       #endregion
    }
-
 }

@@ -72,10 +72,6 @@ public class MailManager : GenericGameManager {
    }
 
    public static void sendSystemMail (int recipientUserId, string subject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
-      if (Global.player == null) {
-         return;
-      }
-
       // Use the player to send a system mail
       RPCManager.createSystemMail(recipientUserId, subject, message, attachedItemsIds, attachedItemsCount);
    }
