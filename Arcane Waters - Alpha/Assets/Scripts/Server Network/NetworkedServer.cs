@@ -644,7 +644,7 @@ public class NetworkedServer : NetworkedBehaviour
       if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ReceiveGuildInvitationNotification, guildId, inviterUserId, inviterName, invitedUserId, guildName);
       } else {
-         D.debug("Could not find player: " + invitedUserId);
+         D.debug("GUILD INVITE :: Could not find server with player: " + invitedUserId);
       }
    }
 
@@ -672,7 +672,7 @@ public class NetworkedServer : NetworkedBehaviour
       if (player != null) {
          player.Target_ReceiveGuildInvitationNotification(player.connectionToClient, guildId, inviterName, inviterUserId, guildName);
       } else {
-         D.debug("Could not find player: " + inviteeUserId);
+         D.debug("GUILD INVITE :: Could not find player: " + inviteeUserId);
       }
    }
 

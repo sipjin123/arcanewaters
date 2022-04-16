@@ -195,12 +195,12 @@ public class ContextMenuPanel : MonoBehaviour
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {
             addButton("Guild Invite", () => {
-               D.debug("Successfully Sent Guild Invite to user {" + targetEntity == null ? "NULL" : (targetEntity.entityName + ":" + targetEntity.userId) + "}");
+               D.debug("Successfully Sent Guild Invite using {method A} to user {" + targetUserId + "}");
                Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
             });
          } else {
             addButton("Guild Invite", () => {
-               D.debug("Successfully Sent Guild Invite to user {" + targetUserId + "}");
+               D.debug("Successfully Sent Guild Invite using {method B} to user {" + targetUserId + "}");
                Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
             });
 
