@@ -10,7 +10,10 @@ public class CancelAction : BattleAction {
    public float timeToSubtract = 0f;
 
    // Can only cancel abilities that is below this thresold of action end time
-   public const float CANCEL_BUFFER = .5f;
+   public const float CANCEL_BUFFER_OFFSET = .5f;
+
+   // Abilities that will execute in less than this value cannot be cancelled anymore
+   public const float CANCEL_MIN_BUFFER = .75f;
 
    #endregion
 

@@ -275,6 +275,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // References to images of the outline and fill of the attack timing indicator
    public Image attackingTimingOutline, attackTimingFill;
+   public Color attackTimingColorStart, attackTimingColorEnd;
+
+   // The waiting time before action proceeds
+   public double actionWaitTime;
 
    // The sprite containers
    public Transform spriteContainers;
@@ -776,14 +780,20 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       float timer = 0.0f;
       setAttackTimingIndicatorVisibility(true);
 
+      actionWaitTime = timeUntilAttack;
       while (timer < timeUntilAttack) {
          float normalisedTime = Mathf.Clamp01(timer / timeUntilAttack);
          attackTimingFill.fillAmount = normalisedTime;
+
+         // Display green color if action thresold reaches more than half of its fill bar  or if action time span is less then minium value
+         attackTimingFill.color = normalisedTime > .5f || timeUntilAttack < CancelAction.CANCEL_MIN_BUFFER ? attackTimingColorEnd : attackTimingColorStart;
+
          attackingTimingOutline.color = ColorCurveReferences.self.attackTimingOutlineColor.Evaluate(normalisedTime);
          timer += Time.deltaTime;
          yield return null;
       }
 
+      actionWaitTime = 100;
       setAttackTimingIndicatorVisibility(false);
    }
 

@@ -65,6 +65,18 @@ public class AttackPanel : MonoBehaviour {
 
       // Cancels recent ability triggered
       if (isValidRecentAbility() && recentAbilityRequest.abilityIndex == abilityIndex) {
+         // If attack timing fill exceeds half it can no longer be cancelled
+         if (BattleManager.self.getPlayerBattler().attackTimingFill.fillAmount > .5f) {
+            recentAbilityRequest.lastTimeTriggered = NetworkTime.time;
+            return;
+         }
+
+         // If an attack action duration is shorter than the minimum attack buffer, means the time span is too short to cancel
+         if (BattleManager.self.getPlayerBattler().actionWaitTime < CancelAction.CANCEL_MIN_BUFFER) {
+            recentAbilityRequest.lastTimeTriggered = NetworkTime.time;
+            return;
+         }
+
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
          recentAbilityRequest.abilityIndex = -1;
          recentAbilityRequest.targetNetId = 0;
