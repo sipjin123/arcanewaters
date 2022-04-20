@@ -96,6 +96,9 @@ public class BattleUIManager : MonoBehaviour {
 
    // Self
    public static BattleUIManager self;
+   
+   // The ability click minimum interval
+   float MIN_TAP_INTERVAL = .5f;
 
    // Reference to the attack panel
    public AttackPanel attackPanel;
@@ -192,11 +195,17 @@ public class BattleUIManager : MonoBehaviour {
 
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-            if (BattleManager.self.getPlayerBattler().canCastAbility() && selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f) {
-               //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
-               SoundEffectManager.self.playGuiButtonConfirmSfx();
-
-               triggerAbility(selectedButton, selectedButton.abilityType);
+            bool isCancellingAnAbility = !BattleManager.self.getPlayerBattler().canCastAbility() && attackPanel.recentAbilityRequest.abilityIndex == selectedButton.abilityIndex;
+            bool isCoolingDown = BattleManager.self.getPlayerBattler().canCastAbility() && selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f;
+            bool isIntervalValid = NetworkTime.time - attackPanel.recentAbilityRequest.lastTimeTriggered > MIN_TAP_INTERVAL;
+            if (isCoolingDown || isCancellingAnAbility) {
+               if (isIntervalValid) {
+                  //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
+                  SoundEffectManager.self.playGuiButtonConfirmSfx();
+                  triggerAbility(selectedButton, selectedButton.abilityType);
+               } else {
+                  // TODO: Add ui panel trigger or message log here notifying spam attempts
+               }
             }
          } else {
             selectedButton.invalidButtonClick();
@@ -369,7 +378,8 @@ public class BattleUIManager : MonoBehaviour {
          BattleSelectionManager.self.autoTargetNextOpponent();
       }
 
-      if (!abilityButton.cooldownImage.enabled) {
+      bool isCancellingAction = abilityButton.cooldownImage.enabled && abilityButton.abilityTypeIndex == attackPanel.recentAbilityRequest.abilityIndex;
+      if (!abilityButton.cooldownImage.enabled || isCancellingAction) {
          if (abilityType == AbilityType.Standard) {
             attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
          } else if (abilityType == AbilityType.BuffDebuff) {
@@ -397,7 +407,7 @@ public class BattleUIManager : MonoBehaviour {
          updateAbilityButtons();
 
          // If the player is in the middle of an attack, ignore input
-         if ((_playerLocalBattler != null) && !_playerLocalBattler.isAttacking) {
+         if ((_playerLocalBattler != null)) {
             if (InputManager.self.inputMaster.LandBattle.Ability1.WasPressedThisFrame()) {
                triggerAbilityByKey(0);
             } else if (InputManager.self.inputMaster.LandBattle.Ability2.WasPressedThisFrame()) {

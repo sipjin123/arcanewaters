@@ -20,6 +20,7 @@ public class AttackPanel : MonoBehaviour {
       public AbilityType abilityType;
       public uint targetNetId;
       public int abilityIndex;
+      public double lastTimeTriggered;
    }
 
    #endregion
@@ -65,12 +66,18 @@ public class AttackPanel : MonoBehaviour {
       // Cancels recent ability triggered
       if (isValidRecentAbility() && recentAbilityRequest.abilityIndex == abilityIndex) {
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
-      } 
+         recentAbilityRequest.abilityIndex = -1;
+         recentAbilityRequest.targetNetId = 0;
+         recentAbilityRequest.abilityType = AbilityType.Undefined;
+         recentAbilityRequest.lastTimeTriggered = NetworkTime.time;
+         return;
+      }
 
       // Send the request to the server
       recentAbilityRequest.abilityType = AbilityType.Standard;
       recentAbilityRequest.targetNetId = target.netId;
       recentAbilityRequest.abilityIndex = abilityIndex;
+      recentAbilityRequest.lastTimeTriggered = NetworkTime.time;
 
       if (BattleManager.self.getPlayerBattler().canCastAbility()) {
          BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false);
