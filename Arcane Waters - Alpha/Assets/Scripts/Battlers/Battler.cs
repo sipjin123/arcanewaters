@@ -290,6 +290,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The starting AP for all units
    public const int DEFAULT_AP = 5;
 
+   // The initial and end time of the action
+   public double declaredActionBeginTime = 0, decalredActionEndTime = 0;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -301,8 +304,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
+   public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType, double actionStartTime, double actionEndTime) {
       currentActionCoroutine = newEnumerator;
+      declaredActionBeginTime = actionStartTime;
+      decalredActionEndTime = actionEndTime;
       StartCoroutine(currentActionCoroutine);
    }
 
@@ -1385,7 +1390,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Default all abilities to display as attacks
             if (!(battleAction is AttackAction)) {
                D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
-               isAttacking = false;
+               resetAttackingState();
                yield break;
             }
 
@@ -1416,7 +1421,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             if (sourceBattler.isDisabledByStatus()) {
-               isAttacking = false;
+               resetAttackingState();
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1692,7 +1697,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             if (sourceBattler.isDisabledByStatus()) {
-               isAttacking = false;
+               resetAttackingState();
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1849,7 +1854,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             if (sourceBattler.isDisabledByStatus()) {
-               isAttacking = false;
+               resetAttackingState();
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -2002,7 +2007,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the battle has ended, no problem
             if (battle == null) {
-               isAttacking = false;
+               resetAttackingState();
                yield break;
             }
 
@@ -2018,7 +2023,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             break;
          default:
-            isAttacking = false;
+            resetAttackingState();
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
@@ -2027,6 +2032,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          setBattlerCanCastAbility(true);
       }
 
+      resetAttackingState();
+   }
+
+   private void resetAttackingState () {
+      declaredActionBeginTime = 0;
+      decalredActionEndTime = 0;
       isAttacking = false;
    }
 

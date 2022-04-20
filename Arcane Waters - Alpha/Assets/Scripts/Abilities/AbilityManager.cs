@@ -214,7 +214,7 @@ public class AbilityManager : MonoBehaviour
 
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
-               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
                break;
 
             case BattleActionType.Stance: 
@@ -227,7 +227,7 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time;
 
-               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
                break;
 
             case BattleActionType.BuffDebuff: 
@@ -240,7 +240,7 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time;
 
-               sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
                break;
 
             case BattleActionType.Cancel:
