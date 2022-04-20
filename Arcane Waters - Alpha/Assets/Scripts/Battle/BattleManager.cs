@@ -545,7 +545,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       if (abilityType == AbilityType.Standard) {
-         CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, 0, 0, 0);
+         CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, targets.Count > 0 ? targets[0].userId : 0, NetworkTime.time, 0, NetworkTime.time);
          cancelAction.abilityGlobalID = abilityData.itemID;
          actions.Add(cancelAction);
 
@@ -554,6 +554,7 @@ public class BattleManager : MonoBehaviour {
 
             foreach (CancelAction action in actions) {
                stringList.Add(action.serialize());
+               battle.cancelActionList.Add(action);
             }
 
             // Force the cooldown to reach current time so a new ability can be casted
@@ -779,7 +780,7 @@ public class BattleManager : MonoBehaviour {
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
-                targetApChange, abilityData.itemID, damageEffectMagnitude);
+                targetApChange, abilityData.itemID, damageEffectMagnitude, NetworkTime.time);
             action.actionId = actionIdIndex;
             action.targetStartingHealth = target.health;
             actions.Add(action);
@@ -990,35 +991,54 @@ public class BattleManager : MonoBehaviour {
 
                yield return new WaitForSeconds(attackApplyDelay);
 
-               // Apply damage
-               target.health -= attackAction.damage;
-               target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-               source.canExecuteAction = true;
+               // Check for cancel action queues to determine if the next attack action should be cancelled or if it should proceed
+               List<CancelAction> cancelActionChecks = battle.cancelActionList.FindAll(cancelActionEntry => 
+                  cancelActionEntry.sourceId == action.sourceId && cancelActionEntry.targetId == action.targetId // Match the target/source ids
+                  && cancelActionEntry.abilityGlobalID == action.abilityGlobalID  // Match the ability used
+                  && cancelActionEntry.actionStartTime > action.actionStartTime  // Cancel actions should be triggered later than attack actions
+                  && cancelActionEntry.actionStartTime < action.actionEndTime - CancelAction.CANCEL_BUFFER); // Make sure that the cancel action does not exceed the end time of the attack action
 
-               // Apply attack status here
-               if (abilityDataReference.statusType != Status.Type.None) {
-                  bool canBeDisabled = true;
-                  if (target.isBossType) {
-                     switch (abilityDataReference.statusType) {
-                        case Status.Type.Slowed:
-                        case Status.Type.Stunned:
-                           canBeDisabled = false;
-                           break;
+               // Make sure there is no cancel queued for the next action
+               bool isCancelQueued = cancelActionChecks == null || cancelActionChecks.Count < 1;
+               if (!isCancelQueued) {
+                  foreach (CancelAction cancelledAction in cancelActionChecks) {
+                     if (cancelledAction.actionStartTime > action.actionStartTime && cancelledAction.actionStartTime < (action.actionEndTime - CancelAction.CANCEL_BUFFER)) {
+                        battle.cancelActionList.Remove(cancelledAction);
+                        break;
+                     }
+                  }
+               } else {
+                  // Apply damage
+                  target.health -= attackAction.damage;
+                  target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
+
+                  source.canExecuteAction = true;
+
+                  // Apply attack status here
+                  if (abilityDataReference.statusType != Status.Type.None) {
+                     bool canBeDisabled = true;
+                     if (target.isBossType) {
+                        switch (abilityDataReference.statusType) {
+                           case Status.Type.Slowed:
+                           case Status.Type.Stunned:
+                              canBeDisabled = false;
+                              break;
+                        }
+                     }
+
+                     if (canBeDisabled) {
+                        float randomizedChance = Random.Range(1, 100);
+                        if (randomizedChance < abilityDataReference.statusChance) {
+                           StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
+                        }
                      }
                   }
 
-                  if (canBeDisabled) {
-                     float randomizedChance = Random.Range(1, 100);
-                     if (randomizedChance < abilityDataReference.statusChance) {
-                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
-                     }
+                  // Setup server to declare a battler is dead when the network time reaches the time action ends
+                  if (target.health <= 0) {
+                     StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
+                     StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
                   }
-               }
-
-               // Setup server to declare a battler is dead when the network time reaches the time action ends
-               if (target.health <= 0) {
-                  StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
-                  StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
                }
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;

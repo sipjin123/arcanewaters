@@ -247,13 +247,13 @@ public class AbilityManager : MonoBehaviour
                CancelAction cancelAction = action as CancelAction;
                actionToExecute = cancelAction;
                if (sourceBattler.canCancelAction) {
-                  // Update the battler's action timestamps
-                  sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
-                  sourceBattler.stopActionCoroutine();
-                  sourceBattler.setBattlerCanCastAbility(true);
-                  sourceBattler.processCancelStateUI();
-               } else {
-                  D.log("Ability can not be canceled!");
+                  if (cancelAction.actionStartTime > sourceBattler.declaredActionBeginTime && cancelAction.actionStartTime < (sourceBattler.decalredActionEndTime - CancelAction.CANCEL_BUFFER)) {
+                     // Update the battler's action timestamps
+                     sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
+                     sourceBattler.stopActionCoroutine();
+                     sourceBattler.setBattlerCanCastAbility(true);
+                     sourceBattler.processCancelStateUI();
+                  }
                }
                break;
          }

@@ -69,6 +69,9 @@ public class Battle : NetworkBehaviour {
    // Is the battle happening on a ship deck?
    public bool isShipBattle = false;
 
+   // The cancel actions recorded
+   public List<CancelAction> cancelActionList = new List<CancelAction>();
+
    #endregion
 
    public void Start () {
@@ -594,8 +597,8 @@ public class Battle : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveCancelAction (int battleId, int sourceId, int targetId, double time, float timeToSubtract) {
-      CancelAction cancelAction = new CancelAction(battleId, sourceId, targetId, time, timeToSubtract);
+   public void Rpc_ReceiveCancelAction (int battleId, int sourceId, int targetId, double time, float timeToSubtract, double timeStart) {
+      CancelAction cancelAction = new CancelAction(battleId, sourceId, targetId, time, timeToSubtract, timeStart);
       AbilityManager.self.execute(new[] { cancelAction });
    }
 
