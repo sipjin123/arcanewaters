@@ -17,12 +17,8 @@ public class WorldMapWaypointsManager : MonoBehaviour
       self = this;
    }
 
-   private void Update () {
-      if (_waypoints.Count >= _waypointSpots.Count) {
-         return;
-      }
-
-      foreach (WorldMapSpot spot in _waypointSpots) {
+   private void FixedUpdate () {
+      foreach (WorldMapSpot spot in _waypointSpotsQueue) {
          if (Global.player == null) {
             continue;
          }
@@ -37,22 +33,18 @@ public class WorldMapWaypointsManager : MonoBehaviour
             }
          }
 
-         instantiateWaypointAt(spot);
-      }
-   }
-
-   public void clearWaypoints () {
-      // Destroy all the instanced waypoints
-      foreach (WorldMapWaypoint waypoint in _waypoints) {
-         Destroy(waypoint);
+         instantiateSceneWaypoint(spot);
+         _waypointSpotsQueueTemp.Add(spot);
       }
 
-      // Clear registries
-      _waypoints.Clear();
-      _waypointSpots.Clear();
+      // Remove the processed spots from the queue
+      foreach (WorldMapSpot spot in _waypointSpotsQueueTemp) {
+         _waypointSpotsQueue.Remove(spot);
+      }
+      _waypointSpotsQueueTemp.Clear();
    }
 
-   private void instantiateWaypointAt (WorldMapSpot spot) {
+   private void instantiateSceneWaypoint (WorldMapSpot spot) {
       if (Global.player == null) {
          return;
       }
@@ -71,51 +63,77 @@ public class WorldMapWaypointsManager : MonoBehaviour
       _waypoints.Add(waypoint);
 
       // Set the details on the new waypoint
-      waypoint.transform.localPosition = WorldMapManager.self.getPositionFromSpot(Global.player.areaKey, spot);
       waypoint.spot = spot;
       waypoint.spot.type = WorldMapSpot.SpotType.Waypoint;
       waypoint.displayName = $"Waypoint {_waypoints.Count}";
+      waypoint.transform.localPosition = WorldMapManager.self.getPositionFromSpot(Global.player.areaKey, spot);
 
       // Add a minimap icon for the waypoint
       Minimap.self.addWaypointIcon(area, waypoint);
    }
 
-   public void addWaypoint (WorldMapSpot spot) {
-      _waypointSpots.Add(spot);
-   }
-
-   public void removeWaypoint (WorldMapSpot spot) {
-      foreach (WorldMapWaypoint waypoint in _waypoints.ToArray()) {
-         if (waypoint.spot == spot) {
-            // Destroy the instanced waypoint scene object
-            Destroy(waypoint.gameObject);
-
-            // Remove the waypooint from storage
-            _waypoints.Remove(waypoint);
-
-            // Delete the waypoint from the minimap
-            Minimap.self.deleteWaypointIcon(waypoint);
-         }
+   public void createWaypoint (WorldMapSpot spot) {
+      if (!_waypointSpots.Contains(spot)) {
+         _waypointSpots.Add(spot);
       }
 
+      _waypointSpotsQueue.Add(spot);
+   }
+
+   public void destroyWaypoint (WorldMapSpot spot) {
+      // Deletes the logical waypoint
       _waypointSpots.Remove(spot);
+
+      WorldMapWaypoint waypoint = _waypoints.Find(_ => _.spot == spot);
+      if (waypoint == null) {
+         return;
+      }
+
+      // Deletes the physical waypoint
+      destroySceneWaypoint(waypoint);
+   }
+
+   private void destroySceneWaypoint (WorldMapWaypoint waypoint) {
+      if (waypoint == null) {
+         return;
+      }
+      
+      // Destroy the instanced waypoint scene object
+      Destroy(waypoint.gameObject);
+
+      // Removes the waypoint from storage
+      _waypoints.Remove(waypoint);
+
+      // Removes the waypoint from the minimap
+      Minimap.self.deleteWaypointIcon(waypoint);
    }
 
    public List<WorldMapWaypoint> getWaypoints () {
       return _waypoints;
    }
-
+   
    public List<WorldMapSpot> getWaypointSpots () {
       return _waypointSpots;
    }
 
+   public void refreshWaypoints () {
+      foreach (WorldMapSpot spot in _waypointSpots.ToArray()) {
+         destroyWaypoint(spot);
+         createWaypoint(spot);
+      }
+   }
+
    #region Private Variables
 
-   // Waypoints registry
+   // The scene waypoints that have been instanced so far
    private List<WorldMapWaypoint> _waypoints = new List<WorldMapWaypoint>();
 
-   // Spots registry
+   // The set of spots that still need to be converted into waypoints
+   private List<WorldMapSpot> _waypointSpotsQueue = new List<WorldMapSpot>();
+   private List<WorldMapSpot> _waypointSpotsQueueTemp = new List<WorldMapSpot>();
+   
+   // The set of spots that have been converted into waypoints so far
    private List<WorldMapSpot> _waypointSpots = new List<WorldMapSpot>();
-
+   
    #endregion
 }

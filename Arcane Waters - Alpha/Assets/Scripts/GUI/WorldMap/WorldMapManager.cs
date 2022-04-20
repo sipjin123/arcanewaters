@@ -317,6 +317,22 @@ public class WorldMapManager : MonoBehaviour
       }
    }
 
+   public string encodeSpot (WorldMapSpot spot) {
+      try {
+         return JsonUtility.ToJson(spot);
+      } catch {
+         return string.Empty;
+      }
+   }
+
+   public WorldMapSpot decodeSpot (string geoCoordsStr) {
+      try {
+         return JsonUtility.FromJson<WorldMapSpot>(geoCoordsStr);
+      } catch {
+         return null;
+      }
+   }
+   
    public string getStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
       float adjustedAreaY = geoCoords.areaY / 255 * 999; 
       float adjustedAreaX = geoCoords.areaX / 255 * 999; 

@@ -167,7 +167,7 @@ public class WorldMapPanel : Panel
          }
       } else if (menuItem.isWaypoint()) {
          // Delete the waypoint at spot from the scene
-         WorldMapWaypointsManager.self.removeWaypoint(spot);
+         WorldMapWaypointsManager.self.destroyWaypoint(spot);
 
          // Delete the waypoint at spot from the map panel
          waypointsContainer.removeWaypoint(spot);

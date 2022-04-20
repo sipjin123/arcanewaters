@@ -36,7 +36,7 @@ public class WorldMapWaypoint : MonoBehaviour
 
             // Remove the waypoint
             if (WorldMapWaypointsManager.self) {
-               WorldMapWaypointsManager.self.removeWaypoint(spot);
+               WorldMapWaypointsManager.self.destroyWaypoint(spot);
             }
          });
       }

@@ -648,7 +648,6 @@ public class ChatPanel : MonoBehaviour {
       string displayGeoCoords = WorldMapManager.self.getDisplayStringFromGeoCoords(geoCoords);
       chatLine.chatInfo.text = chatLine.chatInfo.text.Remove(startIndex, strLength);
       chatLine.chatInfo.text = chatLine.chatInfo.text.Insert(startIndex, displayGeoCoords);
-      chatLine.chatInfo.extra = WorldMapManager.self.encodeGeoCoords(geoCoords);
    }
 
    public void refreshChatLines () {

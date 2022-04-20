@@ -463,7 +463,7 @@ public class MouseManager : ClientMonoBehaviour
          _isOverNPC = !Global.player.isInBattle();
       }
 
-      if (Battler.getHoveredBattlers().Count > 0 && Global.player.isInBattle()) {
+      if (Battler.getHoveredBattlers().Count > 0 && Global.player != null && Global.player.isInBattle()) {
          _isOverTouchable = true;
       }
 

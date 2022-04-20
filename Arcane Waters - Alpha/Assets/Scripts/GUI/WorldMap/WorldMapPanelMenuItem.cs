@@ -27,8 +27,12 @@ public class WorldMapPanelMenuItem : MonoBehaviour
    #endregion
 
    private void Start () {
-      if (button) {
-         button.onClick.AddListener(onMenuItemClicked);
+      if (warpActionButton) {
+         warpActionButton.onClick.AddListener(onMenuItemClicked);
+      }
+      
+      if (waypointDeleteButton) {
+         waypointDeleteButton.onClick.AddListener(onMenuItemClicked);
       }
    }
 
@@ -65,8 +69,12 @@ public class WorldMapPanelMenuItem : MonoBehaviour
    }
 
    private void OnDestroy () {
-      if (button) {
-         button.onClick.RemoveAllListeners();
+      if (warpActionButton) {
+         warpActionButton.onClick.RemoveAllListeners();
+      }
+      
+      if (waypointDeleteButton) {
+         waypointDeleteButton.onClick.RemoveAllListeners();
       }
    }
 

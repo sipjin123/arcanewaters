@@ -7887,7 +7887,7 @@ public class DB_Main : DB_MainStub
    public static new void deactivateUser (int accountId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users_deleted SELECT * FROM users WHERE accId=@accId AND usrId=@usrId; DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users_deleted (SELECT * FROM users WHERE accId=@accId AND usrId=@usrId); DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);

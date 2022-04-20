@@ -630,7 +630,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                            necklaceList.Add(actualData);
                            message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.necklaceType;
                         } else {
-                           D.debug("WARNING! A necklace has no assigned necklace type! " + dataId + " : " + actualData.necklaceType);
+                           D.debug("WARNING! A necklace has no assigned necklace type! XmlID:{" + dataId + "} Type:{" + actualData.necklaceType + "}" + " IsActive:{" + isActive + "}");
                         }
                      } else {
                         D.debug("Skip add entry for necklace:" + dataId);

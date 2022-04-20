@@ -9,9 +9,6 @@ public class WorldMapPanelWaypointsContainer : MonoBehaviour
    // Reference to the prefab used to create indicators
    public GameObject mapWaypointPrefab;
 
-   // The sprite used to represent waypoints
-   public Sprite waypointSprite;
-
    #endregion
 
    public void clearWaypoints () {
@@ -24,18 +21,24 @@ public class WorldMapPanelWaypointsContainer : MonoBehaviour
 
    public void addWaypoints (IEnumerable<WorldMapSpot> spots) {
       foreach (WorldMapSpot spot in spots) {
-         WorldMapPanelWaypoint newWaypoint = createWaypoint(spot);
-         positionWaypoint(newWaypoint);
-         textureWaypoint(newWaypoint);
+         if (createWaypoint(spot, out WorldMapPanelWaypoint waypoint)) {
+            positionWaypoint(waypoint);
+         }
       }
    }
 
-   private WorldMapPanelWaypoint createWaypoint (WorldMapSpot spot) {
-      GameObject o = Instantiate(mapWaypointPrefab);
-      WorldMapPanelWaypoint waypoint = o.GetComponent<WorldMapPanelWaypoint>();
-      waypoint.spot = spot;
-      _waypoints.Add(waypoint);
-      return waypoint;
+   private bool createWaypoint (WorldMapSpot spot, out WorldMapPanelWaypoint waypoint) {
+      try {
+         GameObject o = Instantiate(mapWaypointPrefab);
+         waypoint = o.GetComponent<WorldMapPanelWaypoint>();
+         waypoint.spot = spot;
+         _waypoints.Add(waypoint);
+         return true;
+      }
+      catch {
+         waypoint = null;
+         return false;
+      }
    }
 
    public void removeWaypoint (WorldMapSpot spot) {
@@ -57,10 +60,6 @@ public class WorldMapPanelWaypointsContainer : MonoBehaviour
       float computedY = (mapDimensions.y - 1 - waypoint.spot.worldY) * cellSize.y - waypoint.spot.areaY / waypoint.spot.areaHeight * cellSize.y;
 
       waypoint.transform.localPosition = new Vector3(computedX, -computedY);
-   }
-
-   private void textureWaypoint (WorldMapPanelWaypoint waypoint) {
-      waypoint.setSprite(waypointSprite);
    }
 
    public List<WorldMapPanelWaypoint> getWaypointsWithinArea (WorldMapPanelAreaCoords mapPanelAreaCoords) {

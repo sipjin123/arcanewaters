@@ -489,14 +489,20 @@ public class ChatManager : GenericGameManager
             }
          }
       }
-
+      
       _sentMessageHistory.Add(textToProcess);
 
       // Check if it's a chat command
       if (textToProcess.StartsWith("/")) {
          executeChatCommand(textToProcess);
       } else {
-         sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);
+         // If the message contains a Geo Coords, extract it, convert it into a spot and send it as an extra
+         WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromString(textToProcess, out int startIndex, out int strLength);
+         string extra = (startIndex >= 0 && strLength > 0)
+            ? WorldMapManager.self.encodeSpot(WorldMapManager.self.getSpotFromGeoCoords(geoCoords))
+            : string.Empty;
+         
+         sendMessageToServer(textToProcess, ChatPanel.self.currentChatType, extra);
       }
 
       resetMessagesAgo();

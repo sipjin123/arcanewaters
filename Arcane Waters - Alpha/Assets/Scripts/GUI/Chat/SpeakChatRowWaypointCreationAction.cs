@@ -7,33 +7,25 @@ public class SpeakChatRowWaypointCreationAction : SpeakChatRowAction
    #endregion
 
    public override void execute () {
-      WorldMapGeoCoords geoCoords = WorldMapManager.self.decodeGeoCoords(chatRow.chatLine.chatInfo.extra);
+      WorldMapSpot newSpot = WorldMapManager.self.decodeSpot(chatRow.chatLine.chatInfo.extra);
 
-      if (geoCoords == null) {
+      if (newSpot == null) {
          return;
       }
 
-      if (!WorldMapManager.self.areGeoCoordsValid(geoCoords)) {
-         PanelManager.self.noticeScreen.show("Invalid Location");
-         return;
-      }
-
-      WorldMapSpot spot = WorldMapManager.self.getSpotFromGeoCoords(geoCoords);
-
-      if (WorldMapWaypointsManager.self.getWaypointSpots().Any(_ => WorldMapManager.self.areSpotsInTheSamePosition(_, spot))) {
+      if (WorldMapWaypointsManager.self.getWaypointSpots().Any(spot => WorldMapManager.self.areSpotsInTheSamePosition(spot, newSpot))) {
          PanelManager.self.noticeScreen.show("Waypoint already placed!");
          return;
       }
 
-      WorldMapWaypointsManager.self.addWaypoint(spot);
+      WorldMapWaypointsManager.self.createWaypoint(newSpot);
       PanelManager.self.noticeScreen.show("Waypoint placed!");
    }
 
    public override void refresh () {
       // Check visibility
-      WorldMapGeoCoords geoCoords = WorldMapManager.self.decodeGeoCoords(chatRow.chatLine.chatInfo.extra);
-      bool showAction = geoCoords != null && WorldMapManager.self.areGeoCoordsValid(geoCoords);
-      this.toggle(showAction);
+      WorldMapSpot spot = WorldMapManager.self.decodeSpot(chatRow.chatLine.chatInfo.extra);
+      this.toggle(spot != null);
 
       // Set the tooltip
       tooltip.message = "Click to create a waypoint";
