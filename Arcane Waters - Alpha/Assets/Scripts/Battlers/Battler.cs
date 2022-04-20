@@ -1425,11 +1425,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
-            // Make sure the source and target battler is still alive at this point
+            /* TODO: Remove after revision of cancel attack feature is finalized
+            // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }
+            }*/
 
             if (sourceBattler.isDisabledByStatus()) {
                resetAttackingState();
@@ -1701,11 +1702,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
+            /* TODO: Remove after revision of cancel attack feature is finalized
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }
+            }*/
 
             if (sourceBattler.isDisabledByStatus()) {
                resetAttackingState();
@@ -1858,11 +1860,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
+            /* TODO: Remove after revision of cancel attack feature is finalized
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }
+            }*/
 
             if (sourceBattler.isDisabledByStatus()) {
                resetAttackingState();

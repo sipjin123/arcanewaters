@@ -976,9 +976,10 @@ public class BattleManager : MonoBehaviour {
 
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
-               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-               AbilityManager.self.execute(new[] { cancelAction });
-               battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
+               // TODO: Investigate if cancel action is needed here after playtesting
+               // CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract, NetworkTime.time);
+               // AbilityManager.self.execute(new[] { cancelAction });
+               // battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract, NetworkTime.time);
             } else {
                D.log("Cannot cancel action");
             }
