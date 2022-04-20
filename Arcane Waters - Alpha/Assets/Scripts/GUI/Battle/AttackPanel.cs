@@ -49,6 +49,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Send the request to the server
+      D.adminLog("Client is attempting to cancel ability {" + abilityIndex + "} T:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
       D.adminLog("Cancel Ability: " + abilityType + " : " + abilityIndex, D.ADMIN_LOG_TYPE.AbilityCast);
       Global.player.rpc.Cmd_RequestAbility((int)abilityType, target.netId, abilityIndex, true);
    }
@@ -77,12 +78,22 @@ public class AttackPanel : MonoBehaviour {
             return;
          }
 
+         D.adminLog("----->>> [Client Attack Panel - Cancel Action] :: " +
+            "T:{" + NetworkTime.time.ToString("f1") + "}::[Cancel ability]{" + abilityIndex + "}" +
+            "LastTriggerTime:{" + recentAbilityRequest.lastTimeTriggered.ToString("f1") + "} " +
+            "TapInterval:{" + (NetworkTime.time - recentAbilityRequest.lastTimeTriggered).ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
          recentAbilityRequest.abilityIndex = -1;
          recentAbilityRequest.targetNetId = 0;
          recentAbilityRequest.abilityType = AbilityType.Undefined;
          recentAbilityRequest.lastTimeTriggered = NetworkTime.time;
          return;
+      } else {
+         D.adminLog("----->>> [Client Attack Panel - Attack Action] :: " +
+            "T:{" + NetworkTime.time.ToString("f1") + "}::[Attack Ability]{" + abilityIndex + "} " +
+            "LastTriggerTime:{" + recentAbilityRequest.lastTimeTriggered.ToString("f1") + "} " +
+            "TapInterval:{" + (NetworkTime.time - recentAbilityRequest.lastTimeTriggered).ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
       }
 
       // Send the request to the server

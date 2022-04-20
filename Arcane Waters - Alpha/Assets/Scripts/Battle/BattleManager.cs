@@ -555,12 +555,16 @@ public class BattleManager : MonoBehaviour {
             foreach (CancelAction action in actions) {
                stringList.Add(action.serialize());
                battle.cancelActionList.Add(action);
+               D.adminLog("[QUEUE]--->>> Added CancelAction to Queue:: T:{" + NetworkTime.time.ToString("f1") + "}{" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
+                  "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}{" + battle.cancelActionList.Count + "}" +
+                  "{" + action.actionStartTime.ToString("f1") + "}{" + action.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Force the cooldown to reach current time so a new ability can be casted
             source.cooldownEndTime = NetworkTime.time - .1f;
 
             // Send it to clients
+            D.adminLog("User:{" + source.userId + "} Sent RPC Cancel battle action {" + abilityInventoryIndex + "} T:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
          }
       }
@@ -803,6 +807,12 @@ public class BattleManager : MonoBehaviour {
             }
             actionEndTime = action.actionEndTime;
 
+            if (source.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Triggering ApplyActionAfterDelay::{" + actionIdIndex + "} {" + abilityInventoryIndex + "} " +
+                  "T:{" + NetworkTime.time.ToString("f1") + "}{" + action.actionStartTime.ToString("f1") + "}{" + action.actionEndTime.ToString("f1") + "} " +
+                  "Wait for:{" + timeToWait.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+            }
+
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
          }
@@ -1002,16 +1012,27 @@ public class BattleManager : MonoBehaviour {
                bool isCancelQueued = cancelActionChecks == null || cancelActionChecks.Count < 1;
                if (!isCancelQueued) {
                   foreach (CancelAction cancelledAction in cancelActionChecks) {
-                     if (cancelledAction.actionStartTime > action.actionStartTime && cancelledAction.actionStartTime < (action.actionEndTime - CancelAction.CANCEL_BUFFER)) {
+                     if (cancelledAction.actionStartTime > action.actionStartTime && cancelledAction.actionStartTime < CancelAction.calculateEndTime(action.actionEndTime)) {
+                        D.adminLog("[QUEUE]--->>> Removed Cancel Action from Queue:: {" + cancelledAction.actionId + "}{" + cancelledAction.sourceId + "}{" + cancelledAction.targetId + "}" +
+                                    "{" + cancelledAction.abilityInventoryIndex + "}{" + cancelledAction.abilityGlobalID + "}{" + cancelActionChecks.Count + "}" +
+                                    "{" + cancelledAction.actionStartTime.ToString("f1") + "}{" + cancelledAction.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
                         battle.cancelActionList.Remove(cancelledAction);
                         break;
                      }
                   }
+                  D.adminLog("[AttackFailed][HP_LOGIC]---------->>> Action Cancelled! T:{" + NetworkTime.time.ToString("f1") + "} QueueCount: {" + cancelActionChecks.Count + "}", D.ADMIN_LOG_TYPE.CancelAttack);
                } else {
                   // Apply damage
                   target.health -= attackAction.damage;
                   target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
 
+                  if (source.enemyType == Enemy.Type.PlayerBattler) {
+                     D.adminLog("[AttackConnected][HP_LOGIC]---------->>> TargetData:: {" + target.enemyType + "}{" + target.health + "} Action: {" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
+                                 "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}{" + (cancelActionChecks == null ? "NULL" : cancelActionChecks.Count.ToString()) + "/" + battle.cancelActionList.Count + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+                     D.adminLog("[AttackConnected][HP_LOGIC]---------->>> TimeData:: T:{" + NetworkTime.time.ToString("f1") + "}" +
+                                 "{" + action.actionStartTime.ToString("f1") + "}-->{" + action.actionEndTime.ToString("f1") +
+                                 "(" + CancelAction.calculateEndTime(action.actionEndTime).ToString("f1") + ")} Delay:{" + attackApplyDelay.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+                  }
                   source.canExecuteAction = true;
 
                   // Apply attack status here

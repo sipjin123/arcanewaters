@@ -343,6 +343,7 @@ public class BattleUIManager : MonoBehaviour {
                   if (BattleSelectionManager.self.selectedBattler == null) {
                      abilityButton.invalidButtonClick();
                   } else {
+                     D.adminLog("Client Trigger Cancel Ability! {" + abilityButton.abilityTypeIndex + "} T:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
                      attackPanel.cancelAbility(abilityType, abilityButton.abilityTypeIndex);
                   }
                });

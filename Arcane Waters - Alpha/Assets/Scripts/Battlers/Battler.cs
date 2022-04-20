@@ -1131,6 +1131,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public IEnumerator animateDeath () {
       // Do not proceed to animate death yet if this unit is still attacking
       while (Vector2.Distance(battleSpot.transform.position, transform.position) > .115f) {
+         D.adminLog("--> Enemy { " + enemyType + " } still attacking! Wait for attack to end!", D.ADMIN_LOG_TYPE.DeathAnimDelay);
          yield return 0;
       }
 
