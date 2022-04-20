@@ -599,7 +599,34 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    private void startAnimalPetting (Vector2 distToMoveAnimal, float distanceToAnimal) {
       if (Global.player != null) {
          float currentDistance = Vector2.Distance((Vector2) transform.position, Global.player.transform.position);
-         bool isWithinStationaryBounds = isStationary && currentDistance < NpcControlOverride.STATIONARY_PET_DISTANCE;
+         bool isWithinStationaryBounds = false;
+         float distance = .2f;
+         float nearestDistance = 10;
+         Direction overrideDirection = Direction.North;
+         if (isStationary) {
+            // Check nearest pet node to snap on to for stationary pets
+            if (Vector2.Distance(transform.position, Global.player.transform.position) < distance) {
+               float bottomDist = Vector2.Distance(animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Bottom")).transform.position, Global.player.transform.position);
+               float leftDist = Vector2.Distance(animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Left")).transform.position, Global.player.transform.position);
+               float rightDist = Vector2.Distance(animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Right")).transform.position, Global.player.transform.position);
+               if (bottomDist < nearestDistance) {
+                  nearestDistance = bottomDist;
+                  isWithinStationaryBounds = true;
+                  overrideDirection = Direction.North;
+               }
+               if (leftDist < nearestDistance) {
+                  nearestDistance = leftDist;
+                  isWithinStationaryBounds = true;
+                  overrideDirection = Direction.East;
+               }
+               if (rightDist < nearestDistance) {
+                  nearestDistance = rightDist;
+                  isWithinStationaryBounds = true;
+                  overrideDirection = Direction.West;
+               }
+            }
+         }
+
          if (!isStationary || isWithinStationaryBounds) {
             // Set correct NPC state
             isInteractingAnimal = true;
@@ -608,16 +635,16 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
             Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
             float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
-            Global.player.rpc.Cmd_StartPettingAnimal(this.netIdentity.netId, (int) Global.player.facing);
+            Global.player.rpc.Cmd_StartPettingAnimal(this.netIdentity.netId, isStationary ? (int) overrideDirection : (int) Global.player.facing);
 
             // Take control over player to ensure that character stays in place
-            gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
+            gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player, isStationary);
          }
       }
    }
 
    public void triggerPetAnimation (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
-      if (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
+      if (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE && !isStationary) {
          // Wait for destination to sync before playing animation
          CO_WaitToReachDestination(maxTime + 0.05f, playerEntityId, animalEndPos);
       } else {

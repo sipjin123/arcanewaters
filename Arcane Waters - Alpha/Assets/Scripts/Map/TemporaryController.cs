@@ -11,7 +11,7 @@ public abstract class TemporaryController : MonoBehaviour
 
    #endregion
 
-   public void controlGranted (NetEntity entity) {
+   public void controlGranted (NetEntity entity, bool overrideMovement = false) {
       if (_puppets.Any(p => p.entity == entity)) {
          D.error("Trying to grant control twice to a controller.");
          return;
@@ -25,7 +25,8 @@ public abstract class TemporaryController : MonoBehaviour
          entity = entity,
          startTime = Time.time,
          startPos = entity.getRigidbody().position,
-         hasMovement = !isNpc
+         hasMovement = !isNpc,
+         controlledMovementExternally = overrideMovement
       };
       _puppets.Add(puppet);
 
@@ -136,5 +137,8 @@ public abstract class TemporaryController : MonoBehaviour
 
       // If this puppet has movement altering feature
       public bool hasMovement = true;
+
+      // If movement is being controlled externally
+      public bool controlledMovementExternally = false;
    }
 }

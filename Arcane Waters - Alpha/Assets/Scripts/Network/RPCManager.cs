@@ -9707,6 +9707,9 @@ public class RPCManager : NetworkBehaviour
             closestSpot = npc.animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Right"));
             break;
       }
+      if (npc.isStationary) {
+         _player.Rpc_ForceLookat((Direction) facing);
+      }
 
       float distance = Vector2.Distance(closestSpot.transform.position, playerPos);
       Vector2 distToMoveAnimal = playerPos - closestSpot.transform.position;
@@ -9737,7 +9740,7 @@ public class RPCManager : NetworkBehaviour
          npc.Rpc_ContinuePettingAnimal(_player.netId, animalEndPos, maxTime);
          npcontroller.hasReachedDestination.RemoveAllListeners();
       });
-      npcontroller.overridePosition(animalEndPos, _player.transform.position);
+      npcontroller.overridePosition(npc.isStationary ? (Vector2) closestSpot.transform.position : animalEndPos, _player.transform.position, _player, npc.isStationary);
       npc.Rpc_ContinuePetMoveControl(animalEndPos, maxTime);
    }
 

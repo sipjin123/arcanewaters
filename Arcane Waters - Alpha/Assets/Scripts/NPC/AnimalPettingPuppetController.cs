@@ -10,8 +10,8 @@ public class AnimalPettingPuppetController : TemporaryController
 
    #endregion
 
-   public void startControlOverPlayer (NetEntity player) {
-      player.requestControl(this);
+   public void startControlOverPlayer (NetEntity player, bool overrideMovement = false) {
+      player.requestControl(this, overrideMovement);
    }
 
    protected override void onForceFastForward (ControlData puppet) {
@@ -24,7 +24,7 @@ public class AnimalPettingPuppetController : TemporaryController
 
    protected override void controlUpdate (ControlData puppet) {
       // Force player to stay in place in the same direction when animal petting 
-      if (puppet.entity.isLocalPlayer) {
+      if (puppet.entity.isLocalPlayer && !puppet.controlledMovementExternally) {
          puppet.entity.getRigidbody().MovePosition(puppet.startPos);
          puppet.entity.facing = _direction;
       }

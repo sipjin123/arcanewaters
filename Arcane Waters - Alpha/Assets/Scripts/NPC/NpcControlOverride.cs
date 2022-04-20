@@ -27,8 +27,11 @@ public class NpcControlOverride : MonoBehaviour {
    public Rigidbody2D rigidBody;
    public NPC npc;
 
+   // If this npc is stationary, would mean player will approach it instead
+   public bool isStationaryNPC;
+
    // Distance to trigger petting
-   public const float PET_DISTANCE = .1f;
+   public const float PET_DISTANCE = .075f;
    public const float STATIONARY_PET_DISTANCE = .22f;
    public const float CLIENT_PET_DISTANCE = .25f;
 
@@ -53,29 +56,33 @@ public class NpcControlOverride : MonoBehaviour {
 
             // Calculate an angle for that direction
             float angle = Util.angle(dir);
-
             // Set our facing direction based on that angle
             npc.facing = npc.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
          } else {
-            isOverridingMovement = false;
-            hasReachedDestination.Invoke();
+            if (_entityReference != null) {
+               _entityReference = null;
+               isOverridingMovement = false;
+               hasReachedDestination.Invoke();
 
-            // Force the pet to look at the player upon arriving to destination
-            Vector2 dir = playerPosition - (Vector2)transform.position;
-            dir.Normalize();
+               // Force the pet to look at the player upon arriving to destination
+               Vector2 dir = playerPosition - (Vector2) transform.position;
+               dir.Normalize();
 
-            // Calculate an angle for that direction
-            float angle = Util.angle(dir);
+               // Calculate an angle for that direction
+               float angle = Util.angle(dir);
 
-            // Set our facing direction based on that angle
-            npc.facing = npc.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+               // Set our facing direction based on that angle
+               npc.facing = npc.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+            }
          }
       }
    }
 
-   public void overridePosition (Vector2 endPos, Vector2 playerPos) {
+   public void overridePosition (Vector2 endPos, Vector2 playerPos, NetEntity entity, bool isStationary) {
       // Force the pet to look at the direction where it is headed to
       Vector2 dir = endPos - playerPos;
+      _entityReference = entity;
+      isStationaryNPC = isStationary;
       dir.Normalize();
 
       // Calculate an angle for that direction
@@ -91,9 +98,19 @@ public class NpcControlOverride : MonoBehaviour {
 
       isOverridingMovement = true;
       npc.isUnderExternalControl = true;
+
+      // If npc is stationary, snap to pet nodes
+      if (isStationary) {
+         _entityReference.moveToWorldPosition(endPosition);
+         playerPosition = _entityReference.transform.position;
+      }
    }
 
    #region Private Variables
+
+   // The entity reference
+   [SerializeField]
+   private NetEntity _entityReference;
 
    #endregion
 }

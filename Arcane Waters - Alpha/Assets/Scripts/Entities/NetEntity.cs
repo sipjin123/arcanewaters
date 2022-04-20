@@ -903,6 +903,16 @@ public class NetEntity : NetworkBehaviour
       transform.localPosition = position;
    }
 
+   [Server]
+   public void moveToWorldPosition (Vector3 position) {
+      Target_SetWorldPosition(position);
+   }
+
+   [TargetRpc]
+   private void Target_SetWorldPosition (Vector3 position) {
+      transform.position = position;
+   }
+
    public void requestAnimationPlay (Anim.Type animType, bool freezeAnim = false) {
       if (interactingAnimation) {
          return;
@@ -1778,7 +1788,7 @@ public class NetEntity : NetworkBehaviour
       return;
    }
 
-   public void requestControl (TemporaryController controller) {
+   public void requestControl (TemporaryController controller, bool overrideMovement = false) {
       if (_temporaryControllers.Contains(controller)) {
          D.error("Requesting control of entity twice by the same controller.");
          return;
@@ -1795,7 +1805,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (_temporaryControllers.Count == 1) {
-         controller.controlGranted(this);
+         controller.controlGranted(this, overrideMovement);
       }
    }
 
