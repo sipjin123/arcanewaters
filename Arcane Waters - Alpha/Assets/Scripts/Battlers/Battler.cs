@@ -275,10 +275,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // References to images of the outline and fill of the attack timing indicator
    public Image attackingTimingOutline, attackTimingFill;
-   public Color attackTimingColorStart, attackTimingColorEnd;
-
-   // The waiting time before action proceeds
-   public double actionWaitTime;
 
    // The sprite containers
    public Transform spriteContainers;
@@ -294,9 +290,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The starting AP for all units
    public const int DEFAULT_AP = 5;
 
-   // The initial and end time of the action
-   public double declaredActionBeginTime = 0, decalredActionEndTime = 0;
-
    #endregion
 
    public void stopActionCoroutine () {
@@ -308,10 +301,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType, double actionStartTime, double actionEndTime) {
+   public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
       currentActionCoroutine = newEnumerator;
-      declaredActionBeginTime = actionStartTime;
-      decalredActionEndTime = actionEndTime;
       StartCoroutine(currentActionCoroutine);
    }
 
@@ -780,20 +771,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       float timer = 0.0f;
       setAttackTimingIndicatorVisibility(true);
 
-      actionWaitTime = timeUntilAttack;
       while (timer < timeUntilAttack) {
          float normalisedTime = Mathf.Clamp01(timer / timeUntilAttack);
          attackTimingFill.fillAmount = normalisedTime;
-
-         // Display green color if action thresold reaches more than half of its fill bar  or if action time span is less then minium value
-         attackTimingFill.color = normalisedTime > .5f || timeUntilAttack < CancelAction.CANCEL_MIN_BUFFER ? attackTimingColorEnd : attackTimingColorStart;
-
          attackingTimingOutline.color = ColorCurveReferences.self.attackTimingOutlineColor.Evaluate(normalisedTime);
          timer += Time.deltaTime;
          yield return null;
       }
 
-      actionWaitTime = 100;
       setAttackTimingIndicatorVisibility(false);
    }
 
@@ -1401,7 +1386,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Default all abilities to display as attacks
             if (!(battleAction is AttackAction)) {
                D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
-               resetAttackingState();
+               isAttacking = false;
                yield break;
             }
 
@@ -1425,15 +1410,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
-            /* TODO: Remove after revision of cancel attack feature is finalized
-            // Make sure the battlers are still alive at this point
+            // Make sure the source and target battler is still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }*/
+            }
 
             if (sourceBattler.isDisabledByStatus()) {
-               resetAttackingState();
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1702,15 +1686,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
-            /* TODO: Remove after revision of cancel attack feature is finalized
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }*/
+            }
 
             if (sourceBattler.isDisabledByStatus()) {
-               resetAttackingState();
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1860,15 +1843,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return 0;
             }
 
-            /* TODO: Remove after revision of cancel attack feature is finalized
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                isAttacking = false;
                yield break;
-            }*/
+            }
 
             if (sourceBattler.isDisabledByStatus()) {
-               resetAttackingState();
+               isAttacking = false;
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -2021,7 +2003,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the battle has ended, no problem
             if (battle == null) {
-               resetAttackingState();
+               isAttacking = false;
                yield break;
             }
 
@@ -2037,7 +2019,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             break;
          default:
-            resetAttackingState();
+            isAttacking = false;
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
@@ -2046,12 +2028,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          setBattlerCanCastAbility(true);
       }
 
-      resetAttackingState();
-   }
-
-   private void resetAttackingState () {
-      declaredActionBeginTime = 0;
-      decalredActionEndTime = 0;
       isAttacking = false;
    }
 

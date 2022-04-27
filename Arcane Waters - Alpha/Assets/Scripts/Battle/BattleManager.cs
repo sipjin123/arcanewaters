@@ -545,7 +545,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       if (abilityType == AbilityType.Standard) {
-         CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, targets.Count > 0 ? targets[0].userId : 0, NetworkTime.time, 0, NetworkTime.time);
+         CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, 0, 0, 0);
          cancelAction.abilityGlobalID = abilityData.itemID;
          actions.Add(cancelAction);
 
@@ -554,17 +554,12 @@ public class BattleManager : MonoBehaviour {
 
             foreach (CancelAction action in actions) {
                stringList.Add(action.serialize());
-               battle.cancelActionList.Add(action);
-               D.adminLog("[QUEUE]--->>> Added CancelAction to Queue:: T:{" + NetworkTime.time.ToString("f1") + "}{" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
-                  "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}{" + battle.cancelActionList.Count + "}" +
-                  "{" + action.actionStartTime.ToString("f1") + "}{" + action.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Force the cooldown to reach current time so a new ability can be casted
             source.cooldownEndTime = NetworkTime.time - .1f;
 
             // Send it to clients
-            D.adminLog("User:{" + source.userId + "} Sent RPC Cancel battle action {" + abilityInventoryIndex + "} T:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
          }
       }
@@ -784,7 +779,7 @@ public class BattleManager : MonoBehaviour {
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
-                targetApChange, abilityData.itemID, damageEffectMagnitude, NetworkTime.time);
+                targetApChange, abilityData.itemID, damageEffectMagnitude);
             action.actionId = actionIdIndex;
             action.targetStartingHealth = target.health;
             actions.Add(action);
@@ -806,12 +801,6 @@ public class BattleManager : MonoBehaviour {
                   + " TotalTargets: " + targets.Count, D.ADMIN_LOG_TYPE.Boss);
             }
             actionEndTime = action.actionEndTime;
-
-            if (source.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Triggering ApplyActionAfterDelay::{" + actionIdIndex + "} {" + abilityInventoryIndex + "} " +
-                  "T:{" + NetworkTime.time.ToString("f1") + "}{" + action.actionStartTime.ToString("f1") + "}{" + action.actionEndTime.ToString("f1") + "} " +
-                  "Wait for:{" + timeToWait.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
 
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
@@ -976,10 +965,9 @@ public class BattleManager : MonoBehaviour {
 
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
-               // TODO: Investigate if cancel action is needed here after playtesting
-               // CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract, NetworkTime.time);
-               // AbilityManager.self.execute(new[] { cancelAction });
-               // battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract, NetworkTime.time);
+               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
+               AbilityManager.self.execute(new[] { cancelAction });
+               battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
             } else {
                D.log("Cannot cancel action");
             }
@@ -1002,65 +990,35 @@ public class BattleManager : MonoBehaviour {
 
                yield return new WaitForSeconds(attackApplyDelay);
 
-               // Check for cancel action queues to determine if the next attack action should be cancelled or if it should proceed
-               List<CancelAction> cancelActionChecks = battle.cancelActionList.FindAll(cancelActionEntry => 
-                  cancelActionEntry.sourceId == action.sourceId && cancelActionEntry.targetId == action.targetId // Match the target/source ids
-                  && cancelActionEntry.abilityGlobalID == action.abilityGlobalID  // Match the ability used
-                  && cancelActionEntry.actionStartTime > action.actionStartTime  // Cancel actions should be triggered later than attack actions
-                  && cancelActionEntry.actionStartTime < action.actionEndTime - CancelAction.CANCEL_BUFFER); // Make sure that the cancel action does not exceed the end time of the attack action
+               // Apply damage
+               target.health -= attackAction.damage;
+               target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
+               source.canExecuteAction = true;
 
-               // Make sure there is no cancel queued for the next action
-               bool isCancelQueued = cancelActionChecks == null || cancelActionChecks.Count < 1;
-               if (!isCancelQueued) {
-                  foreach (CancelAction cancelledAction in cancelActionChecks) {
-                     if (cancelledAction.actionStartTime > action.actionStartTime && cancelledAction.actionStartTime < CancelAction.calculateEndTime(action.actionEndTime)) {
-                        D.adminLog("[QUEUE]--->>> Removed Cancel Action from Queue:: {" + cancelledAction.actionId + "}{" + cancelledAction.sourceId + "}{" + cancelledAction.targetId + "}" +
-                                    "{" + cancelledAction.abilityInventoryIndex + "}{" + cancelledAction.abilityGlobalID + "}{" + cancelActionChecks.Count + "}" +
-                                    "{" + cancelledAction.actionStartTime.ToString("f1") + "}{" + cancelledAction.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-                        battle.cancelActionList.Remove(cancelledAction);
-                        break;
-                     }
-                  }
-                  D.adminLog("[AttackFailed][HP_LOGIC]---------->>> Action Cancelled! T:{" + NetworkTime.time.ToString("f1") + "} QueueCount: {" + cancelActionChecks.Count + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-               } else {
-                  // Apply damage
-                  target.health -= attackAction.damage;
-                  target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-
-                  if (source.enemyType == Enemy.Type.PlayerBattler) {
-                     D.adminLog("[AttackConnected][HP_LOGIC]---------->>> TargetData:: {" + target.enemyType + "}{" + target.health + "} Action: {" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
-                                 "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}{" + (cancelActionChecks == null ? "NULL" : cancelActionChecks.Count.ToString()) + "/" + battle.cancelActionList.Count + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-                     D.adminLog("[AttackConnected][HP_LOGIC]---------->>> TimeData:: T:{" + NetworkTime.time.ToString("f1") + "}" +
-                                 "{" + action.actionStartTime.ToString("f1") + "}-->{" + action.actionEndTime.ToString("f1") +
-                                 "(" + CancelAction.calculateEndTime(action.actionEndTime).ToString("f1") + ")} Delay:{" + attackApplyDelay.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-                  }
-                  source.canExecuteAction = true;
-
-                  // Apply attack status here
-                  if (abilityDataReference.statusType != Status.Type.None) {
-                     bool canBeDisabled = true;
-                     if (target.isBossType) {
-                        switch (abilityDataReference.statusType) {
-                           case Status.Type.Slowed:
-                           case Status.Type.Stunned:
-                              canBeDisabled = false;
-                              break;
-                        }
-                     }
-
-                     if (canBeDisabled) {
-                        float randomizedChance = Random.Range(1, 100);
-                        if (randomizedChance < abilityDataReference.statusChance) {
-                           StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
-                        }
+               // Apply attack status here
+               if (abilityDataReference.statusType != Status.Type.None) {
+                  bool canBeDisabled = true;
+                  if (target.isBossType) {
+                     switch (abilityDataReference.statusType) {
+                        case Status.Type.Slowed:
+                        case Status.Type.Stunned:
+                           canBeDisabled = false;
+                           break;
                      }
                   }
 
-                  // Setup server to declare a battler is dead when the network time reaches the time action ends
-                  if (target.health <= 0) {
-                     StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
-                     StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
+                  if (canBeDisabled) {
+                     float randomizedChance = Random.Range(1, 100);
+                     if (randomizedChance < abilityDataReference.statusChance) {
+                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
+                     }
                   }
+               }
+
+               // Setup server to declare a battler is dead when the network time reaches the time action ends
+               if (target.health <= 0) {
+                  StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
+                  StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
                }
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;

@@ -163,11 +163,9 @@ public class AbilityManager : MonoBehaviour
          Battler sourceBattler = battle.getBattler(action.sourceId);
          Battler targetBattler = battle.getBattler(action.targetId);
          if (sourceBattler == null) {
-            D.editorLog("Source Battler missing! {" + action.sourceId + "}", Color.red);
             continue;
          }
          if (targetBattler == null) {
-            D.editorLog("Target Battler missing! {" + action.targetId + "}", Color.red);
             continue;
          }
 
@@ -194,15 +192,6 @@ public class AbilityManager : MonoBehaviour
          float animationLength = .6f;
          switch (action.battleActionType) {
             case BattleActionType.Attack:
-               if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-                  D.adminLog("<<-----[ATTACK]----->> Action is proceeding to Attack!: " +
-                    "{" + NetworkTime.time.ToString("f1") + "}{" + targetBattler.health + ":" + targetBattler.displayedHealth + "}::" +
-                    "{" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
-                    "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}" +
-                    "{" + action.actionEndTime.ToString("f1") + "} {" + sourceBattler.declaredActionBeginTime.ToString("f1") + "}" +
-                    "{" + action.cooldownDuration.ToString("f1") + "}{" + action.actionStartTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-               }
-
                // Get the ability object for this action
                if (sourceBattler.getAttackAbilities().Count < action.abilityInventoryIndex || sourceBattler.getAttackAbilities().Count == 0) {
                   D.debug("Failed to process attack execution! AbilityIndex: " + action.abilityInventoryIndex + " TotalAttacks: " + sourceBattler.getAttackAbilities().Count + " Total Abilities: " + sourceBattler.getBasicAbilities().Count);
@@ -225,7 +214,7 @@ public class AbilityManager : MonoBehaviour
 
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
-               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
             case BattleActionType.Stance: 
@@ -238,7 +227,7 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time;
 
-               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
             case BattleActionType.BuffDebuff: 
@@ -251,34 +240,20 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time;
 
-               sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType, action.actionStartTime, action.actionEndTime);
+               sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
             case BattleActionType.Cancel:
                CancelAction cancelAction = action as CancelAction;
                actionToExecute = cancelAction;
                if (sourceBattler.canCancelAction) {
-                  if (cancelAction.actionStartTime > sourceBattler.declaredActionBeginTime && cancelAction.actionStartTime < CancelAction.calculateEndTime(sourceBattler.decalredActionEndTime)) {
-                     D.adminLog("<<-----[CANCEL]----->> Action being cancelled, now Stopping Battler Coroutine!: " +
-                        "{" + NetworkTime.time.ToString("f1") + "}{" + targetBattler.health + ":" + targetBattler.displayedHealth + "}::" +
-                        "{" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
-                        "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}" +
-                        "{" + sourceBattler.declaredActionBeginTime.ToString("f1") + "}->{" + sourceBattler.decalredActionEndTime + "(" + CancelAction.calculateEndTime(sourceBattler.decalredActionEndTime).ToString("f1") + ")}" +
-                        "{" + action.actionStartTime.ToString("f1") + "}->{" + action.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-
-                     // Update the battler's action timestamps
-                     sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
-                     sourceBattler.stopActionCoroutine();
-                     sourceBattler.setBattlerCanCastAbility(true);
-                     sourceBattler.processCancelStateUI();
-                  } else {
-                     D.adminLog("<<-----[FAIL-CANCEL]----->> Action skipped cancellation, now Stopping Battler Coroutine!: " +
-                      "{" + NetworkTime.time.ToString("f1") + "}{" + targetBattler.health + ":" + targetBattler.displayedHealth + "}::" +
-                      "{" + action.actionId + "}{" + action.sourceId + "}{" + action.targetId + "}" +
-                      "{" + action.abilityInventoryIndex + "}{" + action.abilityGlobalID + "}" +
-                      "{" + sourceBattler.declaredActionBeginTime.ToString("f1") + "}->{" + sourceBattler.decalredActionEndTime.ToString("f1") + "(" + CancelAction.calculateEndTime(sourceBattler.decalredActionEndTime).ToString("f1") + ")}" +
-                      "{" + action.actionStartTime.ToString("f1") + "}->{" + action.actionEndTime.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-                  }
+                  // Update the battler's action timestamps
+                  sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
+                  sourceBattler.stopActionCoroutine();
+                  sourceBattler.setBattlerCanCastAbility(true);
+                  sourceBattler.processCancelStateUI();
+               } else {
+                  D.log("Ability can not be canceled!");
                }
                break;
          }

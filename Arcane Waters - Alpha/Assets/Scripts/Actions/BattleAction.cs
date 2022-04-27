@@ -26,9 +26,6 @@ public class BattleAction {
    // The server timestamp for when this action was marked as ending
    public double actionEndTime;
 
-   // The start time of the action
-   public double actionStartTime;
-
    // The cooldown duration that this action requires
    public float cooldownDuration;
 

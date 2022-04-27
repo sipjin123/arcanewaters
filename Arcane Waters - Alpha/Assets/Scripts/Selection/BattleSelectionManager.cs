@@ -134,6 +134,7 @@ public class BattleSelectionManager : MonoBehaviour {
             return;
          }
       }
+      D.debug("No Targets alive, failed to auto target NEXT Opponent!");
    }
 
    public Battler getRandomTarget () {

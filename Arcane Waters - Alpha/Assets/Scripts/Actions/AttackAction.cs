@@ -27,7 +27,7 @@ public class AttackAction : BattleAction {
 
    public AttackAction (int battleId, ActionType actionType, int sourceId, int targetId, int damage, double actionEndTime,
            int abilityInventoryIndex, bool wasCritical, bool wasBlocked, float cooldownDuration,
-           int sourceApChange, int targetApChange, int abilityGlobalID, DamageMagnitude damageMagnitude, double actionStartTime) {
+           int sourceApChange, int targetApChange, int abilityGlobalID, DamageMagnitude damageMagnitude) {
       this.battleId = battleId;
       this.actionType = actionType;
       this.sourceId = sourceId;
@@ -43,7 +43,6 @@ public class AttackAction : BattleAction {
       this.abilityGlobalID = abilityGlobalID;
       this.battleActionType = BattleActionType.Attack;
       this.damageMagnitude = damageMagnitude;
-      this.actionStartTime = actionStartTime;
    }
 
    public override bool Equals (object rhs) {
@@ -89,7 +88,6 @@ public class AttackAction : BattleAction {
       serialized += (int) this.damageMagnitude + ",";
       serialized += (int) this.actionId + ",";
       serialized += (int) this.targetStartingHealth + ",";
-      serialized += this.actionStartTime + ",";
 
       return serialized;
    }
@@ -115,7 +113,6 @@ public class AttackAction : BattleAction {
       action.damageMagnitude = (DamageMagnitude) Convert.ToInt32(stringArray[15]);
       action.actionId = Convert.ToInt32(stringArray[16]);
       action.targetStartingHealth = Convert.ToInt32(stringArray[17]);
-      action.actionStartTime = float.Parse(stringArray[18]);
 
       return action;
    }

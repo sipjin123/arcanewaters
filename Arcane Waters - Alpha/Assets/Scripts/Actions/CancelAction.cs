@@ -9,26 +9,19 @@ public class CancelAction : BattleAction {
    // The amount of time to subtract
    public float timeToSubtract = 0f;
 
-   // Can only cancel abilities that is below this thresold of action end time
-   public const float CANCEL_BUFFER_OFFSET = .5f;
-
-   // Abilities that will execute in less than this value cannot be cancelled anymore
-   public const float CANCEL_MIN_BUFFER = .75f;
-
    #endregion
 
    public CancelAction () {
 
    }
 
-   public CancelAction (int battleId, int sourceId, int targetId, double actionEndTime, float timeToSubtract, double actionStartTime) {
+   public CancelAction (int battleId, int sourceId, int targetId, double actionEndTime, float timeToSubtract) {
       this.battleId = battleId;
       this.sourceId = sourceId;
       this.targetId = targetId;
       this.actionEndTime = actionEndTime;
       this.timeToSubtract = timeToSubtract;
       this.battleActionType = BattleActionType.Cancel;
-      this.actionStartTime = actionStartTime;
    }
 
    public override bool Equals (object rhs) {
@@ -50,9 +43,6 @@ public class CancelAction : BattleAction {
       serialized += actionEndTime + ",";
       serialized += timeToSubtract + ",";
       serialized += (int)BattleActionType.Cancel + ",";
-      serialized += abilityGlobalID + ",";
-      serialized += abilityInventoryIndex + ",";
-      serialized += actionStartTime + ",";
 
       return serialized;
    }
@@ -67,9 +57,6 @@ public class CancelAction : BattleAction {
       action.actionEndTime = double.Parse(stringArray[4]);
       action.timeToSubtract = float.Parse(stringArray[5]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[6]);
-      action.abilityGlobalID = int.Parse(stringArray[7]);
-      action.abilityInventoryIndex = int.Parse(stringArray[8]);
-      action.actionStartTime = double.Parse(stringArray[9]);
 
       return action;
    }

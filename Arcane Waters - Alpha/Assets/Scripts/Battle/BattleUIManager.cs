@@ -96,15 +96,15 @@ public class BattleUIManager : MonoBehaviour {
 
    // Self
    public static BattleUIManager self;
-   
-   // The ability click minimum interval
-   float MIN_TAP_INTERVAL = .5f;
 
    // Reference to the attack panel
    public AttackPanel attackPanel;
 
    // The selection id
    public int selectionId = 0;
+
+   // Counts the ability triggers, for debugging purpose
+   public int debugAbilityCounter = 0;
 
    // The battle camera
    public Camera battleCamera;
@@ -180,12 +180,27 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void triggerAbilityByKey (int keySlot) {
+      if (_playerLocalBattler.isAttacking) {
+         if (debugAbilityCounter >= 1) {
+            D.debug("This unit is still attacking! Cant cast new skill");
+            debugAbilityCounter = 0;
+         } else {
+            debugAbilityCounter++;
+         }
+         return;
+      }
+      debugAbilityCounter = 0;
       AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
 
       // If player is using keys 1-5 to attack with no target selected, then select a random target
       if ((BattleSelectionManager.self.selectedBattler == null) || BattleSelectionManager.self.selectedBattler.isDead()) {
          try {
-            BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+            Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
+            if (randomTarget == null) {
+               D.debug("Warning, no live targets found using Random Target Selection!");
+            } else {
+               BattleSelectionManager.self.clickBattler(randomTarget);
+            }
          } catch {
             if (!Global.autoAttack) {
                D.debug("Unable to find an opponent to target");
@@ -195,19 +210,19 @@ public class BattleUIManager : MonoBehaviour {
 
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-            bool isCancellingAnAbility = !BattleManager.self.getPlayerBattler().canCastAbility() && attackPanel.recentAbilityRequest.abilityIndex == selectedButton.abilityIndex;
-            bool isCoolingDown = BattleManager.self.getPlayerBattler().canCastAbility() && selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f;
-            bool isIntervalValid = NetworkTime.time - attackPanel.recentAbilityRequest.lastTimeTriggered > MIN_TAP_INTERVAL;
-            if (isCoolingDown || isCancellingAnAbility) {
-               if (isIntervalValid) {
-                  //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
-                  SoundEffectManager.self.playGuiButtonConfirmSfx();
-                  triggerAbility(selectedButton, selectedButton.abilityType);
-               } else {
-                  // TODO: Add ui panel trigger or message log here notifying spam attempts
-               }
+            bool hasNoCooldownBlocker = selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f;
+            if (BattleManager.self.getPlayerBattler().canCastAbility() && hasNoCooldownBlocker) {
+               //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
+               SoundEffectManager.self.playGuiButtonConfirmSfx();
+
+               triggerAbility(selectedButton, selectedButton.abilityType);
+            } else {
+               D.debug("{" + (hasNoCooldownBlocker ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
+                  "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}");
             }
          } else {
+            D.debug("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
+               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "}");
             selectedButton.invalidButtonClick();
          }
       }
@@ -283,7 +298,12 @@ public class BattleUIManager : MonoBehaviour {
                         // If player is using keys 1-5 to attack with no target selected, then select a random target
                         if ((BattleSelectionManager.self.selectedBattler == null) || BattleSelectionManager.self.selectedBattler.isDead()) {
                            try {
-                              BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+                              Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
+                              if (randomTarget == null) {
+                                 D.debug("Warning, no live targets found using Random Target Selection!");
+                              } else {
+                                 BattleSelectionManager.self.clickBattler(randomTarget);
+                              }
                            } catch {
                               if (!Global.autoAttack) {
                                  D.debug("Unable to find an opponent to target");
@@ -292,15 +312,17 @@ public class BattleUIManager : MonoBehaviour {
                         }
 
                         if (abilityButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-                           if (BattleManager.self.getPlayerBattler().canCastAbility() && abilityButton.cooldownValue >= abilityButton.cooldownTarget - .1f) {
+                           bool hasNoCooldownBlocker = abilityButton.cooldownValue >= abilityButton.cooldownTarget - .1f;
+                           if (BattleManager.self.getPlayerBattler().canCastAbility() && hasNoCooldownBlocker) {
                               triggerAbility(abilityButton, abilityType);
                            } else {
-                              D.debug("Block ability click because cooldown");
+                              D.debug("{" + (hasNoCooldownBlocker ? "" : "The ability is in cooldown! {" + abilityButton.cooldownValue + "}") + "}" +
+                                 "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}");
                            }
                         } else {
                            D.debug("Block ability click because of " +
                               "{" + (abilityButton.isEnabled ? "AbilityButtonEnabled" : "AbilityButtonDisabled") + "}" +
-                              "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null Selected" : "Selected Battelr" + BattleSelectionManager.self.selectedBattler.enemyType) + "}");
+                              "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null Selected" : "Selected Battler" + BattleSelectionManager.self.selectedBattler.enemyType) + "}");
                         }
                      }
                   }
@@ -343,7 +365,6 @@ public class BattleUIManager : MonoBehaviour {
                   if (BattleSelectionManager.self.selectedBattler == null) {
                      abilityButton.invalidButtonClick();
                   } else {
-                     D.adminLog("Client Trigger Cancel Ability! {" + abilityButton.abilityTypeIndex + "} T:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
                      attackPanel.cancelAbility(abilityType, abilityButton.abilityTypeIndex);
                   }
                });
@@ -379,14 +400,17 @@ public class BattleUIManager : MonoBehaviour {
          BattleSelectionManager.self.autoTargetNextOpponent();
       }
 
-      bool isCancellingAction = abilityButton.cooldownImage.enabled && abilityButton.abilityTypeIndex == attackPanel.recentAbilityRequest.abilityIndex;
-      if (!abilityButton.cooldownImage.enabled || isCancellingAction) {
+      if (!abilityButton.cooldownImage.enabled) {
          if (abilityType == AbilityType.Standard) {
             attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
          } else if (abilityType == AbilityType.BuffDebuff) {
             attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+         } else {
+            D.debug("Unknown Ability request! {" + abilityButton.abilityTypeIndex + "}");
          }
       } else {
+         D.debug("Cooldown is enabled for this ability {" + abilityButton.abilityIndex + "} " +
+            "Wait for {" + abilityButton.cooldownValue.ToString("f1") + "/" + abilityButton.cooldownTarget.ToString("f1") + "}");
          abilityButton.invalidButtonClick();
       }
    }
@@ -402,7 +426,12 @@ public class BattleUIManager : MonoBehaviour {
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
          if (!isInitialEnemySelected) {
-            BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+            Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
+            if (randomTarget == null) {
+               D.debug("Warning, no live targets found using Random Target Selection!");
+            } else {
+               BattleSelectionManager.self.clickBattler(randomTarget);
+            }
             isInitialEnemySelected = true;
          }
          updateAbilityButtons();
@@ -420,7 +449,11 @@ public class BattleUIManager : MonoBehaviour {
             } else if (InputManager.self.inputMaster.LandBattle.Ability5.WasPressedThisFrame()) {
                triggerAbilityByKey(4);
             } else if (InputManager.self.inputMaster.LandBattle.NextTarget.WasPressedThisFrame()) {
-               selectNextTarget();
+               if (!_playerLocalBattler.isAttacking) {
+                  selectNextTarget();
+               } else {
+                  D.debug("This unit is still attacking! Cant change target");
+               }
             }
          }
 
