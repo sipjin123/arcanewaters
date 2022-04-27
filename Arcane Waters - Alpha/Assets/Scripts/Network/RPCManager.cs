@@ -5020,6 +5020,18 @@ public class RPCManager : NetworkBehaviour
                      shopItemCopy.data = Blueprint.HAT_DATA_PREFIX;
                      shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
                      break;
+                  case Item.Category.Ring:
+                     shopItemCopy.data = Blueprint.RING_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
+                  case Item.Category.Necklace:
+                     shopItemCopy.data = Blueprint.NECKLACE_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
+                  case Item.Category.Trinket:
+                     shopItemCopy.data = Blueprint.TRINKET_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
                   case Item.Category.CraftingIngredients:
                      shopItemCopy.data = Blueprint.INGREDIENT_DATA_PREFIX;
                      shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
@@ -6073,6 +6085,18 @@ public class RPCManager : NetworkBehaviour
             } else if (blueprint.data.StartsWith(Blueprint.HAT_DATA_PREFIX)) {
                HatStatData hatData = EquipmentXMLManager.self.getHatData(blueprint.itemTypeId);
                resultItem = HatStatData.translateDataToHat(hatData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.NECKLACE_DATA_PREFIX)) {
+               NecklaceStatData necklaceData = EquipmentXMLManager.self.getNecklaceData(blueprint.itemTypeId);
+               resultItem = NecklaceStatData.translateDataToNecklace(necklaceData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.RING_DATA_PREFIX)) {
+               RingStatData ringData = EquipmentXMLManager.self.getRingData(blueprint.itemTypeId);
+               resultItem = RingStatData.translateDataToRing(ringData);
+               resultItem.data = "";
+            } else if (blueprint.data.StartsWith(Blueprint.TRINKET_DATA_PREFIX)) {
+               TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(blueprint.itemTypeId);
+               resultItem = TrinketStatData.translateDataToTrinket(trinketData);
                resultItem.data = "";
             } else if (blueprint.data.StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
                resultItem = new CraftingIngredients {
@@ -7527,6 +7551,18 @@ public class RPCManager : NetworkBehaviour
                case Item.Category.CraftingIngredients:
                   newDatabaseItem.data = Blueprint.INGREDIENT_DATA_PREFIX;
                   item.data = Blueprint.INGREDIENT_DATA_PREFIX;
+                  break;
+               case Item.Category.Ring:
+                  newDatabaseItem.data = Blueprint.RING_DATA_PREFIX;
+                  item.data = Blueprint.RING_DATA_PREFIX;
+                  break;
+               case Item.Category.Necklace:
+                  newDatabaseItem.data = Blueprint.NECKLACE_DATA_PREFIX;
+                  item.data = Blueprint.NECKLACE_DATA_PREFIX;
+                  break;
+               case Item.Category.Trinket:
+                  newDatabaseItem.data = Blueprint.TRINKET_DATA_PREFIX;
+                  item.data = Blueprint.TRINKET_DATA_PREFIX;
                   break;
             }
             D.adminLog("Database item is Blueprint! " + itemCache.xmlId + " : " + EquipmentXMLManager.self.getItemName(itemCache.resultItem), D.ADMIN_LOG_TYPE.Blueprints);

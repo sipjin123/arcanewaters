@@ -602,7 +602,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                            ringList.Add(actualData);
                            message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.ringType;
                         } else {
-                           D.debug("WARNING! A ring has no assigned ring type! " + dataId + " : " + actualData.ringType);
+                           D.debug("WARNING! A ring has no assigned ring type! " + dataId + " : " + actualData.ringType + "}" + " IsActive:{" + isActive + "}");
                         }
                      } else {
                         D.debug("Skip add entry for ring:" + dataId);
@@ -658,7 +658,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                            trinketList.Add(actualData);
                            message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.trinketType;
                         } else {
-                           D.debug("WARNING! A trinket has no assigned trinket type! " + dataId + " : " + actualData.trinketType);
+                           D.debug("WARNING! A trinket has no assigned trinket type! " + dataId + " : " + actualData.trinketType + "}" + " IsActive:{" + isActive + "}");
                         }
                      } else {
                         D.debug("Skip add entry for trinket:" + dataId);
@@ -905,7 +905,8 @@ public class XmlVersionManagerClient : GenericGameManager {
                         D.editorLog("Duplicate Crafting Key: " + keyName, Color.red);
                      } else {
                         craftData.xmlId = uniqueId;
-                        _craftingData.Add(keyName, craftData);
+                        CraftableItemRequirements newCraftData = CraftingManager.self.overrideCraftingData(craftData);
+                        _craftingData.Add(keyName, newCraftData);
                      }
 
                      message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];

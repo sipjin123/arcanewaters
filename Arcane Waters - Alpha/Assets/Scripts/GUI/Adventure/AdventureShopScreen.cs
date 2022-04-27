@@ -5,8 +5,10 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using TMPro;
+using System;
 
-public class AdventureShopScreen : Panel {
+public class AdventureShopScreen : Panel
+{
    #region Public Variables
 
    // The prefab we use for creating rows
@@ -47,7 +49,7 @@ public class AdventureShopScreen : Panel {
       self = this;
    }
 
-   public void refreshPanel() {
+   public void refreshPanel () {
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetItemsForArea(shopId);
    }
@@ -136,7 +138,15 @@ public class AdventureShopScreen : Panel {
          // Create a new row
          AdventureItemRow row = Instantiate(rowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);
-         row.setRowForItem(item);
+
+         try {
+            row.setRowForItem(item);
+         } catch (Exception ex) {
+            if (row.gameObject != null) {
+               Destroy(row.gameObject);
+            }
+            D.error("Failed setting shop item row for: " + item?.getCastItem()?.getName() ?? "NULL" + " - " + ex);
+         }
       }
 
       // Trigger the tutorial

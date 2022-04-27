@@ -28,12 +28,18 @@ public class Blueprint : RecipeItem
    public const string ARMOR_DATA_PREFIX = "blueprintType=armor";
    public const string HAT_DATA_PREFIX = "blueprintType=hat";
    public const string INGREDIENT_DATA_PREFIX = "blueprintType=ingredients";
+   public const string RING_DATA_PREFIX = "blueprintType=ring";
+   public const string NECKLACE_DATA_PREFIX = "blueprintType=necklace";
+   public const string TRINKET_DATA_PREFIX = "blueprintType=trinket";
 
    // Set a generic blueprint icon 
    public const string BLUEPRINT_WEAPON_ICON = "Assets/Sprites/Icons/Blueprint/WeaponBP.png";
    public const string BLUEPRINT_ARMOR_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
    public const string BLUEPRINT_HAT_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
    public const string BLUEPRINT_INGREDIENT_ICON = "Assets/Sprites/Icons/Blueprint/IngredientBP.png";
+   public const string BLUEPRINT_RING_ICON = "Assets/Sprites/Icons/Blueprint/IngredientBP.png";
+   public const string BLUEPRINT_NECKLACE_ICON = "Assets/Sprites/Icons/Blueprint/IngredientBP.png";
+   public const string BLUEPRINT_TRINKET_ICON = "Assets/Sprites/Icons/Blueprint/IngredientBP.png";
 
    #endregion Public Variables
 
@@ -90,6 +96,12 @@ public class Blueprint : RecipeItem
          return Item.Category.Armor;
       } else if (data.StartsWith(HAT_DATA_PREFIX)) {
          return Item.Category.Hats;
+      } else if (data.StartsWith(RING_DATA_PREFIX)) {
+         return Item.Category.Ring;
+      } else if (data.StartsWith(NECKLACE_DATA_PREFIX)) {
+         return Item.Category.Necklace;
+      } else if (data.StartsWith(TRINKET_DATA_PREFIX)) {
+         return Item.Category.Trinket;
       } else if (data.StartsWith(INGREDIENT_DATA_PREFIX)) {
          return Item.Category.CraftingIngredients;
       }

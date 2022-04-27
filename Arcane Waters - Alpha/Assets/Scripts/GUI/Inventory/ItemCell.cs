@@ -357,6 +357,51 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                      item.paletteNames = PaletteSwapManager.extractPalettes(fetchedHatData.defaultPalettes);
                   }
                }
+            } else if (item.data.Contains(Blueprint.RING_DATA_PREFIX)) {
+               RingStatData fetchedRingData = EquipmentXMLManager.self.getRingData(item.itemTypeId);
+               if (fetchedRingData == null) {
+                  D.debug("Failed to fetch Ring Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedRingData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedRingData.defaultPalettes);
+                  }
+               }
+            } else if (item.data.Contains(Blueprint.NECKLACE_DATA_PREFIX)) {
+               NecklaceStatData fetchedNecklaceData = EquipmentXMLManager.self.getNecklaceData(item.itemTypeId);
+               if (fetchedNecklaceData == null) {
+                  D.debug("Failed to fetch Necklace Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedNecklaceData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedNecklaceData.defaultPalettes);
+                  }
+               }
+            } else if (item.data.Contains(Blueprint.TRINKET_DATA_PREFIX)) {
+               TrinketStatData fetchedTrinketData = EquipmentXMLManager.self.getTrinketData(item.itemTypeId);
+               if (fetchedTrinketData == null) {
+                  D.debug("Failed to fetch Trinket Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedTrinketData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedTrinketData.defaultPalettes);
+                  }
+               }
             } else if (item.data.Contains(Blueprint.INGREDIENT_DATA_PREFIX)) {
                CraftingIngredients ingredientReference = new CraftingIngredients(item);
 

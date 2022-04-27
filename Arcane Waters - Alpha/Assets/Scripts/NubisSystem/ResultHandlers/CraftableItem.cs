@@ -53,6 +53,12 @@ namespace NubisDataHandling {
                         itemCategory = Item.Category.Hats;
                      } else if (dataGroup[3].StartsWith(Blueprint.INGREDIENT_DATA_PREFIX)) {
                         itemCategory = Item.Category.CraftingIngredients;
+                     } else if (dataGroup[3].StartsWith(Blueprint.RING_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Ring;
+                     } else if (dataGroup[3].StartsWith(Blueprint.NECKLACE_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Necklace;
+                     } else if (dataGroup[3].StartsWith(Blueprint.TRINKET_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Trinket;
                      } else {
                         itemCategory = (Item.Category) int.Parse(dataGroup[1]);
                      }

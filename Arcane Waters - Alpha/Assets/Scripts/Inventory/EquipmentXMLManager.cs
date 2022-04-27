@@ -858,6 +858,15 @@ public class EquipmentXMLManager : MonoBehaviour {
          case Blueprint.HAT_DATA_PREFIX:
             blueprintCategory = Item.Category.Hats;
             break;
+         case Blueprint.RING_DATA_PREFIX:
+            blueprintCategory = Item.Category.Ring;
+            break;
+         case Blueprint.NECKLACE_DATA_PREFIX:
+            blueprintCategory = Item.Category.Necklace;
+            break;
+         case Blueprint.TRINKET_DATA_PREFIX:
+            blueprintCategory = Item.Category.Trinket;
+            break;
          case Blueprint.INGREDIENT_DATA_PREFIX:
             blueprintCategory = Item.Category.CraftingIngredients;
             break;

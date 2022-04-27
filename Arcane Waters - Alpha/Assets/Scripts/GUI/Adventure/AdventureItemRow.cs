@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class AdventureItemRow : MonoBehaviour {
+public class AdventureItemRow : MonoBehaviour
+{
    #region Public Variables
 
    // The icon of the item
@@ -35,7 +36,6 @@ public class AdventureItemRow : MonoBehaviour {
    public Button buyButton;
 
    // The Item associated with this row
-   [HideInInspector]
    public Item item;
 
    // The tooltip on the image
@@ -60,7 +60,7 @@ public class AdventureItemRow : MonoBehaviour {
       this.item = item;
       bool displayStars = true;
 
-      string path = ""; 
+      string path = "";
       if (item.category == Item.Category.CraftingIngredients) {
          CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
          path = CraftingIngredients.getIconPath(ingredientType);
@@ -145,6 +145,12 @@ public class AdventureItemRow : MonoBehaviour {
                CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
                blueprintIndicator.SetActive(true);
 
+               if (craftingData == null) {
+                  D.debug("Blueprint with ID: {" + item.itemTypeId + "} is missing crafting data!");
+                  Destroy(gameObject);
+                  return;
+               }
+
                if (craftingData.resultItem.category == Item.Category.Armor) {
                   ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftingData.resultItem.itemTypeId);
                   if (armorData == null) {
@@ -181,6 +187,39 @@ public class AdventureItemRow : MonoBehaviour {
                      blueprintDescription = hatData.equipmentDescription;
                      blueprintStrength = "Defense = " + hatData.hatBaseDefense.ToString();
                   }
+               } else if (craftingData.resultItem.category == Item.Category.Ring) {
+                  RingStatData ringData = EquipmentXMLManager.self.getRingData(craftingData.resultItem.itemTypeId);
+                  if (ringData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
+                  } else {
+                     path = ringData.equipmentIconPath;
+                     itemName.text = ringData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = ringData.equipmentDescription;
+                  }
+               } else if (craftingData.resultItem.category == Item.Category.Necklace) {
+                  NecklaceStatData necklaceData = EquipmentXMLManager.self.getNecklaceData(craftingData.resultItem.itemTypeId);
+                  if (necklaceData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
+                  } else {
+                     path = necklaceData.equipmentIconPath;
+                     itemName.text = necklaceData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = necklaceData.equipmentDescription;
+                  }
+               } else if (craftingData.resultItem.category == Item.Category.Trinket) {
+                  TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(craftingData.resultItem.itemTypeId);
+                  if (trinketData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
+                  } else {
+                     path = trinketData.equipmentIconPath;
+                     itemName.text = trinketData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = trinketData.equipmentDescription;
+                  }
                }
 
                item.itemName = itemName.text;
@@ -208,7 +247,7 @@ public class AdventureItemRow : MonoBehaviour {
       }
 
       float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);
-      goldAmount.text = ((int)(item.getSellPrice() * perkMultiplier)) + "";
+      goldAmount.text = ((int) (item.getSellPrice() * perkMultiplier)) + "";
 
       // Rarity stars
       Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());

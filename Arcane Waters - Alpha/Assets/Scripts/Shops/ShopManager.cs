@@ -207,8 +207,9 @@ public class ShopManager : MonoBehaviour {
             } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
                Rarity.Type rarity = Rarity.getRandom();
                int randomizedPrice = rawItemData.shopItemCostMax;
+
                Item item = new Item {
-                  category = (Item.Category) rawItemData.shopItemCategoryIndex,
+                  category = Item.Category.Blueprint,
                   itemTypeId = rawItemData.shopItemTypeIndex,
                   count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
                   id = _itemId++,

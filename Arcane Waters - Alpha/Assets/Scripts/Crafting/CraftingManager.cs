@@ -111,13 +111,43 @@ public class CraftingManager : MonoBehaviour {
                if (craftingData.isEnabled) {
                   // Save the Crafting data in the memory cache
                   if (!_craftingData.ContainsKey(keyName)) {
-                     _craftingData.Add(keyName, craftingData);
-                     craftingDataList.Add(craftingData);
+                     CraftableItemRequirements newCraftData = overrideCraftingData(craftingData);
+                     _craftingData.Add(keyName, newCraftData);
+                     craftingDataList.Add(newCraftData);
                   }
                }
             }
          });
       });
+   }
+
+   public CraftableItemRequirements overrideCraftingData (CraftableItemRequirements craftingData) {
+      if (craftingData.resultItem.category == Item.Category.Weapon && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.WEAPON_DATA_PREFIX;
+         D.debug("Investigate Weapon {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+      if (craftingData.resultItem.category == Item.Category.Armor && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.ARMOR_DATA_PREFIX;
+         D.debug("Investigate Armor {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+      if (craftingData.resultItem.category == Item.Category.Hats && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.HAT_DATA_PREFIX;
+         D.debug("Investigate Hat {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+      if (craftingData.resultItem.category == Item.Category.Ring && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.RING_DATA_PREFIX;
+         D.debug("Investigate Ring {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+      if (craftingData.resultItem.category == Item.Category.Necklace && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.NECKLACE_DATA_PREFIX;
+         D.debug("Investigate Necklace {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+      if (craftingData.resultItem.category == Item.Category.Trinket && craftingData.resultItem.data.Length < 1) {
+         craftingData.resultItem.data = Blueprint.TRINKET_DATA_PREFIX;
+         D.debug("Investigate Trinket {" + craftingData.xmlId + "} crafting data for {" + craftingData.resultItem.itemTypeId + "}");
+      }
+
+      return craftingData;
    }
 
    public void receiveZipData (Dictionary<string, CraftableItemRequirements> zipData) {

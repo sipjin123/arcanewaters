@@ -61,7 +61,7 @@ public class RewardManager : MonoBehaviour {
 
       // Show a confirmation in chat
       if (itemName.Length < 1) {
-         D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId + " : " + item.data);
+         D.debug("RewardManager:Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId + " : " + item.data);
       } else {
          string msg = string.Format("You found <color=yellow>{0}</color> <color=red>{1}</color>", item.count, itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
