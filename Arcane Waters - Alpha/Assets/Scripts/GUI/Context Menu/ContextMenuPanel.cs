@@ -143,9 +143,8 @@ public class ContextMenuPanel : MonoBehaviour
       processDefaultMenuForUser(targetEntity, targetUserId, userName, targetGuildId, targetVoyageGroupId, isInSameGroup);
    }
 
-   public void processDefaultMenuForUser (NetEntity targetEntity, int targetUserId, string userName, int targetGuildId, int targetVoyageGroupId, bool isInSameGroup = false) {
+   public void processDefaultMenuForUser (NetEntity targetEntity, int targetUserId, string userName, int targetGuildId, int targetVoyageGroupId, bool isInSameGroup = false, bool isInSameGuild = false) {
       clearButtons();
-
       if (Global.player.userId != targetUserId) {
          if (VoyageGroupManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
@@ -193,17 +192,12 @@ public class ContextMenuPanel : MonoBehaviour
          }
 
          // Only allow inviting to guild if we can locally see the invitee
-         if (Global.player.canInviteGuild(targetEntity)) {
+         if (Global.player.canInviteGuild(targetEntity, isInSameGuild)) {
             addButton("Guild Invite", () => {
                D.debug("Successfully Sent Guild Invite using {method A} to user {" + targetUserId + "}");
                Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
             });
          } else {
-            addButton("Guild Invite", () => {
-               D.debug("Successfully Sent Guild Invite using {method B} to user {" + targetUserId + "}");
-               Global.player.rpc.Cmd_InviteToGuild(targetUserId, userName);
-            });
-
             string targetEntityInfo = (targetEntity == null ? "Null" : (targetEntity.entityName + ":" + targetEntity.userId));
             if (Global.player.guildId < 1 || (targetEntity != null && targetEntity.guildId < 1)) {
                D.debug("GuildInviteFailed! Invalid Guild parameters! {" + targetEntityInfo + "}");

@@ -312,12 +312,12 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text, chatInfo.sender, chatInfo.recipient);
    }
 
-   public void sendContextMenuRequest (int senderUserId, string senderUserName, int targetUserId) {
-      server.InvokeServerRpc(server.MasterServer_SendContextMenuRequest, senderUserId, senderUserName, server.networkedPort.Value, targetUserId);
+   public void sendContextMenuRequest (int senderUserId, string senderUserName, int targetUserId, int inviterVoyageGroupId, int inviterGuildId) {
+      server.InvokeServerRpc(server.MasterServer_SendContextMenuRequest, senderUserId, senderUserName, server.networkedPort.Value, targetUserId, inviterVoyageGroupId, inviterGuildId);
    }
 
-   public void returnContextMenuRequest (int senderUserId, string senderUserName, int originPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
-      server.InvokeServerRpc(server.MasterServer_ReturnContextMenuRequest, senderUserId, senderUserName, originPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+   public void returnContextMenuRequest (int senderUserId, string senderUserName, int originPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
+      server.InvokeServerRpc(server.MasterServer_ReturnContextMenuRequest, senderUserId, senderUserName, originPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId, isSameGroup, isSameGuild);
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {

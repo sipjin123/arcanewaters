@@ -861,7 +861,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public void toggleGuildIcon(bool show) {
+   public void toggleGuildIcon (bool show) {
       if (show) {
          showGuildIcon();
       } else {
@@ -1403,8 +1403,10 @@ public class NetEntity : NetworkBehaviour
             } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
                if (otherEntity.guildId != guildId) {
                   // Proceed to alliance check
-                  if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId) || otherEntity.voyageGroupId == voyageGroupId) {
+                  if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
                      // If guilds are allied to each other, they are not enemies
+                     return false;
+                  } else if (otherEntity.voyageGroupId > 0 && otherEntity.voyageGroupId == voyageGroupId) {
                      return false;
                   } else {
                      // If no alliance is formed, they are enemies
@@ -1485,8 +1487,10 @@ public class NetEntity : NetworkBehaviour
          } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
             if (otherEntity.guildId != guildId) {
                // Proceed to alliance check
-               if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId) || otherEntity.voyageGroupId == voyageGroupId) {
+               if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId)) {
                   // If guilds are allied to each other, they are not enemies
+                  return true;
+               } else if (voyageGroupId > 0 && otherEntity.voyageGroupId == voyageGroupId) {
                   return true;
                } else {
                   // If no alliance is formed, they are enemies
@@ -2492,7 +2496,7 @@ public class NetEntity : NetworkBehaviour
          SoundEffectManager.BgType bgParam = SoundEffectManager.self.getAreaBasedBgMusic(area.areaKey, instanceReference.biome);
          SoundEffectManager.AmbType ambienceParam = SoundEffectManager.self.getAreaBasedAmbience(area.areaKey, instanceReference.biome);
          SoundEffectManager.self.playBgMusic(bgParam, ambienceParam);
-         
+
          WorldMapWaypointsManager.self.refreshWaypoints();
       }
    }
@@ -2705,8 +2709,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
-      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetGuildId, targetVoyageGroupId);
+   public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
+      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetGuildId, targetVoyageGroupId, isSameGroup, isSameGuild);
    }
 
    public Vector3 getProjectedPosition (float afterSeconds) {
@@ -2717,8 +2721,8 @@ public class NetEntity : NetworkBehaviour
       return ((this.guildPermissions & (int) action) != 0);
    }
 
-   public bool canInviteGuild (NetEntity targetEntity) {
-      return this.guildId > 0 && (targetEntity == null || (targetEntity != null && targetEntity.guildId == 0)) && canPerformAction(GuildPermission.Invite);
+   public bool canInviteGuild (NetEntity targetEntity, bool isSameGuild) {
+      return this.guildId > 0 && ((targetEntity != null && targetEntity.guildId == 0) || (targetEntity == null && !isSameGuild)) && canPerformAction(GuildPermission.Invite);
    }
 
    public bool canInvitePracticeDuel (NetEntity targetEntity) {

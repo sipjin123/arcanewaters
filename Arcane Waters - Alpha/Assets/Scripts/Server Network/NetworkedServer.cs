@@ -472,32 +472,32 @@ public class NetworkedServer : NetworkedBehaviour
    #endregion
 
    [ServerRPC]
-   public void MasterServer_SendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId) {
-      InvokeClientRpcOnEveryone(Server_ReceiveSendContextMenuRequest, senderId, senderName, senderServerPort, targetUserId);
+   public void MasterServer_SendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId, int inviterVoyageGroupId, int inviterGuildId) {
+      InvokeClientRpcOnEveryone(Server_ReceiveSendContextMenuRequest, senderId, senderName, senderServerPort, targetUserId, inviterVoyageGroupId, inviterGuildId);
    }
 
    [ClientRPC]
-   public void Server_ReceiveSendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId) {
+   public void Server_ReceiveSendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId, int inviterVoyageGroupId, int inviterGuildId) {
       // Find the player entity in this server, if found then send back user information
       if (ServerNetworkingManager.self.server.connectedUserIds.Contains(targetUserId)) {
          NetEntity entityUser = EntityManager.self.getEntity(targetUserId);
          if (entityUser != null) {
-            ServerNetworkingManager.self.returnContextMenuRequest(senderId, senderName, senderServerPort, targetUserId, entityUser.entityName, entityUser.voyageGroupId, entityUser.guildId);
+            ServerNetworkingManager.self.returnContextMenuRequest(senderId, senderName, senderServerPort, targetUserId, entityUser.entityName, entityUser.voyageGroupId, entityUser.guildId, inviterVoyageGroupId == entityUser.voyageGroupId, inviterGuildId == entityUser.guildId);
          }
       }
    }
 
    [ServerRPC]
-   public void MasterServer_ReturnContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
-      InvokeClientRpcOnEveryone(Server_ReceiveReturnContextMenuRequest, senderId, senderServerPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+   public void MasterServer_ReturnContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
+      InvokeClientRpcOnEveryone(Server_ReceiveReturnContextMenuRequest, senderId, senderServerPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId, isSameGroup, isSameGuild);
    }
 
    [ClientRPC]
-   public void Server_ReceiveReturnContextMenuRequest (int senderId, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
+   public void Server_ReceiveReturnContextMenuRequest (int senderId, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
       if (ServerNetworkingManager.self.server.networkedPort.Value == senderServerPort) {
          NetEntity entityUser = EntityManager.self.getEntity(senderId);
          if (entityUser != null) {
-            entityUser.Target_ReceiveContextMenuContent(targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+            entityUser.Target_ReceiveContextMenuContent(targetUserId, targetName, targetVoyageGroupId, targetGuildId, isSameGroup, isSameGuild);
          }
       }
    }

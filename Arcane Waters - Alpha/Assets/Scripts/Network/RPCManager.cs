@@ -1285,7 +1285,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_ContextMenuRequest (int targetUserId) {
-      ServerNetworkingManager.self.sendContextMenuRequest(_player.userId, _player.entityName, targetUserId);
+      ServerNetworkingManager.self.sendContextMenuRequest(_player.userId, _player.entityName, targetUserId, _player.voyageGroupId, _player.guildId);
    }
 
    [Server]
@@ -3462,7 +3462,7 @@ public class RPCManager : NetworkBehaviour
                      hasCompletedAllQuests = false;
                   }
                }
-               
+
                // TODO: Add reduce items here if need be
 
                if (hasCompletedAllQuests) {
