@@ -11,9 +11,6 @@ public class StoreDBManager : GenericGameManager
 {
    #region Public Variables
 
-   // The id of the GemStore Tag
-   public int gemStoreTag = 6;
-
    // Did this manager execute?
    public bool hasExecuted;
 
@@ -50,8 +47,6 @@ public class StoreDBManager : GenericGameManager
       isExecuting = true;
 
       linkPalettes();
-      linkDyes();
-      toggleDyes();
 
       hasExecuted = true;
       isExecuting = false;
@@ -66,8 +61,8 @@ public class StoreDBManager : GenericGameManager
          PaletteToolData paletteData = Util.xmlLoad<PaletteToolData>(rawPaletteData.xmlData);
 
          // Manually inject these values to the newly fetched xml translated data
-         paletteData.subcategory = rawPaletteData.subcategory;
-         paletteData.tagId = rawPaletteData.tagId;
+         //paletteData.subcategory = rawPaletteData.subcategory;
+         //paletteData.tagId = rawPaletteData.tagId;
 
          fetchedPalettes.Add(rawPaletteData.xmlId, paletteData);
       }
@@ -107,90 +102,26 @@ public class StoreDBManager : GenericGameManager
    }
 
    /// <summary>
-   /// Creates a Dye record in the database for each valid palette
+   /// Creates a Store entry in the database for each valid palette
    /// </summary>
    /// <returns></returns>
    private bool linkPalettes () {
       try {
          Dictionary<int, PaletteToolData> palettes = fetchAllPalettes();
-         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
+         Dictionary<ulong, StoreItem> storeItems = fetchAllStoreItems();
+         PaletteImageType[] supportedDyeTypes = new PaletteImageType[] { PaletteImageType.Armor, PaletteImageType.Hair, PaletteImageType.Hat, PaletteImageType.Weapon };
 
          foreach (KeyValuePair<int, PaletteToolData> pair in palettes) {
             PaletteToolData palette = pair.Value;
             int paletteId = pair.Key;
-
-            if (palette.paletteType == (int) PaletteImageType.Armor || palette.paletteType == (int) PaletteImageType.Hair || palette.paletteType == (int) PaletteImageType.Weapon) {
-               if (palette.tagId == gemStoreTag) {
-                  // Check if the palette has a matching dye
-                  bool hasMatchingDye = dyes.Any(_ => _.Value.paletteId == paletteId);
-
-                  if (!hasMatchingDye) {
-                     // Create Dye for the palette
-                     DyeData newDyeData = new DyeData { paletteId = paletteId, itemName = computeDyeName(palette), itemDescription = computeDyeDescription(palette) };
-                     DB_Main.updateDyeXML(-1, newDyeData.serializeXML(), 157658);
-                  }
-               }
-            }
-         }
-
-         return true;
-      } catch (System.Exception ex) {
-         D.error(ex.Message);
-      }
-
-      return false;
-   }
-
-   /// <summary>
-   /// Creates a store item record in the database for each valid dye
-   /// </summary>
-   /// <returns></returns>
-   private bool linkDyes () {
-      try {
-         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
-         Dictionary<ulong, StoreItem> storeItems = fetchAllStoreItems();
-
-         foreach (KeyValuePair<XMLPair, DyeData> pair in dyes) {
-            DyeData dye = pair.Value;
-            XMLPair dyeXml = pair.Key;
-            bool hasMatchingStoreItem = storeItems.Any(_ => _.Value.itemId == dyeXml.xmlId);
+            bool hasMatchingStoreItem = storeItems.Any(_ => _.Value.itemId == paletteId);
 
             if (!hasMatchingStoreItem) {
-               // Create Store item for the Dye
-               ulong newStoreItemId = DB_Main.createStoreItem();
-               DB_Main.updateStoreItem(newStoreItemId, Item.Category.Dye, dyeXml.xmlId, true, 50, dye.itemName, dye.itemDescription);
-            }
-         }
-
-         return true;
-      } catch (System.Exception ex) {
-         D.error(ex.Message);
-      }
-
-      return false;
-   }
-
-   /// <summary>
-   /// Toggles the dyes. Dyes, whose palettes are not found or invalid, are disabled
-   /// </summary>
-   /// <returns></returns>
-   private bool toggleDyes () {
-      try {
-         Dictionary<int, PaletteToolData> palettes = fetchAllPalettes();
-         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
-
-         foreach (KeyValuePair<int, PaletteToolData> pair in palettes) {
-            PaletteToolData palette = pair.Value;
-            int paletteId = pair.Key;
-            bool shouldEnable = (palette != null && palette.tagId == gemStoreTag);
-            KeyValuePair<XMLPair, DyeData> matchingDyePair = dyes.FirstOrDefault(_ => _.Value.paletteId == paletteId);
-
-            if (matchingDyePair.Key == null || matchingDyePair.Key.xmlId == 0 || shouldEnable == matchingDyePair.Key.isEnabled) {
-               continue;
-            }
-
-            if (!DB_Main.toggleDyeXML(matchingDyePair.Key.xmlId, shouldEnable, 157658)) {
-               D.warning($"StoreDBManager: Couldn't update dye {matchingDyePair.Key.xmlId}");
+               if (supportedDyeTypes.Contains((PaletteImageType) palette.paletteType) && palette.hasTag(StoreScreen.GEM_STORE_TAG)) {
+                  // Create Store item for the Dye
+                  ulong newStoreItemId = DB_Main.createStoreItem();
+                  DB_Main.updateStoreItem(newStoreItemId, Item.Category.Dye, paletteId, true, 50, palette.paletteDisplayName, palette.paletteDescription);
+               }
             }
          }
 

@@ -98,7 +98,7 @@ public class ArmorManager : EquipmentManager {
 
       // Play a sound
       if (!equipOnStart) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+         SoundEffectManager.self.playEquipSfx();
       }
 
       D.adminLog("Equipped armor" + " SQL: {" + armorData.sqlId +

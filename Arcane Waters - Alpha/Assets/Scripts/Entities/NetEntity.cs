@@ -642,7 +642,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   protected bool canReceiveInput () {
+   public bool canReceiveInput () {
       return isLocalPlayer && Util.isGeneralInputAllowed() && !isFalling() && !isDead() && !isAboutToWarpOnClient;
    }
 
@@ -858,6 +858,14 @@ public class NetEntity : NetworkBehaviour
 
       if (this is PlayerShipEntity) {
          this.getPlayerShipEntity().guildIconGO.SetActive(false);
+      }
+   }
+
+   public void toggleGuildIcon(bool show) {
+      if (show) {
+         showGuildIcon();
+      } else {
+         hideGuildIcon();
       }
    }
 
@@ -2484,6 +2492,8 @@ public class NetEntity : NetworkBehaviour
          SoundEffectManager.BgType bgParam = SoundEffectManager.self.getAreaBasedBgMusic(area.areaKey, instanceReference.biome);
          SoundEffectManager.AmbType ambienceParam = SoundEffectManager.self.getAreaBasedAmbience(area.areaKey, instanceReference.biome);
          SoundEffectManager.self.playBgMusic(bgParam, ambienceParam);
+         
+         WorldMapWaypointsManager.self.refreshWaypoints();
       }
    }
 

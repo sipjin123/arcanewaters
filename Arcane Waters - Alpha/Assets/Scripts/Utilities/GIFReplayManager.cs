@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
+using System.Linq;
 
 public class GIFReplayManager : ClientMonoBehaviour
 {
@@ -55,18 +57,18 @@ public class GIFReplayManager : ClientMonoBehaviour
 
       // Initialize temp texture to whatever
       _tempRenderTexture = new RenderTexture(0, 0, 0);
-
-      // Load settings
-      setIsAlwaysRecording(PlayerPrefs.GetInt(GIF_RECORDING_ENABLED_KEY, 0) == 1, false);
-      setDownscaleFactor(PlayerPrefs.GetInt(GIF_RECORDING_RESOLUTION_KEY, 1), false);
-      setFPS(PlayerPrefs.GetInt(GIF_RECORDING_FPS_KEY, 10), false);
-      setDuration(PlayerPrefs.GetInt(GIF_RECORDING_DURATION_KEY, 10), false);
    }
 
    private void Start () {
       if (Util.isBatch()) {
          return;
       }
+
+      // Load settings
+      setIsAlwaysRecording(PlayerPrefs.GetInt(GIF_RECORDING_ENABLED_KEY, 0) == 1, false);
+      setDownscaleFactor(PlayerPrefs.GetInt(GIF_RECORDING_RESOLUTION_KEY, 1), false);
+      setFPS(PlayerPrefs.GetInt(GIF_RECORDING_FPS_KEY, 10), false);
+      setDuration(PlayerPrefs.GetInt(GIF_RECORDING_DURATION_KEY, 10), false);
 
       StartCoroutine(CO_RecordRoutine());
    }
@@ -127,18 +129,14 @@ public class GIFReplayManager : ClientMonoBehaviour
             Height = targetH
          };
 
-         if (f == 1) {
-            frame.Data = sourceData;
-         } else {
-            frame.Data = new byte[frame.Width * frame.Height * 3];
-            int n = 0;
+         frame.Data = new byte[frame.Width * frame.Height * 3];
+         int n = 0;
 
-            for (int j = 0; j < frame.Height; j++) {
-               for (int i = 0; i < frame.Width; i++) {
-                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3];
-                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3 + 1];
-                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3 + 2];
-               }
+         for (int j = 0; j < frame.Height; j++) {
+            for (int i = 0; i < frame.Width; i++) {
+               frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 4];
+               frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 4 + 1];
+               frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 4 + 2];
             }
          }
 
@@ -326,6 +324,24 @@ public class GIFReplayManager : ClientMonoBehaviour
          return;
       }
 
+      if (isRecording) {
+         if (!SystemInfo.IsFormatSupported(_recordFormat, FormatUsage.ReadPixels)) {
+            ChatManager.self.addChat("GIF recording not support on this system", ChatInfo.Type.System);
+            isRecording = false;
+
+            List<GraphicsFormat> formats = new List<GraphicsFormat>();
+
+            foreach (GraphicsFormat f in Enum.GetValues(typeof(GraphicsFormat))) {
+               if (SystemInfo.IsFormatSupported(f, FormatUsage.ReadPixels)) {
+                  formats.Add(f);
+               }
+            }
+
+            D.log("GIF format not supported, you may try: " +
+               string.Join(", ", formats.Select(f => f.ToString())));
+         }
+      }
+
       _isAlwaysRecording = isRecording;
 
       _currentFrames.Clear();
@@ -432,6 +448,11 @@ public class GIFReplayManager : ClientMonoBehaviour
    }
 
    public void userRequestedRecord () {
+      if (!SystemInfo.IsFormatSupported(_recordFormat, FormatUsage.ReadPixels)) {
+         ChatManager.self.addChat("GIF recording not support on this system", ChatInfo.Type.System);
+         return;
+      }
+
       if (_isSpecificRecording) {
          ChatManager.self.addChat("Already recording.", ChatInfo.Type.System);
       } else if (isEncoding()) {
@@ -455,7 +476,7 @@ public class GIFReplayManager : ClientMonoBehaviour
    #region Private Variables
 
    // Texture format of the texture we use to record
-   private TextureFormat _recordFormat = TextureFormat.RGB24;
+   private GraphicsFormat _recordFormat = GraphicsFormat.R8G8B8A8_UNorm;
 
    // The frames we have so far recorded
    private List<CustomFrame> _currentFrames = new List<CustomFrame>();

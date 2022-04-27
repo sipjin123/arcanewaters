@@ -120,7 +120,7 @@ public class QuickLaunchPanel : MonoBehaviour {
    }
 
    public void changePort (int modifier) {
-      MyNetworkManager.self.telepathy.port += (ushort) modifier;
+      MyNetworkManager.self.Port += (ushort) modifier;
    }
 
    public void startWithFastLogin () {

@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 
 public class GoldPanel : ClientMonoBehaviour
 {
@@ -18,6 +16,9 @@ public class GoldPanel : ClientMonoBehaviour
 
    // The canvas group component
    public CanvasGroup canvasGroup;
+
+   // Reference to group rect transform
+   public RectTransform rectTransform;
 
    // Self
    public static GoldPanel self;
@@ -44,9 +45,22 @@ public class GoldPanel : ClientMonoBehaviour
       // Show the panel when relevant
       Panel currentPanel = PanelManager.self.currentPanel();
       if (currentPanel != null && PANELS_DISPLAYING_GOLD.Contains(currentPanel.type)) {
-         canvasGroup.Show();
+         showGoldPanel();
       } else {
          canvasGroup.Hide();
+      }
+   }
+
+   private void showGoldPanel () {
+      // Only invoke show when panel is hidden
+      if (!canvasGroup.IsShowing()) {
+         // Updating the gold panel width so we can avoid manually updating the gold panel width in scene when button is added/removed in bottom hud
+         float width = BottomBar.self.GetComponent<RectTransform>().rect.size.x;
+         Vector2 size = rectTransform.rect.size;
+         size.x = width;
+         rectTransform.sizeDelta = size;
+            
+         canvasGroup.Show();
       }
    }
 

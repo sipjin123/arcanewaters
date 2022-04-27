@@ -32,6 +32,9 @@ public class LoadingScreen : FullScreenSeparatePanel
    // The error notice section
    public GameObject errorSection;
 
+   // The error notice text
+   public Text errorSectionNotice;
+   
    #endregion
 
    private void Awake () {
@@ -115,6 +118,13 @@ public class LoadingScreen : FullScreenSeparatePanel
 
          // Check if we exceeded maximum wait time
          if (!errorSection.activeSelf && Time.time - _startTime > LOADING_TIMEOUT) {
+            if (SteamManager.Initialized && _loadingProcesses[0].type == LoadingType.Login) {
+               errorSectionNotice.text = "The Steam login server is currently down and unable to authenticate any login requests. Steam should have this fixed soon!";
+            } 
+            else {
+               errorSectionNotice.text = "It looks like something went wrong. You can wait a little longer or go back to the title screen.";
+            }
+            
             errorSection.SetActive(true);
             D.log("The maximum loading time was exceeded.");
          }

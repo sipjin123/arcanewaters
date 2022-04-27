@@ -311,7 +311,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       // If NPC is marked as "animal", player can interact with it
-      if (animalReactionType != AnimalPetting.ReactionType.None) {
+      if (isAnimal()) {
          if (!isInteractingAnimal) {
             GameObject closestSpot = null;
             foreach (GameObject spot in animalPettingPositions) {
@@ -769,6 +769,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Make sure that server can update this pet again
       isUnderExternalControl = false;
+   }
+
+   public bool isAnimal () {
+      return animalReactionType != AnimalPetting.ReactionType.None;
    }
 
    #region Private Variables

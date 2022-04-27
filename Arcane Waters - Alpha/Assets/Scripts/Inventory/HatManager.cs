@@ -83,7 +83,7 @@ public class HatManager : EquipmentManager {
 
       // Play a sound
       if (!equipOnStart) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+         SoundEffectManager.self.playEquipSfx();
       }
 
       Global.getUserObjects().hat = new Hat {

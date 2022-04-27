@@ -17,13 +17,7 @@ public class StoreHairDyeBox : StoreDyeBox
    public void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.HairDyes;
 
-      if (this.imageIcon == null || Util.isBatch() || dye == null) {
-         return;
-      }
-
-      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
-
-      if (this.palette == null) {
+      if (this.imageIcon == null || Util.isBatch()) {
          return;
       }
 

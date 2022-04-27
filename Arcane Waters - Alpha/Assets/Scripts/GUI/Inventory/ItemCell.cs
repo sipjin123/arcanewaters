@@ -402,15 +402,15 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             break;
 
          case Item.Category.Dye:
-            DyeData dyeData = DyeXMLManager.self.getDyeData(item.itemTypeId);
+            PaletteToolData palette = PaletteSwapManager.self.getPalette(item.itemTypeId);
 
-            if (dyeData == null) {
+            if (palette == null) {
                D.debug("Failed to fetch Dye Data for: " + item.itemTypeId);
                Destroy(gameObject);
                break;
             }
 
-            PaletteImageType dyeType = DyeXMLManager.self.getDyeType(item.itemTypeId);
+            PaletteImageType dyeType = (PaletteImageType) palette.paletteType;
             Sprite chosenSprite = ImageManager.self.blankSprite;
 
             if (dyeType == PaletteImageType.Armor) {

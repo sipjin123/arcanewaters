@@ -739,10 +739,8 @@ public class Instance : NetworkBehaviour
          }
 
          VaryingStateObject newObject = Instantiate(bPrefab);
-
-         newObject.transform.SetParent(area.transform, false);
-         Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 5) * 0.16f;
-         newObject.transform.localPosition = targetLocalPos;
+         newObject.areaKey = areaKey;
+         newObject.localPosition = new Vector3(dataField.x, dataField.y, 5) * 0.16f;
 
          if (dataField.d != null) {
             newObject.receiveData(dataField.d);

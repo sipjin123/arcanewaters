@@ -132,11 +132,11 @@ public class CropProjectile : MonoBehaviour {
                config.shadowHeight != 0 ? config.shadowHeight : cropPickup.shadow.transform.localScale.y,
                cropPickup.shadow.transform.localScale.z);
             cropPickup.shadow.transform.localScale = newShadowSize;
+
+            // Play hit sound effect
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.HARVEST_HIT, transform.position);
          }
       }
-
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.HARVESTING_HIT, transform.position);
-
       Destroy(this.gameObject);
    }
 

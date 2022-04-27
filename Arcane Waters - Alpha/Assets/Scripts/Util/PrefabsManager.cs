@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using DigitalRuby.LightningBolt;
 
-public class PrefabsManager : MonoBehaviour {
+public class PrefabsManager : MonoBehaviour
+{
    #region Public Variables
 
    [Header("Entity Prefabs")]
@@ -118,6 +119,9 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating generic Effects
    public GameObject genericEffectPrefab;
+   
+   // The Prefab we use for creating bonus effects
+   public GameObject bonusEffectPrefab;
 
    // The prefab we use for creating 3d sounds
    //public AudioSource sound3dPrefab;
@@ -149,7 +153,13 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we can use for showing that the requirements are not enough
    public GameObject insufficientPrefab;
 
-   [Header("Generic Prefabs")]
+   [Header("Generic Prefabs")] 
+   // The prefab we use for creating sparkle burst
+   public GameObject sparkleBurstPrefab;
+      
+   // The prefab we use for creating sparkle trail
+   public GameObject sparkleTrailPrefab;
+   
    // A prefab we use for creating a figure eight route
    public Route figureEightRoutePrefab;
 
@@ -198,6 +208,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating Pvp Capture Target Holders in pvp maps
    public PvpCaptureTargetHolder pvpCaptureTargetHolderPrefab;
 
+   // The prefab we use for sea outposts
+   public Outpost outpostPrefab = null;
+
    // The prefab we use for creating point effectors
    public GameObject pointEffectorPrefab;
 
@@ -226,7 +239,7 @@ public class PrefabsManager : MonoBehaviour {
 
    // A reference to the heal effect prefab
    public GameObject healPrefab;
-   
+
    // A reference to the explosive shot projectile prefab
    public SeaProjectile explosiveShotProjectilePrefab;
 

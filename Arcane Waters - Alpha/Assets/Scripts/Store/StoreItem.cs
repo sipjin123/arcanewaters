@@ -61,7 +61,7 @@ namespace Store
 
       }
 
-      public StoreItem (ulong itemId, string name, string description, Item.Category category, int quantity, int price, string metadata, DateTime creationDate, CurrencyMode currencyMode, int item = 0, bool isEnabled = true, bool overrideItemName = false, bool overrideItemDescription = false) {
+      public StoreItem (ulong itemId, string name, string description, Item.Category category, int quantity, int price, DateTime creationDate, CurrencyMode currencyMode, int item = 0, bool isEnabled = true, bool overrideItemName = false, bool overrideItemDescription = false) {
          this.id = itemId;
          this.category = category;
          this.quantity = quantity;
@@ -81,18 +81,18 @@ namespace Store
 
       public static StoreItem create (MySqlDataReader reader) {
          StoreItem item = new StoreItem();
-         item.id = DataUtil.getUInt64(reader, "siItemId");
-         item.category = (Item.Category) DataUtil.getInt(reader, "siItemCategory");
-         item.quantity = DataUtil.getInt(reader, "siItemQuantity");
-         item.price = DataUtil.getInt(reader, "siItemPrice");
-         item.creationDate = DataUtil.getDateTime(reader, "siItemCreationDate");
-         item.currencyMode = (StoreItem.CurrencyMode) DataUtil.getInt(reader, "siItemCurrencyMode");
+         item.id = DataUtil.getUInt64(reader, "siId");
+         item.category = (Item.Category) DataUtil.getInt(reader, "siCategory");
+         item.quantity = DataUtil.getInt(reader, "siQuantity");
+         item.price = DataUtil.getInt(reader, "siPrice");
+         item.creationDate = DataUtil.getDateTime(reader, "siCreationDate");
+         item.currencyMode = (StoreItem.CurrencyMode) DataUtil.getInt(reader, "siCurrencyMode");
          item.itemId = DataUtil.getInt(reader, "siItem"); 
          item.isEnabled = DataUtil.getBoolean(reader, "siIsEnabled"); 
-         item.overrideItemName = DataUtil.getBoolean(reader, "siItemNameOverride"); 
-         item.overrideItemDescription = DataUtil.getBoolean(reader, "siItemDescriptionOverride");
-         item.displayName = DataUtil.getString(reader, "siItemName");
-         item.displayDescription = DataUtil.getString(reader, "siItemDescription");
+         item.overrideItemName = DataUtil.getBoolean(reader, "siNameOverride"); 
+         item.overrideItemDescription = DataUtil.getBoolean(reader, "siDescriptionOverride");
+         item.displayName = DataUtil.getString(reader, "siName");
+         item.displayDescription = DataUtil.getString(reader, "siDescription");
          return item;
       }
 

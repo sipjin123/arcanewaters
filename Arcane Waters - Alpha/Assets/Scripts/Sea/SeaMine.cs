@@ -251,7 +251,7 @@ public class SeaMine : NetworkBehaviour, IObserver
       fadeSequence.Append(DOTween.To(() => explosionSpriteGroup.alpha, (x) => explosionSpriteGroup.alpha = x, 0.0f, 0.75f));
       fadeSequence.AppendCallback(() => Destroy(explosionVisualEffect.gameObject));
 
-      SoundEffectManager.self.playSeaMineExplosionSfx(explosionVisualEffect.transform.position);
+      SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.SEA_MINE, SoundEffectManager.AMB_SW_PARAM, 2, explosionVisualEffect.transform.position);
 
       barrelSpriteRenderer.enabled = false;
       waterSpriteRenderer.enabled = false;

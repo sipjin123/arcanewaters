@@ -17,6 +17,7 @@ public class Area : MonoBehaviour
 
    // The special type of the area
    public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7, PvpArena = 8, GuildMap = 9, POI = 10, WorldMap = 11 }
+   public enum SpecialState { None = 0, POI = 1, SeaMonstersOnly = 2 };
 
    public static string TUTORIAL_AREA = "Tutorial Town Cemetery";
 
@@ -110,7 +111,7 @@ public class Area : MonoBehaviour
 
    // Large Window spots to be loaded by the server
    public List<ExportedPrefab001> largeWindowDataFields = new List<ExportedPrefab001>();
-   
+
    // Ships to be loaded by the server
    public List<ExportedPrefab001> shipDataFields = new List<ExportedPrefab001>();
 
@@ -405,8 +406,12 @@ public class Area : MonoBehaviour
       _colliderChunks = chunks;
    }
 
-   public Vector3Int worldToCell (Vector2 worldPos) {
+   public Vector3Int worldToCell (Vector3 worldPos) {
       return _grid.WorldToCell(worldPos);
+   }
+
+   public Vector3 cellToWorld (Vector3Int cellPos) {
+      return _grid.GetCellCenterWorld(cellPos);
    }
 
    public GridGraph getGraph () {
@@ -481,7 +486,7 @@ public class Area : MonoBehaviour
    }
 
    public static SoundManager.Type getBackgroundMusic (string areaKey, Biome.Type biome) {
-      if(string.Equals(areaKey, "Tutorial Town Cemetery v2", StringComparison.InvariantCultureIgnoreCase)) {
+      if (string.Equals(areaKey, "Tutorial Town Cemetery v2", StringComparison.InvariantCultureIgnoreCase)) {
          return SoundManager.Type.Town_Forest_Cementery;
       }
 
@@ -601,6 +606,65 @@ public class Area : MonoBehaviour
             _tileAttributesMatrix.addAttributes(new Vector2Int(tile.x + mapTileSize.x / 2, tile.y + mapTileSize.y / 2), attributes);
          }
       }
+   }
+
+   public bool closestTileWithAttribute (TileAttributes.Type attribute, Vector3 worldPosition, Vector2Int searchBounds, out Vector3 closest) {
+      // Get cell position
+      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+
+      // Rebase coordinates to corner of map
+      cellPos += mapTileSize / 2;
+
+      double minDist = double.MaxValue;
+      closest = Vector3.zero;
+
+      for (int i = 0; i < searchBounds.x; i++) {
+         for (int j = 0; j < searchBounds.y; j++) {
+            // Center the point in the bounds
+            Vector2Int p = new Vector2Int(cellPos.x + i - searchBounds.x / 2, cellPos.y + j - searchBounds.y / 2);
+
+            // If position is out of bounds, return default
+            if (p.x < 0 || p.y < 0 || p.x >= mapTileSize.x || p.y >= mapTileSize.y) {
+               continue;
+            }
+
+            if (_tileAttributesMatrix.hasAttribute(p, attribute)) {
+               double sqrDist = Math.Pow(cellPos.x - p.x, 2) + Math.Pow(cellPos.y - p.y, 2);
+               if (sqrDist < minDist) {
+                  minDist = sqrDist;
+                  closest = cellToWorld((Vector3Int) (p - mapTileSize / 2));
+               }
+            }
+         }
+      }
+
+      return minDist < Mathf.Pow(searchBounds.x + searchBounds.y, 2);
+   }
+
+   public bool hasTileAttributeInBounds (TileAttributes.Type attribute, Vector3 worldPosition, Vector2Int bounds) {
+      // Get cell position
+      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+
+      // Rebase coordinates to corner of map
+      cellPos += mapTileSize / 2;
+
+      for (int i = 0; i < bounds.x; i++) {
+         for (int j = 0; j < bounds.y; j++) {
+            // Center the point in the bounds
+            Vector2Int p = new Vector2Int(cellPos.x + i - bounds.x / 2, cellPos.y + j - bounds.y / 2);
+
+            // If position is out of bounds, return default
+            if (p.x < 0 || p.y < 0 || p.x >= mapTileSize.x || p.y >= mapTileSize.y) {
+               continue;
+            }
+
+            if (_tileAttributesMatrix.hasAttribute(p, attribute)) {
+               return true;
+            }
+         }
+      }
+
+      return false;
    }
 
    public bool hasTileAttribute (TileAttributes.Type attribute, Vector3 worldPosition) {

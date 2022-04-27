@@ -20,7 +20,7 @@ public class SoundEffectManager : GenericGameManager
 
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
-   public const string AMBIENCE_SWITCH_PARAM = "Ambience_Switch";
+   public const string AMB_SW_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
    public const string APPLY_PUP_PARAM = "Apply_Powerup";
@@ -43,10 +43,15 @@ public class SoundEffectManager : GenericGameManager
    public const string MAIL_NOTIFICATION = "event:/SFX/Game/UI/Mail_Notification";
    public const string LOCALE_UNLOCK = "event:/SFX/Game/UI/Locale_Unlock";
    public const string TURNING_PAGES_ON_BOOKS = "event:/SFX/Game/UI/Turning_Pages_on_Books";
+   
    public const string EQUIP = "event:/SFX/Game/UI/Equip";
+   public const string EQUIP_SPECIAL = "event:/SFX/Game/UI/Equip_Ring_Neck_Trinket";
+
    public const string TUTORIAL_STEP = "event:/SFX/Game/UI/Tutorial_Step";
    public const string TUTORIAL_POP_UP = "event:/SFX/Game/UI/Tutorial_Pop_Up";
    public const string LAYOUTS_DESTINATIONS = "event:/SFX/Game/UI/Layouts_Destinations";
+   public const string FRIEND_REQUEST = "event:/SFX/Game/UI/Send_Recieve_Friend_Request";
+   public const string PLACING_WAYPOINT = "event:/SFX/Game/UI/Placing_Waypoint";
 
    #endregion
 
@@ -98,6 +103,8 @@ public class SoundEffectManager : GenericGameManager
    public const string REEFMAN_HURT = "event:/SFX/NPC/Enemy/Giant_Reefman/Giant_Reefman_Pain";
    public const string REEFMAN_DEATH = "event:/SFX/NPC/Enemy/Giant_Reefman/Giant_Reefman_Death";
 
+   public const string HARPOON = "event:/SFX/Player/Interactions/Diegetic/Harpoon";
+
    #endregion
 
    #region GAME
@@ -133,13 +140,10 @@ public class SoundEffectManager : GenericGameManager
    public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
    public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
    public const string SHIP_LAUNCH_CHARGE = "event:/SFX/Player/Interactions/Non_Diegetic/Ship_Launch_Charge";
-   public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
-   public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
    public const string FOOTSTEP = "event:/SFX/Player/Interactions/Diegetic/Footstep";
 
    public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
    public const string DOOR_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Close";
-
    public const string DOOR_CLOTH_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Cloth_Open";
    public const string DOOR_CLOTH_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Cloth_Close";
 
@@ -150,8 +154,13 @@ public class SoundEffectManager : GenericGameManager
    public const string TRIUMPH_HARVEST = "event:/SFX/Player/Interactions/Non_Diegetic/Triumph_Harvest";
    public const string LOOT_BAG = "event:/SFX/Player/Interactions/Diegetic/Loot_Bag";
    public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
-   public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
+
+   public const string HARVEST_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvest_Hit";
    public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
+   public const string TREE_CUTTER = "event:/SFX/Player/Interactions/Diegetic/TreeCutter";
+   public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
+   public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
+
    public const string SHIP_SAILING = "event:/SFX/Player/Interactions/Diegetic/Ship/Ship_Sailing";
    public const string WEB_JUMP = "event:/SFX/Player/Interactions/Diegetic/Web_Jumps";
 
@@ -160,7 +169,6 @@ public class SoundEffectManager : GenericGameManager
    public const string DISCOVERY_RUINS = "event:/SFX/Player/Interactions/Diegetic/Discovery_Ruins";
    public const string BERSERKER_CALL = "event:/SFX/Player/Interactions/Diegetic/Berserker_Call";
    public const string RUFFIAN_REPAIRS = "event:/SFX/Player/Interactions/Diegetic/Ruffian_Repairs";
-   public const string TREE_CUTTER = "event:/SFX/Player/Interactions/Diegetic/TreeCutter";
 
    public const string WATERFALL_SECRET = "event:/SFX/Player/Interactions/Diegetic/WF_Secret";
    public const string CURTAIN = "event:/SFX/Player/Interactions/Diegetic/Curtain";
@@ -200,6 +208,11 @@ public class SoundEffectManager : GenericGameManager
       }
 
       FMODUnity.RuntimeManager.PlayOneShot(path, position);
+   }
+
+   public void playEquipSfx(bool isSpecial = false) {
+      string path = isSpecial ? EQUIP_SPECIAL : EQUIP;
+      playFmodSfx(path);
    }
 
    public void playLandProjectileSfx (Weapon.Class weaponClass, Vector3 position) {
@@ -271,10 +284,12 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(hurtPath, position);
    }
 
-   public void playSeaMineExplosionSfx (Vector3 position) {
-      FMOD.Studio.EventInstance eventInstance = createEventInstance(SEA_MINE);
-      eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-      eventInstance.setParameterByName(AMBIENCE_SWITCH_PARAM, 2);
+   public void playOneShotWithParam (string path, string parameterName, int parameterValue, Vector3 position = default) {
+      FMOD.Studio.EventInstance eventInstance = createEventInstance(path);
+      if (position != default) {
+         eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      }
+      eventInstance.setParameterByName(parameterName, parameterValue);
       eventInstance.start();
       eventInstance.release();
    }
@@ -293,7 +308,7 @@ public class SoundEffectManager : GenericGameManager
       switch (projectileType) {
          case ProjectileType.Sea_Mine:
             eventPath = SEA_MINE;
-            parameterName = AMBIENCE_SWITCH_PARAM;
+            parameterName = AMB_SW_PARAM;
             parameterValue = 1;
             break;
          case ProjectileType.Cannonball_Fire:
@@ -342,8 +357,8 @@ public class SoundEffectManager : GenericGameManager
          _previousAmbience = _currentAmbience;
          _currentAmbience = ambType;
 
-         if (ambType != AmbType.None) {
-            _ambEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) ambType);
+         if (ambType != AmbType.None && ambType != AmbType.Title_Screen) {
+            _ambEvent.setParameterByName(AMB_SW_PARAM, (int) ambType);
 
             _ambEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE ambState);
             if (ambState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
@@ -374,7 +389,7 @@ public class SoundEffectManager : GenericGameManager
          _currentMusic = bgType;
 
          if (bgType != BgType.None) {
-            _bgEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) bgType);
+            _bgEvent.setParameterByName(AMB_SW_PARAM, (int) bgType);
 
             _bgEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE bgState);
             if (bgState == FMOD.Studio.PLAYBACK_STATE.STOPPED || _previousMusic == BgType.Land_Battle) {
@@ -481,7 +496,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playTriumphSfx () {
       if (_bgEvent.isValid()) {
-         _bgEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
+         _bgEvent.setParameterByName(AMB_SW_PARAM, 20);
       }
    }
 
@@ -714,7 +729,6 @@ public class SoundEffectManager : GenericGameManager
             playFmodSfx(REEFMAN_ATTACK, targetPosition);
             break;
          case SeaAbilityType.Berzerkers_Call:
-         case SeaAbilityType.Ruffian_Repairs:
             NetEntity sourceEntity = EntityManager.self.getEntityByNetId(netId);
             if (sourceEntity != null && sourceEntity is SeaEntity) {
                if (seaAbilityType == SeaAbilityType.Berzerkers_Call) {
@@ -962,15 +976,15 @@ public class SoundEffectManager : GenericGameManager
    #region Ruffian Repairs
 
    public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
-      if (isPlay) {
-         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-            playRuffianRepairs(netId);
-         }
-      } else {
-         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-            stopRuffianRepairs(netId);
-         }
-      }
+      //if (isPlay) {
+      //   if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+      //      playRuffianRepairs(netId);
+      //   }
+      //} else {
+      //   if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+      //      stopRuffianRepairs(netId);
+      //   }
+      //}
    }
 
    private void checkRuffianRepairs () {
@@ -987,16 +1001,16 @@ public class SoundEffectManager : GenericGameManager
    }
 
    private void playRuffianRepairs (uint netId) {
-      NetEntity entity = EntityManager.self.getEntityByNetId(netId);
-      if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
-         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
-         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
+      //NetEntity entity = EntityManager.self.getEntityByNetId(netId);
+      //if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
+      //   FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
+      //   FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
 
-         eventInstance.start();
-         _ruffianRepairsEvents.Add(netId, eventInstance);
+      //   eventInstance.start();
+      //   _ruffianRepairsEvents.Add(netId, eventInstance);
 
-         //D.debug($"[SFX] Play Ruffian Repairs for netId: {netId}");
-      }
+      //   //D.debug($"[SFX] Play Ruffian Repairs for netId: {netId}");
+      //}
    }
 
    private void stopRuffianRepairs (uint netId) {
@@ -1015,7 +1029,7 @@ public class SoundEffectManager : GenericGameManager
       if (!Util.isBatch()) {
          FMOD.Studio.EventInstance eventInstance = createEventInstance(TREE_CUTTER);
          eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-         eventInstance.setParameterByName(AMBIENCE_SWITCH_PARAM, isLastHit ? 1 : 0);
+         eventInstance.setParameterByName(AMB_SW_PARAM, isLastHit ? 1 : 0);
          eventInstance.start();
          eventInstance.release();
       }
@@ -1066,6 +1080,9 @@ public class SoundEffectManager : GenericGameManager
 
    // Ruffian Repairs events
    private Dictionary<uint, FMOD.Studio.EventInstance> _ruffianRepairsEvents = new Dictionary<uint, FMOD.Studio.EventInstance>();
+
+   // Harpoon events
+   //private Dictionary<GameObject, FMOD.Studio.EventInstance> _harpoonEvents = new Dictionary<GameObject, FMOD.Studio.EventInstance>();
 
    public enum BgType
    {
@@ -1145,7 +1162,8 @@ public class SoundEffectManager : GenericGameManager
       Fishman_Attack = 4,
       Reef_Giant_Attack = 5,
       Ruffian_Repairs = 6,
-      Berzerkers_Call = 7
+      Berzerkers_Call = 7,
+      Harpoon = 8
    }
 
    public enum HorrorAttackType
@@ -1163,7 +1181,8 @@ public class SoundEffectManager : GenericGameManager
       Cannonball_Fire = 3,
       Sea_Mine = 4,
       Fishman_Attack = 6,
-      Tentacle = 7
+      Tentacle = 7,
+      Harpoon = 8
    }
 
    public enum ShipSailingType
@@ -1176,6 +1195,16 @@ public class SoundEffectManager : GenericGameManager
    {
       Loop = 0,
       Stop = 1
+   }
+
+   public enum HarpoonEvent
+   {
+      None = -1,
+      Fire = 0,
+      Hit = 1,
+      Drag = 2,
+      Reel = 3,
+      Snap = 4
    }
 
    #endregion

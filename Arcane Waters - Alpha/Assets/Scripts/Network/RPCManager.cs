@@ -1735,59 +1735,40 @@ public class RPCManager : NetworkBehaviour
       bool referredItemIsEnabled = false;
 
       switch (storeItem.category) {
-         case Item.Category.None:
-            referredItemIsEnabled = false;
-            break;
-         case Item.Category.Weapon:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Armor:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Hats:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Potion:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Usable:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.CraftingIngredients:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Blueprint:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Currency:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Quest_Item:
-            referredItemIsEnabled = true;
-            break;
-         case Item.Category.Haircut:
-            referredItemIsEnabled = (HaircutXMLManager.self.getHaircutData(storeItem.itemId) != null);
-            break;
-         case Item.Category.Gems:
-            referredItemIsEnabled = (GemsXMLManager.self.getGemsData(storeItem.itemId) != null);
-            break;
-         case Item.Category.ShipSkin:
-            referredItemIsEnabled = (ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId) != null);
-            break;
-         case Item.Category.Dye:
-            referredItemIsEnabled = (DyeXMLManager.self.getDyeData(storeItem.itemId) != null);
-            break;
-         case Item.Category.Pet:
-            referredItemIsEnabled = true;
-            break;
          case Item.Category.Consumable:
-            referredItemIsEnabled = (ConsumableXMLManager.self.getConsumableData(storeItem.itemId) != null);
-            break;
-         case Item.Category.Crop:
-            referredItemIsEnabled = true;
+            referredItemIsEnabled = ConsumableXMLManager.self.getConsumableData(storeItem.itemId) != null;
             break;
          case Item.Category.Prop:
             referredItemIsEnabled = ItemDefinitionManager.self.tryGetDefinition(storeItem.itemId, out PropDefinition _);
+            break;
+         case Item.Category.Haircut:
+            referredItemIsEnabled = HaircutXMLManager.self.getHaircutData(storeItem.itemId) != null;
+            break;
+         case Item.Category.Gems:
+            referredItemIsEnabled = GemsXMLManager.self.getGemsData(storeItem.itemId) != null;
+            break;
+         case Item.Category.ShipSkin:
+            referredItemIsEnabled = ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId) != null;
+            break;
+         case Item.Category.Dye:
+            PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
+            referredItemIsEnabled = palette != null && palette.hasTag(StoreScreen.GEM_STORE_TAG);
+            break;
+         case Item.Category.Weapon:
+         case Item.Category.Armor:
+         case Item.Category.Hats:
+         case Item.Category.Potion:
+         case Item.Category.Usable:
+         case Item.Category.CraftingIngredients:
+         case Item.Category.Blueprint:
+         case Item.Category.Currency:
+         case Item.Category.Quest_Item:
+         case Item.Category.Pet:
+         case Item.Category.Crop:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.None:
+            referredItemIsEnabled = false;
             break;
          default:
             break;
@@ -2229,15 +2210,15 @@ public class RPCManager : NetworkBehaviour
          }
 
          if (storeItem.category == Item.Category.Dye) {
-            DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+            PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
 
-            if (dyeData == null) {
-               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the hair dye data.");
+            if (palette == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the dye data.");
                reportStorePurchaseFailed();
                return;
             }
 
-            storeReferencedItem = Dye.createFromData(dyeData);
+            storeReferencedItem = Dye.createFromData(storeItem.itemId, palette);
          }
 
          if (storeItem.category == Item.Category.ShipSkin) {
@@ -2678,29 +2659,21 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    private void useDye (Item item) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(item.itemTypeId);
-
-      if (dyeData == null) {
-         D.error($"Player {_player.userId} tried to use the dye {item.itemTypeId} but failed. Couldn't find the dye data.");
-         reportUseItemFailure("Unknown Dye");
-         return;
-      }
-
-      PaletteToolData paletteToolData = PaletteSwapManager.self.getPalette(dyeData.paletteId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(item.itemTypeId);
 
       // Check if the palette was found
-      if (paletteToolData == null) {
-         D.error($"Player {_player.userId} tried to apply the dye {dyeData.paletteId} (palette: {paletteToolData.paletteName}) but failed. Couldn't find the palette.");
+      if (palette == null) {
+         D.error($"Player {_player.userId} tried to apply the dye with (palette: {palette.paletteName}) but failed. Couldn't find the palette.");
          reportUseItemFailure("Unknown Dye");
          return;
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Hair Dye
-         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hair) {
-            if (paletteToolData.isPrimary()) {
+         if (palette.paletteType == (int) PaletteToolManager.PaletteImageType.Hair) {
+            if (palette.isPrimary()) {
                // Set the new hair color in the database
-               DB_Main.setHairColor(_player.userId, paletteToolData.paletteName);
+               DB_Main.setHairColor(_player.userId, palette.paletteName);
 
                // Delete the item
                DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
@@ -2710,7 +2683,7 @@ public class RPCManager : NetworkBehaviour
 
                // Back to Unity
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  _player.hairPalettes = paletteToolData.paletteName;
+                  _player.hairPalettes = palette.paletteName;
 
                   // Refresh local store
                   Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
@@ -2726,12 +2699,10 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
-         bool isHatDye = paletteToolData.paletteName.ToLower().StartsWith("hat"); // TODO: Refactor this line as soon as the Web Palette Tool supports hats
-
          // At the moment hat palettes are "flagged" as armors. Therefore, we check the palette name to tell armor dyes and hat dyes apart
-         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Armor && !isHatDye) {
+         if (palette.paletteType == (int) PaletteToolManager.PaletteImageType.Armor) {
             // Compute new palette
-            string dyePalette = paletteToolData.paletteName;
+            string dyePalette = palette.paletteName;
             UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
             string currentArmorPalette = userObjects.armor.paletteNames;
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentArmorPalette));
@@ -2769,7 +2740,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Hat Dye
-         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hat || isHatDye) {
+         if (palette.paletteType == (int) PaletteToolManager.PaletteImageType.Hat) {
             UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
 
             // A hat dye can only be applied if the player has a hat
@@ -2779,7 +2750,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Compute new palette
-            string dyePalette = paletteToolData.paletteName;
+            string dyePalette = palette.paletteName;
             string currentHatPalette = userObjects.hat.paletteNames;
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentHatPalette));
 
@@ -2806,7 +2777,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Weapon Dye
-         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Weapon) {
+         if (palette.paletteType == (int) PaletteToolManager.PaletteImageType.Weapon) {
             UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
             Item weapon = userObjects.weapon;
 
@@ -2816,7 +2787,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Compute new palette
-            string dyePalette = paletteToolData.paletteName;
+            string dyePalette = palette.paletteName;
             string currentWeaponPalette = weapon.paletteNames;
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentWeaponPalette));
 
@@ -2845,7 +2816,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Unknown or unsupported dye type
-         D.error($"Player {_player.userId} tried to apply the dye {dyeData.paletteId} (palette: {paletteToolData.paletteName}). This dye type is currently unsupported.");
+         D.error($"Player {_player.userId} tried to apply the dye/palette: {palette.paletteName}. The dye/palette type {palette.paletteType} is currently unsupported.");
          reportUseItemFailure("Unsupported Dye");
          return;
       });
@@ -4168,20 +4139,18 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReceivePlayerAddedToServer (NetworkConnection connection) {
-      if (Global.isFirstSpawn) {
-         Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
-
-         // On first spawn check for rewards
-         string steamId = _player.userId.ToString();
-         if (SteamManager.Initialized && Global.isSteamLogin) {
-            steamId = Global.lastSteamId;
-         }
-
-         Cmd_CheckRewardCodes(steamId);
-         D.debug($"First spawn!");
+      if (!Global.isFirstSpawn) {
+         return;
       }
 
+      D.debug($"First spawn!");
       Global.isFirstSpawn = false;
+
+      Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
+
+      // On first spawn check for rewards
+      string steamId = (SteamManager.Initialized && Global.isSteamLogin) ? _player.steamId : _player.userId.ToString();
+      Cmd_CheckRewardCodes(steamId);
    }
 
    [Command]
@@ -4722,7 +4691,7 @@ public class RPCManager : NetworkBehaviour
                if (shopData.shopItems.FindAll(_ => _.shopItemType == (PvpShopItem.PvpShopItemType) i).Count > 0) {
                   // Override the item category type to select if atleast one item exists
                   PvpShopItem.PvpShopItemType newItemType = (PvpShopItem.PvpShopItemType) i;
-                  D.debug("Missing {" + itemType + "} Next available Category is {" + newItemType + "}");
+                  D.editorLog("Missing {" + itemType + "} Next available Category is {" + newItemType + "}", Color.red);
                   itemType = newItemType;
                   break;
                }
@@ -7241,15 +7210,15 @@ public class RPCManager : NetworkBehaviour
             randomCount++;
          }
 
-         // Add extra ore spawn if has mining powerup
-         if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.MiningBoost)) {
-            D.debug("User has Mining powerup, added ore from {" + randomCount + "} to {" + (randomCount + 1) + "}");
-            randomCount++;
-         }
          for (int i = 0; i < randomCount; i++) {
             float randomSpeed = Random.Range(.8f, 1.2f);
             float angleOffset = Random.Range(-25, 25);
-            processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
+            processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId, false);
+         }
+         
+         // Add extra ore spawn if has mining powerup
+         if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.MiningBoost)) {
+            StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.voyageGroupId));      
          }
       } else {
          D.adminLog("Player successfully interacted ore {" + oreNode.id + "} Mining is not Finished: {" + oreNode.interactCount + "}", D.ADMIN_LOG_TYPE.Mine);
@@ -7370,7 +7339,22 @@ public class RPCManager : NetworkBehaviour
       checkItemQueue();
    }
 
-   public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
+   public IEnumerator CO_SpawnBonusOreWithDelay (int oreId, Transform nodeTransform, Direction direction, int effectId, int ownerId, int voyageGroupId) {
+      // Spawn bonus ore with a delay so bonus ore would be more visible
+      yield return new WaitForSeconds(0.3f);
+
+      float randomSpeed = Random.Range(.8f, 1.2f);
+      float angleOffset = Random.Range(-25, 25);
+      
+      // Instantiate bonus effect word when mining boost in enabled
+      GameObject bonusEffect = Instantiate(PrefabsManager.self.bonusEffectPrefab, nodeTransform);
+      bonusEffect.transform.localPosition = Vector3.zero;
+      bonusEffect.transform.localScale = Vector3.one * 0.003f;
+
+      processClientMineEffect(oreId, nodeTransform.position, direction, angleOffset, randomSpeed, effectId, ownerId, voyageGroupId, true);
+   }
+
+   public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId, bool isBonus) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       if (oreNode == null) {
@@ -7381,13 +7365,18 @@ public class RPCManager : NetworkBehaviour
 
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
+      
+      // Spawn a sparkle trail if spawned ore is a bonus
+      if (isBonus) {
+         Instantiate(PrefabsManager.self.sparkleTrailPrefab, oreMine.animatingObj);
+      }
 
       // Modify object transform
       oreBounce.transform.position = position;
       Vector3 currentAngle = oreBounce.transform.localEulerAngles;
       oreBounce.transform.localEulerAngles = new Vector3(currentAngle.x, currentAngle.y, currentAngle.z + angleOffset);
-      oreMine.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
-
+      oreMine.setOreSprite(OreManager.self.getSprite(oreNode.oreType));
+            
       // Modify object direction
       if (direction == Direction.East) {
          oreBounce.transform.localScale = new Vector3(-1, 1, 1);
@@ -7396,7 +7385,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Data setup
-      oreMine.initData(ownerId, voyageGroupId, effectId, oreNode, randomSpeed);
+      oreMine.initData(ownerId, voyageGroupId, effectId, oreNode, randomSpeed, isBonus);
    }
 
    [Command]
@@ -8049,7 +8038,7 @@ public class RPCManager : NetworkBehaviour
 
                // If this is an admin group party, randomize delay before team member is forced to join
                if (isGroupBattle) {
-                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, Random.RandomRange(.25f, 4));
+                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, Random.Range(.25f, 4));
                }
             }
          }
@@ -9069,7 +9058,7 @@ public class RPCManager : NetworkBehaviour
          }
       });
    }
-   
+
    [Server]
    public void requestSetRingId (int newId) {
       D.adminLog("Requesting new Ring: " + newId, D.ADMIN_LOG_TYPE.Equipment);
@@ -10259,6 +10248,30 @@ public class RPCManager : NetworkBehaviour
       ChatPanel.self.addChatInfo(new ChatInfo(0, announcementText, DateTime.Now, ChatInfo.Type.System));
    }
 
+   [Command]
+   public void Cmd_BuildOutpost (Vector2 localPosition) {
+      if (!AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
+         return;
+      }
+
+      if (!InstanceManager.self.tryGetInstance(_player.instanceId, out Instance instance)) {
+         return;
+      }
+
+      Vector2 worldPosition = area.transform.TransformPoint(localPosition);
+
+      if (!OutpostUtil.canBuildOutpostAt(_player, worldPosition, out _)) {
+         return;
+      }
+
+      Outpost outpost = Instantiate(PrefabsManager.self.outpostPrefab);
+      outpost.transform.localPosition = localPosition;
+      outpost.setAreaParent(area, false);
+
+      InstanceManager.self.addOutpostToInstance(outpost, instance);
+      NetworkServer.Spawn(outpost.gameObject);
+   }
+
    [Server]
    public void broadcastPvpTowerDestruction (NetEntity attackerEntity, PvpTower targetEntity) {
       if (attackerEntity == null) {
@@ -10904,8 +10917,8 @@ public class RPCManager : NetworkBehaviour
                MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 });
 
                if (!wasPlayerNotified) {
-                  Target_ReceiveCheckRewardCodes();
                   wasPlayerNotified = true;
+                  Target_ReceiveCheckRewardCodes();
                }
 
                D.debug($"The reward code {rewardCode.code} generated for player {steamId} was used. The player was notified.");

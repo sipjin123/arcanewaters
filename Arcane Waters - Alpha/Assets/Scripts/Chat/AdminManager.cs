@@ -133,7 +133,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
       cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
-      cm.addCommand(new CommandData("wishlist", "Download wishlist", downloadSteamUserWishlistTest, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
       cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
@@ -166,7 +165,6 @@ public class AdminManager : NetworkBehaviour
 
       // Test commands
       cm.addCommand(new CommandData("get_reward_code", "Simulates getting a code in AW and redeeming it in a game XYZ (AW for testing)", requestRewardCodeTest, requiredPrefix: CommandType.Admin));
-
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -4107,29 +4105,6 @@ public class AdminManager : NetworkBehaviour
          if (ChatManager.self != null) {
             ChatManager.self.changePlayerNameInChat(userId, oldName, newName);
          }
-      }
-   }
-
-   private void downloadSteamUserWishlistTest () {
-      try {
-         D.warning($"Is Steam initialized?: {SteamManager.Initialized}");
-
-         if (SteamManager.Initialized) {
-            D.warning($"Downloading wishlist for steam user '{Global.lastSteamId}'");
-            var httpRequest = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, $"https://store.steampowered.com/wishlist/profiles/{Global.lastSteamId}/wishlistdata");
-            var httpClient = new System.Net.Http.HttpClient();
-
-            httpClient.SendAsync(httpRequest).ContinueWith((t) => {
-               D.warning($"Tried to download the wishlist. Status Code: {t.Result.StatusCode}.");
-
-               t.Result.Content.ReadAsStringAsync().ContinueWith((t2) => {
-                  D.warning($"Tried to download the wishlist. Response body: {t2.Result}");
-               });
-            });
-         }
-      } catch (Exception ex) {
-         D.error(ex.Message);
-         D.error(ex.StackTrace);
       }
    }
 

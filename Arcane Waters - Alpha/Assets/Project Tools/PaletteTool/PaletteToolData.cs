@@ -70,6 +70,14 @@ public class PaletteToolData
       return subcategory.ToLower().Contains("accent");
    }
 
+   public bool hasTag(int tag) {
+      if (tagsIds != null) {
+         return tagsIds.Contains(tag);
+      }
+
+      return tagId == tag;
+   }
+
    #region Private Variables
 
    #endregion

@@ -121,11 +121,11 @@ namespace NubisDataHandling {
                      }
                      break;
                   case Item.Category.Dye:
-                     DyeData dyeData = DyeXMLManager.self.getDyeData(itmType);
-                     if (dyeData != null) {
-                        otherItem.setBasicInfo(dyeData.itemName, dyeData.itemDescription, dyeData.itemIconPath);
+                     PaletteToolData palette = PaletteSwapManager.self.getPalette(itmType);
+                     if (palette != null) {
+                        otherItem.setBasicInfo(palette.paletteDisplayName, palette.paletteDescription, string.Empty); ;
                      } else {
-                        D.editorLog("Failed to gather data for dye: " + itmType + " : " + dyeData + " : " + itmId, Color.red);
+                        D.editorLog("Failed to gather data for dye: " + itmType + " : " + palette + " : " + itmId, Color.red);
                      }
                      break;
                   case Item.Category.ShipSkin:

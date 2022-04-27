@@ -15,6 +15,9 @@ public class StoreScreen : Panel
 {
    #region Public Variables
 
+   // The flag value for palettes/dyes that should be available in the store
+   public const int GEM_STORE_TAG = 6;
+
    // The text that displays our Gold count
    public Text goldText;
 
@@ -222,6 +225,11 @@ public class StoreScreen : Panel
          descriptionText.text = itemBox.itemDescription;
          descPriceText.text = itemBox.itemCost.ToString();
 
+         if (string.IsNullOrWhiteSpace(descriptionText.text) && itemBox is StoreDyeBox dyeItemBox) {
+            // Try to compute a description text
+            descriptionText.text = computeDyeDescription(dyeItemBox.palette);
+         }
+
          if (itemBox is StoreGemBox storeGemBox) {
             descPriceText.text = storeGemBox.getDisplayCost();
          } else {
@@ -231,8 +239,10 @@ public class StoreScreen : Panel
          if (itemBox is StoreHairDyeBox hairDyeBox) {
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(hairDyeBox.palette.paletteName, Global.userObjects.userInfo.hairPalettes));
             characterStack.updateHair(Global.userObjects.userInfo.hairType, mergedPalette);
+
          } else if (itemBox is StoreHaircutBox hairBox) {
             characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
+
          } else if (itemBox is StoreArmorDyeBox armorDyeBox) {
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.armor.paletteNames));
@@ -244,6 +254,7 @@ public class StoreScreen : Panel
             if (armorData != null) {
                characterStack.updateArmor(Global.player.gender, armorData.armorType, mergedPalette);
             }
+
          } else if (itemBox is StoreWeaponDyeBox weaponDyeBox) {
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.userObjects.weapon.itemTypeId);
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(weaponDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
@@ -255,6 +266,7 @@ public class StoreScreen : Panel
             if (weaponData != null) {
                characterStack.updateWeapon(Global.player.gender, weaponData.weaponType, mergedPalette);
             }
+
          } else if (itemBox is StoreHatDyeBox hatDyeBox) {
             HatStatData hatData = EquipmentXMLManager.self.getHatData(Global.userObjects.hat.itemTypeId);
             string mergedPalette = Item.parseItmPalette(Item.overridePalette(hatDyeBox.palette.paletteName, Global.userObjects.hat.paletteNames));
@@ -266,6 +278,7 @@ public class StoreScreen : Panel
             if (hatData != null) {
                characterStack.updateHats(Global.player.gender, hatData.hatType, mergedPalette);
             }
+
          } else if (itemBox is StoreHatBox hatBox) {
             HatStatData hatData = EquipmentXMLManager.self.getHatData(hatBox.hat.sqlId);
 
@@ -520,49 +533,62 @@ public class StoreScreen : Panel
    }
 
    protected StoreItemBox createDyeBox (StoreItem storeItem) {
-      switch (DyeXMLManager.self.getDyeType(storeItem.itemId)) {
-         case PaletteImageType.Armor:
-            return createArmorDyeBox(storeItem);
-         case PaletteImageType.Hair:
-            return createHairDyeBox(storeItem);
-         case PaletteImageType.Hat:
-            return createHatDyeBox(storeItem);
-         case PaletteImageType.Weapon:
-            return createWeaponDyeBox(storeItem);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
+      
+      if (palette == null) {
+         return null;
       }
 
-      return null;
+      PaletteImageType paletteImageType = (PaletteImageType) palette.paletteType;
+      StoreItemBox createdBox = null;
+
+      switch (paletteImageType) {
+         case PaletteImageType.Armor:
+            createdBox = createArmorDyeBox(storeItem);
+            break;
+         case PaletteImageType.Hair:
+            createdBox = createHairDyeBox(storeItem);
+            break;
+         case PaletteImageType.Hat:
+            createdBox = createHatDyeBox(storeItem);
+            break;
+         case PaletteImageType.Weapon:
+            createdBox = createWeaponDyeBox(storeItem);
+            break;
+      }
+
+      return createdBox;
    }
 
    protected StoreHairDyeBox createHairDyeBox (StoreItem storeItem) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
 
-      if (dyeData == null) {
+      if (palette == null) {
          return null;
       }
 
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.dye = dyeData;
-      box.itemName = box.dye.itemName;
-      box.itemDescription = box.dye.itemDescription;
+      box.palette = palette;
+      box.itemName = palette.paletteDisplayName;
+      box.itemDescription = palette.paletteDescription;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
 
    protected StoreArmorDyeBox createArmorDyeBox (StoreItem storeItem) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
 
-      if (dyeData == null) {
+      if (palette == null) {
          return null;
       }
 
       StoreArmorDyeBox box = Instantiate(PrefabsManager.self.armorDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.dye = dyeData;
-      box.itemName = box.dye.itemName;
-      box.itemDescription = box.dye.itemDescription;
+      box.palette = palette;
+      box.itemName = palette.paletteDisplayName;
+      box.itemDescription = palette.paletteDescription;
       box.playerArmor = Global.userObjects.armor;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -570,17 +596,17 @@ public class StoreScreen : Panel
    }
 
    protected StoreWeaponDyeBox createWeaponDyeBox (StoreItem storeItem) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
 
-      if (dyeData == null) {
+      if (palette == null) {
          return null;
       }
 
       StoreWeaponDyeBox box = Instantiate(PrefabsManager.self.weaponDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.dye = dyeData;
-      box.itemName = box.dye.itemName;
-      box.itemDescription = box.dye.itemDescription;
+      box.palette = palette;
+      box.itemName = palette.paletteDisplayName;
+      box.itemDescription = palette.paletteDescription;
       box.playerWeapon = Global.userObjects.weapon;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -588,22 +614,23 @@ public class StoreScreen : Panel
    }
 
    protected StoreHatDyeBox createHatDyeBox (StoreItem storeItem) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
 
-      if (dyeData == null) {
+      if (palette == null) {
          return null;
       }
 
       StoreHatDyeBox box = Instantiate(PrefabsManager.self.hatDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.dye = dyeData;
-      box.itemName = box.dye.itemName;
-      box.itemDescription = box.dye.itemDescription;
+      box.palette = palette;
+      box.itemName = palette.paletteDisplayName;
+      box.itemDescription = palette.paletteDescription;
       box.playerHat = Global.userObjects.hat;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
 
       if (!box.isDyeApplicable()) {
+         Destroy(box.gameObject);
          return null;
       }
 
@@ -836,6 +863,57 @@ public class StoreScreen : Panel
 
       return validShipNames.ToArray();
    }
+
+   private string computeDyeDescription (PaletteToolData palette) {
+      if (palette == null) {
+         return "Common Dye.";
+      }
+
+      string desc = "";
+
+      if (palette.paletteType == (int) PaletteImageType.Armor) {
+         desc = "Armor Dye.";
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Hat) {
+         desc = "Hat Dye.";
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Hair) {
+         desc = "Hair Dye.";
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Weapon) {
+         desc = "Weapon Dye.";
+      }
+
+      if (palette.isPrimary()) {
+      }
+
+      if (palette.isSecondary()) {
+         desc += " (secondary)";
+      }
+
+      if (palette.isAccent()) {
+         desc += " (accent)";
+      }
+
+      desc = desc.Replace("_", " ").Trim();
+      desc = trimInside(desc);
+      return Util.UppercaseFirst(desc);
+   }
+
+   private string trimInside (string source) {
+      string[] parts = source.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+      string result = "";
+
+      foreach (string part in parts) {
+         result += part.Trim() + " ";
+      }
+
+      return result.Trim();
+   }
+
 
    #endregion
 

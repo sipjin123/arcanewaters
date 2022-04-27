@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// #define KCP
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -13,6 +15,7 @@ using MapCustomization;
 using System;
 using MLAPI;
 using System.Linq;
+using kcp2k;
 using MLAPI.Messaging;
 
 public class MyNetworkManager : NetworkManager
@@ -43,6 +46,9 @@ public class MyNetworkManager : NetworkManager
    // Our Telepathy Transport component
    public TelepathyTransport telepathy;
 
+   // Our Telepathy Transport component
+   public KcpTransport kcp;
+
    // Self
    public static MyNetworkManager self;
 
@@ -70,6 +76,12 @@ public class MyNetworkManager : NetworkManager
       // Redirection
       Redirection = 2
    }
+   
+   #if KCP
+   public ushort Port { get { return kcp ? kcp.Port : (ushort)0; } set { kcp.Port = value; } }
+   #else
+   public ushort Port { get { return telepathy ? telepathy.port : (ushort)0; } set { telepathy.port = value; } }
+   #endif
 
    #endregion
 
@@ -99,7 +111,7 @@ public class MyNetworkManager : NetworkManager
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {
             string[] split = arg.Split('=');
-            telepathy.port = ushort.Parse(split[1]);
+            Port = ushort.Parse(split[1]);
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
@@ -224,9 +236,6 @@ public class MyNetworkManager : NetworkManager
       AreaManager.self.storeAreaInfo();
       SpawnManager.self.storeSpawnPositions();
 
-      // Initialize Store Items
-      StoreDBManager.self.initialize();
-
       // Initialize World Map Manager
       WorldMapDBManager.self.initialize();
 
@@ -310,7 +319,6 @@ public class MyNetworkManager : NetworkManager
       ProjectileStatManager.self.initializeDataCache();
 
       HaircutXMLManager.self.initializeDataCache();
-      DyeXMLManager.self.initializeDataCache();
       GemsXMLManager.self.initializeDataCache();
       ShipSkinXMLManager.self.initializeDataCache();
       ConsumableXMLManager.self.initializeDataCache();
@@ -969,8 +977,8 @@ public class MyNetworkManager : NetworkManager
    }
 
    public static int getCurrentPort () {
-      if (self != null && self.telepathy != null) {
-         return self.telepathy.port;
+      if (self != null) {
+         return self.Port;
       }
 
       return 0;

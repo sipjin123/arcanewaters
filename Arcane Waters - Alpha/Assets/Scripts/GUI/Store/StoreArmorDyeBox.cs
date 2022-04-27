@@ -25,13 +25,7 @@ public class StoreArmorDyeBox : StoreDyeBox
    public virtual void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.ArmorDyes;
 
-      if (this.armorImage == null || this.bodyImage == null || this.armorSprite == null || Util.isBatch() || dye == null) {
-         return;
-      }
-
-      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
-
-      if (this.palette == null) {
+      if (this.armorImage == null || this.bodyImage == null || this.armorSprite == null || Util.isBatch()) {
          return;
       }
 

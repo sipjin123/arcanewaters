@@ -472,19 +472,19 @@ public class Util : MonoBehaviour
          case Direction.North:
             return Vector2.up;
          case Direction.NorthEast:
-            return Vector2.up + Vector2.right;
+            return new Vector2(0.70710678118654752440084436210485f, 0.70710678118654752440084436210485f);
          case Direction.East:
             return Vector2.right;
          case Direction.SouthEast:
-            return Vector2.right + Vector2.down;
+            return new Vector2(0.70710678118654752440084436210485f, -0.70710678118654752440084436210485f);
          case Direction.South:
             return Vector2.down;
          case Direction.SouthWest:
-            return Vector2.down + Vector2.left;
+            return new Vector2(-0.70710678118654752440084436210485f, -0.70710678118654752440084436210485f);
          case Direction.West:
             return Vector2.left;
          case Direction.NorthWest:
-            return Vector2.left + Vector2.up;
+            return new Vector2(-0.70710678118654752440084436210485f, 0.70710678118654752440084436210485f);
       }
       return Vector2.right;
    }

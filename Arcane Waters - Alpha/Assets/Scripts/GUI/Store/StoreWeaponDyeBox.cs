@@ -16,13 +16,7 @@ public class StoreWeaponDyeBox : StoreDyeBox
    public void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.WeaponDyes;
 
-      if (this.weaponImage == null || Util.isBatch() || dye == null) {
-         return;
-      }
-
-      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
-
-      if (this.palette == null) {
+      if (this.weaponImage == null || Util.isBatch()) {
          return;
       }
 

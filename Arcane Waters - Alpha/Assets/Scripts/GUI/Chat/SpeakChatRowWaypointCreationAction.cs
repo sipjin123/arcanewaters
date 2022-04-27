@@ -20,6 +20,9 @@ public class SpeakChatRowWaypointCreationAction : SpeakChatRowAction
 
       WorldMapWaypointsManager.self.createWaypoint(newSpot);
       PanelManager.self.noticeScreen.show("Waypoint placed!");
+
+      // Sound effect
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACING_WAYPOINT);
    }
 
    public override void refresh () {

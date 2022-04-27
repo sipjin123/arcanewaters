@@ -33,11 +33,11 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Redirect (NetworkConnection conn, RedirectMessage msg) {
-      D.debug($"Received redirect message for {msg.newIpAddress}:{msg.newPort}, currently connected port {MyNetworkManager.self.telepathy.port}");
+      D.debug($"Received redirect message for {msg.newIpAddress}:{msg.newPort}, currently connected port {MyNetworkManager.self.Port}");
       lastRedirectMessageTime = (float)NetworkTime.time;
 
       // If the address and port are the same, we just send another login request
-      if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {
+      if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.Port) {
          ClientManager.sendAccountNameAndUserId();
       } else {
          _self.StartCoroutine(CO_Reconnect(msg));
@@ -63,7 +63,7 @@ public class ClientMessageManager : MonoBehaviour {
 
       // Plug the new address and port in
       MyNetworkManager.self.networkAddress = msg.newIpAddress;
-      MyNetworkManager.self.telepathy.port = (ushort) msg.newPort;
+      MyNetworkManager.self.Port = (ushort) msg.newPort;
 
       // Connect to the new address
       if (wasHost) {
@@ -325,6 +325,11 @@ public class ClientMessageManager : MonoBehaviour {
          case ConfirmMessage.Type.FriendshipInvitationSent:
          case ConfirmMessage.Type.FriendshipInvitationAccepted:
          case ConfirmMessage.Type.FriendshipDeleted:
+            // Sound effect for invitation sent
+            if(msg.confirmType == ConfirmMessage.Type.FriendshipInvitationSent) {
+               SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.FRIEND_REQUEST, SoundEffectManager.AMB_SW_PARAM, 0);
+            }
+
             // Hide the confirm panel
             PanelManager.self.confirmScreen.hide();
 

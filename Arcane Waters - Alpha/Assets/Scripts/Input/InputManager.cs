@@ -230,6 +230,17 @@ public class InputManager : GenericGameManager {
    }
 
    private void Update () {
+
+      // No direction move when game lost focus
+      if (!Util.isBatch()) {
+         if (!isFocused) {
+            if (self.inputMaster.General.enabled) self.inputMaster.General.Disable();
+            return;
+         } else {
+            if (!self.inputMaster.General.enabled) self.inputMaster.General.Enable();
+         }
+      }
+
       if (!isFocused) {
          return;
       }
@@ -409,15 +420,6 @@ public class InputManager : GenericGameManager {
       // Skip main logic for batch mode 
       if (Util.isBatch()) {
          return false;
-      }
-
-      // No direction move when game lost focus
-      if (!self.isFocused) {
-         if (self.inputMaster.General.enabled) self.inputMaster.General.Disable();
-         return false;
-      } 
-      else {
-         if (!self.inputMaster.General.enabled) self.inputMaster.General.Enable();
       }
 
       switch (direction) {

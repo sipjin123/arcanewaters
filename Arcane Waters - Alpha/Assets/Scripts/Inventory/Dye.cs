@@ -23,13 +23,13 @@ public class Dye : Item
       this.durability = durability;
    }
 
-   public static Dye createFromData (DyeData data) {
+   public static Dye createFromData (int paletteTypeId, PaletteToolData data) {
       if (data == null) {
          return null;
       }
 
-      Dye dye = new Dye(-1, data.itemID, "", "", 100);
-      dye.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
+      Dye dye = new Dye(-1, paletteTypeId, "", "", 100);
+      dye.setBasicInfo(data.paletteDisplayName, data.paletteDescription, string.Empty);
       return dye;
    }
 
@@ -50,7 +50,13 @@ public class Dye : Item
    }
 
    public override string getIconPath () {
-      PaletteImageType dyeType = DyeXMLManager.self.getDyeType(itemTypeId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(itemTypeId);
+
+      if (palette == null) {
+         return null;
+      }
+
+      PaletteImageType dyeType = (PaletteImageType)palette.paletteType;
 
       if (dyeType == PaletteImageType.Armor || dyeType == PaletteImageType.Weapon || dyeType == PaletteImageType.Hair || dyeType == PaletteImageType.Hat) {
          return "Icons/Inventory/DyeIcons";
@@ -60,23 +66,23 @@ public class Dye : Item
    }
 
    public override string getName () {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(itemTypeId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(itemTypeId);
 
-      if (dyeData == null) {
-         return itemName;
+      if (palette == null) {
+         return null;
       }
 
-      return dyeData.itemName;
+      return palette.paletteDisplayName;
    }
 
    public override string getDescription () {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(itemTypeId);
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(itemTypeId);
 
-      if (dyeData == null) {
-         return itemDescription;
+      if (palette == null) {
+         return null;
       }
 
-      return dyeData.itemDescription;
+      return palette.paletteDescription;
    }
 
    public override string getTooltip () {

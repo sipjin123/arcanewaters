@@ -54,6 +54,14 @@ public class SeaHarpoon : SeaProjectile {
             NetworkServer.Destroy(gameObject);
             return;
          }
+
+         if (_attachedEntity != null) {
+            float timeSinceLastNoteAttacker = (float) NetworkTime.time - _lastNoteAttackerTime;
+            if (timeSinceLastNoteAttacker > NOTE_ATTACKER_UPDATE_INTERVAL) {
+               _attachedEntity.noteAttacker(_sourceEntityNetId);
+               _lastNoteAttackerTime = (float) NetworkTime.time;
+            }
+         }
       }
 
       updateHarpoon();
@@ -65,7 +73,6 @@ public class SeaHarpoon : SeaProjectile {
       }
 
       if (_sourceEntity != null && _attachedEntity != null) {
-
          Vector2 ropeVector = getRopeEndPos() - getRopeStartPos();
          float ropeLength = ropeVector.magnitude;
          float ropeLengthReduction = 0.0f;
@@ -122,7 +129,7 @@ public class SeaHarpoon : SeaProjectile {
 
       harpoonRope.SetPosition(0, ropeStart);
       harpoonRope.SetPosition(1, ropeEnd);
-      
+
       // Only check rope tension once we are attached to something
       if (_attachedEntity == null) {
          return;
@@ -230,7 +237,7 @@ public class SeaHarpoon : SeaProjectile {
          if (_sourceEntity != null) {
             _sourceEntity.attachedByHarpoonNetIds.Remove(_attachedEntityNetId);
          }
-         
+
          if (_attachedEntity != null) {
             _attachedEntity.attachedByHarpoonNetIds.Remove(_sourceEntityNetId);
          }
@@ -247,7 +254,7 @@ public class SeaHarpoon : SeaProjectile {
       } else {
          return _attachedEntity.transform.position;
       }
-      
+
    }
 
    protected override void OnDestroy () {
@@ -307,6 +314,12 @@ public class SeaHarpoon : SeaProjectile {
 
    // Returns true when the harpoon is connected to an entity
    private bool isAttachedToEntity => _rigidbody.isKinematic;
+
+   // Tracks when we last called note attacker on the entity attached to this harpoon
+   private float _lastNoteAttackerTime = 0.0f;
+
+   // How often we will call 'note attacker' on the attached entity
+   private const float NOTE_ATTACKER_UPDATE_INTERVAL = 5.0f;
 
    #endregion
 }

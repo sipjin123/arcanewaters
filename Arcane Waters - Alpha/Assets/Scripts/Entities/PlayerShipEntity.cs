@@ -2413,6 +2413,10 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public bool getIsChargingCannon () {
+      return _isChargingCannon;
+   }
+
    #region Private Variables
 
    // Our ship movement sound

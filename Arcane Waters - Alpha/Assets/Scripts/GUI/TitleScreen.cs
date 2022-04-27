@@ -229,7 +229,7 @@ public class TitleScreen : MonoBehaviour {
 
       if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {
          // Randomly choose a server among the available that are online
-         MyNetworkManager.self.telepathy.port = (ushort) onlineServerPortList.ChooseRandom();
+         MyNetworkManager.self.Port = (ushort) onlineServerPortList.ChooseRandom();
 
          // Start up the Network Client, which triggers the rest of the login process
          MyNetworkManager.self.StartClient();

@@ -74,6 +74,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation);
+
+            // Play door sound effect, only when we're leaving an interior area
+            Instance instanceRef = InstanceManager.self.getInstance(player.instanceId);
+            if (AreaManager.self.isInteriorArea(instanceRef.areaKey)) {
+               SoundEffectManager.self.playDoorSfx(SoundEffectManager.DoorAction.Open, instanceRef.biome, this.transform.position);
+            }
+
             LoadingUtil.executeAfterFade(() => {
                if (Global.player) {
                   Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);

@@ -290,19 +290,19 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      // If an npc is above the player, hide the guild icon
+      //If an npc is above the player, hide the guild icon
       bool isNpcNear = false;
       Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 0.5f), 0.25f);
       foreach (Collider2D collider in colliders) {
-         if (collider.transform.GetComponent<NPC>()) {
-            isNpcNear = true;
-            this.hideGuildIcon();
+         if (collider.transform.TryGetComponent<NPC>(out NPC npc)) {
+            if (!npc.isAnimal()) {
+               isNpcNear = true;
+               break;
+            }
          }
       }
 
-      if (!isNpcNear) {
-         this.showGuildIcon();
-      }
+      toggleGuildIcon(show: !isNpcNear);
    }
 
    public void showLevelTag (bool show) {

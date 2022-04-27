@@ -363,7 +363,7 @@ public class SeaEntity : NetEntity
    }
 
    private void tryRegisterAttackTypeAchievement (Attack.Type attackType, NetEntity achievementEarner, bool wasDamageReceiver) {
-      
+
       // Register achievements for being hit by various attack types
       if (wasDamageReceiver) {
          switch (attackType) {
@@ -380,7 +380,7 @@ public class SeaEntity : NetEntity
                break;
          }
 
-      // Register achievements for hitting entities with various attack types
+         // Register achievements for hitting entities with various attack types
       } else {
          switch (attackType) {
             case Attack.Type.Ice:
@@ -2397,7 +2397,7 @@ public class SeaEntity : NetEntity
    protected void Rpc_TriggerHealEffect (bool isEnable) {
       showHealEffect(isEnable);
    }
-   
+
    [ClientRpc]
    public void Rpc_ShowReceivedAbilityBuff (uint buffSourceNetId, ShipAbilityData shipAbilityData) {
       // Don't show an icon for buffs received from self
@@ -2407,7 +2407,7 @@ public class SeaEntity : NetEntity
 
       EffectManager.createBuffEffect(shipAbilityData.skillIconPath, new Vector2(0.0f, 0.025f), transform, true);
    }
-   
+
    protected virtual void showHealEffect (bool isEnable) {
       // Override this method to implement heal effect on inheriting class
    }

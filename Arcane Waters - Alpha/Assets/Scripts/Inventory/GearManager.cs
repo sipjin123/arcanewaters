@@ -78,7 +78,7 @@ public class GearManager : EquipmentManager
 
       // Play a sound
       if (!equipOnStart) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+         SoundEffectManager.self.playEquipSfx(true);
       }
 
       D.adminLog("Equipped Ring SQL: {" + ringData.sqlId +
@@ -99,7 +99,7 @@ public class GearManager : EquipmentManager
 
       // Play a sound
       if (!equipOnStart) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+         SoundEffectManager.self.playEquipSfx(true);
       }
 
       D.adminLog("Equipped Necklace SQL: {" + necklaceData.sqlId +
@@ -120,7 +120,7 @@ public class GearManager : EquipmentManager
 
       // Play a sound
       if (!equipOnStart) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+         SoundEffectManager.self.playEquipSfx(true);
       }
 
       D.adminLog("Equipped Trinket SQL: {" + trinketData.sqlId +

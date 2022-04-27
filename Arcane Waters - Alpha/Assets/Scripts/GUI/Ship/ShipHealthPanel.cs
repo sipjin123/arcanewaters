@@ -57,9 +57,11 @@ public class ShipHealthPanel : ClientMonoBehaviour
          return;
       }
 
-      int hpStep = 0;
+      float hpPerSailor = getHpPerSailor();
+
+      float hpStep = 0;
       for (int i = 0; i < _sailors.Count; i++) {
-         if ((hpStep + (HP_PER_SAILOR / 2)) < Global.player.currentHealth) {
+         if ((hpStep + (hpPerSailor / 2)) < Global.player.currentHealth) {
             _sailors[i].setStatus(SailorHP.Status.Healthy);
          } else if (hpStep < Global.player.currentHealth) {
             _sailors[i].setStatus(SailorHP.Status.Damaged);
@@ -68,7 +70,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
          } else {
             _sailors[i].setStatus(SailorHP.Status.Hidden);
          }
-         hpStep += HP_PER_SAILOR;
+         hpStep += hpPerSailor;
       }
 
       // If current health is 100% or greater, make sure all sailor icons are showing full health
@@ -80,7 +82,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
 
       if (Global.player.currentHealth > 0 && Global.player.currentHealth < _lastHealth) {
          int blinkLoopCount;
-         float sailorLeftCount = (float) Global.player.currentHealth / HP_PER_SAILOR;
+         float sailorLeftCount = (float) Global.player.currentHealth / hpPerSailor;
 
          // The closer the death, the more intense the red blinking
          if (sailorLeftCount <= 1) {
@@ -121,6 +123,18 @@ public class ShipHealthPanel : ClientMonoBehaviour
    private void show() {
       if (!canvasGroup.IsShowing()) {
          canvasGroup.alpha = 1;
+      }
+   }
+
+   private float getHpPerSailor () {
+      
+      // If max health is small enough to be shown on screen with default HP_PER_SAILOR, don't change it
+      if (Global.player.maxHealth <= MAX_SAILORS * HP_PER_SAILOR) {
+         return HP_PER_SAILOR;
+      
+      // If max health is too large to be shown on screen with default HP_PER_SAILOR, we will scale HP_PER_SAILOR to fit
+      } else {
+         return (float)Global.player.maxHealth / MAX_SAILORS;
       }
    }
 

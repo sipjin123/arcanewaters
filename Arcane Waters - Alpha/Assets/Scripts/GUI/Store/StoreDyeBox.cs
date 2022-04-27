@@ -2,9 +2,6 @@
 {
    #region Public Variables
 
-   // The clothing dye information
-   public DyeData dye;
-
    // Palette information
    public PaletteToolData palette;
 

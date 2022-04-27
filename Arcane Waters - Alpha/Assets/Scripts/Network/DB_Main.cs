@@ -12208,7 +12208,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand($"INSERT INTO `store_items` DEFAULT VALUES", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"INSERT INTO `store_items_v2` DEFAULT VALUES", conn)) {
                int rowsAffected = cmd.ExecuteNonQuery();
 
                if (rowsAffected == 0) {
@@ -12232,14 +12232,14 @@ public class DB_Main : DB_MainStub
             // Open the connection.
             conn.Open();
 
-            using (MySqlCommand cmd = new MySqlCommand($"UPDATE `store_items` SET siItemCategory=@siItemCategory, siItem=@siItem, siIsEnabled=@siIsEnabled, siItemPrice=@siItemPrice, siItemName=@siItemName, siItemDescription=@siItemDescription WHERE `siItemId`=@itemId", conn)) {
-               cmd.Parameters.AddWithValue("@itemId", itemId);
-               cmd.Parameters.AddWithValue("@siItemPrice", price);
+            using (MySqlCommand cmd = new MySqlCommand($"UPDATE `store_items_v2` SET siCategory=@siCategory, siItem=@siItem, siIsEnabled=@siIsEnabled, siPrice=@siPrice, siName=@siName, siDescription=@siDescription WHERE `siId`=@id", conn)) {
+               cmd.Parameters.AddWithValue("@id", itemId);
                cmd.Parameters.AddWithValue("@siIsEnabled", isEnabled);
                cmd.Parameters.AddWithValue("@siItem", soldItemId);
-               cmd.Parameters.AddWithValue("@siItemCategory", category);
-               cmd.Parameters.AddWithValue("@siItemName", storeItemName);
-               cmd.Parameters.AddWithValue("@siItemDescription", storeItemDescription);
+               cmd.Parameters.AddWithValue("@siPrice", price);
+               cmd.Parameters.AddWithValue("@siCategory", category);
+               cmd.Parameters.AddWithValue("@siName", storeItemName);
+               cmd.Parameters.AddWithValue("@siDescription", storeItemDescription);
 
                int rowsAffected = cmd.ExecuteNonQuery();
                result = rowsAffected > 0;
@@ -12257,8 +12257,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand($"DELETE FROM `store_items` WHERE `siItemId` = @itemId", conn)) {
-               cmd.Parameters.AddWithValue("@itemId", itemId);
+            using (MySqlCommand cmd = new MySqlCommand($"DELETE FROM `store_items_v2` WHERE `siId` = @id", conn)) {
+               cmd.Parameters.AddWithValue("@id", itemId);
                int rowsAffected = cmd.ExecuteNonQuery();
                return rowsAffected > 0;
             }
@@ -12275,8 +12275,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items` WHERE `siItemId` = @itemId", conn)) {
-               cmd.Parameters.AddWithValue("@itemId", itemId);
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items_v2` WHERE `siId` = @id", conn)) {
+               cmd.Parameters.AddWithValue("@id", itemId);
                using (MySqlDataReader reader = cmd.ExecuteReader()) {
                   if (reader.Read()) {
                      storeItem = StoreItem.create(reader);
@@ -12297,7 +12297,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items`", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items_v2`", conn)) {
                using (MySqlDataReader reader = cmd.ExecuteReader()) {
                   while (reader.Read()) {
                      storeItems.Add(StoreItem.create(reader));

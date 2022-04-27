@@ -195,12 +195,12 @@ public class InstanceManager : MonoBehaviour
    }
 
    public void addVaryingStateObjectToInstance (VaryingStateObject ob, Instance instance) {
-      instance.entities.Add(instance);
+      instance.entities.Add(ob);
       ob.instanceId = instance.id;
    }
 
    public void addCustomizationManagerToInstance (MapCustomizationManager mapCustomizationManager, Instance instance) {
-      instance.entities.Add(instance);
+      instance.entities.Add(mapCustomizationManager);
       instance.mapCustomizationManager = mapCustomizationManager;
       mapCustomizationManager.instanceId = instance.id;
    }
@@ -244,6 +244,10 @@ public class InstanceManager : MonoBehaviour
       instance.entities.Add(objEntity);
       instance.interactableObject.Add(objEntity);
       objEntity.instanceId = instance.id;
+   }
+
+   public void addOutpostToInstance (Outpost outpost, Instance instance) {
+      addSeaStructureToInstance(outpost, instance);
    }
 
    public void addSeaStructureToInstance (SeaStructure seaStructure, Instance instance) {
@@ -319,7 +323,7 @@ public class InstanceManager : MonoBehaviour
       instance.areaKey = areaKey;
       instance.numberInArea = getInstanceCount(areaKey) + 1;
       instance.serverAddress = MyNetworkManager.self.networkAddress;
-      instance.serverPort = MyNetworkManager.self.telepathy.port;
+      instance.serverPort = MyNetworkManager.self.Port;
       instance.mapSeed = UnityEngine.Random.Range(0, 1000000);
       instance.creationDate = DateTime.UtcNow.ToBinary();
       instance.isVoyage = isVoyage;
@@ -561,6 +565,34 @@ public class InstanceManager : MonoBehaviour
       }
 
       return count;
+   }
+
+   public bool isPrimaryInstance (Instance instance) {
+      foreach (Instance existing in _instances.Values) {
+         if (existing.areaKey.CompareTo(instance.areaKey) == 0) {
+            if (existing.creationDate < instance.creationDate) {
+               return false;
+            }
+         }
+      }
+
+      return true;
+   }
+
+   public bool getPrimaryInstance (string areaKey) {
+      Instance result = null;
+      long oldest = long.MaxValue;
+
+      foreach (Instance instance in _instances.Values) {
+         if (instance.areaKey.CompareTo(areaKey) == 0) {
+            if (instance.creationDate < oldest) {
+               oldest = instance.creationDate;
+               result = instance;
+            }
+         }
+      }
+
+      return result;
    }
 
    public void reset () {

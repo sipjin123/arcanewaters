@@ -150,6 +150,10 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
       return _userId;
    }
 
+   public string getUserName () {
+      return _userName;
+   }
+   
    #region Private Variables
 
    // The ID of the guild member displayed by this row

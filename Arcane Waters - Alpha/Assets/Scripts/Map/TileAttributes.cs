@@ -24,7 +24,17 @@ public class TileAttributes
       ShallowWater = 10,
       MidWater = 11,
       Carpet = 12,
-      Dirt = 13
+      Dirt = 13,
+      OutpostBridgeSnap_S = 14,
+      OutpostBridgeSnap_N = 15,
+      OutpostBridgeSnap_E = 16,
+      OutpostBridgeSnap_W = 17,
+      OutpostBridgeSnap_SW = 18,
+      OutpostBridgeSnap_SE = 19,
+      OutpostBridgeSnap_NW = 20,
+      OutpostBridgeSnap_NE = 21,
+      OutpostBaseSpot = 22,
+      OutpostBasePrevent = 23
    }
 
    // The attributes that are assigned to a tile

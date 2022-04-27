@@ -1,11 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 using TMPro;
-using TMPro.Examples;
-using UnityEngine.InputSystem;
 
 public class RollingTextFade : ClientMonoBehaviour {
    #region Public Variables
@@ -28,7 +23,7 @@ public class RollingTextFade : ClientMonoBehaviour {
    private void Update () {
       // If the player clicks the mouse while we're fading in, then finish up
       if (KeyUtils.GetButtonDown(MouseButton.Left)) {
-         _delayPerCharacter = .01f;
+         _delayPerCharacter = 0f;
       }
    }
 

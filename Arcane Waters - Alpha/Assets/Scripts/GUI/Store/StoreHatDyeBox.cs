@@ -24,13 +24,7 @@ public class StoreHatDyeBox : StoreDyeBox
    public virtual void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.HatDyes;
 
-      if (this.hatImage == null || this.bodyImage == null || this.hatSprite == null || Util.isBatch() || dye == null) {
-         return;
-      }
-
-      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
-
-      if (this.palette == null) {
+      if (this.hatImage == null || this.bodyImage == null || this.hatSprite == null || Util.isBatch()) {
          return;
       }
 
@@ -88,7 +82,6 @@ public class StoreHatDyeBox : StoreDyeBox
 
    public bool isDyeApplicable () {
       // Checks whether the dye can actually be applied to the hat
-      PaletteToolData palette = PaletteSwapManager.self.getPalette(this.dye.paletteId);
       HatDyeSupportInfo info = getHatDyeSupportInfo();
 
       if (palette.isPrimary() && info.supportsPrimaryDyes ||
@@ -114,18 +107,20 @@ public class StoreHatDyeBox : StoreDyeBox
       bool canUseAccentDyes = false;
 
       foreach (PaletteToolData palette in palettes) {
-         if (DyeXMLManager.self.getAdjustedPaletteType(palette) == PaletteToolManager.PaletteImageType.Hat) {
-            if (palette.isPrimary() && primaryPalette == null) {
-               primaryPalette = palette;
-            }
+         if (palette.paletteType != (int) PaletteToolManager.PaletteImageType.Hat) {
+            continue;
+         }
 
-            if (palette.isSecondary() && secondaryPalette == null) {
-               secondaryPalette = palette;
-            }
+         if (palette.isPrimary() && primaryPalette == null) {
+            primaryPalette = palette;
+         }
 
-            if (palette.isAccent() && accentPalette == null) {
-               accentPalette = palette;
-            }
+         if (palette.isSecondary() && secondaryPalette == null) {
+            secondaryPalette = palette;
+         }
+
+         if (palette.isAccent() && accentPalette == null) {
+            accentPalette = palette;
          }
       }
 

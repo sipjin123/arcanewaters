@@ -8,7 +8,8 @@ using System;
 // The Direction we're facing
 public enum Direction { North = 1, NorthEast = 2, East = 3, SouthEast = 4, South = 5, SouthWest = 6, West = 7, NorthWest = 8 }
 
-public class DirectionUtil {
+public class DirectionUtil
+{
    #region Public Variables
 
    #endregion

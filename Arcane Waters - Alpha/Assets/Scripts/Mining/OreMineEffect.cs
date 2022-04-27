@@ -11,11 +11,11 @@ public class OreMineEffect : MonoBehaviour {
    // The ore being animated
    public Transform animatingObj;
 
+   // The sprite renderer outline reference
+   public SpriteRenderer oreOutline;
+   
    // The sprite renderer reference
    public SpriteRenderer spriteRender;
-
-   // The list of ores and their associated sprites
-   public List<OreSprite> oreSpriteList;
 
    // The animator component
    public Animator animator;
@@ -29,6 +29,9 @@ public class OreMineEffect : MonoBehaviour {
    // The user who interacted this ore
    public int ownerId;
 
+   // Set to true if ore is a bonus ore
+   public bool isBonusOre;
+
    // The voyage group that owns this ore
    public int voyageGroupId;
 
@@ -37,34 +40,36 @@ public class OreMineEffect : MonoBehaviour {
 
    #endregion
 
-   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, float randomSpeed) {
+   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, float randomSpeed, bool isBonus) {
       this.ownerId = ownerId;
       this.voyageGroupId = voyageGroupId;
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
+      isBonusOre = isBonus;
       animator.speed = randomSpeed;
 
+      oreOutline.gameObject.SetActive(isBonusOre);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_DROP, transform);
    }
 
    private void LateUpdate () {
       shadow.transform.eulerAngles = new Vector3(0, 0, 0);
    }
-
-   public void setSprite (OreNode.Type oreType) {
-      OreSprite cropSprite = oreSpriteList.Find(_ => _.oreType == oreType);
-      if (cropSprite != null) {
-         spriteRender.sprite = cropSprite.sprite;
-      }
-
-      Invoke("endAnim", 1);
+   
+   public void setOreSprite (Sprite oreSprite) {
+      spriteRender.sprite = oreSprite;
+      oreOutline.sprite = oreSprite;
    }
 
    public void endAnim () {
       if (!oreNode.orePickupCollection.ContainsKey(oreEffectId)) {
          GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab, oreNode.transform);
          OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
-         orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite, animatingObj.rotation);
+         if (isBonusOre) {
+            Instantiate(PrefabsManager.self.sparkleBurstPrefab, spawnedObj.transform);
+         }
+
+         orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite);
 
          oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 

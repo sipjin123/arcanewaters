@@ -359,7 +359,14 @@ public class GuildPanel : Panel {
 
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
-         Global.player.rpc.Cmd_KickGuildMember(row.getUserId());
+         // Show a confirmation screen before user can successfully kick a guild member
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+            PanelManager.self.confirmScreen.hide();
+            Global.player.rpc.Cmd_KickGuildMember(row.getUserId());
+         });
+         
+         PanelManager.self.confirmScreen.show($"Are you sure you want to kick {row.getUserName()}?");
       }
    }
 
@@ -370,7 +377,14 @@ public class GuildPanel : Panel {
 
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
-         Global.player.rpc.Cmd_AppointGuildLeader(row.getUserId());
+         // Show confirmation screen before user can successfully appoint new guild leader
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+            PanelManager.self.confirmScreen.hide();
+            Global.player.rpc.Cmd_AppointGuildLeader(row.getUserId());
+         });
+
+         PanelManager.self.confirmScreen.show($"Are you sure you want to appoint {row.getUserName()} as the new Guild Leader?");
       }
    }
 

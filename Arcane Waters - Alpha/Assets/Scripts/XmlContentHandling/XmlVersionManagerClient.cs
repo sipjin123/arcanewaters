@@ -1019,25 +1019,6 @@ public class XmlVersionManagerClient : GenericGameManager {
             HaircutXMLManager.self.receiveHaircutDataFromZipData(haircutDataList);
             break;
 
-         case EditorToolType.Dyes:
-            List<DyeData> dyesDataList = new List<DyeData>();
-
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  DyeData actualData = Util.xmlLoad<DyeData>(xmlSubGroup[1]);
-                  actualData.itemID = dataId;
-                  dyesDataList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-
-            DyeXMLManager.self.receiveDataFromZipData(dyesDataList);
-            break;
-
          case EditorToolType.Gems:
             List<GemsData> gemsDataList = new List<GemsData>();
 

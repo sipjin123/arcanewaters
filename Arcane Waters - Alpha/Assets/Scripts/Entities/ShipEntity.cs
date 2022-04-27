@@ -393,11 +393,10 @@ public class ShipEntity : SeaEntity
       float value = shipAbilityData.damageModifier;
       float refreshDuration = 0.5f;
 
-      // TODO: Jose setup sfx here
       // Handle start sfx trigger here            
-      Rpc_PlaySFXTrigger(false, "Play Start AOE SFX HERE");
+      Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, true);
       Rpc_TriggerHealEffect(true);
-      D.debug("---- Casting ability now: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
+      //D.debug("---- Casting ability now: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
 
       // Retain the buffs within the allies status while within proximity and time duration
       while (NetworkTime.time < endTimeVal) {
@@ -460,11 +459,10 @@ public class ShipEntity : SeaEntity
          }
       }
 
-      // TODO: Jose setup sfx here
       // Handle stop sfx trigger here
-      Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
+      Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, false);
       Rpc_TriggerHealEffect(false);
-      D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
+      //D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
    }
 
 
@@ -506,8 +504,12 @@ public class ShipEntity : SeaEntity
    }
 
    [ClientRpc]
-   public void Rpc_PlaySFXTrigger (bool isPlay, string temp) {
-      // TODO: Insert broadcast client sfx trigger here
+   public void Rpc_PlaySFXTrigger (SoundEffectManager.SeaAbilityType seaAbilityType, uint netId, bool isPlay) {
+      switch (seaAbilityType) {
+         case SoundEffectManager.SeaAbilityType.Ruffian_Repairs:
+            SoundEffectManager.self.triggerSeaAbilitySfx(netId, seaAbilityType, isPlay);
+            break;
+      }
    }
 
    [Command]

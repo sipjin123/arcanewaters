@@ -47,6 +47,18 @@ public class TileAttributesMatrix
       return false;
    }
 
+   public void logAttributes (Vector2Int index, string prefix) {
+      TileAttributes a = getTileAttributesMatrixElement(index);
+      if (a == null) {
+         prefix += "null";
+      } else {
+         for (int i = 0; i < a.attributes.Count; i++) {
+            prefix += a.attributes[i].ToString() + " ";
+         }
+      }
+      Debug.Log(prefix);
+   }
+
    public int getAttributes (Vector2Int index, TileAttributes.Type[] attributeBuffer) {
       TileAttributes a = getTileAttributesMatrixElement(index);
       if (a == null) {

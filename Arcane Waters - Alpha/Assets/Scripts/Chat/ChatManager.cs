@@ -445,6 +445,7 @@ public class ChatManager : GenericGameManager
       if (Util.isBatch()) {
          return;
       }
+      EventSystem.current.SetSelectedGameObject(null);
       InputManager.self.actionMapStates.Restore();
       InputManager.self.inputMaster.Chat.Disable();
       autoCompletePanel.inputFieldFocused = false;
@@ -1024,6 +1025,9 @@ public class ChatManager : GenericGameManager
       }
       
       addChat(message, ChatInfo.Type.PendingFriendRequestsNotification);
+
+      // Sound effect
+      SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.FRIEND_REQUEST, SoundEffectManager.AMB_SW_PARAM, 1);
    }
 
    [Server]

@@ -14,6 +14,14 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    [SyncVar]
    public int instanceId;
 
+   // The area key this object belongs to
+   [SyncVar]
+   public string areaKey;
+
+   // The local position to an area
+   [SyncVar]
+   public Vector2 localPosition;
+
    // The state this object currently has
    [SyncVar(hook = nameof(stateSyncVarChanged))]
    public string state = "";
@@ -28,6 +36,27 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    public readonly List<int> triggersObjects = new List<int>();
 
    #endregion
+
+   private void Start () {
+      StartCoroutine(CO_SetAreaParent());
+   }
+
+   protected IEnumerator CO_SetAreaParent () {
+      // Wait until we have finished instantiating the area
+      Area area = null;
+      if (AreaManager.self == null) {
+         yield return null;
+      }
+      while (!AreaManager.self.tryGetArea(areaKey, out area)) {
+         yield return 0;
+      }
+
+      transform.parent = area.prefabParent.transform;
+      transform.localPosition = localPosition;
+      if (TryGetComponent(out ZSnap snap)) {
+         snap.snapZ();
+      }
+   }
 
    private void stateSyncVarChanged (string oldVal, string newVal) {
       onStateChanged(newVal);
