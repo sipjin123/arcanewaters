@@ -297,7 +297,8 @@ namespace MapCreationTool.Serialization
       public const string CRITTER_RUN_DIRECTION_KEY = "run direction";
 
       public const string LAND_ENEMY_DATA_KEY = "enemy data";
-
+      public const string IS_RANDOMIZED_KEY = "isRandomized";
+      
       public const string ORE_SPOT_DATA_KEY = "ore id";
       public const string ORE_TYPE_DATA_KEY = "ore type";
       public const string ORE_RESPAWN_TIME_DATA_KEY = "ore respawn time";

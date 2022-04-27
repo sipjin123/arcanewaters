@@ -237,13 +237,21 @@ public class EnemyManager : MonoBehaviour {
                         float spawnShipChance = 60;
                         int randomEnemyTypeVal = Random.Range(0, 100);
                         int guildId = BotShipEntity.PIRATES_GUILD_ID;
+                        bool forceSpawnSeamonsters = false;
 
                         // Override random value to fix ship spawning only if the map does not allow seamonsters
                         MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaTarget.areaKey);
                         if (mapInfo != null) {
+                           // Some maps do not allow spawning of sea monsters
                            if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
                               D.debug("Map Data override! This map {" + areaTarget.areaKey + "} does not allow spawning of SeaMonsters!");
                               randomEnemyTypeVal = 0;
+                           }
+
+                           // Some maps only spawns seamonsters such as the areas between all the biomes
+                           if ((Area.SpecialState) mapInfo.specialState == Area.SpecialState.SeaMonstersOnly) {
+                              randomEnemyTypeVal = 100;
+                              forceSpawnSeamonsters = true;
                            }
                         }
 
@@ -252,7 +260,7 @@ public class EnemyManager : MonoBehaviour {
                         if (randomEnemyTypeVal < spawnShipChance) {
                            spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
                         } else {
-                           if (mapInfo.spawnsSeaMonsters) {
+                           if (mapInfo.spawnsSeaMonsters || forceSpawnSeamonsters) {
                               spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, guildId, difficulty);
                            } else {
                               spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);

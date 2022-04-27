@@ -94,11 +94,13 @@ namespace MapCreationTool
          maxPlayerCountInput.text = map.maxPlayerCount.ToString();
          sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
          spawnsSeaMonsterToggle.isOn = map.spawnsSeaMonsters;
+
+         specialState.maxValue = Enum.GetValues(typeof(Area.SpecialState)).Length - 1;
          specialState.onValueChanged.AddListener(_ => {
-            specialStateText.text = _.ToString();
+            specialStateText.text = ((Area.SpecialState) _).ToString();
          });
          specialState.value = map.specialState;
-         specialStateText.text = map.specialState.ToString();
+         specialStateText.text = ((Area.SpecialState) map.specialState).ToString();
 
          sourceMapDropdown.value = 0;
          for (int i = 0; i < sourceOptions.Length; i++) {
@@ -182,11 +184,11 @@ namespace MapCreationTool
                throw new ArgumentException("Only outside area maps can be town maps");
             }
 
-            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpGameMode != PvpGameMode.None) {
+            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpGameMode != PvpGameMode.None && newMap.specialState == 0) {
                throw new ArgumentException("Only pvp arenas can have a game mode");
             }
 
-            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpArenaSize != PvpArenaSize.None) {
+            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpArenaSize != PvpArenaSize.None && newMap.specialState == 0) {
                throw new ArgumentException("Only pvp arenas can have an arena size");
             }
 

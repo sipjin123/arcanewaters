@@ -162,6 +162,7 @@ public class LandPowerupManager : MonoBehaviour {
    }
 
    public bool hasPowerup (int userId, LandPowerupType type) {
+      // Server side checks only, refer to powerup panel for client checks
       if (!landPowerupDataSet.ContainsKey(userId)) {
          return false;
       }

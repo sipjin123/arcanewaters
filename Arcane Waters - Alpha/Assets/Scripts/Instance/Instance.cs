@@ -465,6 +465,7 @@ public class Instance : NetworkBehaviour
 
             Enemy.Type newEnemyType = Enemy.Type.None;
             bool newIsStationary = false;
+            bool isRandomized = false;
             foreach (DataField field in dataField.d) {
                if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
                   // Get ID from npc data field
@@ -476,9 +477,17 @@ public class Instance : NetworkBehaviour
                   string isStationaryData = field.v.Split(':')[0];
                   newIsStationary = isStationaryData.ToLower() == "true" ? true : false;
                }
+               if (field.k.CompareTo(DataField.IS_RANDOMIZED_KEY) == 0) {
+                  string isRandomizedData = field.v.Split(':')[0];
+                  isRandomized = isRandomizedData.ToLower() == "true" ? true : false;
+               }
             }
 
             if (newEnemyType != Enemy.Type.PlayerBattler) {
+               if (isRandomized) {
+                  // Do randomized logic here for enemies that are not fixed
+               }
+
                // Add it to the Instance
                Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
                enemy.enemyType = newEnemyType;
