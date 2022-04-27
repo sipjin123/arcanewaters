@@ -271,9 +271,6 @@ public class MailPanel : Panel
       // Refresh the mail list
       refreshMailList();
 
-      // Update the new mail notification
-      BottomBar.self.setUnreadMailNotificationStatus(hasUnreadMail);
-
       // Adjust UI for system mails
       replyMailButton.interactable = !isSystemMail;
       senderNameText.text = isSystemMail ? MailManager.SYSTEM_USERNAME : senderNameText.text;

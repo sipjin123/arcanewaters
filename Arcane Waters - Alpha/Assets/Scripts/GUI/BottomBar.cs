@@ -9,12 +9,6 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
-   // The mail panel button when there is no unread mail
-   public GameObject normalMailPanelButton;
-
-   // The mail panel button when there is unread mail
-   public GameObject unreadMailPanelButton;
-
    // The friend list panel button when there is no pending request
    public GameObject normalFriendListPanelButton;
 
@@ -25,7 +19,6 @@ public class BottomBar : MonoBehaviour {
 
    private void Awake () {
       self = this;
-      setUnreadMailNotificationStatus(false);
       setFriendshipRequestNotificationStatus(false);
    }
 
@@ -50,11 +43,6 @@ public class BottomBar : MonoBehaviour {
             _areButtonsActive = true;
          }
       }
-   }
-
-   public void setUnreadMailNotificationStatus (bool active) {
-      unreadMailPanelButton.SetActive(active);
-      normalMailPanelButton.SetActive(!active);
    }
 
    public void setFriendshipRequestNotificationStatus (bool active) {
