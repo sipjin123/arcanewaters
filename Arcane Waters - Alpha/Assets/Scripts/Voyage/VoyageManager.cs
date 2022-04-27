@@ -498,8 +498,12 @@ public class VoyageManager : GenericGameManager {
             foreach (int memberUserId in voyageGroup.members) {
                NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
                if (memberEntity != null) {
-                  memberEntity.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
-               } 
+                  if (memberEntity.userId == player.userId) {
+                     memberEntity.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+                  } else {
+                     // Do logic here for allies that will be entering the league
+                  }
+               }
             }
          } else {
             player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);

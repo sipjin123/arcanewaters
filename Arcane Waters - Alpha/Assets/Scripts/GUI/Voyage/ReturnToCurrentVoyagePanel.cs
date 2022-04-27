@@ -32,6 +32,7 @@ public class ReturnToCurrentVoyagePanel : Panel
    public void updatePanelWithCurrentVoyage (Voyage voyage) {
       // Clear out any old info
       mapCellContainer.DestroyChildren();
+      VoyageTriggerPopup.self.disableAllPanels();
 
       // Instantiate the cell
       if (voyage.isPvP) {

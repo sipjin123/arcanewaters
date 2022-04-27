@@ -231,6 +231,7 @@ public class PlayerShipEntity : ShipEntity
 
          InputManager.self.inputMaster.Sea.Dash.performed += OnSeaDashPerformed;
          InputManager.self.inputMaster.Sea.Dash.canceled += OnSeaDashCanceled;
+         VoyageTriggerPopup.self.disableAllPanels();
 
          // Creating the FMOD event Instance
          _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);

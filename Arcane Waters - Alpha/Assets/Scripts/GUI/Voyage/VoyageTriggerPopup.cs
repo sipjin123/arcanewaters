@@ -33,6 +33,11 @@ public class VoyageTriggerPopup : MonoBehaviour {
       });
    }
 
+   public void disableAllPanels () {
+      voyageStatusPopup.SetActive(false);
+      warningPanel.SetActive(false);
+   }
+
    public void toggleWarningPanel (string message) {
       warningMessage.text = message;
       warningPanel.SetActive(true);
@@ -41,7 +46,14 @@ public class VoyageTriggerPopup : MonoBehaviour {
    public void enableVoyageGUI (bool isEnable, Sprite spriteRef = null) {
       voyageStatusPopup.SetActive(isEnable);
       if (isEnable) {
-         voyageStatusBiomeImg.sprite = spriteRef;
+         ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
+
+         // Make sure the panel is not showing, otherwise override state
+         if (panel != null && panel.isShowing()) {
+            voyageStatusPopup.SetActive(false);
+         } else {
+            voyageStatusBiomeImg.sprite = spriteRef;
+         }
       }
    }
 
