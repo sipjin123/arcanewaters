@@ -33,7 +33,7 @@ public class ScreenLogger : GenericGameManager {
       isEnabled = false;
       canvasObj.SetActive(false);
 
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.CancelAttack);
+      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Treasure);
       D.debug("Screen Logger v5.0.6 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
       if (!Util.isCloudBuild()) {

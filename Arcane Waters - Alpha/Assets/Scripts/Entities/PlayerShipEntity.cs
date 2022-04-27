@@ -2189,10 +2189,10 @@ public class PlayerShipEntity : ShipEntity
          if (abilityIndex < CannonPanel.self.cannonBoxList.Count && abilityIndex >= 0) {
             CannonPanel.self.cannonBoxList[abilityIndex].abilityId = newShipAbilityId;
          } else {
-            D.debug("Was trying to process invalid index {" + abilityIndex + "}");
+            D.editorLog("Was trying to process invalid index {" + abilityIndex + "}", Color.yellow);
          }
       }
-      D.debug(abilityNameData);
+      D.editorLog(abilityNameData, Color.yellow);
 
       CannonPanel.self.updateCooldownDurations();
    }

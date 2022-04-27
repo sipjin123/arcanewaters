@@ -298,12 +298,14 @@ public class TreasureChest : NetworkBehaviour {
       List<TreasureDropsData> treasureDropsList = (lootGroupId != TreasureDropsData.EMPTY_DROPS || lootGroupId > 0) 
          ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) 
          : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
-      D.adminLog("Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items", D.ADMIN_LOG_TYPE.Treasure);
+      string itemList = "Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
 
       // Try to fetch biome based drops if no treasure content is found
       if (treasureDropsList.Count < 1) {
          treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
+         itemList = "Processing Chest Contents from Biome {" + biome + "}:{" + rarity + "}:{" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
       }
+      D.adminLog(itemList, D.ADMIN_LOG_TYPE.Treasure);
 
       if (treasureDropsList.Count < 1) {
          // If no treasure content was fetched still, find the next viable content
@@ -319,6 +321,8 @@ public class TreasureChest : NetworkBehaviour {
             randomEntry.item.count = assignItemCount(randomEntry);
             if (Item.isValidItem(randomEntry.item)) {
                return randomEntry.item;
+            } else {
+               D.error("This is not a valid item {" + randomEntry.item.category + ":" + randomEntry.item.itemTypeId + "}{" + randomEntry.item.data + ":" + randomEntry.item.id + "}");
             }
          } else {
             D.error("Random Entry found is: NULL for biome {" + biome + "}");
@@ -570,7 +574,9 @@ public class TreasureChest : NetworkBehaviour {
 
       // Show a confirmation in chat
       if (itemName.Length < 1) {
-         D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId + " : " + item.data);
+         Instance instance = InstanceManager.self.getInstance(instanceId);
+         Biome.Type biome = instance == null ? Biome.Type.None : instance.biome;
+         D.debug("TreasureChest:Invalid Item Name: The item found is: {" + item.category + "}:{" + item.itemTypeId + "}:{" + item.data + "}:{" + biome + "}");
       } else {
          string msg = string.Format("You found <color=yellow>{0}</color> <color=red>{1}</color>", item.count, itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);

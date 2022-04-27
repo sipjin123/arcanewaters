@@ -784,7 +784,6 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_OpenLootBag (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
-      D.adminLog("User {" + _player.userId + "} is trying to open lootbag {" + chestId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       // Make sure we found the Treasure Chest
       if (chest == null) {
@@ -7732,7 +7731,9 @@ public class RPCManager : NetworkBehaviour
       AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
 
       if (item.category == Item.Category.Blueprint) {
-         D.debug("Sending Item Reward to player {" + _player.userId + "} item: " + item.category + " : " + item.itemTypeId);
+         Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+         Biome.Type biome = instance == null ? Biome.Type.None : instance.biome;
+         D.debug("Sending Item Reward to player:{" + _player.userId + "}item:{" + item.category + "}:{" + item.itemTypeId + "}:{" + item.data + "}:{" + biome + "}");
       }
 
       // Send it to the specific player that opened it
