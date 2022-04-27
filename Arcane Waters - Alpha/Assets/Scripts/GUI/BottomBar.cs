@@ -90,7 +90,7 @@ public class BottomBar : MonoBehaviour {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
 
-            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer(true);
          }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Guild);

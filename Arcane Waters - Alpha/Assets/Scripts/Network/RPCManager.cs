@@ -721,16 +721,20 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGuildInfo (NetworkConnection connection, GuildInfo info, GuildRankInfo[] guildRanks) {
+   public void Target_ReceiveGuildInfo (NetworkConnection connection, GuildInfo info, GuildRankInfo[] guildRanks, bool forceOpenPanel) {
       // Make sure the panel is showing
       GuildPanel panel = (GuildPanel) PanelManager.self.get(Panel.Type.Guild);
 
-      if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(Panel.Type.Guild);
-      }
+      if (forceOpenPanel) {
+         if (!panel.isShowing()) {
+            PanelManager.self.linkPanel(Panel.Type.Guild);
+         }
 
-      // Update the Inventory Panel with the items we received from the server
-      panel.receiveDataFromServer(info, guildRanks);
+         // Update the Inventory Panel with the items we received from the server
+         panel.receiveDataFromServer(info, guildRanks);
+      } else {
+         panel.updatePlayerRanks(info, guildRanks);
+      }
    }
 
    [TargetRpc]
@@ -1501,7 +1505,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestGuildInfoFromServer () {
+   public void Cmd_RequestGuildInfoFromServer (bool forceOpenPanel) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Default to an empty guild info
@@ -1554,7 +1558,7 @@ public class RPCManager : NetworkBehaviour
                }
             }
 
-            _player.rpc.Target_ReceiveGuildInfo(_player.connectionToClient, info, rankInfo != null ? rankInfo.ToArray() : null);
+            _player.rpc.Target_ReceiveGuildInfo(_player.connectionToClient, info, rankInfo != null ? rankInfo.ToArray() : null, forceOpenPanel);
          });
       });
    }

@@ -208,7 +208,7 @@ public class ClientMessageManager : MonoBehaviour {
             ((GuildPanel) PanelManager.self.get(Panel.Type.Guild)).guildCreatePanel.hide();
 
             // Get updated info
-            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer(true);
 
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
@@ -218,7 +218,7 @@ public class ClientMessageManager : MonoBehaviour {
             ((GuildPanel) PanelManager.self.get(Panel.Type.Guild)).guildRanksPanel.hide();
 
             // Get updated info
-            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer(true);
 
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
@@ -229,7 +229,7 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
             // Get updated info
-            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer(true);
 
             return;
          case ConfirmMessage.Type.GuildActionGlobal:
@@ -239,7 +239,7 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ConfirmMessage.Type.GuildActionUpdate:
             // Get updated info
-            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer(true);
 
             return;
          case ConfirmMessage.Type.UsedConsumable:

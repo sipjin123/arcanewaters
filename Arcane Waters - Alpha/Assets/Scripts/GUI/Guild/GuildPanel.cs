@@ -33,6 +33,9 @@ public class GuildPanel : Panel {
    // The prefab we use for creating a guild member row
    public GuildMemberRow guildMemberPrefab;
 
+   // The total seconds before refreshing panel
+   public const float REFRESH_TIMER = 3;
+
    // Our various texts
    public Text nameText;
    public Text dateText;
@@ -191,6 +194,17 @@ public class GuildPanel : Panel {
       guildAllyLoadBlocker.SetActive(false);
    }
 
+   public void updatePlayerRanks (GuildInfo info, GuildRankInfo[] guildRanks) {
+      foreach (UserInfo guildMember in info.guildMembers) {
+         GuildMemberRow currRow = _guildMemberRowsReference.Find(_ => _.getUserId() == guildMember.userId);
+         if (currRow != null) {
+            currRow.setRowForGuildMember(guildMember, guildRanks);
+         }
+      }
+
+      Invoke(nameof(refreshGuildAllyData), REFRESH_TIMER);
+   }
+
    public void receiveDataFromServer (GuildInfo info, GuildRankInfo[] guildRanks) {
       guildAlliesPanel.SetActive(false);
       bool inGuild = Global.player.guildId != 0;
@@ -275,6 +289,14 @@ public class GuildPanel : Panel {
 
       // Sync order
       sort(_sortedColumn, _sortDirection);
+
+      Invoke(nameof(refreshGuildAllyData), REFRESH_TIMER);
+   }
+
+   private void refreshGuildAllyData () {
+      if (gameObject.activeInHierarchy) {
+         Global.player.rpc.Cmd_RequestGuildInfoFromServer(false);
+      }
    }
 
    public void createGuildPressed () {
