@@ -187,6 +187,10 @@ public class Area : MonoBehaviour
 
    #endregion
 
+   private void Awake () {
+      _grid = GetComponentInChildren<Grid>();
+   }
+
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields,
@@ -608,7 +612,23 @@ public class Area : MonoBehaviour
       }
    }
 
-   public bool closestTileWithAttribute (TileAttributes.Type attribute, Vector3 worldPosition, Vector2Int searchBounds, out Vector3 closest) {
+   public void setTileAttribute (TileAttributes.Type type, Vector2 worldPosition) {
+      // Get cell position
+      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+
+      // Rebase coordinates to corner of map
+      cellPos += mapTileSize / 2;
+
+      // If position is out of bounds, return
+      if (cellPos.x < 0 || cellPos.y < 0 || cellPos.x >= mapTileSize.x || cellPos.y >= mapTileSize.y) {
+         return;
+      }
+
+      _tileAttributesMatrix.addAttribute(cellPos, type);
+   }
+
+   public bool closestTileWithAnyOfAttribute (TileAttributes.Type[] attributes, Vector3 worldPosition, Vector2Int searchBounds,
+      out Vector3 closest, out TileAttributes.Type foundAttribute) {
       // Get cell position
       Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
 
@@ -617,6 +637,7 @@ public class Area : MonoBehaviour
 
       double minDist = double.MaxValue;
       closest = Vector3.zero;
+      foundAttribute = TileAttributes.Type.None;
 
       for (int i = 0; i < searchBounds.x; i++) {
          for (int j = 0; j < searchBounds.y; j++) {
@@ -628,11 +649,15 @@ public class Area : MonoBehaviour
                continue;
             }
 
-            if (_tileAttributesMatrix.hasAttribute(p, attribute)) {
-               double sqrDist = Math.Pow(cellPos.x - p.x, 2) + Math.Pow(cellPos.y - p.y, 2);
-               if (sqrDist < minDist) {
-                  minDist = sqrDist;
-                  closest = cellToWorld((Vector3Int) (p - mapTileSize / 2));
+            for (int k = 0; k < attributes.Length; k++) {
+               if (_tileAttributesMatrix.hasAttribute(p, attributes[k])) {
+                  double sqrDist = Math.Pow(cellPos.x - p.x, 2) + Math.Pow(cellPos.y - p.y, 2);
+                  if (sqrDist < minDist) {
+                     minDist = sqrDist;
+                     closest = cellToWorld((Vector3Int) (p - mapTileSize / 2));
+                     foundAttribute = attributes[k];
+                  }
+                  break;
                }
             }
          }
@@ -640,10 +665,9 @@ public class Area : MonoBehaviour
 
       return minDist < Mathf.Pow(searchBounds.x + searchBounds.y, 2);
    }
-
-   public bool hasTileAttributeInBounds (TileAttributes.Type attribute, Vector3 worldPosition, Vector2Int bounds) {
+   public bool hasTileAttributeInBounds (TileAttributes.Type attribute, Vector3 botLeftCornerPosition, Vector2Int bounds) {
       // Get cell position
-      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+      Vector2Int cellPos = (Vector2Int) worldToCell(botLeftCornerPosition);
 
       // Rebase coordinates to corner of map
       cellPos += mapTileSize / 2;
@@ -651,7 +675,7 @@ public class Area : MonoBehaviour
       for (int i = 0; i < bounds.x; i++) {
          for (int j = 0; j < bounds.y; j++) {
             // Center the point in the bounds
-            Vector2Int p = new Vector2Int(cellPos.x + i - bounds.x / 2, cellPos.y + j - bounds.y / 2);
+            Vector2Int p = new Vector2Int(cellPos.x + i, cellPos.y + j);
 
             // If position is out of bounds, return default
             if (p.x < 0 || p.y < 0 || p.x >= mapTileSize.x || p.y >= mapTileSize.y) {

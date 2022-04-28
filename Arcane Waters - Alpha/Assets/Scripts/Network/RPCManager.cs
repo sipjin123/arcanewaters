@@ -1197,7 +1197,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
       // Make sure the panel is showing
       PanelManager.self.linkIfNotShowing(Panel.Type.ReturnToCurrentVoyagePanel);
-
+      
       // Pass the data to the panel
       ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
       panel.updatePanelWithCurrentVoyage(voyage);
@@ -4152,7 +4152,7 @@ public class RPCManager : NetworkBehaviour
       Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
 
       // On first spawn check for rewards
-      string steamId = (SteamManager.Initialized && Global.isSteamLogin) ? _player.steamId : _player.userId.ToString();
+      string steamId = (SteamManager.Initialized && Global.isSteamLogin) ? _player.steamId : _player.accountId.ToString();
       Cmd_CheckRewardCodes(steamId);
    }
 
@@ -6514,9 +6514,11 @@ public class RPCManager : NetworkBehaviour
             if (memberEntity == null) {
                missingMembersUserIds.Add(memberUserId);
             } else {
+               // TODO: Completely remove this block if distance based voyage warp is no longer needed
+               /*
                if (Vector3.Distance(memberEntity.transform.position, _player.transform.position) > Voyage.LEAGUE_START_MEMBERS_MAX_DISTANCE) {
                   missingMembersNames.Add(memberEntity.entityName);
-               }
+               }*/
             }
          }
 
@@ -7242,7 +7244,7 @@ public class RPCManager : NetworkBehaviour
             float angleOffset = Random.Range(-25, 25);
             processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId, false);
          }
-         
+
          // Add extra ore spawn if has mining powerup
          if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.MiningBoost)) {
             StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.voyageGroupId));      
@@ -7372,7 +7374,7 @@ public class RPCManager : NetworkBehaviour
 
       float randomSpeed = Random.Range(.8f, 1.2f);
       float angleOffset = Random.Range(-25, 25);
-      
+
       // Instantiate bonus effect word when mining boost in enabled
       GameObject bonusEffect = Instantiate(PrefabsManager.self.bonusEffectPrefab, nodeTransform);
       bonusEffect.transform.localPosition = Vector3.zero;
@@ -10290,7 +10292,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuildOutpost (Vector2 localPosition) {
+   public void Cmd_BuildOutpost (Vector2 localPosition, Direction direction) {
       if (!AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
          return;
       }
@@ -10301,7 +10303,7 @@ public class RPCManager : NetworkBehaviour
 
       Vector2 worldPosition = area.transform.TransformPoint(localPosition);
 
-      if (!OutpostUtil.canBuildOutpostAt(_player, worldPosition, out _)) {
+      if (!OutpostUtil.canBuildOutpostAt(_player, worldPosition, direction, out _)) {
          return;
       }
 
@@ -10309,8 +10311,13 @@ public class RPCManager : NetworkBehaviour
       outpost.transform.localPosition = localPosition;
       outpost.setAreaParent(area, false);
 
+      outpost.guildId = _player.guildId;
+      outpost.setDirection(direction);
+
       InstanceManager.self.addOutpostToInstance(outpost, instance);
       NetworkServer.Spawn(outpost.gameObject);
+
+      outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
    }
 
    [Server]
@@ -10971,6 +10978,40 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    private void Target_ReceiveCheckRewardCodes () {
       ChatManager.self.addChat("Good news! Check your mails!", ChatInfo.Type.System);
+   }
+
+   #endregion
+
+   #region Wishlist
+
+   [Command]
+   public void Cmd_RequestWishlist (string steamId) {
+      string computedUrl = string.Empty;
+
+      if (!string.IsNullOrWhiteSpace(steamId)) {
+         string salt = Util.createSalt("arcane");
+         string steamIdHashed = Util.hashPassword(salt, steamId);
+         string steamIdEncoded = Convert.ToBase64String(Encoding.ASCII.GetBytes(steamIdHashed));
+         computedUrl = $"https://arcanewaters.com/wishlist?p={steamId}&x={steamIdEncoded}";
+      }
+
+      Target_ReceiveRequestWishlist(computedUrl, steamId);
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveRequestWishlist (string computedUrl, string playerIdentifier) {
+      if (PanelManager.self == null) {
+         return;
+      }
+
+      if (string.IsNullOrWhiteSpace(computedUrl)) {
+         PanelManager.self.noticeScreen.show("Can't open the Wishlist page at the moment.");
+         return;
+      }
+
+      string title = "Opening Wishlist";
+      string desc = "You are about to navigate to the Wishlist Web Page. Do you want to proceed?";
+      PanelManager.self.showConfirmationPanel(title, onConfirm: () => Application.OpenURL(computedUrl), description: desc);
    }
 
    #endregion

@@ -103,7 +103,10 @@ public class OptionsPanel : Panel
 
    // The objects that only appears when a user is NOT logged in
    public GameObject[] notLoggedInObjects;
-
+   
+   // The objects that only appears when a user selected a character
+   public GameObject[] hasCharacterObjects;
+   
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
 
@@ -464,6 +467,12 @@ public class OptionsPanel : Panel
          }
       }
 
+      // Show/hide some options when player has/hasn't selected a character
+      bool hasCharacter = Global.player != null;
+      foreach (GameObject options in hasCharacterObjects) {
+         options.SetActive(hasCharacter);
+      }
+
       bool isAdmin = Global.isLoggedInAsAdmin();
       serverLogRow.SetActive(isAdmin);
       logRowSeparator.SetActive(!isAdmin);
@@ -666,6 +675,22 @@ public class OptionsPanel : Panel
    public void onPlayersCountReceived (int playersCount, string [] playersNames) {
       activePlayersCountLabel.text = "Active Players: " + playersCount.ToString();
       activePlayersAdminTooltip.message = string.Join("\n", playersNames);
+   }
+
+   public void onWishlistButtonPress () {
+      if (Global.player == null || !Global.player.isAdmin()) {
+         return;
+      }
+
+      // The player must be logged into Steam
+      if (!SteamManager.Initialized || !Global.isSteamLogin) {
+         if (PanelManager.self != null) {
+            PanelManager.self.noticeScreen.show("Can't open the Wishlist page at the moment.");
+         }
+         return;
+      }
+
+      Global.player.rpc.Cmd_RequestWishlist(Global.player.steamId);
    }
 
    #region Private Variables

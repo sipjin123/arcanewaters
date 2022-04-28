@@ -440,6 +440,18 @@ namespace MapCreationTool
                   }
                }
 
+               if (pref.TryGetComponent(out SetTileAttributeInArea setTiles)) {
+                  if (setTiles.areaCollider != null) {
+                     for (float x = setTiles.areaCollider.bounds.min.x; x < setTiles.areaCollider.bounds.max.x + 0.16f; x += 0.16f) {
+                        for (float y = setTiles.areaCollider.bounds.min.y; y < setTiles.areaCollider.bounds.max.y + 0.16f; y += 0.16f) {
+                           if (setTiles.areaCollider.OverlapPoint(new Vector2(x, y))) {
+                              area.setTileAttribute(setTiles.type, new Vector2(x, y));
+                           }
+                        }
+                     }
+                  }
+               }
+
                CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
                if (customizablePrefab != null) {
                   customizablePrefab.isPermanent = true;

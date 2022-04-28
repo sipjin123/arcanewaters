@@ -1969,7 +1969,7 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
-      BottomBar.self.setUnreadMailNotificationStatus(true);
+      // TODO: Do mail logic here
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAIL_NOTIFICATION);
    }
 
