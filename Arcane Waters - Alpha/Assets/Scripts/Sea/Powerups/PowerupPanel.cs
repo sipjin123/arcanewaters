@@ -85,6 +85,28 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       }
    }
 
+   public void addItemBuff (Item item, bool isLand, string areaKey) {
+      if (VoyageManager.isLeagueArea(areaKey) || WorldMapManager.self.isWorldMapArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
+         if (!gameObject.activeInHierarchy) {
+            gameObject.SetActive(true);
+         }
+         if (!powerupPanelContainer.gameObject.activeInHierarchy) {
+            powerupPanelContainer.gameObject.SetActive(true);
+         }
+      }
+
+      if (isLand) {
+         LandPowerupIcon newPowerup = Instantiate(landPowerupIconPrefab, transform).GetComponent<LandPowerupIcon>();
+         newPowerup.initializeItemPowerup(item);
+         _landPowerupIcons.Add(newPowerup);
+         newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
+      } else {
+         PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
+         newPowerup.initializeItemPowerup(item);
+         _powerupIcons.Add(newPowerup);
+      }
+   }
+
    public void removePowerup (LandPowerupData powerupData) {
       LandPowerupIcon powerupIcon = _landPowerupIcons.Find(_ => _.landPowerupType == powerupData.landPowerupType && _.rarity == Rarity.Type.Common);
 

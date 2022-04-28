@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
+using System.Linq;
 
 public class LandPowerupIcon : MonoBehaviour {
    #region Public Variables
@@ -32,6 +33,9 @@ public class LandPowerupIcon : MonoBehaviour {
    [HideInInspector]
    public LandPowerupType landPowerupType;
 
+   // Cached border sprites
+   public List<Sprite> borderSprites = new List<Sprite>();
+
    #endregion
 
    public void init (LandPowerupType type, Rarity.Type rarity) {
@@ -40,7 +44,9 @@ public class LandPowerupIcon : MonoBehaviour {
          return;
       }
 
-      Sprite[] borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION);
+      if (borderSprites.Count < 1) {
+         borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION).ToList();
+      }
 
       iconImage.sprite = LandPowerupManager.self.getLandPowerupSprite(type);
       borderImage.sprite = borderSprites[(int) rarity - 1];
@@ -51,6 +57,28 @@ public class LandPowerupIcon : MonoBehaviour {
 
       this.landPowerupType = type;
       this.rarity = rarity;
+
+      _parentCanvasTransform = PowerupPanel.self.parentCanvas.GetComponent<RectTransform>();
+   }
+
+   public void initializeItemPowerup (Item itemData) {
+      string itemName = EquipmentXMLManager.self.getItemName(itemData);
+      string itemDescription = EquipmentXMLManager.self.getItemDescription(itemData);
+      string itemIcon = EquipmentXMLManager.self.getItemIconPath(itemData);
+      Rarity.Type itemRarity = itemData.getRarity();
+
+      if (borderSprites.Count < 1) {
+         borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION).ToList();
+      }
+
+      iconImage.sprite = ImageManager.getSprite(itemIcon);
+      borderImage.sprite = borderSprites[(int) itemRarity - 1];
+
+      nameText.text = itemName;
+      descriptionText.text = itemDescription;
+      nameText.faceColor = PowerupPanel.self.rarityColors[(int) rarity];
+      this.rarity = itemRarity;
+      //this.landPowerupType = type;
 
       _parentCanvasTransform = PowerupPanel.self.parentCanvas.GetComponent<RectTransform>();
    }

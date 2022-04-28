@@ -273,6 +273,7 @@ public class PlayerShipEntity : ShipEntity
 
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, userPowerups);
+         processGearBuffs();
 
          // When we enter a new scene, create powerup orbs for all existing powerups
          List<Powerup.Type> powerupTypes = new List<Powerup.Type>();
@@ -1333,6 +1334,10 @@ public class PlayerShipEntity : ShipEntity
       weaponType = weaponData == null ? 0 : weaponData.weaponType;
       armorType = armorData == null ? 0 : armorData.armorType;
       hatType = hatData == null ? 0 : hatData.hatType;
+
+      ringType = ring.itemTypeId;
+      trinketType = trinket.itemTypeId;
+      necklaceType = necklace.itemTypeId;
 
       hatColors = hat != null ? hat.paletteNames : hatData.palettes;
       weaponColors = weapon != null ? weapon.paletteNames : weaponData.palettes;

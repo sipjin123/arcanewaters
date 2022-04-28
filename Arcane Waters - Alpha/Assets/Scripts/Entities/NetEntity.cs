@@ -861,6 +861,42 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [Server]
+   public void processGearBuffs () {
+      int trinketTypeId = 0;
+      int ringTypeId = 0;
+      int necklaceTypeId = 0;
+      if (this is PlayerShipEntity) {
+         PlayerShipEntity playerShip = (PlayerShipEntity) this;
+         trinketTypeId = playerShip.trinketType;
+      }
+
+      if (this is PlayerBodyEntity) {
+         PlayerBodyEntity playerBody = (PlayerBodyEntity) this;
+         trinketTypeId = playerBody.gearManager.equippedTrinkedXmlId;
+      }
+
+      if (trinketTypeId > 0) {
+         TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(trinketTypeId);
+         if (trinketData != null) {
+            Trinket trinketItem = new Trinket {
+               category = Item.Category.Trinket,
+               itemTypeId = trinketTypeId,
+               count = 1,
+               itemName = trinketData.equipmentName,
+               itemDescription = trinketData.equipmentDescription
+            };
+            rpc.Target_UpdateItemPowerup(connectionToClient, trinketItem);
+         } else {
+            D.editorLog("No trinket found", Color.red);
+         }
+      } else {
+         D.editorLog("No trinket assigned", Color.red);
+      }
+
+      // TODO: If necklace or rings have powerups, do logic here
+   }
+
    public void toggleGuildIcon (bool show) {
       if (show) {
          showGuildIcon();

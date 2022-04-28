@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
+using System.Linq;
 
 public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
    #region Public Variables
@@ -32,6 +33,9 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
    [HideInInspector]
    public Powerup.Type type;
 
+   // Cached border sprites
+   public List<Sprite> borderSprites = new List<Sprite>();
+
    #endregion
 
    public void init(Powerup.Type type, Rarity.Type rarity) {
@@ -40,8 +44,10 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
          return;
       }
 
+      if (borderSprites.Count < 1) {
+         borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION).ToList();
+      }
       Sprite[] iconSprites = Resources.LoadAll<Sprite>(Powerup.ICON_SPRITES_LOCATION);
-      Sprite[] borderSprites = Resources.LoadAll<Sprite>(Powerup.BORDER_SPRITES_LOCATION);
 
       iconImage.sprite = iconSprites[(int)type - 1];
       borderImage.sprite = borderSprites[(int)rarity - 1];
@@ -56,6 +62,29 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
       _parentCanvasTransform = PowerupPanel.self.parentCanvas.GetComponent<RectTransform>();
    }
+
+   public void initializeItemPowerup (Item itemData) {
+      string itemName = EquipmentXMLManager.self.getItemName(itemData);
+      string itemDescription = EquipmentXMLManager.self.getItemDescription(itemData);
+      string itemIcon = EquipmentXMLManager.self.getItemIconPath(itemData);
+      Rarity.Type itemRarity = itemData.getRarity();
+
+      if (borderSprites.Count < 1) {
+         borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION).ToList();
+      }
+
+      iconImage.sprite = ImageManager.getSprite(itemIcon);
+      borderImage.sprite = borderSprites[(int) itemRarity - 1];
+
+      nameText.text = itemName;
+      descriptionText.text = itemDescription;
+      nameText.faceColor = PowerupPanel.self.rarityColors[(int) rarity];
+      this.rarity = itemRarity;
+      //this.landPowerupType = type;
+
+      _parentCanvasTransform = PowerupPanel.self.parentCanvas.GetComponent<RectTransform>();
+   }
+
 
    public void OnPointerEnter (PointerEventData eventData) {
       toolTip.gameObject.SetActive(true);
