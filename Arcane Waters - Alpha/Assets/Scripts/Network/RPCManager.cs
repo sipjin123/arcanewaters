@@ -7246,8 +7246,8 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Add extra ore spawn if has mining powerup
-         if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.MiningBoost)) {
-            StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.voyageGroupId));      
+         if (PowerupPanel.self.hasLandPowerup(LandPowerupType.MiningBoost)) {
+            StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.voyageGroupId));
          }
       } else {
          D.adminLog("Player successfully interacted ore {" + oreNode.id + "} Mining is not Finished: {" + oreNode.interactCount + "}", D.ADMIN_LOG_TYPE.Mine);
@@ -7398,6 +7398,7 @@ public class RPCManager : NetworkBehaviour
       // Spawn a sparkle trail if spawned ore is a bonus
       if (isBonus) {
          Instantiate(PrefabsManager.self.sparkleTrailPrefab, oreMine.animatingObj);
+         oreMine.animator.speed = Random.Range(0.5f, .9f);
       }
 
       // Modify object transform
@@ -10104,6 +10105,11 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_UpdateLandPowerups (NetworkConnection connection, List<LandPowerupData> landPowerups) {
       PowerupPanel.self.updateLandPowerups(landPowerups);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateItemPowerup (NetworkConnection connection, Item item) {
+      PowerupPanel.self.addItemBuff(item, _player is PlayerBodyEntity, _player.areaKey);
    }
 
    [TargetRpc]
