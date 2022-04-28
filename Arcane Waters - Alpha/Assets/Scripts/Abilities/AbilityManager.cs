@@ -247,6 +247,10 @@ public class AbilityManager : MonoBehaviour
                CancelAction cancelAction = action as CancelAction;
                actionToExecute = cancelAction;
                if (sourceBattler.canCancelAction) {
+                  if (sourceBattler.isLocalBattler()) {
+                     D.adminLog("LocalClient {" + sourceBattler.userId + "} has cancelled ability!", D.ADMIN_LOG_TYPE.CancelAttack);
+                  }
+
                   // Update the battler's action timestamps
                   sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
                   sourceBattler.stopActionCoroutine();

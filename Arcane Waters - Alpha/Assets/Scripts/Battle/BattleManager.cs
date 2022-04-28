@@ -917,130 +917,148 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected IEnumerator applyActionAfterDelay (double timeToWait, BattleAction actionToApply, bool hasMultipleTargets) {
-      // This function processes on the server side only
-      yield return new WaitForSecondsDouble(timeToWait);
-
       // Check if the battle has ended
       Battle battle = getBattle(actionToApply.battleId);
-
       if (battle == null) {
+         D.debug("Missing battle! {" + actionToApply.battleId + "}");
          yield break;
       }
 
       // Get the Battler object
       Battler source = battle.getBattler(actionToApply.sourceId);
-
-      bool forceCancelAction = false;
-      if (source.isDisabledByStatus()) {
-         forceCancelAction = true;
-         D.adminLog("Cancel action because source is disabled by status!", D.ADMIN_LOG_TYPE.CombatStatus);
+      if (source == null) {
+         D.debug("Missing source battler! {" + actionToApply.sourceId + "}");
+         yield break;
       }
 
-      if (actionToApply is AttackAction || actionToApply is BuffAction) {
-         BattleAction action = (BattleAction) actionToApply;
-         Battler target = battle.getBattler(action.targetId);
+      Battler target = battle.getBattler(actionToApply.targetId);
+      if (target == null) {
+         D.debug("Missing target battler! {" + actionToApply.sourceId + "}");
+         yield break;
+      }
 
-         // If the source or target is already dead, then send a Cancel Action
-         if (source.isDead() || target.isDead() || forceCancelAction) {
+      // This function processes on the server side only, process waiting time of action
+      double startTimer = NetworkTime.time;
+      double endTime = startTimer + timeToWait;
+      while (NetworkTime.time < endTime) {
+         if (source.isDead() || target.isDead() || source.isDisabledByStatus()) {
             // Don't create Cancel Actions for multi-target abilities
-            if (hasMultipleTargets && !forceCancelAction) {
+            if (hasMultipleTargets && !source.isDisabledByStatus()) {
                yield break;
             }
-            float animLength = .6f;
-            if (actionToApply is AttackAction) {
-               // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
-               // So we will grab the source battler
-               AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
 
-               // Remove the action cooldown and animation duration from the source's timestamps
-               animLength = abilityData.getTotalAnimLength(source, target);
+            if (source.isDisabledByStatus()) {
+               D.adminLog("Cancel action because source is disabled by status!", D.ADMIN_LOG_TYPE.CombatStatus);
             }
 
-            float timeToSubtract = action.cooldownDuration + animLength;
+            processCancelAction(battle, source, target, actionToApply, endTime - NetworkTime.time);
+            yield break;
+         }
+         yield return 0;
+      }
 
-            // Update the battler's action timestamps here on the server
-            target.animatingUntil -= animLength;
-            source.animatingUntil -= animLength;
-            source.cooldownEndTime -= timeToSubtract;
+      // Check if battle has ended after wait timer
+      if (getBattle(actionToApply.battleId) == null) {
+         yield break;
+      }
 
-            // Create a Cancel Action to send to the clients
-            if (source.canCancelAction) {
-               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-               AbilityManager.self.execute(new[] { cancelAction });
-               battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-            } else {
-               D.log("Cannot cancel action");
+      if (actionToApply is AttackAction) {
+         AttackAction attackAction = (AttackAction) actionToApply;
+
+         // Registers the usage of the Offensive Skill for achievement recording
+         if (source.player.userId != 0) {
+            AchievementManager.registerUserAchievement(source.player, ActionType.OffensiveSkillUse);
+         }
+
+         // Applies damage delay for abilities with extra animation durations such as casting and aiming
+         float attackApplyDelay = 0;
+         AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(actionToApply.abilityGlobalID, AbilityType.Standard);
+         if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
+            attackApplyDelay += abilityDataReference.getAimDuration();
+         }
+
+         yield return new WaitForSeconds(attackApplyDelay);
+
+         // Apply damage
+         target.health -= attackAction.damage;
+         target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
+         source.canExecuteAction = true;
+
+         // Apply attack status here
+         if (abilityDataReference.statusType != Status.Type.None) {
+            bool canBeDisabled = true;
+            if (target.isBossType) {
+               switch (abilityDataReference.statusType) {
+                  case Status.Type.Slowed:
+                  case Status.Type.Stunned:
+                     canBeDisabled = false;
+                     break;
+               }
             }
 
-         } else {
-            if (action is AttackAction) {
-               AttackAction attackAction = (AttackAction) action;
-
-               // Registers the usage of the Offensive Skill for achievement recording
-               if (source.player.userId != 0) {
-                  AchievementManager.registerUserAchievement(source.player, ActionType.OffensiveSkillUse);
+            if (canBeDisabled) {
+               float randomizedChance = Random.Range(1, 100);
+               if (randomizedChance < abilityDataReference.statusChance) {
+                  StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, actionToApply.actionEndTime, abilityDataReference.itemID, source.userId));
                }
-
-               // Applies damage delay for abilities with extra animation durations such as casting and aiming
-               float attackApplyDelay = 0;
-               AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
-               if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
-                  attackApplyDelay += abilityDataReference.getAimDuration();
-               }
-
-               yield return new WaitForSeconds(attackApplyDelay);
-
-               // Apply damage
-               target.health -= attackAction.damage;
-               target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-               source.canExecuteAction = true;
-
-               // Apply attack status here
-               if (abilityDataReference.statusType != Status.Type.None) {
-                  bool canBeDisabled = true;
-                  if (target.isBossType) {
-                     switch (abilityDataReference.statusType) {
-                        case Status.Type.Slowed:
-                        case Status.Type.Stunned:
-                           canBeDisabled = false;
-                           break;
-                     }
-                  }
-
-                  if (canBeDisabled) {
-                     float randomizedChance = Random.Range(1, 100);
-                     if (randomizedChance < abilityDataReference.statusChance) {
-                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
-                     }
-                  }
-               }
-
-               // Setup server to declare a battler is dead when the network time reaches the time action ends
-               if (target.health <= 0) {
-                  StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
-                  StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
-               }
-            } else if (action is BuffAction) {
-               BuffAction buffAction = (BuffAction) action;
-
-               // Registers the usage of the Buff Skill for achievement recording
-               AchievementManager.registerUserAchievement(source.player, ActionType.BuffSkillUse);
-
-               if (source.enemyType == Enemy.Type.PlayerBattler) {
-                  float buffValue = buffAction.buffValue;
-                  buffValue *= 1.0f + PerkManager.self.getPerkMultiplierAdditive(buffAction.sourceId, Perk.Category.Healing);
-               }
-
-               // Apply damage
-               if (buffAction.buffActionType == BuffActionType.Regeneration) {
-                  target.health += buffAction.buffValue;
-                  target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-               }
-
-               // Apply the Buff
-               target.addBuff(buffAction.getBuffTimer());
             }
          }
+
+         // Setup server to declare a battler is dead when the network time reaches the time action ends
+         if (target.health <= 0) {
+            StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
+            StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
+         }
+      } else if (actionToApply is BuffAction) {
+         BuffAction buffAction = (BuffAction) actionToApply;
+
+         // Registers the usage of the Buff Skill for achievement recording
+         AchievementManager.registerUserAchievement(source.player, ActionType.BuffSkillUse);
+
+         if (source.enemyType == Enemy.Type.PlayerBattler) {
+            float buffValue = buffAction.buffValue;
+            buffValue *= 1.0f + PerkManager.self.getPerkMultiplierAdditive(buffAction.sourceId, Perk.Category.Healing);
+         }
+
+         // Apply damage
+         if (buffAction.buffActionType == BuffActionType.Regeneration) {
+            target.health += buffAction.buffValue;
+            target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
+         }
+
+         // Apply the Buff
+         target.addBuff(buffAction.getBuffTimer());
+      }
+   }
+
+   private void processCancelAction (Battle battle, Battler source, Battler target, BattleAction actionToApply, double remainingTime) {
+      float animLength = .6f;
+      if (actionToApply is AttackAction) {
+         // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
+         // So we will grab the source battler
+         AttackAbilityData abilityData = source.getAttackAbilities()[actionToApply.abilityInventoryIndex];
+
+         // Remove the action cooldown and animation duration from the source's timestamps
+         animLength = abilityData.getTotalAnimLength(source, target);
+      }
+
+      float timeToSubtract = actionToApply.cooldownDuration + animLength;
+
+      // Update the battler's action timestamps here on the server
+      target.animatingUntil -= animLength;
+      source.animatingUntil -= animLength;
+      source.cooldownEndTime -= timeToSubtract;
+
+      // Create a Cancel Action to send to the clients
+      if (source.canCancelAction) {
+         if (source.userId > 0) {
+            D.adminLog("Cancelling attack! " + (remainingTime > 0 ? "Remaining time was {" + remainingTime.ToString("f1") + "}" : "") + " for user: {" + source.userId + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+         }
+         CancelAction cancelAction = new CancelAction(actionToApply.battleId, actionToApply.sourceId, actionToApply.targetId, NetworkTime.time, timeToSubtract);
+         AbilityManager.self.execute(new[] { cancelAction });
+         battle.Rpc_ReceiveCancelAction(actionToApply.battleId, actionToApply.sourceId, actionToApply.targetId, NetworkTime.time, timeToSubtract);
+      } else {
+         D.log("Cannot cancel action");
       }
    }
 
