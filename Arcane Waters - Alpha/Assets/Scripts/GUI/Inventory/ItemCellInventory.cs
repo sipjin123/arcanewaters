@@ -15,6 +15,10 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
    // The canvas group component
    public CanvasGroup canvasGroup;
 
+   // The tooltip components
+   public GameObject tooltipObject;
+   public TextMeshProUGUI tooltipMessage;
+
    #endregion
 
    public override void clear () {

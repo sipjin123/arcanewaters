@@ -162,35 +162,18 @@ public class InventoryPanel : Panel
          equippedTrinketId = (Global.player as PlayerShipEntity).trinketType;
       }
 
-      if (equippedWeaponId != 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedWeaponCell);
-      }
-
-      if (equippedArmorId != 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedArmorCell);
-      }
-
-      if (equippedHatId != 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedHatCell);
-      }
-
-      if (equippedRingId != 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedRingCell);
-      }
-
-      if (equippedNecklaceId != 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedNecklaceCell);
-      }
-
-      if (equippedTrinketId!= 0) {
-         subscribeClickEventsForCell(characterInfoSection.equippedTrinketCell);
-      }
+      subscribeClickEventsForCell(characterInfoSection.equippedWeaponCell, equippedWeaponId == 0);
+      subscribeClickEventsForCell(characterInfoSection.equippedArmorCell, equippedArmorId == 0);
+      subscribeClickEventsForCell(characterInfoSection.equippedHatCell, equippedHatId == 0);
+      subscribeClickEventsForCell(characterInfoSection.equippedRingCell, equippedRingId == 0);
+      subscribeClickEventsForCell(characterInfoSection.equippedNecklaceCell, equippedNecklaceId == 0);
+      subscribeClickEventsForCell(characterInfoSection.equippedTrinketCell, equippedTrinketId == 0);
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenInventory);
    }
 
-   private void subscribeClickEventsForCell (ItemCell cell) {
+   private void subscribeClickEventsForCell (ItemCell cell, bool tooltipOnly) {
       if (cell == null) {
          D.error("Cannot subscribe click events because cell is null");
          return;
@@ -204,21 +187,44 @@ public class InventoryPanel : Panel
       cell.onPointerExit.RemoveAllListeners();
       cell.onDragStarted.RemoveAllListeners();
 
-      cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-      cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
-      cell.shiftClickEvent.AddListener(() => {
-         if (ChatPanel.self != null) {
-            ChatPanel.self.addItemInsertToInput(cell.getItem());
+      if (tooltipOnly) {
+         if (cell is ItemCellInventory) {
+            ItemCellInventory inventoryCell = (ItemCellInventory) cell;
+            inventoryCell.onPointerEnter.AddListener(() => {
+               if (inventoryCell.tooltipObject != null) {
+                  inventoryCell.tooltipObject.SetActive(true);
+                  inventoryCell.tooltipMessage.text = inventoryCell.equipmentType.ToString();
+               }
+            });
+            inventoryCell.onPointerExit.AddListener(() => {
+               if (inventoryCell.tooltipObject != null) {
+                  inventoryCell.tooltipObject.SetActive(false);
+               }
+            });
+            inventoryCell.enablePointerEvents();
+            inventoryCell.updateCellColor(100);
+            inventoryCell.show();
+            inventoryCell.tooltip.message = "";
+            cell.GetComponent<Button>().interactable = false;
          }
-      });
-      cell.onPointerEnter.AddListener(() => {
-         // Play hover sfx
-         SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_ITEMS);
+      } else {
+         cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+         cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
+         cell.shiftClickEvent.AddListener(() => {
+            if (ChatPanel.self != null) {
+               ChatPanel.self.addItemInsertToInput(cell.getItem());
+            }
+         });
+         cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
+         cell.onPointerEnter.AddListener(() => {
+            // Play hover sfx
+            SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_ITEMS);
 
-         equipmentStats.setStatModifiers(cell.getItem());
-      });
-      cell.onPointerExit.AddListener(() => equipmentStats.clearStatModifiers());
-      cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
+            equipmentStats.setStatModifiers(cell.getItem());
+         });
+         cell.GetComponent<Button>().interactable = true;
+         cell.onPointerExit.AddListener(() => equipmentStats.clearStatModifiers());
+      }
    }
 
    private ItemCell instantiateItemCell (Item item, Transform parent) {
@@ -230,7 +236,7 @@ public class InventoryPanel : Panel
 
       // Subscribe the click events
       if (!cell.isDisabledItem) {
-         subscribeClickEventsForCell(cell);
+         subscribeClickEventsForCell(cell, false);
       }
 
       return cell;

@@ -550,7 +550,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       hideSelectedBox();
    }
 
-   private void updateCellColor (int durability) {
+   public void updateCellColor (int durability) {
       // Prototype UI feeback if an item durability is low or high
       if (itemCellImage) {
          if (durability < 25) {
