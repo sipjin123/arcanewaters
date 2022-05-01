@@ -26,7 +26,7 @@ public class FlagshipPanel : Panel {
       base.show();
    }
 
-   public void updatePanelWithShips (List<ShipInfo> shipList, int flagshipId) {
+   public void updatePanelWithShips (List<ShipInfo> shipList, int flagshipId, int level) {
       playerFlagshipId = flagshipId;
 
       // Clear out any old info
@@ -39,7 +39,7 @@ public class FlagshipPanel : Panel {
          // Create a new row
          FlagshipRow row = Instantiate(rowPrefab, scrollViewContent.transform, false);
          row.transform.SetParent(scrollViewContent.transform, false);
-         row.setRowForItem(shipInfo);
+         row.setRowForItem(shipInfo, level);
       }
    }
 

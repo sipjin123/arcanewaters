@@ -762,7 +762,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass them along to the Flagship panel
-      panel.updatePanelWithShips(shipList, flagshipId);
+      panel.updatePanelWithShips(shipList, flagshipId, LevelUtil.levelForXp(_player.XP));
    }
 
    [TargetRpc]
@@ -8972,14 +8972,30 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
-         // Update the setting in the database
-         DB_Main.setCurrentShip(_player.userId, flagshipId);
+         ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipXmlId);
+         if (shipData != null) {
+            int level = LevelUtil.levelForXp(_player.XP);
+            if (level >= shipData.shipLevelRequirement) {
+               // Update the setting in the database
+               DB_Main.setCurrentShip(_player.userId, flagshipId);
 
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveNewFlagshipId(_player.connectionToClient, flagshipId);
-         });
+               // Back to Unity Thread
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.rpc.Target_ReceiveNewFlagshipId(_player.connectionToClient, flagshipId);
+               });
+            } else {
+               // Back to Unity Thread
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  Target_ReceiveNoticePanelWarning(_player.connectionToClient, "Level does not meet the requirement");
+               });
+            }
+         }
       });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveNoticePanelWarning (NetworkConnection connection, string message) {
+      PanelManager.self.noticeScreen.show(message);
    }
 
    [Server]

@@ -33,6 +33,7 @@ public class ShipyardRow : MonoBehaviour {
    public Text speedText;
    public Text attackRangeText;
    public Text sailorsText;
+   public Text levelRequirementText;
 
    // Skill prefabs setup
    public GameObject skillPrefabHolder;
@@ -69,6 +70,7 @@ public class ShipyardRow : MonoBehaviour {
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
       sailorsText.text = "" + shipInfo.sailors;
+      levelRequirementText.text = "" + shipData.shipLevelRequirement;
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();

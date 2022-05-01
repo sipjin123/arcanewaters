@@ -33,13 +33,17 @@ public class FlagshipRow : MonoBehaviour {
    public Text speedText;
    public Text attackRangeText;
    public Text sailorsText;
+   public Text levelRequirementText;
 
    // The ability row references
    public FlagShipAbilityRow[] abilityTemplates;
 
+   // Indicator showing level requirement does not meet
+   public GameObject levelRequirementWarning;
+
    #endregion
 
-   public void setRowForItem (ShipInfo shipInfo) {
+   public void setRowForItem (ShipInfo shipInfo, int level) {
       this.shipInfo = shipInfo;
 
       // Update the icon name and text
@@ -59,6 +63,15 @@ public class FlagshipRow : MonoBehaviour {
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
       sailorsText.text = "" + shipInfo.sailors;
+
+      ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipXmlId);
+      if (shipData != null) {
+         levelRequirementWarning.SetActive(level < shipData.shipLevelRequirement);
+         levelRequirementText.text = "" + shipData.shipLevelRequirement;
+      } else {
+         levelRequirementText.text = "";
+         levelRequirementWarning.SetActive(false);
+      }
 
       // Disable the flagship button at sea
       flagshipButton.interactable = (Global.player is BodyEntity);

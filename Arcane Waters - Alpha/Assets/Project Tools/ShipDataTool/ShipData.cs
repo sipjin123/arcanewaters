@@ -95,6 +95,9 @@ public class ShipData
    // Determines if skill is randomized
    public bool isSkillRandom;
 
+   // The player level requirement to use this ship
+   public int shipLevelRequirement;
+
    // List of ship ability names
    public List<ShipAbilityPair> shipAbilities = new List<ShipAbilityPair>();
 }
