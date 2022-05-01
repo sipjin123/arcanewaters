@@ -661,6 +661,18 @@ public class BattleManager : MonoBehaviour {
                      }
                      damage += weaponBoostDamage;
                   }
+                  
+                  // Add damage for trinket based buffs
+                  TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(playerBody.gearManager.equippedTrinkedXmlId);
+                  if (trinketData != null) {
+                     if (trinketData.gearBuffType == EquipmentStatData.GearBuffType.PlayerDamageBoost) {
+                        if (trinketData.isBuffPercentage) {
+                           damage += (int) (damage * (trinketData.itemBuffValue * 0.01));
+                        } else {
+                           damage += trinketData.itemBuffValue;
+                        }
+                     }
+                  }
                }
 
                // Stacks the weapon class damage boost as part of the overall damage boost

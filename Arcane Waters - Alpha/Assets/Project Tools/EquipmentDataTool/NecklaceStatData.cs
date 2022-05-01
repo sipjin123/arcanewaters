@@ -15,6 +15,15 @@ public class NecklaceStatData : EquipmentStatData {
    // The defense of the necklace
    public int necklaceBaseDefense;
 
+   // The buff value if any
+   public float itemBuffValue;
+
+   // The type of buff this gear can offer
+   public GearBuffType gearBuffType;
+
+   // Determines if buff value is percentage or raw value
+   public bool isBuffPercentage;
+
    // The elemental defense of the gear
    public int fireResist;
    public int waterResist;

@@ -7,8 +7,13 @@ using System;
 using System.Xml.Serialization;
 
 [Serializable]
-public class EquipmentStatData
-{
+public class EquipmentStatData {
+   public enum GearBuffType
+   {
+      None = 0, ShipSpeedBoost = 1, ShipDamageBoost = 2,
+      PlayerSpeedBoost = 3, PlayerDamageBoost = 4,
+   }
+
    // Name of the item
    public string equipmentName = "Undefined";
 

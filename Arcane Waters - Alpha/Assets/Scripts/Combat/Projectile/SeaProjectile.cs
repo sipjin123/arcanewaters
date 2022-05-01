@@ -355,6 +355,22 @@ public class SeaProjectile : NetworkBehaviour
          }
          int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
 
+         // Add damage for trinket based buffs
+         if (sourceEntity is PlayerShipEntity) {
+            PlayerShipEntity shipEntity = (PlayerShipEntity) sourceEntity;
+            if (shipEntity.trinketType > 0) {
+               TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(shipEntity.trinketType);
+               if (trinketData != null) {
+                  if (trinketData.gearBuffType == EquipmentStatData.GearBuffType.PlayerDamageBoost) {
+                     if (trinketData.isBuffPercentage) {
+                        totalInitialDamage += (int) (totalInitialDamage * (trinketData.itemBuffValue * 0.01));
+                     } else {
+                        totalInitialDamage += (int) trinketData.itemBuffValue;
+                     }
+                  }
+               }
+            }
+         }
          int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId, _attackType);
 
          string abilityDataDamageModifier = (_abilityData != null) ? (_abilityData.damageModifier * 100).ToString() : "0";
