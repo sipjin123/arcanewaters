@@ -775,28 +775,12 @@ public class DB_MainStub : MonoBehaviour
       return new List<PenaltyInfo>();
    }
 
-   public static bool forceSinglePlayerForAccount (PenaltyInfo penalty) {
-      return false;
+   public static PenaltyInfo getPenaltyForAccount (int accId, List<PenaltyInfo.ActionType> penaltyTypes) {
+      return null;
    }
 
-   public static bool muteAccount (PenaltyInfo penalty) {
+   public static bool savePenalty (PenaltyInfo penalty) {
       return false;
-   }
-
-   public static bool unMuteAccount (PenaltyInfo penalty) {
-      return false;
-   }
-
-   public static bool banAccount (PenaltyInfo penalty) {
-      return false;
-   }
-
-   public static bool unBanAccount (PenaltyInfo penalty) {
-      return false;
-   }
-
-   public static void kickAccount (PenaltyInfo penalty) {
-
    }
 
    public static int getAccountId (string accountName, string accountPassword, string accountPasswordCapsLock) {
@@ -988,11 +972,11 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static List<QueueItem> getPenaltiesQueue () {
-      return new List<QueueItem>();
+   public static List<PenaltiesQueueItem> getPenaltiesQueue () {
+      return new List<PenaltiesQueueItem>();
    }
 
-   public static void processPenaltyFromQueue (int id) {
+   public static void removePenaltiesQueueItem (int id) {
 
    }
 

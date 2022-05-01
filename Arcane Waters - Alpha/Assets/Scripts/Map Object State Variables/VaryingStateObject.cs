@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using MapObjectStateVariables;
@@ -10,8 +9,15 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
 {
    #region Public Variables
 
+   // Can this object be interacted with by the user
+   public bool canUserInteractWith = false;
+
+   // The state this object currently has
+   [SyncVar(hook = nameof(stateSyncVarChanged))]
+   public string state = "";
+
    // The instance this object belongs to
-   [SyncVar]
+   [SyncVar, Space(10)]
    public int instanceId;
 
    // The area key this object belongs to
@@ -21,10 +27,6 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    // The local position to an area
    [SyncVar]
    public Vector2 localPosition;
-
-   // The state this object currently has
-   [SyncVar(hook = nameof(stateSyncVarChanged))]
-   public string state = "";
 
    // Unique ID for a prefab (only within it's area) provided by map editor
    public int mapEditorId;
@@ -36,6 +38,18 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    public readonly List<int> triggersObjects = new List<int>();
 
    #endregion
+
+   private void Awake () {
+      if (NetworkClient.active) {
+         _outline = GetComponent<SpriteOutline>();
+         _haveOutline = _outline != null;
+
+         if (_haveOutline) {
+            _outline.setNewColor(Color.white);
+            _outline.setVisibility(false);
+         }
+      }
+   }
 
    private void Start () {
       StartCoroutine(CO_SetAreaParent());
@@ -63,10 +77,26 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    }
 
    protected virtual void onStateChanged (string state) { }
+   protected virtual void clientInteract () { }
 
-   public virtual bool clientTriesInteracting () {
-      // Return false by default so nothing happens if child object doesn't make it so
-      return false;
+   public bool clientTriesInteracting (Vector2 mouseWorldPos) {
+      if (Global.player == null) {
+         return false;
+      }
+
+      if (!canUserInteractWith) {
+         return false;
+      }
+
+      // Only works when the player is close enough
+      if (!Util.distanceLessThan2D(transform.position, Global.player.transform.position, NPC.TALK_DISTANCE)) {
+         FloatingCanvas.instantiateAt(mouseWorldPos).asTooFar();
+         return true;
+      }
+
+      clientInteract();
+
+      return true;
    }
 
    public override void OnStartClient () {
@@ -116,7 +146,11 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
             field.tryGetIntValue(out mapEditorId);
          }
       }
+
+      receiveMapEditorData(dataFields);
    }
+
+   protected virtual void receiveMapEditorData (DataField[] dataFields) { }
 
    public int getInstanceId () {
       return instanceId;
@@ -133,6 +167,22 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
       return new HashSet<int>();
    }
 
+   public void onPointerExit () {
+      _hovered = false;
+
+      if (_haveOutline) {
+         _outline.setVisibility(false);
+      }
+   }
+
+   public void onPointerEnter () {
+      _hovered = true;
+
+      if (canUserInteractWith && _haveOutline) {
+         _outline.setVisibility(true);
+      }
+   }
+
    #region Private Variables
 
    // Describes how the state of this object can change
@@ -141,6 +191,12 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
    // Last time we tried to change the state on client
    private int _lastStateChangeFrame = 0;
 
+   // Outline componenet, if we have it
+   private SpriteOutline _outline;
+   private bool _haveOutline = false;
+
+   // Are we hovered right now
+   private bool _hovered = false;
 
    #endregion
 }

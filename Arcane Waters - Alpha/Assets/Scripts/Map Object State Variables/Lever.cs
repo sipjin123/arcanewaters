@@ -8,19 +8,17 @@ public class Lever : VaryingStateObject
 {
    #region Public Variables
 
-   // The lever we rotate
-   public Transform leverVisual;
+   // The animator of the lever
+   public SpriteRendererAnimator leverAnim;
 
    #endregion
 
    private void Update () {
-      _rotation = Mathf.MoveTowards(_rotation, state.Equals("left") ? 45f : -45f, Time.deltaTime * 90);
-      leverVisual.transform.localRotation = Quaternion.Euler(0, 0, _rotation);
+      leverAnim.playBackwards = state.Equals("left");
    }
 
-   public override bool clientTriesInteracting () {
+   protected override void clientInteract () {
       requestStateState(state.Equals("left") ? "right" : "left");
-      return true;
    }
 
    #region Private Variables

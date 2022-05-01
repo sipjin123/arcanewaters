@@ -846,7 +846,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool tryInteractUnderMouse () {
-      Collider2D[] hits = Physics2D.OverlapPointAll(Util.getMousePos());
+      Vector2 mPos = Util.getMousePos();
+
+      Collider2D[] hits = Physics2D.OverlapPointAll(mPos);
       int collisionCount = 0;
 
       foreach (Collider2D hit in hits) {
@@ -908,7 +910,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          // If we clicked on an interactable object, interact with it
          VaryingStateObject varyingStateObject = hit.GetComponent<VaryingStateObject>();
-         if (varyingStateObject != null && varyingStateObject.clientTriesInteracting()) {
+         if (varyingStateObject != null && varyingStateObject.clientTriesInteracting(mPos)) {
             return true;
          }
       }

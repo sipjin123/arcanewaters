@@ -135,7 +135,7 @@ public class OutpostUtil
          ? instance.seaStructures
          : Outpost.outpostsClient;
       foreach (SeaStructure struc in structs) {
-         if (struc is Outpost) {
+         if (struc != null && struc is Outpost) {
             if (Util.distanceLessThan2D(struc.transform.position, buildPosition, MIN_DIST_BETWEEN_OUTPOST)) {
                cantBuildReason = CantBuildReason.TooCloseToOutpost;
                return false;

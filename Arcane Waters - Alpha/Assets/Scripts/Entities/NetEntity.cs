@@ -59,6 +59,14 @@ public class NetEntity : NetworkBehaviour
    [SyncVar(hook = "onMaxHealthChanged")]
    public int maxHealth = 1000;
 
+   // Our current food
+   [SyncVar]
+   public float currentFood = 500;
+
+   // Our max food
+   [SyncVar]
+   public float maxFood = 500;
+
    // The amount of XP we have, which we can use to show our level
    [SyncVar]
    public int XP;
@@ -648,6 +656,10 @@ public class NetEntity : NetworkBehaviour
 
    public bool isMuted () {
       return DateTime.UtcNow.Ticks < this.muteExpirationDate;
+   }
+
+   public int muteTimeRemaining () {
+      return (int)(new DateTime(this.muteExpirationDate) - DateTime.UtcNow).TotalSeconds;
    }
 
    [TargetRpc]
@@ -1730,8 +1742,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void setMuteInfo (long expiresAt, bool isStealth) {
-      this.muteExpirationDate = expiresAt;
+   public void setMuteInfo (int muteTime, bool isStealth) {
+      this.muteExpirationDate = DateTime.UtcNow.AddSeconds(muteTime).Ticks;
       this.isStealthMuted = isStealth;
    }
 
@@ -1818,7 +1830,8 @@ public class NetEntity : NetworkBehaviour
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_STEP);
 
          // Show the level up in chat
-         string levelsMsg = string.Format("You gained {0} {1} {2}! Current level: {3}", levelsGained, jobType, levelsGained > 1 ? "levels" : "level", newLevel);
+         string levelsMsg = string.Format("You gained a {0} level! Current level: {1}", jobType, newLevel);
+         D.editorLog("" + levelsMsg, Color.green);
          ChatManager.self.addChat(levelsMsg, ChatInfo.Type.System);
       }
    }

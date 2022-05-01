@@ -12,6 +12,15 @@ public class SpriteRendererAnimator : ClientMonoBehaviour, IBiomable
    [Tooltip("How much time it takes for each frame")]
    public float timePerFrame = 0.25f;
 
+   [Tooltip("Should the animation go backwards")]
+   public bool playBackwards = false;
+
+   [Tooltip("Should the animation stop at last frame")]
+   public bool stayAtLastFrame = false;
+
+   [Tooltip("Is the animation paused currently")]
+   public bool paused = false;
+
    [Header("Biomable"), Tooltip("Whether to react to biome changes")]
    public bool reactToBiomeChanges = false;
 
@@ -27,7 +36,7 @@ public class SpriteRendererAnimator : ClientMonoBehaviour, IBiomable
    }
 
    private void Update () {
-      if (Time.time > _nextFrameTime) {
+      if (Time.time > _nextFrameTime && !paused) {
          performAnimationFrame();
       }
    }
@@ -37,7 +46,19 @@ public class SpriteRendererAnimator : ClientMonoBehaviour, IBiomable
 
       if (sprites.Count == 0) return;
 
-      _previousIndex = (_previousIndex + 1) % sprites.Count;
+      int delta = playBackwards ? -1 : 1;
+      int nextIndex = _previousIndex + delta;
+
+      // If we should stay at last frame and the index is out of bounds, do nothing
+      if (stayAtLastFrame && (nextIndex < 0 || nextIndex >= sprites.Count)) {
+         return;
+      }
+
+      // Clamp index in bounds
+      while (nextIndex < 0) {
+         nextIndex += sprites.Count;
+      }
+      _previousIndex = nextIndex % sprites.Count;
 
       _sr.sprite = sprites[_previousIndex];
    }

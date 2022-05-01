@@ -258,6 +258,12 @@ public class SeaEntity : NetEntity
 
       // Keep track of the damage each attacker has done on this entity
       NetEntity sourceEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
+
+      // If we damaged ourselves, don't include us in attackers, etc.
+      if (damageSourceNetId == netId) {
+         sourceEntity = null;
+      }
+
       if (sourceEntity != null) {
          if (sourceEntity.userId > 0 && sourceEntity is PlayerShipEntity) {
             if (_damageReceivedPerAttacker.ContainsKey(sourceEntity.userId)) {
@@ -283,8 +289,10 @@ public class SeaEntity : NetEntity
          }
       }
 
-      noteAttacker(damageSourceNetId);
-      Rpc_NoteAttacker(damageSourceNetId);
+      if (damageSourceNetId != netId) {
+         noteAttacker(damageSourceNetId);
+         Rpc_NoteAttacker(damageSourceNetId);
+      }
 
       if (isDead()) {
          onDeath();
@@ -605,7 +613,9 @@ public class SeaEntity : NetEntity
 
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
-         _outline.setVisibility(false);
+         if (_outline != null) {
+            _outline.setVisibility(false);
+         }
 
          // Don't disable colliders on destroyed player ships - colliders are dealt with separately in PlayerShipEntity.cs when activating lifeboat 
          if (!(this is PlayerShipEntity)) {

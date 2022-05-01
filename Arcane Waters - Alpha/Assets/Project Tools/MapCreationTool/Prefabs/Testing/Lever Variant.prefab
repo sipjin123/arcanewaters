@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: Two Stage Lever
+  title: Lever
   canInheritPosition: 0
   canControlPosition: 0
   positionStep: {x: 0, y: 0}
@@ -45,6 +45,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1118977937074439866, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4219383885121819889, guid: 48bf00faaabf4b945b1c0bfd494bd991,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6439206294669856749, guid: 48bf00faaabf4b945b1c0bfd494bd991,
         type: 3}
       propertyPath: m_Name

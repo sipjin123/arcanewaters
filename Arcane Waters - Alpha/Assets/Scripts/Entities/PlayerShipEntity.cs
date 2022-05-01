@@ -16,6 +16,13 @@ public class PlayerShipEntity : ShipEntity
 {
    #region Public Variables
 
+   // How much food is consumed every second
+   public const float FOOD_PER_SECOND = 2f;
+
+   // How much damage is received when player has no food
+   public const float STARVE_TICK_DELAY = 5f;
+   public const int STARVE_TICK_DAMAGE = 100;
+
    // The ID of this ship in the database
    [SyncVar]
    public int shipId;
@@ -512,6 +519,19 @@ public class PlayerShipEntity : ShipEntity
                   }
                }
                Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false, this.netId);
+            }
+         }
+
+         // Control food consumption
+         if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+            currentFood = Mathf.Clamp(currentFood - Time.deltaTime * FOOD_PER_SECOND, 0, maxFood);
+
+            if (currentFood == 0) {
+               if (Time.time - _lastStarveTick > STARVE_TICK_DELAY) {
+                  _lastStarveTick = Time.time;
+
+                  applyDamage(STARVE_TICK_DAMAGE, netId, Attack.Type.None);
+               }
             }
          }
       }
@@ -2526,6 +2546,9 @@ public class PlayerShipEntity : ShipEntity
 
    // A reference to the player's heal effect
    private Animator _healEffect;
+
+   // When was the last time player was damaged to due to starvation
+   private float _lastStarveTick = 0;
 
    // The maximum number of active sea mines the player can have at a time
    private const int SEA_MINE_LIMIT = 4;

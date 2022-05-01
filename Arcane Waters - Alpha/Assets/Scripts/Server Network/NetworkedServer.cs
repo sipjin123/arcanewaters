@@ -992,82 +992,18 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_ForceSinglePlayerForUser (int userId) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ForceSinglePlayerForUser, userId);
+   public void MasterServer_ApplyPenaltyToPlayer (int accId, PenaltyInfo.ActionType penaltyType, int seconds) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAccount(accId);
+      if(targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ApplyPenaltyToPlayer, accId, penaltyType, seconds);
       }
    }
 
    [ClientRPC]
-   public void Server_ForceSinglePlayerForUser (int userId) {
-      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if (targetEntity != null) {
-         targetEntity.admin.forceSinglePlayer();
-      }
-   }
-
-   [ServerRPC]
-   public void MasterServer_MutePlayer (int userId, bool isStealth, long expiresAt) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_MutePlayer, userId, isStealth, expiresAt);
-      }
-   }
-
-   [ClientRPC]
-   public void Server_MutePlayer (int userId, bool isStealth, long expiresAt) {
-      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if (targetEntity != null) {
-         targetEntity.admin.mutePlayer(isStealth, expiresAt);
-      }
-   }
-
-   [ServerRPC]
-   public void MasterServer_UnMutePlayer (int userId) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_UnMutePlayer, userId);
-      }
-   }
-
-   [ClientRPC]
-   public void Server_UnMutePlayer (int userId) {
-      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if (targetEntity != null) {
-         targetEntity.admin.unMutePlayer();
-      }
-   }
-
-   [ServerRPC]
-   public void MasterServer_KickPlayer (int userId) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_KickPlayer, userId);
-      }
-   }
-
-   [ClientRPC]
-   public void Server_KickPlayer (int userId) {
-      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if (targetEntity != null) {
-         targetEntity.admin.kickPlayer();
-      }
-   }
-
-   [ServerRPC]
-   public void MasterServer_BanPlayer (int userId, bool isPermanent, long expiresAt) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_BanPlayer, userId, isPermanent, expiresAt);
-      }
-   }
-
-   [ClientRPC]
-   public void Server_BanPlayer (int userId, bool isPermanent, long expiresAt) {
-      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if (targetEntity != null) {
-         targetEntity.admin.banPlayer(isPermanent, expiresAt);
+   public void Server_ApplyPenaltyToPlayer (int accId, PenaltyInfo.ActionType penaltyType, int seconds) {
+      NetEntity targetEntity = EntityManager.self.getEntityWithAccId(accId);
+      if(targetEntity != null) {
+         targetEntity.admin.applyPenalty(penaltyType, seconds);
       }
    }
 

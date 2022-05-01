@@ -1197,7 +1197,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
       // Make sure the panel is showing
       PanelManager.self.linkIfNotShowing(Panel.Type.ReturnToCurrentVoyagePanel);
-      
+
       // Pass the data to the panel
       ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
       panel.updatePanelWithCurrentVoyage(voyage);
@@ -1317,7 +1317,7 @@ public class RPCManager : NetworkBehaviour
 
       // The player is muted (normal) and can't send messages. We notify the player about it
       if (muted && !_player.isStealthMuted) {
-         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted until {Util.getTimeInEST(new DateTime(_player.muteExpirationDate))} EST", ChatInfo.Type.System);
+         _player.Target_ReceiveNormalChat($"Muted for {_player.muteTimeRemaining()} seconds.", ChatInfo.Type.System);
          return;
       }
 
@@ -7406,7 +7406,7 @@ public class RPCManager : NetworkBehaviour
       Vector3 currentAngle = oreBounce.transform.localEulerAngles;
       oreBounce.transform.localEulerAngles = new Vector3(currentAngle.x, currentAngle.y, currentAngle.z + angleOffset);
       oreMine.setOreSprite(OreManager.self.getSprite(oreNode.oreType));
-            
+
       // Modify object direction
       if (direction == Direction.East) {
          oreBounce.transform.localScale = new Vector3(-1, 1, 1);
@@ -10299,31 +10299,56 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_BuildOutpost (Vector2 localPosition, Direction direction) {
-      if (!AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
-         return;
-      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check that user has enough resources to build
+         int woodCount = DB_Main.getItemCountByType(_player.userId, (int) Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood);
 
-      if (!InstanceManager.self.tryGetInstance(_player.instanceId, out Instance instance)) {
-         return;
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (woodCount < 500) {
+               Target_DisplayServerMessage("You need 500 wood to build an outpost");
+               return;
+            }
 
-      Vector2 worldPosition = area.transform.TransformPoint(localPosition);
+            if (!AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
+               return;
+            }
 
-      if (!OutpostUtil.canBuildOutpostAt(_player, worldPosition, direction, out _)) {
-         return;
-      }
+            if (!InstanceManager.self.tryGetInstance(_player.instanceId, out Instance instance)) {
+               return;
+            }
 
-      Outpost outpost = Instantiate(PrefabsManager.self.outpostPrefab);
-      outpost.transform.localPosition = localPosition;
-      outpost.setAreaParent(area, false);
+            Vector2 worldPosition = area.transform.TransformPoint(localPosition);
 
-      outpost.guildId = _player.guildId;
-      outpost.setDirection(direction);
+            if (!OutpostUtil.canBuildOutpostAt(_player, worldPosition, direction, out _)) {
+               return;
+            }
 
-      InstanceManager.self.addOutpostToInstance(outpost, instance);
-      NetworkServer.Spawn(outpost.gameObject);
+            Outpost outpost = Instantiate(PrefabsManager.self.outpostPrefab);
+            outpost.transform.localPosition = localPosition;
+            outpost.setAreaParent(area, false);
 
-      outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
+            outpost.guildId = _player.guildId;
+            outpost.areaKey = _player.areaKey;
+            outpost.outpostDirection = direction;
+            outpost.setDirection(direction);
+
+            outpost.guildIconBackground = _player.guildIconBackground;
+            outpost.guildIconBorder = _player.guildIconBorder;
+            outpost.guildIconBackPalettes = _player.guildIconBackPalettes;
+            outpost.guildIconSigil = _player.guildIconSigil;
+            outpost.guildIconSigilPalettes = _player.guildIconSigilPalettes;
+
+            InstanceManager.self.addOutpostToInstance(outpost, instance);
+            NetworkServer.Spawn(outpost.gameObject);
+
+            outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
+
+            // Remove resources
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, 500);
+            });
+         });
+      });
    }
 
    [Server]

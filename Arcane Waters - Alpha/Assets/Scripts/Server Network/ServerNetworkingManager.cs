@@ -428,24 +428,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SummonUser, targetUserId, adminLocation);
    }
 
-   public void forceSinglePlayerModeForUser (int userId) {
-      server.InvokeServerRpc(server.MasterServer_ForceSinglePlayerForUser, userId);
-   }
-
-   public void mutePlayer (int userId, bool isStealth, long expiresAt) {
-      server.InvokeServerRpc(server.MasterServer_MutePlayer, userId, isStealth, expiresAt);
-   }
-
-   public void unMutePlayer (int userId) {
-      server.InvokeServerRpc(server.MasterServer_UnMutePlayer, userId);
-   }
-
-   public void banPlayer (int userId, bool isPermanent, long expiresAt) {
-      server.InvokeServerRpc(server.MasterServer_BanPlayer, userId, isPermanent, expiresAt);
-   }
-
-   public void kickPlayer (int userId) {
-      server.InvokeServerRpc(server.MasterServer_KickPlayer, userId);
+   public void applyPenaltyToPlayer(int accId, PenaltyInfo.ActionType penaltyType, int seconds) {
+      server.InvokeServerRpc(server.MasterServer_ApplyPenaltyToPlayer, accId, penaltyType, seconds);
    }
 
    public void changeUserName (int userId, string oldName, string newName) {

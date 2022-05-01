@@ -6736,23 +6736,54 @@ public class DB_Main : DB_MainStub
       return accountName;
    }
 
-   public static new List<PenaltyInfo> getPenaltiesForAccount (int accId) {
-      List<PenaltyInfo> penalties = new List<PenaltyInfo>();
+   public static new PenaltyInfo getPenaltyForAccount (int accId, List<PenaltyInfo.ActionType> penaltyTypes) {
+      // Kick penalties don't have a duration
+      if (penaltyTypes.Contains(PenaltyInfo.ActionType.Kick)) {
+         return null;
+      }
 
-      // We get all this accId penalties with some conditions:
-      // expiresAt must be in the future (so, this penalty is still valid)
-      // lifted must be 0. Lifted is used to invalidate a penalty before its expiration date
+      PenaltyInfo muteInfo = null;
+
+      string sqlArray = $"({string.Join(", ", penaltyTypes.Select(pt => (int) pt))})";
+
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_penalties_v2 " +
-            "WHERE targetAccId = @accId AND ((expiresAt IS NULL AND penaltyType = @penaltyType) " +
-            "OR expiresAt > @currentDate) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            $"SELECT * FROM global.account_penalties_v2 " +
+            $"WHERE penaltyType IN {sqlArray} AND targetAccId = @accId AND NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) AND lifted = 0 " +
+            "ORDER BY addedAt DESC LIMIT 1", conn)) {
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@penaltyType", (int) PenaltyInfo.ActionType.PermanentBan);
-            cmd.Parameters.AddWithValue("@currentDate", DateTime.UtcNow);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  muteInfo = new PenaltyInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return muteInfo;
+   }
+
+   public static new List<PenaltyInfo> getPenaltiesForAccount (int accId) {
+      List<PenaltyInfo> penalties = new List<PenaltyInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_penalties_v2 " +
+            "WHERE targetAccId = @accId AND (NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) OR penaltyType = @permaBan) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@permaBan", PenaltyInfo.ActionType.PermanentBan);
+
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6769,205 +6800,52 @@ public class DB_Main : DB_MainStub
       return penalties;
    }
 
-   public static new bool forceSinglePlayerForAccount (PenaltyInfo penalty) {
-      bool success = false;
-
-      try {
-         using (MySqlConnection conn = getConnection()) {
-            conn.Open();
-
-            // First, we toggle the account forceSinglePlayer field
-            using (MySqlCommand updateCmd = new MySqlCommand("UPDATE global.accounts " +
-               "SET forceSinglePlayer = @forceSinglePlayer " +
-               "WHERE accId = @accId", conn)) {
-               updateCmd.Prepare();
-
-               updateCmd.Parameters.AddWithValue("@accId", penalty.targetAccId);
-               updateCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ? 1 : 0);
-
-               DebugQuery(updateCmd);
-               updateCmd.ExecuteNonQuery();
-            }
-
-            // Then, we add this event to the account penalties table, for history purposes
-            using (MySqlCommand insertCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource) " +
-               "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource)", conn)) {
-               insertCmd.Prepare();
-
-               insertCmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-               insertCmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-               insertCmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-               insertCmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-               insertCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-               insertCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-               insertCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-
-               DebugQuery(insertCmd);
-               insertCmd.ExecuteNonQuery();
-            }
-
-            success = true;
-         }
-      } catch (Exception ex) {
-         D.error("MySQL Error: " + ex.ToString());
-      }
-
-      return success;
-   }
-
-   public static new bool muteAccount (PenaltyInfo penalty) {
+   public static new bool savePenalty (PenaltyInfo penalty) {
       bool success = false;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource, expiresAt) " +
-            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource, @expiresAt)", conn)) {
+         using (MySqlCommand saveCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource) " +
+            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource)", conn)) {
             conn.Open();
-            cmd.Prepare();
+            saveCmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-            cmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-            cmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-            cmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-            cmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-            cmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-            cmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-            cmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-            cmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
-            cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-            cmd.Parameters.AddWithValue("@expiresAt", new DateTime(penalty.expiresAt));
+            saveCmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
+            saveCmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
+            saveCmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
+            saveCmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
+            saveCmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
+            saveCmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
+            saveCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
+            saveCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
+            saveCmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
+            saveCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
 
-            DebugQuery(cmd);
-            success = cmd.ExecuteNonQuery() == 1;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
+            DebugQuery(saveCmd);
+            success = saveCmd.ExecuteNonQuery() == 1;
 
-      return success;
-   }
+            if (penalty.id > 0 && penalty.isLiftType()) {
+               using (MySqlCommand liftCmd = new MySqlCommand("UPDATE global.account_penalties_v2 SET lifted = 1 WHERE id = @id", conn)) {
+                  liftCmd.Prepare();
 
-   public static new bool unMuteAccount (PenaltyInfo penalty) {
-      bool success = false;
+                  liftCmd.Parameters.AddWithValue("@id", penalty.id);
 
-      try {
-         using (MySqlConnection conn = getConnection()) {
-            conn.Open();
-
-            using (MySqlCommand insertCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource) " +
-                  "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource)", conn)) {
-               insertCmd.Prepare();
-
-               insertCmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-               insertCmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-               insertCmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-               insertCmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-               insertCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-               insertCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-               insertCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-
-               DebugQuery(insertCmd);
-               insertCmd.ExecuteNonQuery();
+                  DebugQuery(liftCmd);
+                  liftCmd.ExecuteNonQuery();
+               }
             }
 
-            using (MySqlCommand updateCmd = new MySqlCommand("UPDATE global.account_penalties_v2 SET lifted = 1 WHERE id = @id", conn)) {
-               updateCmd.Prepare();
+            if (penalty.penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer || penalty.penaltyType == PenaltyInfo.ActionType.LiftForceSinglePlayer) {
+               // First, we toggle the account forceSinglePlayer field
+               using (MySqlCommand accCmd = new MySqlCommand("UPDATE global.accounts SET forceSinglePlayer = @forceSinglePlayer WHERE accId = @accId", conn)) {
+                  accCmd.Prepare();
 
-               updateCmd.Parameters.AddWithValue("@id", penalty.id);
+                  accCmd.Parameters.AddWithValue("@accId", penalty.targetAccId);
+                  accCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ? 1 : 0);
 
-               DebugQuery(updateCmd);
-               updateCmd.ExecuteNonQuery();
-            }
-
-            success = true;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return success;
-   }
-
-   public static new bool banAccount (PenaltyInfo penalty) {
-      bool success = false;
-
-      string query = "INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource, expiresAt) " +
-         "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource, @expiresAt)";
-
-      // If our ban is permanent, we remove the expiresAt parameter, since we don't need to specify a date for it
-      if (penalty.penaltyType == PenaltyInfo.ActionType.PermanentBan) {
-         query = query.Replace(", penaltyTime", string.Empty);
-         query = query.Replace(", @penaltyTime", string.Empty);
-         query = query.Replace(", expiresAt", string.Empty);
-         query = query.Replace(", @expiresAt", string.Empty);
-      }
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-            cmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-            cmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-            cmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-            cmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-            cmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-            cmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-            cmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-            cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-
-            if (penalty.penaltyType == PenaltyInfo.ActionType.Ban) {
-               cmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
-               cmd.Parameters.AddWithValue("@expiresAt", new DateTime(penalty.expiresAt));
-            }
-
-            DebugQuery(cmd);
-            success = cmd.ExecuteNonQuery() == 1;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return success;
-   }
-
-   public static new bool unBanAccount (PenaltyInfo penalty) {
-      bool success = false;
-
-      try {
-         using (MySqlConnection conn = getConnection()) {
-            using (MySqlCommand insertCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource) " +
-               "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource)", conn)) {
-               conn.Open();
-               insertCmd.Prepare();
-
-               insertCmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-               insertCmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-               insertCmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-               insertCmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-               insertCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-               insertCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-               insertCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-
-               DebugQuery(insertCmd);
-               success = insertCmd.ExecuteNonQuery() == 1;
-            }
-
-            using (MySqlCommand updateCmd = new MySqlCommand("UPDATE global.account_penalties_v2 SET lifted = 1 WHERE id = @id", conn)) {
-               updateCmd.Prepare();
-
-               updateCmd.Parameters.AddWithValue("@id", penalty.id);
-
-               DebugQuery(updateCmd);
-               updateCmd.ExecuteNonQuery();
+                  DebugQuery(accCmd);
+                  accCmd.ExecuteNonQuery();
+               }
             }
          }
       } catch (Exception e) {
@@ -6975,32 +6853,6 @@ public class DB_Main : DB_MainStub
       }
 
       return success;
-   }
-
-   // Just for history purposes
-   public static new void kickAccount (PenaltyInfo penalty) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource) VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource)", conn)) {
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
-            cmd.Parameters.AddWithValue("@sourceUsrId", penalty.sourceUsrId);
-            cmd.Parameters.AddWithValue("@sourceUsrName", penalty.sourceUsrName);
-            cmd.Parameters.AddWithValue("@targetAccId", penalty.targetAccId);
-            cmd.Parameters.AddWithValue("@targetUsrId", penalty.targetUsrId);
-            cmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
-            cmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
-            cmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-            cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
-
-            DebugQuery(cmd);
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
    }
 
    public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
@@ -7556,20 +7408,19 @@ public class DB_Main : DB_MainStub
       return userAccountInfo;
    }
 
-   public static new List<QueueItem> getPenaltiesQueue () {
-      List<QueueItem> queue = new List<QueueItem>();
+   public static new List<PenaltiesQueueItem> getPenaltiesQueue () {
+      List<PenaltiesQueueItem> queue = new List<PenaltiesQueueItem>();
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM penalties_queue " +
-            "WHERE processedAt IS NULL", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM penalties_queue", conn)) {
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  QueueItem item = new QueueItem(dataReader);
+                  PenaltiesQueueItem item = new PenaltiesQueueItem(dataReader);
                   queue.Add(item);
                }
             }
@@ -7581,10 +7432,10 @@ public class DB_Main : DB_MainStub
       return queue;
    }
 
-   public static new void processPenaltyFromQueue (int id) {
+   public static new void removePenaltiesQueueItem (int id) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE penalties_queue SET processedAt = CURRENT_TIMESTAMP WHERE id = @id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM penalties_queue WHERE id = @id", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -8252,7 +8103,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new bool decreaseQuantityOrDeleteItem (int userId, Item.Category itemCategory, int itemTypeId, int deductedValue) {
-      // First query deletes the entry which has only 1 of item left
+      // First query deletes the entry which has only 'deductedValue' of item left
       // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
       string cmdText = "BEGIN;" +
          "DELETE FROM items WHERE usrId=@usrId AND itmType=@itemType AND itmCategory = @itemCategory AND itmCount<=@deductBy; " +

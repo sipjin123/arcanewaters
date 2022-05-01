@@ -641,7 +641,7 @@ public class BattleManager : MonoBehaviour {
                if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DamageBoost)) {
                   allDamageBoost = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DamageBoost) / 100);
                }
-
+               
                PlayerBodyEntity playerBody = source.player.GetComponent<PlayerBodyEntity>();
                if (playerBody != null) {
                   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(playerBody.weaponManager.equipmentDataId);

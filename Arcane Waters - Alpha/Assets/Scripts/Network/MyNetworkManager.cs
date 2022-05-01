@@ -76,12 +76,12 @@ public class MyNetworkManager : NetworkManager
       // Redirection
       Redirection = 2
    }
-   
-   #if KCP
+
+#if KCP
    public ushort Port { get { return kcp ? kcp.Port : (ushort)0; } set { kcp.Port = value; } }
-   #else
-   public ushort Port { get { return telepathy ? telepathy.port : (ushort)0; } set { telepathy.port = value; } }
-   #endif
+#else
+   public ushort Port { get { return telepathy ? telepathy.port : (ushort) 0; } set { telepathy.port = value; } }
+#endif
 
    #endregion
 
@@ -89,24 +89,24 @@ public class MyNetworkManager : NetworkManager
       D.adminLog("MyNetworkManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
-#if FORCE_AMAZON_SERVER
+   #if FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-#endif
-#if FORCE_AMAZON_SERVER_PROD
+   #endif
+   #if FORCE_AMAZON_SERVER_PROD
       Debug.Log("FORCE_AMAZON_SERVER_PROD is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-#endif
-#if FORCE_SYDNEY
+   #endif
+   #if FORCE_SYDNEY
       this.serverOverride = ServerType.AmazonSydney;
-#endif
-#if FORCE_LOCALHOST
+   #endif
+   #if FORCE_LOCALHOST
       this.serverOverride = ServerType.Localhost;
-#endif
+   #endif
 
-#if !FORCE_AMAZON_SERVER
+   #if !FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is not defined.");
-#endif
+   #endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {
@@ -656,12 +656,10 @@ public class MyNetworkManager : NetworkManager
 
             // Get player's mute info if exists, and send it to the player
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(player.accountId);
-               PenaltyInfo muteInfo = penalties.FirstOrDefault(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute);
-
+               PenaltyInfo muteInfo = DB_Main.getPenaltyForAccount(player.accountId, new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.Mute, PenaltyInfo.ActionType.StealthMute });
                if (muteInfo != null) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     player.setMuteInfo(muteInfo.expiresAt, muteInfo.penaltyType == PenaltyInfo.ActionType.StealthMute);
+                     player.setMuteInfo(muteInfo.penaltyTime, muteInfo.penaltyType == PenaltyInfo.ActionType.StealthMute);
                   });
                }
             });

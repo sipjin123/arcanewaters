@@ -8,6 +8,13 @@ public class Outpost : SeaStructureTower, IObserver
 {
    #region Public Variables
 
+   // How fast we fill ships with food
+   public const float FOOD_FILL_PER_SECOND = 100f;
+
+   // Which direction is the outpost facing
+   [SyncVar]
+   public Direction outpostDirection;
+
    // List of outposts in the client
    public static List<SeaStructure> outpostsClient = new List<SeaStructure>();
 
@@ -20,10 +27,15 @@ public class Outpost : SeaStructureTower, IObserver
    // List of outpost dock sprites, indexed by direction
    public Sprite[] dockDirectionSprites = new Sprite[9];
 
+   // A child object that will pass on onTriggerEnter2D events for food filling
+   public TriggerDetector foodFillDetector;
+
    #endregion
 
    protected override void Awake () {
       base.Awake();
+
+      foodFillDetector.onTriggerStay += onFoodFillTriggerStay;
 
       _spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
    }
@@ -31,7 +43,15 @@ public class Outpost : SeaStructureTower, IObserver
    public override void OnStartClient () {
       base.OnStartClient();
 
+      setDirection(outpostDirection);
       outpostsClient.Add(this);
+      updateGuildIconSprites();
+   }
+
+   protected override void Update () {
+      if (isServer && isDead()) {
+         NetworkServer.Destroy(this.gameObject);
+      }
    }
 
    public override void setAreaParent (Area area, bool worldPositionStays) {
@@ -50,8 +70,23 @@ public class Outpost : SeaStructureTower, IObserver
       }
    }
 
-   protected override void Update () {
-      base.Update();
+   private void onFoodFillTriggerStay (Collider2D collider) {
+      // If we have no guild, don't do anything
+      if (guildId <= 0) {
+         return;
+      }
+
+      // We only want to tun this on the server
+      if (!NetworkServer.active) {
+         return;
+      }
+
+      if (collider.TryGetComponent(out PlayerShipEntity entity)) {
+         // Check if entity can receive food from us
+         if (entity.guildId == guildId || entity.guildId == 0) {
+            entity.currentFood = Mathf.Clamp(entity.currentFood + Time.deltaTime * FOOD_FILL_PER_SECOND, 0, entity.maxFood);
+         }
+      }
    }
 
    protected override NetEntity getAttackerInRange () {

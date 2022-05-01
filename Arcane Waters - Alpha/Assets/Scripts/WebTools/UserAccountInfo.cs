@@ -1,9 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-#if IS_SERVER_BUILD
+﻿#if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
 #endif
 
@@ -22,9 +17,6 @@ public class UserAccountInfo {
    // The user's account name
    public string accountName;
 
-   // Single Player status
-   public bool isSinglePlayer;
-
    // Force Single Player status
    public bool forceSinglePlayer;
 
@@ -38,7 +30,6 @@ public class UserAccountInfo {
       this.username = dataReader.GetString("usrName");
       this.accountId = dataReader.GetInt32("accId");
       this.accountName = dataReader.GetString("accName");
-      this.isSinglePlayer = dataReader.GetInt32("isSinglePlayer") == 1;
       this.forceSinglePlayer = dataReader.GetInt32("forceSinglePlayer") == 1;
    }
    #endif

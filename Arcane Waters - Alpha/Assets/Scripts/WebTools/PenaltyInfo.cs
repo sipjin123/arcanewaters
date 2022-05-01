@@ -63,10 +63,43 @@ public class PenaltyInfo
          this.penaltyReason = penaltyReason;
       }
 
-      if(penaltyTime > 0) {
+      if (penaltyTime > 0) {
          this.expiresAt = DateTime.UtcNow.AddSeconds(penaltyTime).Ticks;
       }
    }
+
+   public PenaltyInfo (NetEntity source, UserAccountInfo target, ActionType penaltyType, string reason, int seconds, int penaltyId = 0) {
+      this.id = penaltyId;
+
+      this.sourceAccId = source.accountId;
+      this.sourceUsrId = source.userId;
+      this.sourceUsrName = source.entityName;
+
+      this.targetAccId = target.accountId;
+      this.targetUsrId = target.userId;
+      this.targetUsrName = target.username;
+
+      this.penaltyReason = reason;
+      this.penaltyTime = seconds;
+
+      this.penaltyType = penaltyType;
+
+      this.penaltySource = WebToolsUtil.ActionSource.Game;
+   }
+
+   public PenaltyInfo (int sourceAccId, int targetAccId, ActionType penaltyType, string penaltyReason, int penaltyTime, WebToolsUtil.ActionSource penaltySource) {
+      this.sourceAccId = sourceAccId;
+      this.targetAccId = targetAccId;
+      this.penaltyType = penaltyType;
+      this.penaltyTime = penaltyTime;
+      this.penaltySource = penaltySource;
+
+      if (!string.IsNullOrEmpty(penaltyReason)) {
+         this.penaltyReason = penaltyReason;
+      }
+   }
+
+
 
    #if IS_SERVER_BUILD
 
@@ -86,6 +119,18 @@ public class PenaltyInfo
    }
 
    #endif
+
+   public bool isMute () {
+      return this.penaltyType == ActionType.Mute || this.penaltyType == ActionType.StealthMute;
+   }
+
+   public bool isBan () {
+      return this.penaltyType == ActionType.Ban || this.penaltyType == ActionType.PermanentBan;
+   }
+
+   public bool isLiftType () {
+      return this.penaltyType == ActionType.LiftMute || this.penaltyType == ActionType.LiftBan;
+   }
 
    #region Private Variables
 

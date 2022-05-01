@@ -401,6 +401,8 @@ namespace MapCreationTool.Serialization
       public const string WHALE_RADIUS_KEY = "radius";
       public const string WHALE_DELAY_KEY = "delay";
 
+      public const string SLIDING_DOOR_WIDTH_KEY = "width";
+
       public string k; // Key
       public string v; // Value
 
