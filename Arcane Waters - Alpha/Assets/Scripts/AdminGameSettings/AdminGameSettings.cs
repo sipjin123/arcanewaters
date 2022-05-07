@@ -49,6 +49,10 @@ public class AdminGameSettings
    // The multipler of health and damage of land battles depending on difficulty value
    public float landDifficultyScaling = 0.01f;
 
+   // The demo restrictions
+   public int maxDemoBiome = 2;
+   public int maxDemoLevel = 5;
+
    #endregion
 
    public AdminGameSettings () { }
@@ -68,13 +72,15 @@ public class AdminGameSettings
       this.bossDamagePerMember = DataUtil.getFloat(dataReader, "landBossAddedDamage");
       this.bossHealthPerMember = DataUtil.getFloat(dataReader, "landBossAddedHealth");
       this.landDifficultyScaling = DataUtil.getFloat(dataReader, "landDifficultyScaling");
+      this.maxDemoLevel = DataUtil.getInt(dataReader, "maxDemoLevel");
+      this.maxDemoBiome = DataUtil.getInt(dataReader, "maxDemoBiome");
    }
 
 #endif
 
-   public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration, 
-      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth, 
-      float landBossAddedHealth, float landBossAddedDamage, float landDifficultyScaling) {
+   public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration,
+      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth,
+      float landBossAddedHealth, float landBossAddedDamage, float landDifficultyScaling, int maxDemoLevel, int maxDemoBiome) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
@@ -87,6 +93,8 @@ public class AdminGameSettings
       this.bossHealthPerMember = landBossAddedHealth;
       this.bossDamagePerMember = landBossAddedDamage;
       this.landDifficultyScaling = landDifficultyScaling;
+      this.maxDemoLevel = maxDemoLevel;
+      this.maxDemoBiome = maxDemoBiome;
    }
 
    public override bool Equals (object rhs) {

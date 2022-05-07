@@ -37,6 +37,9 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    public GameObject powerupIndicator;
    public SpriteRenderer powerupSprite;
 
+   // Reference to powerup type that is non-stackable
+   public List<Powerup.Type> nonStackableType = new List<Powerup.Type>();
+
    // The powerup type this loot spawner will provide
    [SyncVar]
    public Powerup.Type powerupType;
@@ -99,14 +102,22 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
          if (playerEntity != null && playerEntity.instanceId == instanceId) {
             isShowingPowerup = false;
-            playerEntity.rpc.Target_ReceivePowerup(powerupType, rarity, collision.transform.position);
-            PowerupManager.self.addPowerupServer(playerEntity.userId, new Powerup {
-               powerupDuration = powerupDuration,
-               powerupRarity = rarity,
-               powerupType = powerupType,
-               expiry = powerupDuration > 0 ? Powerup.Expiry.Timed : Powerup.Expiry.None
-            });
-
+            Powerup powerup = new Powerup() {
+                  powerupDuration = powerupDuration,
+                  powerupRarity = rarity,
+                  powerupType = powerupType,
+                  expiry = powerupDuration > 0 ? Powerup.Expiry.Timed : Powerup.Expiry.None,   
+            };
+            
+            if (nonStackableType.Contains(powerup.powerupType)) {
+               // Replace existing entry with type and create new entry if no entry with type
+               playerEntity.rpc.Target_ReceiveUniquePowerup(powerupType, rarity, collision.transform.position);
+               PowerupManager.self.addReplacePowerupServer(playerEntity.userId, powerup);
+            } else {
+               // Create new entry for this powerup
+               playerEntity.rpc.Target_ReceivePowerup(powerupType, rarity, collision.transform.position);
+               PowerupManager.self.addPowerupServer(playerEntity.userId, powerup);
+            }
             updatePowerup(false, 0, rarity);
             Rpc_ToggleDisplay(false, 0, rarity);
             initializeSpawner(spawnFrequency);

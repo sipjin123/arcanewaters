@@ -43,7 +43,7 @@ public class SoundEffectManager : GenericGameManager
    public const string MAIL_NOTIFICATION = "event:/SFX/Game/UI/Mail_Notification";
    public const string LOCALE_UNLOCK = "event:/SFX/Game/UI/Locale_Unlock";
    public const string TURNING_PAGES_ON_BOOKS = "event:/SFX/Game/UI/Turning_Pages_on_Books";
-   
+
    public const string EQUIP = "event:/SFX/Game/UI/Equip";
    public const string EQUIP_SPECIAL = "event:/SFX/Game/UI/Equip_Ring_Neck_Trinket";
 
@@ -67,6 +67,8 @@ public class SoundEffectManager : GenericGameManager
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
    public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
+
+   public const string SNAKE_HURT = "event:/SFX/NPC/Enemy/Snake_FIghters/SF_Hurt";
 
    public const string LIZARD_KING_ATTACK = "event:/SFX/Game/Land_Battle/Lizard_King/Swipe_Attack";
    public const string LIZARD_KING_HURT = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Pain_Hit";
@@ -193,10 +195,6 @@ public class SoundEffectManager : GenericGameManager
       self = this;
    }
 
-   private void Start () {
-      InvokeRepeating(nameof(checkRuffianRepairs), 0f, 1f);
-   }
-
    public void playFmodSfx (string path, Vector3 position = default) {
       if (Util.isBatch() || string.IsNullOrEmpty(path)) {
          return;
@@ -210,7 +208,7 @@ public class SoundEffectManager : GenericGameManager
       FMODUnity.RuntimeManager.PlayOneShot(path, position);
    }
 
-   public void playEquipSfx(bool isSpecial = false) {
+   public void playEquipSfx (bool isSpecial = false) {
       string path = isSpecial ? EQUIP_SPECIAL : EQUIP;
       playFmodSfx(path);
    }
@@ -257,7 +255,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playLandBattleHitSfx (Enemy.Type sourceType, Enemy.Type targetType, AttackAbilityData ability, Vector3 position) {
       string hitPath = GENERIC_HIT_LAND;
-      string hurtPath = "";
+      string hurtPath = string.Empty;
 
       // Hit sfx
       switch (ability.classRequirement) {
@@ -268,6 +266,13 @@ public class SoundEffectManager : GenericGameManager
 
       // Hurt sfx
       switch (targetType) {
+         case Enemy.Type.Snake_Assassin:
+         case Enemy.Type.Snake_Base:
+         case Enemy.Type.Snake_Healer:
+         case Enemy.Type.Snake_Ranged:
+         case Enemy.Type.Snake_Tank:
+            hurtPath = SNAKE_HURT;
+            break;
          case Enemy.Type.Lizard_King:
             hurtPath = LIZARD_KING_HURT;
             break;
@@ -459,7 +464,7 @@ public class SoundEffectManager : GenericGameManager
       bool isSea = AreaManager.self.isSeaArea(areaKey);
 
       if (isSea) {
-         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
             return BgType.Sea_PvP;
          } else if (VoyageManager.isLeagueArea(areaKey)) {
             return BgType.Sea_League;
@@ -525,6 +530,18 @@ public class SoundEffectManager : GenericGameManager
 
       if (state == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
          _shipSailingEvent.start();
+      }
+   }
+
+   public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
+      if (isPlay) {
+         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+            playRuffianRepairs(netId);
+         }
+      } else {
+         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+            stopRuffianRepairs(netId);
+         }
       }
    }
 
@@ -602,6 +619,7 @@ public class SoundEffectManager : GenericGameManager
             path = HORROR_TENTACLE_DEATH;
             break;
          case SeaMonsterEntity.Type.Fishman:
+         case SeaMonsterEntity.Type.Worm:
             path = FISHMAN_DEATH;
             break;
          case SeaMonsterEntity.Type.Reef_Giant:
@@ -674,6 +692,7 @@ public class SoundEffectManager : GenericGameManager
 
       switch (seaMonsterType) {
          case SeaMonsterEntity.Type.Fishman:
+         case SeaMonsterEntity.Type.Worm:
             path = FISHMAN_HURT;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
@@ -975,55 +994,31 @@ public class SoundEffectManager : GenericGameManager
 
    #region Ruffian Repairs
 
-   public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
-      //if (isPlay) {
-      //   if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-      //      playRuffianRepairs(netId);
-      //   }
-      //} else {
-      //   if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-      //      stopRuffianRepairs(netId);
-      //   }
-      //}
-   }
-
-   private void checkRuffianRepairs () {
-      List<uint> keys = _ruffianRepairsEvents.Keys.ToList();
-      foreach (uint netId in keys) {
-         NetEntity entity = EntityManager.self.getEntityByNetId(netId);
-         if (entity == null) {
-            if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
-               eventInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            }
-            _ruffianRepairsEvents.Remove(netId);
-         }
-      }
-   }
-
    private void playRuffianRepairs (uint netId) {
-      //NetEntity entity = EntityManager.self.getEntityByNetId(netId);
-      //if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
-      //   FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
-      //   FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
-
-      //   eventInstance.start();
-      //   _ruffianRepairsEvents.Add(netId, eventInstance);
-
-      //   //D.debug($"[SFX] Play Ruffian Repairs for netId: {netId}");
-      //}
+      NetEntity entity = EntityManager.self.getEntityByNetId(netId);
+      if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
+         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
+         eventInstance.start();
+         _ruffianRepairsEvents.Add(netId, eventInstance);
+      }
    }
 
    private void stopRuffianRepairs (uint netId) {
-      if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
-         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
-         eventInstance.release();
+      if (_ruffianRepairsEvents.ContainsKey(netId)) {
+         if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
+            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
+            eventInstance.release();
+         }
+         _ruffianRepairsEvents.Remove(netId);
       }
-      _ruffianRepairsEvents.Remove(netId);
-
-      //D.debug($"[SFX] Stop Ruffian Repairs for netId: {netId}");
    }
 
    #endregion
+
+   public void stopSfxForEntity (uint netId) {
+      stopRuffianRepairs(netId);
+   }
 
    public void playTreeChop (Vector3 position, bool isLastHit) {
       if (!Util.isBatch()) {
@@ -1080,9 +1075,6 @@ public class SoundEffectManager : GenericGameManager
 
    // Ruffian Repairs events
    private Dictionary<uint, FMOD.Studio.EventInstance> _ruffianRepairsEvents = new Dictionary<uint, FMOD.Studio.EventInstance>();
-
-   // Harpoon events
-   //private Dictionary<GameObject, FMOD.Studio.EventInstance> _harpoonEvents = new Dictionary<GameObject, FMOD.Studio.EventInstance>();
 
    public enum BgType
    {
@@ -1199,7 +1191,7 @@ public class SoundEffectManager : GenericGameManager
 
    public enum HarpoonEvent
    {
-      None = -1,
+      Stop = -1,
       Fire = 0,
       Hit = 1,
       Drag = 2,

@@ -460,7 +460,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             return false;
          }
 
-         if (map.biome != Biome.Type.Forest && map.biome != Biome.Type.Desert) {
+         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(map.biome)) {
             return false;
          }
       }

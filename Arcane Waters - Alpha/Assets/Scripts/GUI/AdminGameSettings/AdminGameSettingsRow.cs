@@ -16,6 +16,9 @@ public class AdminGameSettingsRow : MonoBehaviour
    public Button upButton;
    public Button downButton;
 
+   // Is this row only accepting integer values
+   public bool integerValues = false;
+
    #endregion
 
    public void initialize (float value) {
@@ -23,11 +26,18 @@ public class AdminGameSettingsRow : MonoBehaviour
    }
 
    public void onUpButtonClicked () {
-      setValue(_value + 0.1f);
+      setValue(_value + buttonStep());
    }
 
    public void onDownButtonClicked () {
-      setValue(_value - 0.1f);
+      setValue(_value - buttonStep());
+   }
+
+   private float buttonStep () {
+      if (integerValues) {
+         return 1f;
+      }
+      return 0.1f;
    }
 
    public void onValueInputEndEdit () {
@@ -40,8 +50,14 @@ public class AdminGameSettingsRow : MonoBehaviour
    }
 
    private void setValue (float value, bool notifyMainPanel = true) {
+      // If we use integers, force it
+      if (integerValues) {
+         value = Mathf.Round(value);
+      }
+
       // Truncate after the second decimal
       value = Mathf.Round(value * 100f) / 100f;
+
       _value = value;
       valueInput.SetTextWithoutNotify(_value.ToString());
 

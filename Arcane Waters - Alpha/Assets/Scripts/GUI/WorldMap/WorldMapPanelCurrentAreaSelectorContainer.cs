@@ -23,8 +23,8 @@ public class WorldMapPanelCurrentAreaSelectorContainer : MonoBehaviour
    }
 
    private static WorldMapAreaCoords tryGetAreaCoords (string areaKey) {
-      if (WorldMapManager.self.isWorldMapArea(areaKey)) {
-         return WorldMapManager.self.getAreaCoords(areaKey);
+      if (WorldMapManager.isWorldMapArea(areaKey)) {
+         return WorldMapManager.getAreaCoords(areaKey);
       }
 
       // See if the current area can be reached through one of the known warps

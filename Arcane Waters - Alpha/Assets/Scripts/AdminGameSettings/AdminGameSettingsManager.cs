@@ -35,6 +35,15 @@ public class AdminGameSettingsManager : GenericGameManager
       });
    }
 
+   public bool isBiomeLegalForDemoUser (Biome.Type biome) {
+      // Lets allow Forest as a bit of a fail-safe
+      if (biome == Biome.Type.Forest) {
+         return true;
+      }
+
+      return (int) biome <= settings.maxDemoBiome;
+   }
+
    [Server]
    public void updateAndStoreSettings (AdminGameSettings newSettings) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

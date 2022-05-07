@@ -259,6 +259,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpLootSpawnData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpCaptureTargetHolderData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> varyingStateObjectData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> whirlpoolData = new List<ExportedPrefab001>();
          OpenWorldController openWorldController = null;
          OreNodeMapController oreController = null;
 
@@ -346,6 +347,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<PvpCaptureTargetHolder>() != null) {
                if (prefab.d != null) {
                   pvpCaptureTargetHolderData.Add(prefab);
+               }
+            } else if (original.GetComponent<WhirlpoolEffector>() != null) { 
+               if (prefab.d != null) {
+                  whirlpoolData.Add(prefab);
                }
             } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -482,7 +487,7 @@ namespace MapCreationTool
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
             pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController,
-            windowInteractData, largeWindowInteractData, varyingStateObjectData);
+            windowInteractData, largeWindowInteractData, varyingStateObjectData, whirlpoolData);
       }
    }
 }

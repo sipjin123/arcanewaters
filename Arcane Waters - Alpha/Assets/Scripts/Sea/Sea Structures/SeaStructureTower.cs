@@ -9,12 +9,6 @@ public class SeaStructureTower : SeaStructure
 {
    #region Public Variables
 
-   // How far away this unit can target and attack enemies
-   public static float ATTACK_RANGE = 3.5f;
-
-   // The range at which the attack range circle will be displayed
-   public static float WARNING_RANGE = 4.5f;
-
    // The position which projectiles are fired from
    public Transform targetingBarrelSocket;
 
@@ -58,9 +52,9 @@ public class SeaStructureTower : SeaStructure
 
       attackTriggerDetector.onTriggerEnter += onAttackTriggerEnter2D;
       attackTriggerDetector.onTriggerExit += onAttackTriggerExit2D;
-      attackTriggerDetector.GetComponent<CircleCollider2D>().radius = ATTACK_RANGE;
+      attackTriggerDetector.GetComponent<CircleCollider2D>().radius = getAttackRange();
 
-      attackRangeRenderer.material.SetFloat("_Radius", ATTACK_RANGE);
+      attackRangeRenderer.material.SetFloat("_Radius", getAttackRange());
       attackRangeRenderer.material.SetFloat("_FillAmount", 1.0f);
       attackRangeRenderer.material.SetColor("_Color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
    }
@@ -223,7 +217,7 @@ public class SeaStructureTower : SeaStructure
 
    protected override bool isInRange (Vector2 position) {
       Vector2 toTarget = position - (Vector2) transform.position;
-      return (toTarget.sqrMagnitude < ATTACK_RANGE * ATTACK_RANGE);
+      return (toTarget.sqrMagnitude < getAttackRange() * getAttackRange());
    }
 
    protected override Sprite getSprite () {
@@ -249,7 +243,7 @@ public class SeaStructureTower : SeaStructure
          Vector2 targetPosition = aimTransform.position;
          Vector2 barrelSocketPosition = targetingBarrelSocket.position;
          float targetDistance = (targetPosition - barrelSocketPosition).magnitude;
-         float distanceModifier = Mathf.Clamp(targetDistance / ATTACK_RANGE, 0.1f, 1.0f);
+         float distanceModifier = Mathf.Clamp(targetDistance / getAttackRange(), 0.1f, 1.0f);
          float parabolaHeight = 0.25f * distanceModifier;
          targetingParabola.parabolaHeight = parabolaHeight;
 
@@ -277,8 +271,8 @@ public class SeaStructureTower : SeaStructure
 
             // If the reticle target position has moved out of range, clamp it in-range
             Vector2 toReticleTargetPosition = reticleTargetPosition - (Vector2) transform.position;
-            if (toReticleTargetPosition.sqrMagnitude > ATTACK_RANGE * ATTACK_RANGE) {
-               reticleTargetPosition = (Vector2) transform.position + toReticleTargetPosition.normalized * ATTACK_RANGE;
+            if (toReticleTargetPosition.sqrMagnitude > getAttackRange() * getAttackRange()) {
+               reticleTargetPosition = (Vector2) transform.position + toReticleTargetPosition.normalized * getAttackRange();
             }
 
             aimTransform.position = Vector2.Lerp(aimTransform.position, reticleTargetPosition, Time.deltaTime * AIM_TARGET_SPEED);
@@ -295,8 +289,8 @@ public class SeaStructureTower : SeaStructure
       PlayerShipEntity playerShipEntity = getGlobalPlayerShip();
       if (isClient && isValidTarget(playerShipEntity)) {
          float distanceToGlobalPlayerShip = Vector2.Distance(transform.position, playerShipEntity.transform.position);
-         bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
-         bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
+         bool isInWarningRange = (distanceToGlobalPlayerShip <= getWarningRange());
+         bool isInAttackRange = (distanceToGlobalPlayerShip <= getAttackRange());
          float lerpTargetAlpha = (isInWarningRange) ? 0.5f : 0.0f;
 
          // Fade circle out as we are dying
@@ -346,9 +340,9 @@ public class SeaStructureTower : SeaStructure
       float targetDistance = toTarget.magnitude;
 
       // If the target is out of range, fire a max range shot in their direction
-      if (targetDistance > ATTACK_RANGE) {
-         targetPosition = spawnPosition + toTarget.normalized * ATTACK_RANGE;
-         targetDistance = ATTACK_RANGE;
+      if (targetDistance > getAttackRange()) {
+         targetPosition = spawnPosition + toTarget.normalized * getAttackRange();
+         targetDistance = getAttackRange();
       }
 
       ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
@@ -357,7 +351,7 @@ public class SeaStructureTower : SeaStructure
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
 
       // Set up the cannonball
-      float distanceModifier = Mathf.Clamp(targetDistance / ATTACK_RANGE, 0.1f, 1.0f);
+      float distanceModifier = Mathf.Clamp(targetDistance / getAttackRange(), 0.1f, 1.0f);
       float lobHeight = 0.25f * distanceModifier;
       float lifetime = targetDistance / (Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier);
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier;
@@ -368,6 +362,14 @@ public class SeaStructureTower : SeaStructure
       NetworkServer.Spawn(netBall.gameObject);
 
       Rpc_NoteAttack();
+   }
+
+   protected virtual float getAttackRange () {
+      return PvpTower.ATTACK_RANGE;
+   }
+
+   protected virtual float getWarningRange () {
+      return PvpTower.WARNING_RANGE;
    }
 
    protected override NetEntity getAttackerInRange () {

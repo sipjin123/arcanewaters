@@ -449,7 +449,7 @@ public class SeaEntity : NetEntity
                }
 
                if (this.isPlayerShip()) {
-                  if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+                  if (WorldMapManager.isWorldMapArea(areaKey)) {
                      rpc.processBadgeReward(_lastAttackerNetId);
                   }
 
@@ -557,7 +557,7 @@ public class SeaEntity : NetEntity
          // Background thread
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Rewards are greater for users that have enabled their pvp status in world maps
-            if (entity != null && entity.enablePvp && WorldMapManager.self.isWorldMapArea(areaKey)) {
+            if (entity != null && entity.enablePvp && WorldMapManager.isWorldMapArea(areaKey)) {
                xp = (int) (xp * 1.5f);
             }
 
@@ -2564,6 +2564,12 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    protected void Rpc_ShowBuffAlly (uint targetNetId, Attack.Type attackType) {
+      BuffOrb newOrb = Instantiate(PrefabsManager.self.buffOrbPrefab, transform.position, Quaternion.identity, orbHolder);
+      newOrb.init(this.netId, attackType, orbHolder, targetNetId, false, true);
+   }
+
+   [ClientRpc]
+   protected void Rpc_RemoveBuffAlly (uint targetNetId, Attack.Type attackType) {
       BuffOrb newOrb = Instantiate(PrefabsManager.self.buffOrbPrefab, transform.position, Quaternion.identity, orbHolder);
       newOrb.init(this.netId, attackType, orbHolder, targetNetId, false, true);
    }

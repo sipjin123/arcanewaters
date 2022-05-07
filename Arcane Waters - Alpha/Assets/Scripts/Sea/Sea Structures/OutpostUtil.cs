@@ -70,7 +70,7 @@ public class OutpostUtil
       }
 
       // Make sure instance is open world
-      if (!WorldMapManager.self.isWorldMapArea(instance.areaKey)) {
+      if (!WorldMapManager.isWorldMapArea(instance.areaKey)) {
          cantBuildReason = CantBuildReason.None;
          return false;
       }
@@ -125,7 +125,7 @@ public class OutpostUtil
       }
 
       // Make sure instance is open world
-      if (!WorldMapManager.self.isWorldMapArea(instance.areaKey)) {
+      if (!WorldMapManager.isWorldMapArea(instance.areaKey)) {
          cantBuildReason = CantBuildReason.None;
          return false;
       }

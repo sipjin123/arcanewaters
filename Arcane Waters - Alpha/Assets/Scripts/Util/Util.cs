@@ -1192,6 +1192,7 @@ public class Util : MonoBehaviour
          PanelManager.isLoading ||
          ChatPanel.self.inputField.isFocused ||
          ChatPanel.self.nameInputField.isFocused ||
+         PvpShopPanel.self.entirePanel.activeInHierarchy ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
          !AreaManager.self.hasArea(Global.player.areaKey) ||
@@ -1480,7 +1481,6 @@ public class Util : MonoBehaviour
       Global.isFirstLogin = true;
       Global.isFirstSpawn = true;
       Global.isRedirecting = false;
-      TitleScreen.self.passwordInputField.text = "";
 
       // Clear the current area - if we reconnect to another server, the area position could be different
       MapManager.self.destroyLastMap();

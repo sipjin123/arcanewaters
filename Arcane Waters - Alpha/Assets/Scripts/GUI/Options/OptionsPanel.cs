@@ -133,7 +133,16 @@ public class OptionsPanel : Panel
 
    // Text indicating if we are using demo user or not
    public GameObject demoUserText = null;
+
+   // Reference to invite link of Arcane Waters Discord game-talk channel
+   public const string DISCORD_URL_INVITE = "https://discord.gg/Evj3a5PNYb"; 
    
+   // Reference to Discord confirmation window title
+   public const string DISCORD_CONFIRM_TITLE = "Opening Discord?";
+   
+   // Reference to Discord confirmation window description
+   public const string DISCORD_CONFIRMATION_DESC = "You are about to open Arcane Waters Discord Channel. Are you sure?";
+
    #endregion
 
    public override void Awake () {
@@ -451,20 +460,12 @@ public class OptionsPanel : Panel
       base.show();
 
       // Show/hide some options when the user is logged in and when he is not
-      if (NetworkServer.active || NetworkClient.active) {
-         foreach (GameObject go in loggedInObjects) {
-            go.SetActive(true);
-         }
-         foreach (GameObject go in notLoggedInObjects) {
-            go.SetActive(false);
-         }
-      } else {
-         foreach (GameObject go in loggedInObjects) {
-            go.SetActive(false);
-         }
-         foreach (GameObject go in notLoggedInObjects) {
-            go.SetActive(true);
-         }
+      bool isLoggedIn = NetworkServer.active || NetworkClient.active;
+      foreach (GameObject options in loggedInObjects) {
+         options.SetActive(isLoggedIn);
+      }
+      foreach (GameObject options in notLoggedInObjects) {
+         options.SetActive(!isLoggedIn);
       }
 
       // Show/hide some options when player has/hasn't selected a character
@@ -678,19 +679,19 @@ public class OptionsPanel : Panel
    }
 
    public void onWishlistButtonPress () {
-      if (Global.player == null || !Global.player.isAdmin()) {
-         return;
-      }
-
       // The player must be logged into Steam
-      if (!SteamManager.Initialized || !Global.isSteamLogin) {
-         if (PanelManager.self != null) {
-            PanelManager.self.noticeScreen.show("Can't open the Wishlist page at the moment.");
-         }
+      if (Global.player == null || !SteamManager.Initialized) {
+         PanelManager.self.noticeScreen.show("Can't open the Wishlist page at the moment.");
          return;
       }
 
+      D.debug("Sending request to open the wishlist page to the server.");
       Global.player.rpc.Cmd_RequestWishlist(Global.player.steamId);
+   }
+
+   public void onDiscordButtonPress () {
+      // Open discord game-talk channel upon player confirmation
+      PanelManager.self.showConfirmationPanel(DISCORD_CONFIRM_TITLE, onConfirm: () => Application.OpenURL(DISCORD_URL_INVITE), description: DISCORD_CONFIRMATION_DESC);
    }
 
    #region Private Variables
@@ -700,6 +701,9 @@ public class OptionsPanel : Panel
 
    // The list of supported resolutions
    private List<Resolution> _supportedResolutions = new List<Resolution>();
+
+   // Reference to Wishlist window unavailable description
+   private const string WISHLIST_UNAVAILABLE = "Can't open the Wishlist page at the moment.";
 
    #endregion
 }

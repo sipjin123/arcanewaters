@@ -204,6 +204,11 @@ public class TitleScreen : MonoBehaviour {
       steamLoginPanel.SetActive(false);
    }
 
+   public void onDiscordButtonPressed () {
+      // Open discord game-talk channel upon player confirmation
+      PanelManager.self.showConfirmationPanel(OptionsPanel.DISCORD_CONFIRM_TITLE, onConfirm: () => Application.OpenURL(OptionsPanel.DISCORD_URL_INVITE), description: OptionsPanel.DISCORD_CONFIRMATION_DESC);
+   }
+
    public void onLoginButtonPressed (bool isSteam) {
       if (!isTermsOfServiceAccepted()) {
          // Show ToS that user has to accept to continue

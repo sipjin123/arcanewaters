@@ -76,7 +76,7 @@ public class PvpArenaPanel : Panel
 
    public void onPvpArenaRowPressed (Voyage voyage) {
       if (Global.player.isDemoUser) {
-         if (voyage.biome != Biome.Type.Forest && voyage.biome != Biome.Type.Desert) {
+         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(voyage.biome)) {
             PanelManager.self.noticeScreen.show("Target biome is closed for demo");
             return;
          }
@@ -87,7 +87,7 @@ public class PvpArenaPanel : Panel
 
    public void joinPvpArena (Voyage voyage, PvpTeamType team) {
       if (Global.player.isDemoUser) {
-         if (voyage.biome != Biome.Type.Forest && voyage.biome != Biome.Type.Desert) {
+         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(voyage.biome)) {
             PanelManager.self.noticeScreen.show("Target biome is closed for demo");
             return;
          }

@@ -1410,7 +1410,7 @@ public class AdminManager : NetworkBehaviour
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Open world areas
-         List<string> openWorldAreas = WorldMapManager.self.getAllAreasList();
+         List<string> openWorldAreas = WorldMapManager.getAllAreasList();
          List<string> visitedAreas = DB_Main.getVisitedAreas(_player.userId);
          IEnumerable<string> unVisitedAreas = openWorldAreas.Except(visitedAreas);
          DB_Main.addVisitedAreas(_player.userId, unVisitedAreas);

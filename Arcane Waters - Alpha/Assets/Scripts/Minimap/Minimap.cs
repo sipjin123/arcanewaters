@@ -542,7 +542,7 @@ public class Minimap : ClientMonoBehaviour {
                continue;
             }
             // Spawn ship prefab
-            icon = Instantiate(WorldMapManager.self.isWorldMapArea(area.areaKey) ? (ship.isAllyOf(Global.player) ? openWorldAlliedShipIconPrefab : openWorldOtherShipIconPrefab) : shipIconPrefab, this.playerShipIconContainer.transform);
+            icon = Instantiate(WorldMapManager.isWorldMapArea(area.areaKey) ? (ship.isAllyOf(Global.player) ? openWorldAlliedShipIconPrefab : openWorldOtherShipIconPrefab) : shipIconPrefab, this.playerShipIconContainer.transform);
             icon.shipEntity = ship;
             icon.currentArea = area;
             icon.setCorrectPosition();
@@ -554,13 +554,13 @@ public class Minimap : ClientMonoBehaviour {
          }
          // Friendly ship
          else if (ship.isAllyOf(Global.player)) {
-            if (!WorldMapManager.self.isWorldMapArea(area.areaKey)) {
+            if (!WorldMapManager.isWorldMapArea(area.areaKey)) {
                icon.GetComponent<Image>().sprite = friendlyShipSprite;
             }
          }
          // Neutral ship
          else {
-            if (!WorldMapManager.self.isWorldMapArea(area.areaKey)) {
+            if (!WorldMapManager.isWorldMapArea(area.areaKey)) {
                icon.GetComponent<Image>().sprite = neutralShipSprite;
             }
          }

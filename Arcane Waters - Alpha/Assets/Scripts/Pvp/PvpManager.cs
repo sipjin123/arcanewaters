@@ -274,7 +274,7 @@ public class PvpManager : MonoBehaviour {
       PvpGame newGame = newGameObject.AddComponent<PvpGame>();
       newGame.init(instance.voyageId, instance.id, instance.areaKey);
       _activeGames[instance.id] = newGame;
-      if (WorldMapManager.self.isWorldMapArea(instance.areaKey.ToLower())) {
+      if (WorldMapManager.isWorldMapArea(instance.areaKey.ToLower())) {
          D.adminLog("Create new game for pvp {" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
       }
 

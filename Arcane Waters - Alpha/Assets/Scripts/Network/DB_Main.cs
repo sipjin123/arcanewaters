@@ -2586,7 +2586,8 @@ public class DB_Main : DB_MainStub
       // fetch the map if and version
       int mapVersion = -1;
       int mapId = -1;
-      string cmdText = "SELECT id,publishedVersion FROM global.maps_v2 WHERE (name=@mapName)";
+      string displayName = "";
+      string cmdText = "SELECT id,publishedVersion,displayName FROM global.maps_v2 WHERE (name=@mapName)";
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2599,6 +2600,7 @@ public class DB_Main : DB_MainStub
                if (dataReader.Read()) {
                   mapId = dataReader.GetInt32("id");
                   mapVersion = dataReader.GetInt32("publishedVersion");
+                  displayName = dataReader.GetString("displayName");
                   //string mapName = dataReader.GetString("name");
                   //string gameData = dataReader.GetString("gameData");
                   //int version = dataReader.GetInt32("publishedVersion");
@@ -2631,6 +2633,7 @@ public class DB_Main : DB_MainStub
                if (dataReader.Read()) {
                   string gameData = dataReader.GetString("gameData");
                   mapInfo = new MapInfo(mapName, gameData, mapVersion);
+                  mapInfo.displayName = displayName;
                }
             }
          }
@@ -6233,16 +6236,18 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void storeShipHealth (int shipId, int shipHealth) {
+   public static new void storeShipHealthAndFood (int shipId, int shipHealth, int shipFood) {
       shipHealth = Mathf.Max(shipHealth, 0);
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.health=@shipHealth WHERE ships.shpId = @shipId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.health=@shipHealth, ships.food=@shipFood " +
+            "WHERE ships.shpId = @shipId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
             cmd.Parameters.AddWithValue("@shipHealth", shipHealth);
+            cmd.Parameters.AddWithValue("@shipFood", shipFood);
             DebugQuery(cmd);
 
             // Execute the command
@@ -6253,10 +6258,10 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void restoreShipMaxHealth (int shipId) {
+   public static new void restoreShipMaxHealthAndFood (int shipId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET health=maxHealth WHERE shpId=@shipId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET health=maxHealth, food=maxFood WHERE shpId=@shipId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
@@ -9145,8 +9150,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shipXmlId, damage, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shipXmlId, @damage, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
+            "INSERT INTO ships (usrId, shipXmlId, damage, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities, food, maxFood) " +
+            "VALUES(@usrId, @shipXmlId, @damage, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9166,6 +9171,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@food", shipInfo.maxFood);
+            cmd.Parameters.AddWithValue("@maxFood", shipInfo.maxFood);
             cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
             cmd.Parameters.AddWithValue("@damage", shipInfo.damage);
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
@@ -9216,8 +9223,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shipXmlId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shipXmlId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
+            "INSERT INTO ships (usrId, shipXmlId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities, food, maxFood) " +
+            "VALUES(@usrId, @shipXmlId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9237,6 +9244,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipyardInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipyardInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@food", shipyardInfo.maxFood);
+            cmd.Parameters.AddWithValue("@maxFood", shipyardInfo.maxFood);
             cmd.Parameters.AddWithValue("@attackRange", shipyardInfo.attackRange);
             cmd.Parameters.AddWithValue("@damage", shipyardInfo.damage);
             cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
@@ -11833,14 +11842,113 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Area Visit List
+
+   public static new void noteUserAreaVisit (int userId, string areaKey) {
+      // First query inserts a new area visit, second deletes all records, except 100 newest
+      string cmdText =
+         "INSERT INTO area_visit_log (usrId, areaKey) VALUES (@userId, @areaKey);" +
+         "DELETE FROM `area_visit_log` WHERE id <= (" +
+            "SELECT id FROM(SELECT id FROM `area_visit_log` ORDER BY id DESC LIMIT 1 OFFSET 100) foo);";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getLastUserVisitedAreas (int userId) {
+      List<string> result = new List<string>();
+
+      string cmdText = "SELECT areaKey FROM area_visit_log WHERE usrId=@userId ORDER BY id DESC;";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result.Add(DataUtil.getString(dataReader, "areaKey"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
+   }
+
+   public static new void incrementWorldAreaVisitStreak (int userId) {
+      string cmdText =
+         "UPDATE users SET worldAreaVisitStreak = worldAreaVisitStreak+1 WHERE usrId = @userId;";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void resetWorldAreaVisitStreak (int userId) {
+      string cmdText =
+         "UPDATE users SET worldAreaVisitStreak = 0 WHERE usrId = @userId;";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Admin Settings
 
    public static new void addAdminGameSettings (AdminGameSettings settings) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage, landDifficultyScaling) " +
-            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage, @landDifficultyScaling) "
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage, landDifficultyScaling, maxDemoLevel, maxDemoBiome) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage, @landDifficultyScaling, @maxDemoLevel, @maxDemoBiome) "
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -11855,6 +11963,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
+            cmd.Parameters.AddWithValue("@maxDemoLevel", settings.maxDemoLevel);
+            cmd.Parameters.AddWithValue("@maxDemoBiome", settings.maxDemoBiome);
 
             DebugQuery(cmd);
 
@@ -11874,7 +11984,8 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
          "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, battleAttackDuration=@battleAttackDuration, " +
          "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown, seaMaxHealth=@seaMaxHealth, " +
-         "landBossAddedHealth=@landBossAddedHealth, landBossAddedDamage=@landBossAddedDamage, landDifficultyScaling=@landDifficultyScaling " +
+         "landBossAddedHealth=@landBossAddedHealth, landBossAddedDamage=@landBossAddedDamage, landDifficultyScaling=@landDifficultyScaling, " +
+         "maxDemoLevel=@maxDemoLevel, maxDemoBiome=@maxDemoBiome " +
          "WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -11889,6 +12000,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
+            cmd.Parameters.AddWithValue("@maxDemoLevel", settings.maxDemoLevel);
+            cmd.Parameters.AddWithValue("@maxDemoBiome", settings.maxDemoBiome);
 
             DebugQuery(cmd);
 
@@ -12386,7 +12499,7 @@ public class DB_Main : DB_MainStub
       return spots;
    }
 
-   public static new bool clearWorldMapSites () {
+   public static new bool clearWorldMapSpots () {
       bool result = false;
 
       try {

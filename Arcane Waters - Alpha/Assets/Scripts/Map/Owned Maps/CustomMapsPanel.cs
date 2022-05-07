@@ -54,6 +54,15 @@ public class CustomMapsPanel : Panel
    }
 
    public void selectBaseMap (int baseMapId) {
+      if (Global.player.isDemoUser) {
+         if (AreaManager.self.tryGetAreaInfo(AreaManager.self.getAreaName(baseMapId), out Map map)) {
+            if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(map.biome)) {
+               PanelManager.self.noticeScreen.show("Target map biome is closed for demo");
+               return;
+            }
+         }
+      }
+
       D.adminLog("Player has selected map {" + baseMapId + "} as custom map", D.ADMIN_LOG_TYPE.CustomMap);
       Global.player.rpc.Cmd_SetCustomMapBaseMap(_customMapManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
 

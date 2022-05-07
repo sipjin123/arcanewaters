@@ -217,6 +217,9 @@ public class PrefabsManager : MonoBehaviour
    // The reference to the Generic Frame prefab
    public GameObject genericFramePrefab;
 
+   // The prefab we use for creating whirlpools in sea maps
+   public WhirlpoolEffector whirlpoolPrefab;
+
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;

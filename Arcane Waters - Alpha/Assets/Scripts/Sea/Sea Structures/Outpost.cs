@@ -8,6 +8,12 @@ public class Outpost : SeaStructureTower, IObserver
 {
    #region Public Variables
 
+   // How far away this unit can target and attack enemies
+   public static float ATTACK_RANGE = 4.5f;
+
+   // The range at which the attack range circle will be displayed
+   public static float WARNING_RANGE = 5.5f;
+
    // How fast we fill ships with food
    public const float FOOD_FILL_PER_SECOND = 100f;
 
@@ -49,6 +55,8 @@ public class Outpost : SeaStructureTower, IObserver
    }
 
    protected override void Update () {
+      base.Update();
+
       if (isServer && isDead()) {
          NetworkServer.Destroy(this.gameObject);
       }
@@ -115,6 +123,14 @@ public class Outpost : SeaStructureTower, IObserver
       return
          entity != null && entity.isPlayerShip() &&
          !entity.isAllyOf(this) && entity.isEnemyOf(this);
+   }
+
+   protected override float getAttackRange () {
+      return ATTACK_RANGE;
+   }
+
+   protected override float getWarningRange () {
+      return WARNING_RANGE;
    }
 
    public int getInstanceId () {

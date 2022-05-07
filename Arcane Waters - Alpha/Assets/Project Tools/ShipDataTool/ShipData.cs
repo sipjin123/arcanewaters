@@ -45,6 +45,11 @@ public class ShipData
    public int baseHealthMin = 100;
    public int baseHealthMax = 300;
 
+   // Food of the ship
+   public int baseFood = 300;
+   public int baseFoodMin = 300;
+   public int baseFoodMax = 500;
+
    // Attack range of the ship
    public int baseRange = 100;
    public int baseRangeMin = 80;

@@ -8,7 +8,8 @@ using System.Xml.Serialization;
 using MySql.Data.MySqlClient;
 #endif
 
-public class UserInfo {
+public class UserInfo
+{
    #region Public Variables
 
    // The user ID
@@ -119,6 +120,9 @@ public class UserInfo {
    // The farm layout map we've chosen
    public int customFarmBaseId;
 
+   // The world map visit streak (amount of unique areas in a row)
+   public int worldAreaVisitStreak = 0;
+
    // The last login time
    public System.DateTime lastLoginTime;
 
@@ -129,15 +133,15 @@ public class UserInfo {
 
    public UserInfo () { }
 
-   #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
    public UserInfo (MySqlDataReader dataReader) {
       this.userId = dataReader.GetInt32("usrId");
       this.accountId = dataReader.GetInt32("accId");
       this.accountName = dataReader.GetString("accName");
       this.username = dataReader.GetString("usrName");
-      this.gender = (Gender.Type)dataReader.GetInt32("usrGender");
-      this.bodyType = (BodyLayer.Type)dataReader.GetInt32("bodyType");
+      this.gender = (Gender.Type) dataReader.GetInt32("usrGender");
+      this.bodyType = (BodyLayer.Type) dataReader.GetInt32("bodyType");
       this.facingDirection = dataReader.GetInt32("usrFacing");
       this.areaKey = dataReader.GetString("areaKey");
       this.localPos = new Vector2(dataReader.GetFloat("localX"), dataReader.GetFloat("localY"));
@@ -148,16 +152,17 @@ public class UserInfo {
       this.necklaceId = dataReader.GetInt32("necklaceId");
       this.trinketId = dataReader.GetInt32("trinketId");
       this.hatId = dataReader.GetInt32("hatId");
-      this.hairType = (HairLayer.Type)dataReader.GetInt32("hairType");
+      this.hairType = (HairLayer.Type) dataReader.GetInt32("hairType");
       this.hairPalettes = dataReader.GetString("hairPalettes");
       this.XP = dataReader.GetInt32("usrXP");
       this.gold = dataReader.GetInt32("usrGold");
       this.gems = dataReader.GetInt32("accGems");
-      this.eyesType = (EyesLayer.Type)dataReader.GetInt32("eyesType");
+      this.eyesType = (EyesLayer.Type) dataReader.GetInt32("eyesType");
       this.eyesPalettes = dataReader.GetString("eyesPalettes");
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.guildId = dataReader.GetInt32("gldId");
+      this.worldAreaVisitStreak = DataUtil.getInt(dataReader, "worldAreaVisitStreak");
 
       try {
          this.pvpState = dataReader.GetInt32("pvpState");
@@ -181,9 +186,14 @@ public class UserInfo {
             D.warning("Problem with loading guild information");
          }
       }
-}
+   }
 
 #endif
+
+   public bool isDemoUser () {
+      return true;
+      return accountName.Contains("@demo");
+   }
 
    public override bool Equals (object rhs) {
       if (rhs is UserInfo) {

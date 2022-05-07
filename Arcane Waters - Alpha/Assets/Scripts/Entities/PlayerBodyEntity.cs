@@ -484,8 +484,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
       }
 
-      if (emoteType != EmoteManager.EmoteTypes.None && areCompositeAnimationsStopped()) {
-         stopEmote();
+      // Only stop emote when it is a local player
+      if (isLocalPlayer) {
+         if (emoteType != EmoteManager.EmoteTypes.None && areCompositeAnimationsStopped()) {
+            stopEmote();
+         }
       }
 
       _prevEmoteType = emoteType;

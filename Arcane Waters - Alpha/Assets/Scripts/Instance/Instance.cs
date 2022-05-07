@@ -771,6 +771,24 @@ public class Instance : NetworkBehaviour
          NetworkServer.Spawn(newObject.gameObject);
       }
 
+      if (area.whirlpoolPrefabs.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.whirlpoolPrefabs) {
+            WhirlpoolEffector whirlpool = Instantiate(PrefabsManager.self.whirlpoolPrefab);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            whirlpool.transform.localPosition = targetLocalPos;
+
+            // The map editor data for the whirlpool will be set here
+            IMapEditorDataReceiver receiver = whirlpool.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            NetworkServer.Spawn(whirlpool.gameObject);
+         }
+
+      }
+
+
       recalculateVaryingObjectRelations();
 
       if (pvpStructuresSpawned > 0) {
@@ -1152,14 +1170,18 @@ public class Instance : NetworkBehaviour
 
          int next = objectsToResolve.Dequeue();
          if (varyingStateObjects.TryGetValue(next, out VaryingStateObject target)) {
-            // Add dependancies of this object as well, making it cascade
-            foreach (int id in target.triggersObjects) {
-               objectsToResolve.ElementAtOrDefault(id);
-            }
+            string prevState = target.state;
 
             // Evaluate the state of this object
             target.state = target.getStateModel().stateExpression.evaluate(varyingStateModels);
             target.getStateModel().state = target.state;
+
+            if (!prevState.Equals(target.state)) {
+               // Add dependancies of this object as well, making it cascade
+               foreach (int id in target.triggersObjects) {
+                  objectsToResolve.Enqueue(id);
+               }
+            }
          }
       }
    }

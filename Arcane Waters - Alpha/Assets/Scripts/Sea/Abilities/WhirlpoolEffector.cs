@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
-public class WhirlpoolEffector : MonoBehaviour {
+public class WhirlpoolEffector : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // When true this whirlpool will apply forces in a clockwise direction, when false, anti-clockwise
@@ -23,11 +24,11 @@ public class WhirlpoolEffector : MonoBehaviour {
 
    private void Awake () {
       _collider = GetComponent<CircleCollider2D>();
-      _collider.radius = effectRadius;
       _pointEffector = GetComponent<PointEffector2D>();
       _pointEffector.forceMagnitude = -radialForceAmount;
 
-      whirlpoolSprite.transform.localScale = Vector3.one * (effectRadius / SPRITE_RADIUS);
+      updateRadius(effectRadius);
+      updateIsClockwise(isClockwise);
    }
 
    private void FixedUpdate () {
@@ -77,6 +78,60 @@ public class WhirlpoolEffector : MonoBehaviour {
 
    private void OnTriggerExit2D (Collider2D collider) {
       tryRemoveBody(collider);
+   }
+
+   private void updateRadius (float newRadius) {
+      effectRadius = newRadius;
+      _collider.radius = effectRadius;
+      whirlpoolSprite.transform.localScale = Vector3.one * (effectRadius / SPRITE_RADIUS);
+   }
+
+   private void updateIsClockwise (bool newValue) {
+      isClockwise = newValue;
+      whirlpoolSprite.flipX = !isClockwise;
+   }
+
+   private void updateRadialForce (float newForce) {
+      radialForceAmount = newForce;
+      _pointEffector.forceMagnitude = -radialForceAmount;
+   }
+
+   private void updateTangentialForce (float newForce) {
+      tangentialForceAmount = newForce;
+   }
+
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.WHIRLPOOL_RADIUS_KEY) == 0) {
+            try {
+               float newRadius = float.Parse(field.v);
+               updateRadius(newRadius);
+            } catch {
+
+            }
+         } else if (field.k.CompareTo(DataField.WHIRLPOOL_CLOCKWISE_KEY) == 0) {
+            try {
+               bool newValue = bool.Parse(field.v);
+               updateIsClockwise(newValue);
+            } catch {
+
+            }
+         } else if (field.k.CompareTo(DataField.WHIRLPOOL_RADIAL_FORCE_KEY) == 0) {
+            try {
+               float newRadialForce = float.Parse(field.v);
+               updateRadialForce(newRadialForce);
+            } catch {
+
+            }
+         } else if (field.k.CompareTo(DataField.WHIRLPOOL_TANGENTIAL_FORCE_KEY) == 0) {
+            try {
+               float newTangentialForce = float.Parse(field.v);
+               updateTangentialForce(newTangentialForce);
+            } catch {
+
+            }
+         }
+      }
    }
 
    #region Private Variables

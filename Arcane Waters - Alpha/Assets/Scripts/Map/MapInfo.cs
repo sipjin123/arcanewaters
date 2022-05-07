@@ -15,6 +15,9 @@ public class MapInfo {
 
    // The version number
    public int version;
+
+   // The display name of the map
+   public string displayName;
       
    #endregion
 

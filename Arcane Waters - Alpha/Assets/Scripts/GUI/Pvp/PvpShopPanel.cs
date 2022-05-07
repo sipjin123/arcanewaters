@@ -226,6 +226,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             if (itemInfo != null) {
                shopTemplate.itemIcon.sprite = itemInfo.sprite;
             }
+            shopTemplate.buyButton.GetComponent<Image>().enabled = canAffordItem;
          }
       }
       userSilverText.text = silverValue.ToString();
@@ -315,6 +316,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
 
          if (userSilver < shopItemData.itemCost) {
             shopItemData.isDisabled = true;
+            shopTemplate.buyButton.GetComponent<Image>().enabled = false;
+         } else {
+            shopTemplate.buyButton.GetComponent<Image>().enabled = true;
          }
          if (shopItemData.isDisabled) {
             shopTemplate.buyButton.interactable = false;

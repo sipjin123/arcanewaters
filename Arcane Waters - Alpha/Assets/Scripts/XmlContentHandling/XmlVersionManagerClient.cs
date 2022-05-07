@@ -602,7 +602,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                            ringList.Add(actualData);
                            message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.ringType;
                         } else {
-                           D.debug("WARNING! A ring has no assigned ring type! " + dataId + " : " + actualData.ringType + "}" + " IsActive:{" + isActive + "}");
+                           D.editorLog("WARNING! A ring has no assigned ring type! " + dataId + " : " + actualData.ringType + "}" + " IsActive:{" + isActive + "}", Color.red);
                         }
                      } else {
                         D.debug("Skip add entry for ring:" + dataId);

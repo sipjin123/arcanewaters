@@ -45,7 +45,7 @@ public class ShipFoodPanel : ClientMonoBehaviour
 
    private void Update () {
       // Only enable at sea in open world
-      if (Global.player == null || !Global.player.isPlayerShip() || !WorldMapManager.self.isWorldMapArea(Global.player.areaKey)) {
+      if (Global.player == null || !Global.player.isPlayerShip() || !WorldMapManager.isWorldMapArea(Global.player.areaKey)) {
          hide();
          return;
       }

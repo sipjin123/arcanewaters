@@ -81,14 +81,14 @@ public class PowerupManager : MonoBehaviour {
 
             NetEntity player = EntityManager.self.getEntity(discardablePowerups.userId);
             Powerup powerUp = new Powerup {
-               powerupType = discardablePowerups.powerupType,
-               powerupRarity = discardablePowerups.rarityType
+                  powerupType = discardablePowerups.powerupType, 
+                  powerupRarity = discardablePowerups.rarityType
             };
 
-            if (player) {
+            if (player.isLocalPlayer) {
                removePowerupServer(player.userId, powerUp);
                player.rpc.Target_RemovePowerup(player.connectionToClient, powerUp);
-            }
+            } 
          }
       }
    }
@@ -153,7 +153,7 @@ public class PowerupManager : MonoBehaviour {
       return boostFactor;
    }
 
-   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource) {
+   private IEnumerator CO_GrabPowerupEffect (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource) {
       // Create the popup icon, make it scale up in size
       PowerupPopupIcon popupIcon = Instantiate(TreasureManager.self.powerupPopupIcon, Vector3.zero, Quaternion.identity).GetComponent<PowerupPopupIcon>();
       popupIcon.transform.SetParent(AreaManager.self.getArea(player.areaKey).transform);
@@ -177,6 +177,27 @@ public class PowerupManager : MonoBehaviour {
       string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
       string msg = string.Format("You received the <color=red>{0}</color> powerup!", powerupName);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
+   }
+
+   public IEnumerator CO_CreatingUniqueFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type rarity, PlayerShipEntity entity, Vector3 spawnSource) {
+      // Spawn powerup and do a vacuum effect going to player ship
+      yield return CO_GrabPowerupEffect(powerupType, rarity, entity, spawnSource);
+      
+      // Remove existing powerup type to ensure powerup with same type don't exist 
+      removePowerupTypeClient(powerupType);
+      
+      // Add new powerup to client
+      addPowerupClient(new Powerup {
+         powerupRarity = rarity,
+         powerupType = powerupType
+      });
+   }
+
+   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource) {
+      // Spawn powerup and do a vacuum effect going to player ship
+      yield return CO_GrabPowerupEffect(powerupType, powerupRarity, player, spawnSource);
+
+      // Add new powerup to client
       addPowerupClient(new Powerup {
          powerupRarity = powerupRarity,
          powerupType = powerupType
@@ -195,21 +216,44 @@ public class PowerupManager : MonoBehaviour {
       return _powerupData[type];
    }
 
-   public void removePowerupClient (Powerup newPowerup) {
+   // Remove entire powerup added with type
+   public void removePowerupTypeClient (Powerup.Type powerupType) {
       if (!NetworkClient.active) {
          D.error("addPowerupClient should only be called on a client");
          return;
       }
 
       // If we don't have a list for that powerup type yet, create it
-      Powerup.Type powerupType = newPowerup.powerupType;
+      if (!_localPlayerPowerups.ContainsKey(powerupType)) {
+         return;
+      }
+
+      var powerups = _localPlayerPowerups[powerupType];
+      foreach (var powerup in powerups) {
+         // Remove powerup icon added in panel
+         PowerupPanel.self.removePowerup(powerup.powerupType, powerup.powerupRarity);
+      }
+      
+      // Clear entire list of powerup with type
+      powerups.Clear();
+   }
+   
+   public void removePowerupClient (Powerup powerup) {
+      if (!NetworkClient.active) {
+         D.error("addPowerupClient should only be called on a client");
+         return;
+      }
+
+      // If we don't have a list for that powerup type yet, create it
+      Powerup.Type powerupType = powerup.powerupType;
       if (!_localPlayerPowerups.ContainsKey(powerupType)) {
          return;
       }
 
       if (_localPlayerPowerups[powerupType].Count > 0) {
-         _localPlayerPowerups[powerupType].RemoveAt(0);
-         PowerupPanel.self.removePowerup(newPowerup.powerupType, newPowerup.powerupRarity);
+         Powerup powerupToRemove = _localPlayerPowerups[powerupType].Find(item => item.powerupRarity == powerup.powerupRarity);
+         _localPlayerPowerups[powerupType].Remove(powerupToRemove);
+         PowerupPanel.self.removePowerup(powerup.powerupType, powerup.powerupRarity);
       }
    }
 
@@ -235,7 +279,7 @@ public class PowerupManager : MonoBehaviour {
       }
    }
 
-   public void removePowerupServer (int userId, Powerup newPowerup) {
+   public void removePowerupServer (int userId, Powerup powerup) {
       if (!NetworkServer.active) {
          return;
       }
@@ -248,17 +292,17 @@ public class PowerupManager : MonoBehaviour {
       PlayerPowerups powerups = _serverPlayerPowerups[userId];
 
       // If we don't have a list for that powerup type yet, create it;
-      if (!powerups.ContainsKey(newPowerup.powerupType)) {
+      if (!powerups.ContainsKey(powerup.powerupType)) {
          return;
       }
 
       // If the player has health bonus powerup deduction, deduct their health immediately
-      if (newPowerup.powerupType == Powerup.Type.IncreasedHealth) {
+      if (powerup.powerupType == Powerup.Type.IncreasedHealth) {
          NetEntity player = EntityManager.self.getEntity(userId);
          if (player) {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
             if (playerShip) {
-               Rarity.Type rarity = newPowerup.powerupRarity;
+               Rarity.Type rarity = powerup.powerupRarity;
                int healthBlockTier = playerShip.shipBars.getHealthBlockTier();
                int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[healthBlockTier];
                playerShip.applyBonusHealth(- ShipBars.getHealthBlockPerRarity(rarity, hpPerBlock), false);
@@ -268,8 +312,65 @@ public class PowerupManager : MonoBehaviour {
       }
 
       // If there is an existing powerup entry, deduct one entry
-      if (powerups[newPowerup.powerupType].Count > 0) {
-         powerups[newPowerup.powerupType].RemoveAt(0);
+      if (powerups[powerup.powerupType].Count > 0) {
+         var targetPowerup = powerups[powerup.powerupType].Find(item => item.powerupRarity == powerup.powerupRarity);
+         powerups[powerup.powerupType].Remove(targetPowerup);
+      }
+      
+      updatePowerupSyncListForUser(userId);
+   }
+
+   public void addReplacePowerupServer (int userId, Powerup powerup) {
+      if (!NetworkServer.active) {
+         D.error("addPowerupServer should only be called on the server");
+         return;
+      }
+      
+      // If we haven't created an entry for this player yet, use addPowerupServer method instead
+      if (!_serverPlayerPowerups.ContainsKey(userId)) {
+         addPowerupServer(userId, powerup);
+         return;
+      }
+
+      PlayerPowerups powerups = _serverPlayerPowerups[userId];
+      
+      // If we don't have a list for that powerup type yet, use addPowerupServer method instead
+      if (!powerups.ContainsKey(powerup.powerupType)) {
+         addPowerupServer(userId, powerup);
+         return;
+      }
+
+      // If player has received a health bonus powerup, use addPowerupServer method instead
+      if (powerup.powerupType == Powerup.Type.IncreasedHealth) {
+         addPowerupServer(userId, powerup);
+         return;
+      }
+      
+      // If there is an existing powerup entry, clear entry
+      if (powerups[powerup.powerupType].Count > 0) {
+         powerups[powerup.powerupType].Clear();
+      }
+
+      powerups[powerup.powerupType].Add(powerup);
+
+      // Add temporary powerup to list
+      if (powerup.powerupDuration > 0) {
+         // If powerup type doesn't exist create an entry of powerup to expiring powerup list
+         if (!temporaryPowerups.Exists(item => item.powerupType == powerup.powerupType)) {
+            expiredPowerupIndex++;
+            temporaryPowerups.Add(new ExpiringPowerups {
+                  id = expiredPowerupIndex,
+                  userId = userId,
+                  powerupType = powerup.powerupType,
+                  rarityType = powerup.powerupRarity,
+                  remainingTime = powerup.powerupDuration
+            });            
+         } else {
+            // If powerup type exist edit existing entry rarity and duration instead
+            ExpiringPowerups tempPowerup = temporaryPowerups.Find(item => item.powerupType == Powerup.Type.SpeedUp);
+            tempPowerup.remainingTime = powerup.powerupDuration;
+            tempPowerup.rarityType = powerup.powerupRarity;
+         }
       }
 
       updatePowerupSyncListForUser(userId);
@@ -314,11 +415,11 @@ public class PowerupManager : MonoBehaviour {
       if (newPowerup.powerupDuration > 0) {
          expiredPowerupIndex++;
          temporaryPowerups.Add(new ExpiringPowerups {
-            id = expiredPowerupIndex,
-            userId = userId,
-            powerupType = newPowerup.powerupType,
-            rarityType = newPowerup.powerupRarity,
-            remainingTime = newPowerup.powerupDuration
+               id = expiredPowerupIndex,
+               userId = userId,
+               powerupType = newPowerup.powerupType,
+               rarityType = newPowerup.powerupRarity,
+               remainingTime = newPowerup.powerupDuration
          });
       }
 

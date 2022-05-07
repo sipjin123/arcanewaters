@@ -1439,6 +1439,11 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceivePowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
       StartCoroutine(PowerupManager.self.CO_CreatingFloatingPowerupIcon(powerupType, rarity, (PlayerShipEntity) _player, spawnSource));
    }
+   
+   [TargetRpc]
+   public void Target_ReceiveUniquePowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
+      StartCoroutine(PowerupManager.self.CO_CreatingUniqueFloatingPowerupIcon(powerupType, rarity, (PlayerShipEntity) _player, spawnSource));
+   }
 
    [TargetRpc]
    public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomization.MapCustomizationData customizations, Biome.Type biome) {
@@ -2526,13 +2531,12 @@ public class RPCManager : NetworkBehaviour
 
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+         PanelManager.self.confirmScreen.hide();
+
          if (canUseImmediately) {
-            PanelManager.self.confirmScreen.hide();
             _player.rpc.Cmd_RequestUseItem(itemId, confirmed: false);
-         } else {
-            if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.refreshPanel();
-            }
+         } else if (StoreScreen.self.isShowing()) {
+            StoreScreen.self.refreshPanel();
          }
       });
 
@@ -4152,8 +4156,7 @@ public class RPCManager : NetworkBehaviour
       Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
 
       // On first spawn check for rewards
-      string steamId = (SteamManager.Initialized && Global.isSteamLogin) ? _player.steamId : _player.accountId.ToString();
-      Cmd_CheckRewardCodes(steamId);
+      Cmd_CheckRewardCodes();
    }
 
    [Command]
@@ -6771,7 +6774,7 @@ public class RPCManager : NetworkBehaviour
 
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
-      if (!WorldMapManager.self.isWorldMapArea(playerToRemove.areaKey)) {
+      if (!WorldMapManager.isWorldMapArea(playerToRemove.areaKey)) {
          // If the player is in a voyage area or is in ghost mode, warp him to the closest town
          if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
             if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
@@ -6830,7 +6833,7 @@ public class RPCManager : NetworkBehaviour
          return true;
       }
 
-      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
+      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.isWorldMapArea(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
@@ -6868,6 +6871,40 @@ public class RPCManager : NetworkBehaviour
       return true;
    }
 
+   [Server]
+   private void checkConsumeWorldAreaVisitStreak () {
+      // Consume when we leave open-world
+      if (!WorldMapManager.isWorldMapArea(_player.areaKey)) {
+         // Give XP if player visited at least 2 world map areas
+         if (_player.worldAreaVisitStreak > 1) {
+            // Lets cap the reward at 10 areas
+            int areas = Mathf.Clamp(_player.worldAreaVisitStreak, 2, 10);
+
+            // Maybe 50xp for 2 areas and 2000 for 10?
+            int xpToGive = (int) Mathf.Lerp(20, 500, Mathf.InverseLerp(2, 10, areas));
+
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.addJobXP(_player.userId, Jobs.Type.Sailor, xpToGive);
+               Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.Target_GainedXP(_player.connectionToClient, xpToGive, newJobXP, Jobs.Type.Sailor, 0, true);
+               });
+            });
+         }
+
+         // Reset the streak if there is any
+         if (_player.worldAreaVisitStreak > 0) {
+            // Lets schedule it in the background and move on
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.resetWorldAreaVisitStreak(_player.userId);
+            });
+
+            _player.worldAreaVisitStreak = 0;
+         }
+      }
+   }
+
    [Command]
    public void Cmd_OnClientFinishedLoadingArea () {
       if (_player == null) {
@@ -6880,6 +6917,9 @@ public class RPCManager : NetworkBehaviour
       if (playerShipEntity != null) {
          playerShipEntity.isDisabled = false;
       }
+
+      // Check if it appropriate to consume world area visit streak and do so if needed
+      checkConsumeWorldAreaVisitStreak();
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
       if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)
@@ -6894,7 +6934,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Remove the player from the game stats manager, when navigating open areas
-      if (WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
+      if (WorldMapManager.isWorldMapArea(_player.areaKey)) {
          GameStatsManager.self.unregisterUser(_player.userId);
       }
 
@@ -7394,7 +7434,7 @@ public class RPCManager : NetworkBehaviour
 
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
-      
+
       // Spawn a sparkle trail if spawned ore is a bonus
       if (isBonus) {
          Instantiate(PrefabsManager.self.sparkleTrailPrefab, oreMine.animatingObj);
@@ -10967,14 +11007,22 @@ public class RPCManager : NetworkBehaviour
    #region Reward Codes
 
    [Command]
-   public void Cmd_CheckRewardCodes (string steamId) {
-      if (_player == null || Util.isEmpty(steamId)) {
+   public void Cmd_CheckRewardCodes () {
+      if (_player == null) {
+         D.debug("Reward Code Check failed. Reason: Player is null.");
          return;
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         bool wasPlayerNotified = false;
+      D.debug($"Reward Code Check. PlayerId: {_player.userId}");
 
+      if (Util.isEmpty(_player.steamId)) {
+         D.debug($"Reward Code Check failed. Reason: Invalid SteamId. PlayerId: '{_player.userId}'");
+         return;
+      }
+
+      string steamId = _player.steamId;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Find any unused reward code and try to send them to the player
          IEnumerable<RewardCode> unusedRewardCodes = DB_Main.getUnusedRewardCodes(steamId, ApiManager.ARCANE_WATERS_API_CLIENT_ID);
          if (unusedRewardCodes == null || unusedRewardCodes.Count() == 0) {
@@ -10989,24 +11037,29 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
-         // Assinging the reward to the System User, so that it can be attached to the mail
-         ArmorStatData armorData = EquipmentXMLManager.self.armorStatList[0];
-         Item baseItem = ItemGenerator.generate(Item.Category.Armor, armorData.armorType, 1).getCastItem();
-         Item rewardItem = DB_Main.createItemOrUpdateItemCount(systemUser.userId, baseItem);
-
-         if (rewardItem == null) {
-            D.debug($"Couldn't create the reward item.");
-            return;
-         }
-
+         bool wasPlayerNotified = false;
          foreach (RewardCode rewardCode in unusedRewardCodes) {
             // Update the reward code
             bool updated = DB_Main.useRewardCode(rewardCode.id);
             if (!updated) {
                // The use status of the code failed to update, so we log and abort
-               D.debug($"The reward code {rewardCode.code} generated for player {steamId} couldn't be used.");
+               D.debug($"Reward Code used. Code: {rewardCode.code}, Player: {steamId}.");
                continue;
             }
+
+            D.debug($"Reward Code used. Code: {rewardCode.code}, Player: {steamId}.");
+
+            // Assinging the reward to the System User, so that it can be attached to the mail
+            ArmorStatData armorData = EquipmentXMLManager.self.armorStatList[0];
+            Item baseItem = ItemGenerator.generate(Item.Category.Armor, armorData.armorType, 1).getCastItem();
+            Item rewardItem = DB_Main.createItemOrUpdateItemCount(systemUser.userId, baseItem);
+
+            if (rewardItem == null) {
+               D.debug($"Reward Creation failed. Code: {rewardCode.code}, PlayerId: {steamId}.");
+               continue;
+            }
+
+            D.debug($"Reward created and ready for delivery. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 });
@@ -11016,7 +11069,7 @@ public class RPCManager : NetworkBehaviour
                   Target_ReceiveCheckRewardCodes();
                }
 
-               D.debug($"The reward code {rewardCode.code} generated for player {steamId} was used. The player was notified.");
+               D.debug($"Reward Code delivered. Code: {rewardCode.code}, PlayerId: {steamId}.");
             });
          }
       });
@@ -11033,6 +11086,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestWishlist (string steamId) {
+      D.debug($"Received request to compute the wishlist page URL for player with steamId {steamId}");
       string computedUrl = string.Empty;
 
       if (!string.IsNullOrWhiteSpace(steamId)) {
@@ -11042,11 +11096,13 @@ public class RPCManager : NetworkBehaviour
          computedUrl = $"https://arcanewaters.com/wishlist?p={steamId}&x={steamIdEncoded}";
       }
 
-      Target_ReceiveRequestWishlist(computedUrl, steamId);
+      D.debug($"Computed wishlist page URL for player with steamId {steamId} is: {computedUrl}");
+      Target_ReceiveRequestWishlist(_player.connectionToClient, computedUrl, steamId);
    }
 
    [TargetRpc]
-   private void Target_ReceiveRequestWishlist (string computedUrl, string playerIdentifier) {
+   public void Target_ReceiveRequestWishlist (NetworkConnection connection, string computedUrl, string playerIdentifier) {
+      D.debug($"Wishlist Page URL received. URL: {computedUrl}");
       if (PanelManager.self == null) {
          return;
       }

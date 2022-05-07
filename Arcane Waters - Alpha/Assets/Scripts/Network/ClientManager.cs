@@ -91,6 +91,10 @@ public class ClientManager : GenericGameManager {
       // Get the client version number from the cloud build manifest
       versionNumberText.text = Util.getJenkinsBuildTitle();
       versionGameObject.SetActive(true);
+
+      if (Global.player != null) {
+         setDemoSuffixInVersionText(Global.player.isDemoUser);
+      }
    }
 
    public void setDemoSuffixInVersionText (bool enabled) {

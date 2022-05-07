@@ -58,7 +58,7 @@ public class TooltipHandler : MonoBehaviour
    public void callToolTip (Rarity.Type itemRarityType, GameObject tooltipOwner, ToolTipComponent.Type type, string msg, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
       // Don't display empty tooltip
       if (msg == "") {
-         D.debug("Empty tooltip for " + tooltipOwner.name);
+         D.editorLog("Empty tooltip for " + tooltipOwner.name, Color.red);
          return;
       }
 

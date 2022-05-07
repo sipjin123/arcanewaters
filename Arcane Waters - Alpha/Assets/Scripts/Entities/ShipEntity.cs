@@ -75,6 +75,8 @@ public class ShipEntity : SeaEntity
       skinType = data.skinType;
       currentHealth = data.baseHealth;
       maxHealth = data.baseHealth;
+      currentFood = data.baseFood;
+      maxFood = data.baseFood;
       attackRangeModifier = data.baseRange;
 
       speed = data.baseSpeed;
@@ -135,8 +137,11 @@ public class ShipEntity : SeaEntity
       shipType = info.shipType;
       skinType = info.skinType;
       currentHealth = info.health;
+      currentFood = info.food;
       maxHealth = info.maxHealth;
+      maxFood = info.maxFood;
       _baseHealth = info.maxHealth;
+      _baseFood = info.maxFood;
       attackRangeModifier = info.attackRange;
 
       speed = info.speed;
@@ -465,8 +470,6 @@ public class ShipEntity : SeaEntity
       //D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
    }
 
-
-
    [ClientRpc]
    public void Rpc_CastSkill (int abilityId, ShipAbilityData shipAbilityData, Vector2 pos, int displayValue, bool showCastVfx, bool showValue, bool showIcon, uint netId) {
       if (shipAbilityData == null) {
@@ -506,6 +509,7 @@ public class ShipEntity : SeaEntity
    [ClientRpc]
    public void Rpc_PlaySFXTrigger (SoundEffectManager.SeaAbilityType seaAbilityType, uint netId, bool isPlay) {
       switch (seaAbilityType) {
+         case SoundEffectManager.SeaAbilityType.Berzerkers_Call:
          case SoundEffectManager.SeaAbilityType.Ruffian_Repairs:
             SoundEffectManager.self.triggerSeaAbilitySfx(netId, seaAbilityType, isPlay);
             break;
@@ -690,6 +694,9 @@ public class ShipEntity : SeaEntity
 
    // The base health amount for this ship, stored from its ShipInfo
    protected int _baseHealth;
+
+   // The base amount of food for this ship, stored from its ShipInfo
+   protected int _baseFood;
 
    #endregion
 }

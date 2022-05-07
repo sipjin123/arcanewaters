@@ -160,7 +160,7 @@ namespace MapCreationTool
             yield return new WaitForSeconds(.5f);
             isFocused = true;
          } else {
-            isFocused = false;        
+            isFocused = false;
          }
       }
 

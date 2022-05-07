@@ -86,7 +86,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void addItemBuff (Item item, bool isLand, string areaKey) {
-      if (VoyageManager.isLeagueArea(areaKey) || WorldMapManager.self.isWorldMapArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
+      if (VoyageManager.isLeagueArea(areaKey) || WorldMapManager.isWorldMapArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
          if (!gameObject.activeInHierarchy) {
             gameObject.SetActive(true);
          }
@@ -142,16 +142,10 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
          newPowerup.init(type, rarity);
          _powerupIcons.Add(newPowerup);
 
-         // When a new powerup icon is added, sort the list by rarity
-         PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
-         for (int i = 0; i < orderedIcons.Length; i++) {
-            orderedIcons[i].transform.SetSiblingIndex(i);
-         }
-
          newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
 
-         // Show the powerup container
-         powerupPanelContainer.gameObject.SetActive(true);
+         // Update remaining icon when an icon is removed and sort by rarity
+         updatePowerupIconSorting();
       }
    }
 
@@ -162,18 +156,21 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
          return;
       }
 
-      _powerupIcons.RemoveAt(0);
-      Destroy(transform.GetChild(0).gameObject);
+      _powerupIcons.Remove(powerupIcon);
+      Destroy(powerupIcon.gameObject);
 
-      // When a new powerup icon is removed, sort the list by rarity
+      // Update remaining icon when an icon is removed and sort by rarity
+      updatePowerupIconSorting();
+   }
+   
+   public void updatePowerupIconSorting() {
+      // When a new powerup icon is added/removed, update the list by rarity
       PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
       for (int i = 0; i < orderedIcons.Length; i++) {
          orderedIcons[i].transform.SetSiblingIndex(i);
       }
 
-      if (transform.childCount < 1) {
-         powerupPanelContainer.gameObject.SetActive(false);
-      }
+      powerupPanelContainer.gameObject.SetActive(transform.childCount > 0);
    }
 
    public void clearSeaPowerups () {

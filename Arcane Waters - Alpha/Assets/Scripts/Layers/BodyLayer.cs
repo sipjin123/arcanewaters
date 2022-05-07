@@ -22,7 +22,7 @@ public class BodyLayer : SpriteLayer {
       // Update our Animated Sprite
       Gender.Type gender = newBodyType.ToString().StartsWith("Male") ? Gender.Type.Male : Gender.Type.Female;
       string path = "Bodies/" + gender + "/" + newBodyType;
-      Texture2D result = ImageManager.getTexture(path);
+      Texture2D result = ImageManager.getTexture(path, false);
       setTexture(result);
    }
 

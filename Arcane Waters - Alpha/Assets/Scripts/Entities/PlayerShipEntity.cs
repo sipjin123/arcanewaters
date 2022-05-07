@@ -170,9 +170,6 @@ public class PlayerShipEntity : ShipEntity
    // The xp rewarded to attackers when being killed, in pvp
    public const int REWARDED_XP = 10;
 
-   // The minimum value of mouse scroll to switch ship abilities
-   public const int BASE_SCROLL_VALUE = 120;
-
    // Reference to the level up effect
    public LevelUpEffect levelUpEffect;
 
@@ -289,7 +286,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          // Set ship type to default for pvp arenas since all ships should be the same and upgraded via shop
-         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
@@ -365,17 +362,20 @@ public class PlayerShipEntity : ShipEntity
          // Notify client to update abilities in cannon panel
          Target_UpdateCannonPanel(connectionToClient, shipAbilities.ToArray());
 
-         if (isInGroup()) {
+         if (WorldMapManager.isWorldMapArea(areaKey)) {
+            // If player is in open-world map, keep previous hp and food
+            initHealthAndFood(alterCurrentState: false);
+         } else if (isInGroup()) {
             // If the player is in a voyage, not in the lobby, and not in a pvp game, don't restore max health, it should be persistent between leagues
             if (!VoyageManager.isLobbyArea(areaKey) && !VoyageManager.isPvpArenaArea(areaKey)) {
-               initHealth(skipCurrentHealth: true);
+               initHealthAndFood(alterCurrentState: false);
 
                // If the player is in a pvp arena or a voyage lobby, restore their full health.
             } else {
-               initHealth(skipCurrentHealth: false);
+               initHealthAndFood(alterCurrentState: true);
             }
          } else {
-            initHealth(skipCurrentHealth: false);
+            initHealthAndFood(alterCurrentState: true);
          }
       }
 
@@ -397,13 +397,15 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void initHealth (bool skipCurrentHealth = false) {
+   private void initHealthAndFood (bool alterCurrentState = true) {
       float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
 
-      if (!skipCurrentHealth) {
+      if (alterCurrentState) {
          currentHealth = (int) (healthMultiplierAdditive * _baseHealth);
+         currentFood = _baseFood;
       }
       maxHealth = (int) (healthMultiplierAdditive * _baseHealth);
+      maxFood = _baseFood;
    }
 
    protected override void updateSprites () {
@@ -491,14 +493,14 @@ public class PlayerShipEntity : ShipEntity
                Cmd_SetIsReelingIn(false);
             }
 
-            // Read input mouse scroll value and divide it to scroll magnitude to get the target ability index
+            // Read input mouse scroll value and check if scroll value is not equal to 0
             float scrollVal = InputManager.self.inputMaster.Sea.AbilitySwitch.ReadValue<float>();
-            if (scrollVal >= BASE_SCROLL_VALUE || scrollVal <= -BASE_SCROLL_VALUE) {
-               // The base scroll value is 120, multiply it with scroll magnitude and divide the result with scroll value to get switch value
-               int switchValue = scrollVal < 0 ? -1 : 1;
+            if (scrollVal != 0f) {
+               // Check if scroll value is positive or negative to switch between previous or next ability
+               int switchValue = scrollVal < 0 ? 1 : -1;
                int targetAbility = Mathf.Clamp(_currentAbilitySlotIndex + switchValue, 0, 4);
                selectAbility(targetAbility);
-            }
+            } 
          }
       }
 
@@ -519,19 +521,6 @@ public class PlayerShipEntity : ShipEntity
                   }
                }
                Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false, this.netId);
-            }
-         }
-
-         // Control food consumption
-         if (WorldMapManager.self.isWorldMapArea(areaKey)) {
-            currentFood = Mathf.Clamp(currentFood - Time.deltaTime * FOOD_PER_SECOND, 0, maxFood);
-
-            if (currentFood == 0) {
-               if (Time.time - _lastStarveTick > STARVE_TICK_DELAY) {
-                  _lastStarveTick = Time.time;
-
-                  applyDamage(STARVE_TICK_DAMAGE, netId, Attack.Type.None);
-               }
             }
          }
       }
@@ -616,7 +605,7 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void FixedUpdate () {
       base.FixedUpdate();
-      
+
       if (NetworkServer.active && InputManager.isInputEnabled()) {
          // If the player wants to stop the ship, we let the linear drag handle the slowdown
          if (!isDead() && _movementInputDirection != Vector2.zero) {
@@ -631,6 +620,19 @@ public class PlayerShipEntity : ShipEntity
             float targetSpeed = getMoveSpeed() * increaseAdditive;
             if (targetSpeed > MAX_SHIP_SPEED && !isGhost) {
                targetSpeed = MAX_SHIP_SPEED;
+            }
+
+            // Control food consumption
+            if (WorldMapManager.isWorldMapArea(areaKey)) {
+               currentFood = Mathf.Clamp(currentFood - Time.deltaTime * FOOD_PER_SECOND, 0, maxFood);
+
+               if (currentFood == 0) {
+                  if (Time.time - _lastStarveTick > STARVE_TICK_DELAY) {
+                     _lastStarveTick = Time.time;
+
+                     applyDamage(STARVE_TICK_DAMAGE, netId, Attack.Type.None);
+                  }
+               }
             }
 
             Vector2 targetVelocity = _movementInputDirection * targetSpeed * Time.fixedDeltaTime;
@@ -1256,7 +1258,7 @@ public class PlayerShipEntity : ShipEntity
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
       if (MyNetworkManager.wasServerStarted) {
-         storeCurrentShipHealth();
+         storeCurrentShipHealthAndFood();
       }
    }
 
@@ -1573,7 +1575,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Ensure the player's ship is always on water
-      if (WorldMapManager.self.isWorldMapArea(area.areaKey)) {
+      if (WorldMapManager.isWorldMapArea(area.areaKey)) {
          if (area.isOpenWaterTile(transform.position)) {
             return;
          }
@@ -1800,15 +1802,18 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Set the ship health back to max
-      restoreMaxShipHealth();
+      restoreMaxShipHealthAndFood();
 
       // Clear any powerup
       PowerupManager.self.clearPowerupsForUser(userId);
    }
 
    [Server]
-   public void storeCurrentShipHealth () {
-      Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, Mathf.Min(this.currentHealth, this.maxHealth)));
+   public void storeCurrentShipHealthAndFood () {
+      Util.tryToRunInServerBackground(() => DB_Main.storeShipHealthAndFood(
+         this.shipId,
+         Mathf.Min(this.currentHealth, this.maxHealth),
+         (int) Mathf.Min(this.currentFood, this.maxFood)));
    }
 
    [Command]
@@ -2014,8 +2019,8 @@ public class PlayerShipEntity : ShipEntity
       // Wait a small delay, so the player's camera can move, and see them respawn
       yield return new WaitForSeconds(0.5f);
 
-      initHealth();
-      restoreMaxShipHealth();
+      initHealthAndFood();
+      restoreMaxShipHealthAndFood();
 
       Rpc_OnRespawnedInInstance(currentHealth);
 
@@ -2373,7 +2378,7 @@ public class PlayerShipEntity : ShipEntity
                return;
             }
 
-            if (nextMap.biome != Biome.Type.Forest && nextMap.biome != Biome.Type.Desert) {
+            if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(nextMap.biome)) {
                return;
             }
          }

@@ -62,7 +62,7 @@ public class MouseTrailParticle : MonoBehaviour
 
    public void setPosition(Vector2 position) {
       _particleStartingPosition = position;
-      image.rectTransform.position = position;
+      image.rectTransform.anchoredPosition = position;
    }
 
    public void setSpeed(float speed) {

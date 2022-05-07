@@ -47,7 +47,7 @@ public class WorldMapManager : MonoBehaviour
       _playerSpotCache[Global.player.userId] = spot;
    }
 
-   private bool areValidOpenWorldMapAreaCoords (WorldMapAreaCoords areaCoords) {
+   private static bool areValidOpenWorldMapAreaCoords (WorldMapAreaCoords areaCoords) {
       if (areaCoords.x < 0 || areaCoords.x >= WORLD_MAP_COORDS_X.Length || areaCoords.y < 0 || areaCoords.y >= WORLD_MAP_COORDS_Y.Length) {
          return false;
       }
@@ -86,7 +86,7 @@ public class WorldMapManager : MonoBehaviour
       return true;
    }
 
-   public string getAreaSuffix (WorldMapAreaCoords areaCoords) {
+   public static string getAreaSuffix (WorldMapAreaCoords areaCoords) {
       if (!areValidOpenWorldMapAreaCoords(areaCoords)) {
          return "";
       }
@@ -97,7 +97,7 @@ public class WorldMapManager : MonoBehaviour
       return $"{cx}{cy}".ToUpper();
    }
 
-   public WorldMapAreaCoords getAreaCoords (string areaKey) {
+   public static WorldMapAreaCoords getAreaCoords (string areaKey) {
       if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(WORLD_MAP_PREFIX)) {
          return new WorldMapAreaCoords(-1, -1);
       }
@@ -111,7 +111,7 @@ public class WorldMapManager : MonoBehaviour
       return new WorldMapAreaCoords(x, y);
    }
 
-   public string getAreaKey (WorldMapAreaCoords areaCoords) {
+   public static string getAreaKey (WorldMapAreaCoords areaCoords) {
       string suffix = getAreaSuffix(areaCoords);
       return $"{WORLD_MAP_PREFIX}{suffix}";
    }
@@ -167,7 +167,7 @@ public class WorldMapManager : MonoBehaviour
       return areaCoordsList;
    }
 
-   public List<string> getAllAreasList () {
+   public static List<string> getAllAreasList () {
       List<string> maps = new List<string>();
 
       for (int row = 0; row < WORLD_MAP_COORDS_Y.Length; row++) {
@@ -183,7 +183,7 @@ public class WorldMapManager : MonoBehaviour
       return new Vector2Int(WORLD_MAP_COORDS_X.Length, WORLD_MAP_COORDS_Y.Length);
    }
 
-   public bool isWorldMapArea (string areaKey) {
+   public static bool isWorldMapArea (string areaKey) {
       return !Util.isEmpty(areaKey) && areaKey.StartsWith(WORLD_MAP_PREFIX);
    }
 
@@ -332,10 +332,10 @@ public class WorldMapManager : MonoBehaviour
          return null;
       }
    }
-   
+
    public string getStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
-      float adjustedAreaY = geoCoords.areaY / 255 * 999; 
-      float adjustedAreaX = geoCoords.areaX / 255 * 999; 
+      float adjustedAreaY = geoCoords.areaY / 255 * 999;
+      float adjustedAreaX = geoCoords.areaX / 255 * 999;
 
       if (!Util.isEmpty(geoCoords.subAreaKey)) {
          int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
@@ -408,7 +408,7 @@ public class WorldMapManager : MonoBehaviour
       if (Util.isEmpty(geoCoordsStr)) {
          return null;
       }
-      
+
       int prefixIndex = geoCoordsStr.IndexOf("<");
       if (prefixIndex < 0) {
          return null;
@@ -507,6 +507,30 @@ public class WorldMapManager : MonoBehaviour
       }
 
       return false;
+   }
+
+   public static bool doesNewAreaExtendWorldVisitStreak (List<string> visitLog, string newArea) {
+      // Checks if visiting an area extends world map area visiting streak
+      // Checks if newArea is unique in the chain of visited world map areas
+      // Assumes newArea was already added to the visit log, visit log ordered from newest to oldest
+
+      // If new area is not open-world, it won't
+      if (!isWorldMapArea(newArea)) {
+         return false;
+      }
+
+      HashSet<string> visited = new HashSet<string>();
+      for (int i = 1; i < visitLog.Count; i++) {
+         // If this is not a world map area, this is the end of the streak
+         if (!isWorldMapArea(visitLog[i])) {
+            break;
+         }
+
+         visited.Add(visitLog[i]);
+      }
+
+      // If newArea is not in visit streak, then it will extend the streak
+      return !visited.Contains(newArea);
    }
 
    #region Private Variables

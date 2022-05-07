@@ -67,6 +67,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public float maxFood = 500;
 
+   // How many areas in a row did we visit in the open-world
+   [SyncVar]
+   public int worldAreaVisitStreak = 0;
+
    // The amount of XP we have, which we can use to show our level
    [SyncVar]
    public int XP;
@@ -668,7 +672,7 @@ public class NetEntity : NetworkBehaviour
       VoyageStatusPanel.self.setUserPvpMode(pvpMode);
       VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
 
-      if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+      if (WorldMapManager.isWorldMapArea(areaKey)) {
          // Since the status of the pvp activity is not change able in open world, just display the icon
          VoyageStatusPanel.self.enablePvpStatDisplay(false);
          VoyageStatusPanel.self.togglePvpButtons(false);
@@ -746,12 +750,15 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
-      this.isDemoUser = userInfo.accountName.Contains("@demo");
+      
+      this.isDemoUser = userInfo.isDemoUser();
 
       this.guildName = guildInfo.guildName;
       this.guildMapBaseId = guildInfo.guildMapBaseId;
       this.guildHouseBaseId = guildInfo.guildHouseBaseId;
       this.guildInventoryId = guildInfo.inventoryId;
+
+      this.worldAreaVisitStreak = userInfo.worldAreaVisitStreak;
 
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
@@ -1790,8 +1797,8 @@ public class NetEntity : NetworkBehaviour
          return true;
       }
 
-      // Restrict user level to max 5
-      return LevelUtil.levelForXp(this.XP) < 5;
+      // Restrict user level to max 
+      return LevelUtil.levelForXp(this.XP) < AdminGameSettingsManager.self.settings.maxDemoLevel;
    }
 
    protected void onGainedJobXP (int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
@@ -2328,7 +2335,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Override the local position if we are in an Open World Area
-      if (WorldMapManager.self.isWorldMapArea(areaKey) && WorldMapManager.self.isWorldMapArea(newArea)) {
+      if (WorldMapManager.isWorldMapArea(areaKey) && WorldMapManager.isWorldMapArea(newArea)) {
          targetLocalPos = transform.localPosition;
          float offset = 0.2f;
 
@@ -2427,19 +2434,24 @@ public class NetEntity : NetworkBehaviour
       // Store the connection reference so that we don't lose it while on the background thread
       NetworkConnection connectionToClient = this.connectionToClient;
 
-      if (isPlayerShip() && VoyageManager.isAnyLeagueArea(areaKey)) {
-         if (VoyageManager.isAnyLeagueArea(newArea) || (isInGroup() && !isDead())) {
-            // While the user is in a league or part of a group, the hp is persistent
-            ((PlayerShipEntity) this).storeCurrentShipHealth();
-         } else {
-            // When leaving leagues or respawning, the hp is restored
-            restoreMaxShipHealth();
+      if (isPlayerShip()) {
+         if (VoyageManager.isAnyLeagueArea(areaKey)) {
+            if (VoyageManager.isAnyLeagueArea(newArea) || (isInGroup() && !isDead())) {
+               // While the user is in a league or part of a group, the hp is persistent
+               ((PlayerShipEntity) this).storeCurrentShipHealthAndFood();
+            } else {
+               // When leaving leagues or respawning, the hp is restored
+               restoreMaxShipHealthAndFood();
+            }
+         } else if (WorldMapManager.isWorldMapArea(newArea)) {
+            // If we are warping to open world, keep our hp
+            ((PlayerShipEntity) this).storeCurrentShipHealthAndFood();
          }
       }
 
       // If the player just entered an open world area, restore the health of the ships
-      if (WorldMapManager.self.isWorldMapArea(newArea) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
-         restoreMaxShipHealth();
+      if (WorldMapManager.isWorldMapArea(newArea) && !WorldMapManager.isWorldMapArea(areaKey)) {
+         restoreMaxShipHealthAndFood();
       }
 
       // Release any claim on the user
@@ -3069,12 +3081,12 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void restoreMaxShipHealth () {
+   public void restoreMaxShipHealthAndFood () {
       Util.tryToRunInServerBackground(() => {
          ShipInfo shipInfo = DB_Main.getShipInfoForUser(userId);
 
          if (shipInfo != null) {
-            DB_Main.restoreShipMaxHealth(shipInfo.shipId);
+            DB_Main.restoreShipMaxHealthAndFood(shipInfo.shipId);
          }
       });
    }

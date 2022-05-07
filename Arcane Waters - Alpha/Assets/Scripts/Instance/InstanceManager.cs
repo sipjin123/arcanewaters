@@ -38,7 +38,7 @@ public class InstanceManager : MonoBehaviour
       }
 
       // If the player is warping to a world map instance, search for it
-      if (VoyageManager.isWorldMapArea(areaKey) && WorldMapManager.self.isWorldMapArea(areaKey)) {
+      if (VoyageManager.isWorldMapArea(areaKey) && WorldMapManager.isWorldMapArea(areaKey)) {
          Instance existingInstance = getWorldMapOpenInstance(areaKey);
          if (existingInstance != null) {
             instance = existingInstance;
@@ -382,7 +382,7 @@ public class InstanceManager : MonoBehaviour
 
    public Instance getWorldMapOpenInstance (string areaKey) {
       foreach (Instance instance in _instances.Values) {
-         if (WorldMapManager.self.isWorldMapArea(instance.areaKey)) {
+         if (WorldMapManager.isWorldMapArea(instance.areaKey)) {
             if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
                return instance;
             }
@@ -424,7 +424,7 @@ public class InstanceManager : MonoBehaviour
 
    public void removeEntityFromInstance (NetEntity entity) {
       if (entity == null || entity.instanceId == 0) {
-         D.debug("No need to remove entity from instance: " + entity);
+         D.adminLog("No need to remove entity from instance: " + entity, D.ADMIN_LOG_TYPE.Disconnection);
          return;
       }
 

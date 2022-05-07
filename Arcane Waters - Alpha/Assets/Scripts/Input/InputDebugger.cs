@@ -41,6 +41,7 @@ public class InputDebugger : MonoBehaviour {
    public TextMeshProUGUI movementInput;
    public TextMeshProUGUI generalActionMapEnabled;
    public TextMeshProUGUI seaActionMapEnabled;
+   public TextMeshProUGUI playerFacing;
    public TextMeshProUGUI notShipIsDisabled;
    public TextMeshProUGUI notShipIsDead;
    public TextMeshProUGUI notShipIsGhost;
@@ -117,6 +118,8 @@ public class InputDebugger : MonoBehaviour {
       seaActionMapEnabled.text = getBoolString(InputManager.self.inputMaster.Sea.enabled);
       
       if (Global.player != null) {
+         playerFacing.text = Global.player.facing.ToString();
+
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
          if (playerShip != null) {
             notShipIsDisabled.text = getBoolString(!playerShip.isDisabled);

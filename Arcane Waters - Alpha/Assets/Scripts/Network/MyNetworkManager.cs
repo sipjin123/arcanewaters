@@ -89,24 +89,24 @@ public class MyNetworkManager : NetworkManager
       D.adminLog("MyNetworkManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
-   #if FORCE_AMAZON_SERVER
+#if FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-   #endif
-   #if FORCE_AMAZON_SERVER_PROD
+#endif
+#if FORCE_AMAZON_SERVER_PROD
       Debug.Log("FORCE_AMAZON_SERVER_PROD is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-   #endif
-   #if FORCE_SYDNEY
+#endif
+#if FORCE_SYDNEY
       this.serverOverride = ServerType.AmazonSydney;
-   #endif
-   #if FORCE_LOCALHOST
+#endif
+#if FORCE_LOCALHOST
       this.serverOverride = ServerType.Localhost;
-   #endif
+#endif
 
-   #if !FORCE_AMAZON_SERVER
+#if !FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is not defined.");
-   #endif
+#endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {
@@ -412,7 +412,7 @@ public class MyNetworkManager : NetworkManager
                areasToBeAdded.Add(forestHomeTownAreaKey);
             }
 
-            string forestHomeTownWorldMapAreaKey = WorldMapManager.self.getAreaKey(WorldMapManager.self.getAreaCoordsForBiome(Biome.Type.Forest));
+            string forestHomeTownWorldMapAreaKey = WorldMapManager.getAreaKey(WorldMapManager.self.getAreaCoordsForBiome(Biome.Type.Forest));
             if (!visitedAreas.Contains(forestHomeTownWorldMapAreaKey)) {
                areasToBeAdded.Add(forestHomeTownWorldMapAreaKey);
             }
@@ -420,6 +420,22 @@ public class MyNetworkManager : NetworkManager
 
          if (areasToBeAdded.Count > 0) {
             DB_Main.addVisitedAreas(authenticatedUserId, new HashSet<string>(areasToBeAdded));
+         }
+
+         // Note the area visit
+         DB_Main.noteUserAreaVisit(authenticatedUserId, previousAreaKey);
+
+         // Get user visit log
+         List<string> visitLog = DB_Main.getLastUserVisitedAreas(userInfo.userId);
+
+         // Check if this appearance in area will increase world map visit streak, update if so
+         if (WorldMapManager.doesNewAreaExtendWorldVisitStreak(visitLog, previousAreaKey)) {
+            // This is fine to do in bg
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.incrementWorldAreaVisitStreak(userInfo.userId);
+            });
+
+            userInfo.worldAreaVisitStreak++;
          }
 
          // Back to the Unity thread
@@ -490,9 +506,9 @@ public class MyNetworkManager : NetworkManager
             }
 
             // If user is a demo account, restrict biomes
-            if (userInfo.accountName.Contains("@demo")) {
-               Biome.Type targetType = AreaManager.self.getMapInfo(baseMapAreaKey).biome;
-               if (targetType != Biome.Type.Forest && targetType != Biome.Type.Desert) {
+            if (userInfo.isDemoUser()) {
+               Biome.Type targetType = InstanceManager.getBiomeForInstance(baseMapAreaKey, voyageId);
+               if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(targetType)) {
                   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                      DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
@@ -514,6 +530,7 @@ public class MyNetworkManager : NetworkManager
                userInfo.localPos = existingConnection.netEntity.transform.localPosition;
                userInfo.facingDirection = (int) existingConnection.netEntity.facing;
                shipInfo.health = existingConnection.netEntity.currentHealth;
+               shipInfo.food = (int) existingConnection.netEntity.currentFood;
 
                DisconnectionManager.self.removeFromDisconnectedUsers(authenticatedUserId);
             }
@@ -699,7 +716,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Players in open world pvp can attack each other without waiting for triggers
-            if (pvpGameMode != PvpGameMode.None && WorldMapManager.self.isWorldMapArea(player.areaKey) && guildInfo.guildId > 0) {
+            if (pvpGameMode != PvpGameMode.None && WorldMapManager.isWorldMapArea(player.areaKey) && guildInfo.guildId > 0) {
                player.hasEnteredPvP = true;
 
                player.openWorldGameMode = pvpGameMode;
@@ -730,10 +747,10 @@ public class MyNetworkManager : NetworkManager
       bool isUserAssignedToAnotherServer = ServerNetworkingManager.self.isUserAssignedToAnotherServer(userId);
 
       if (!isUserAssignedToAnotherServer) {
-         D.debug($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity and friends were notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}");
+         D.adminLog($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity and friends were notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}", D.ADMIN_LOG_TYPE.Disconnection);
          RPCManager.notifyOnlineStatusToFriends(userId, false, "");
       } else {
-         D.debug($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity but friends were not notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}");
+         D.adminLog($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity but friends were not notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}", D.ADMIN_LOG_TYPE.Disconnection);
       }
    }
 
@@ -858,7 +875,7 @@ public class MyNetworkManager : NetworkManager
       }
 
       if (player != null) {
-         D.debug($"In disconnectClient(), we found an existing NetEntity object for {player.entityName}, so we only call finishPlayerDisconnect() instead of removeClientConnectionData()");
+         D.adminLog($"In disconnectClient(), we found an existing NetEntity object for {player.entityName}, so we only call finishPlayerDisconnect() instead of removeClientConnectionData()", D.ADMIN_LOG_TYPE.Disconnection);
 
          if (player.getPlayerShipEntity() != null && !forceFinishDisconnection) {
             // If the player is a ship, keep it in the server for a few seconds

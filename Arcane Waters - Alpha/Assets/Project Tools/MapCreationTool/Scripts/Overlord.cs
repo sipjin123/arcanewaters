@@ -451,5 +451,149 @@ namespace MapCreationTool
 
          return result;
       }
+
+      #region Rendering world
+
+      private void writeBytes (System.IO.FileStream fs, byte[] bytes) {
+         for (int i = 0; i < bytes.Length; i++) {
+            fs.WriteByte(bytes[i]);
+         }
+      }
+
+      private void glueMaps () {
+         StartCoroutine(glueMaps(5, 5, 0, 0, "desert"));
+         StartCoroutine(glueMaps(5, 4, 0, 5, "forest"));
+
+         StartCoroutine(glueMaps(5, 5, 5, 0, "pine"));
+         StartCoroutine(glueMaps(6, 4, 5, 5, "snow"));
+
+         StartCoroutine(glueMaps(5, 5, 10, 0, "lava"));
+         StartCoroutine(glueMaps(4, 4, 11, 5, "shroom"));
+      }
+
+      private IEnumerator glueMaps (int mapsX, int mapsY, int offsetX, int offsetY, string outputName) {
+         string path = Application.persistentDataPath + "/" + outputName + ".bmp";
+         List<Color32>[,] textures = new List<Color32>[mapsX, mapsY];
+         Texture2D tempTex = new Texture2D(4096, 4096);
+
+         for (int i = offsetX; i < mapsX + offsetX; i++) {
+            for (int j = offsetY; j < mapsY + offsetY; j++) {
+               string mapName = "world_map_" + WorldMapManager.WORLD_MAP_COORDS_X[i] + WorldMapManager.WORLD_MAP_COORDS_Y[j];
+               tempTex.LoadImage(System.IO.File.ReadAllBytes(Application.persistentDataPath + "/world map renders/" + mapName + ".png"));
+               Color32[] cols = tempTex.GetPixels32();
+               textures[i - offsetX, j - offsetY] = new List<Color32>();
+               textures[i - offsetX, j - offsetY].AddRange(cols);
+            }
+         }
+
+         Debug.Log("Textures cached for " + outputName);
+         yield return new WaitForSeconds(0.5f);
+
+         UnityThreading.Task t = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            System.IO.File.Delete(path);
+
+            using (System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.CreateNew)) {
+               // Header
+               writeBytes(fs, new byte[] { 0x42, 0x4D }); // 2 Byte constant
+               writeBytes(fs, BitConverter.GetBytes(0)); // Size of file in bytes - can be ignored
+               writeBytes(fs, new byte[] { 0x00, 0x00 }); // 2 Byte empty constant
+               writeBytes(fs, new byte[] { 0x00, 0x00 }); // 2 Byte empty constant
+               writeBytes(fs, BitConverter.GetBytes(54)); // Image data start - constant-ish
+
+               // Second header
+               writeBytes(fs, BitConverter.GetBytes(40)); // Size of this header in bytes
+               writeBytes(fs, BitConverter.GetBytes((uint) (mapsX * 4096))); // Image width
+               writeBytes(fs, BitConverter.GetBytes((uint) (mapsY * 4096))); // Image height
+               writeBytes(fs, BitConverter.GetBytes((ushort) 1)); // Constant
+               writeBytes(fs, BitConverter.GetBytes((ushort) 24)); // Bits per pixel
+               writeBytes(fs, BitConverter.GetBytes(0)); // Compression
+               writeBytes(fs, BitConverter.GetBytes(0)); // Size of image
+               writeBytes(fs, BitConverter.GetBytes((uint) 0)); // Resolution
+               writeBytes(fs, BitConverter.GetBytes((uint) 0)); // Resolution
+               writeBytes(fs, BitConverter.GetBytes(0)); // Colors used
+               writeBytes(fs, BitConverter.GetBytes(0)); // Colors important
+
+
+
+               for (int j = 0; j < mapsY; j++) {
+                  for (int k = 0; k < 4096; k++) {
+                     for (int i = 0; i < mapsX; i++) {
+                        for (int m = 0; m < 4096; m++) {
+                           Color32 pixel = textures[i, j][k * 4096 + m];
+                           fs.WriteByte(pixel.b);
+                           fs.WriteByte(pixel.g);
+                           fs.WriteByte(pixel.r);
+                        }
+                     }
+                  }
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     Debug.Log("finished " + j + " for " + outputName);
+                  });
+               }
+
+               fs.Flush(true);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  Debug.Log("Completed  " + outputName);
+               });
+            }
+         });
+
+         while (!t.HasEnded) {
+            yield return new WaitForEndOfFrame();
+         }
+      }
+
+      private IEnumerator renderAllWorldMaps (List<Map> maps) {
+         foreach (char x in WorldMapManager.WORLD_MAP_COORDS_X) {
+            foreach (char y in WorldMapManager.WORLD_MAP_COORDS_Y) {
+               string mapName = "world_map_" + x + y;
+               // Download the map data
+               UI.loadingPanel.display($"Downloading and rendering the latest version for world map {mapName}");
+               string error = null;
+               MapVersion version = null;
+               UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  try {
+                     version = DB_Main.getLatestMapVersionEditor(maps.FirstOrDefault(
+                        m => m.name.ToLower().StartsWith(mapName.ToLower())));
+                  } catch (Exception ex) {
+                     error = ex.ToString();
+                  }
+               });
+
+               // Wait for download to complete
+               while (!task.HasEnded) {
+                  yield return new WaitForEndOfFrame();
+               }
+
+               if (error != null) {
+                  UI.loadingPanel.close();
+                  UI.messagePanel.displayError(error);
+                  if (Application.isEditor) {
+                     Debug.Log(error);
+                  }
+                  yield break;
+               } else if (version == null) {
+                  UI.loadingPanel.close();
+                  UI.messagePanel.displayError($"Could not find map { name } in the database");
+                  yield break;
+               }
+
+               // Apply map data and render
+               Overlord.instance.applyData(version);
+               yield return new WaitForEndOfFrame();
+               Texture2D tex = ScreenRecorder.recordTexture();
+               System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/world map renders");
+               System.IO.File.WriteAllBytes(Application.persistentDataPath + "/world map renders/" + mapName + ".png",
+                  tex.EncodeToPNG());
+
+               Destroy(tex);
+               yield return new WaitForEndOfFrame();
+            }
+         }
+      }
+
+      #endregion
    }
 }

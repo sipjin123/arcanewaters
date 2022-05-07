@@ -28,7 +28,7 @@ public class WorldMapWaypointsManager : MonoBehaviour
                continue;
             }
          } else {
-            if (WorldMapManager.self.getAreaKey(new WorldMapAreaCoords(spot.worldX, spot.worldY)) != Global.player.areaKey) {
+            if (WorldMapManager.getAreaKey(new WorldMapAreaCoords(spot.worldX, spot.worldY)) != Global.player.areaKey) {
                continue;
             }
          }

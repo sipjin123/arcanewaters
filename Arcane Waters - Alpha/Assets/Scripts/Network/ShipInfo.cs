@@ -50,6 +50,12 @@ public class ShipInfo {
    // The max amount of health this ship can have
    public int maxHealth;
 
+   // The current amount of food this ship has
+   public int food;
+
+   // The max amount of food this ship can have
+   public int maxFood = 500;
+
    // The amount of damage this ship does
    public float damage = 0.05f;
 
@@ -96,6 +102,7 @@ public class ShipInfo {
          this.shipId = DataUtil.getInt(dataReader, "shpId");
          this.userId = DataUtil.getInt(dataReader, "usrId");
          this.health = DataUtil.getInt(dataReader, "health");
+         this.food = DataUtil.getInt(dataReader, "food");
          this.shipName = DataUtil.getString(dataReader, "shpName");
       // }
 
@@ -107,6 +114,7 @@ public class ShipInfo {
       this.suppliesMax = DataUtil.getInt(dataReader, "suppliesMax");
       this.cargoMax = DataUtil.getInt(dataReader, "cargoMax");
       this.maxHealth = DataUtil.getInt(dataReader, "maxHealth");
+      this.maxFood = DataUtil.getInt(dataReader, "maxFood");
       this.damage = DataUtil.getFloat(dataReader, "damage");
       this.attackRange = DataUtil.getInt(dataReader, "attackRange");
       this.speed = DataUtil.getInt(dataReader, "speed");
@@ -131,7 +139,7 @@ public class ShipInfo {
    #endif
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType, int shipXmlId, Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
-      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, float damage,
+      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int food, int maxFood, float damage,
       int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
       this.userId = userId;
@@ -149,6 +157,8 @@ public class ShipInfo {
       this.cargoMax = cargoMax;
       this.health = health;
       this.maxHealth = maxHealth;
+      this.food = food;
+      this.maxFood = maxFood;
       this.damage = damage;
       this.attackRange = attackRange;
       this.speed = speed;

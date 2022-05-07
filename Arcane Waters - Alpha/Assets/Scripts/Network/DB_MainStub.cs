@@ -64,7 +64,7 @@ public class DB_MainStub : MonoBehaviour
    public static string fetchCategorizedItem (int usrId, int categorizedItem) {
       return "";
    }
-   
+
    public static string fetchEquippedItems (int usrId) {
       return "";
    }
@@ -905,11 +905,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void storeShipHealth (int shipId, int shipHealth) {
+   public static void storeShipHealthAndFood (int shipId, int shipHealth, int shipFood) {
 
    }
 
-   public static void restoreShipMaxHealth (int shipId) {
+   public static void restoreShipMaxHealthAndFood (int shipId) {
    }
 
    public static int getUserId (string username) {
@@ -1689,6 +1689,22 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
+   public static void noteUserAreaVisit (int userId, string areaKey) {
+
+   }
+
+   public static List<string> getLastUserVisitedAreas (int userId) {
+      return new List<string>();
+   }
+
+   public static void incrementWorldAreaVisitStreak (int userId) {
+
+   }
+
+   public static void resetWorldAreaVisitStreak (int userId) {
+
+   }
+
    public static void addAdminGameSettings (AdminGameSettings settings) {
    }
 
@@ -1842,7 +1858,7 @@ public class DB_MainStub : MonoBehaviour
       return Array.Empty<WorldMapSpot>();
    }
 
-   public static bool clearWorldMapSites () {
+   public static bool clearWorldMapSpots () {
       return false;
    }
 
