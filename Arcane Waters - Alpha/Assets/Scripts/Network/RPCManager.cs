@@ -5209,7 +5209,16 @@ public class RPCManager : NetworkBehaviour
             if (guildLeader > 0) {
                NetEntity invitedUserEntity = EntityManager.self.getEntity(guildLeader);
                if (invitedUserEntity == null || guildInfo == null || guildAllyInfo == null) {
-                  _player.Target_ReceiveNormalChat("Failed to initialize guild alliance", ChatInfo.Type.System);
+                  _player.Target_ReceiveNormalChat("Failed to initialize guild alliance: {"
+                     + (invitedUserEntity == null ? "Missing Target User" : "") + " "
+                     + (guildInfo == null ? "Missing Guild Info" : "") + " "
+                     + (guildAllyInfo == null ? "Missing Ally Guild Info" : "") + "}", ChatInfo.Type.System);
+                  if (guildInfo == null) {
+                     D.debug("Guild info failed to fetch {" + guildId + "}");
+                  }
+                  if (guildAllyInfo == null) {
+                     D.debug("Guild Ally info failed to fetch {" + allyGuildId + "}");
+                  }
                   return;
                }
 

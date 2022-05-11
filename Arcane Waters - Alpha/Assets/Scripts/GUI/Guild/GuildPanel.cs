@@ -195,14 +195,16 @@ public class GuildPanel : Panel {
    }
 
    public void updatePlayerRanks (GuildInfo info, GuildRankInfo[] guildRanks) {
-      foreach (UserInfo guildMember in info.guildMembers) {
-         GuildMemberRow currRow = _guildMemberRowsReference.Find(_ => _.getUserId() == guildMember.userId);
-         if (currRow != null) {
-            currRow.setRowForGuildMember(guildMember, guildRanks);
+      if (info != null && info.guildMembers != null) {
+         foreach (UserInfo guildMember in info.guildMembers) {
+            GuildMemberRow currRow = _guildMemberRowsReference.Find(_ => _.getUserId() == guildMember.userId);
+            if (currRow != null) {
+               currRow.setRowForGuildMember(guildMember, guildRanks);
+            }
          }
-      }
 
-      Invoke(nameof(refreshGuildAllyData), REFRESH_TIMER);
+         Invoke(nameof(refreshGuildAllyData), REFRESH_TIMER);
+      }
    }
 
    public void receiveDataFromServer (GuildInfo info, GuildRankInfo[] guildRanks) {
