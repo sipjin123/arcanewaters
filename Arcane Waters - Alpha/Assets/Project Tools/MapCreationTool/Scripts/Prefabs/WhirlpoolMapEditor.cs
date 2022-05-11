@@ -12,7 +12,7 @@ namespace MapCreationTool
       #region Public Variables
 
       // Scale of this object when displayed in the palette panel
-      public const float PALETTE_SCALE = 5f;
+      public const float PALETTE_SCALE = 0.3f;
 
       // The starting scale of the model if its not fixed to one
       public float startingScale = 1;
@@ -30,7 +30,7 @@ namespace MapCreationTool
       public void dataFieldChanged (DataField field) {
          // Adjust the scale of this building when spawned in the drawing board
          if (transform.parent.GetComponent<Palette>() != null) {
-            transform.localScale = new Vector3(startingScale / PALETTE_SCALE, startingScale / PALETTE_SCALE, 1);
+            transform.localScale = new Vector3(startingScale * PALETTE_SCALE, startingScale * PALETTE_SCALE, 1);
          } else {
             transform.localScale = new Vector3(startingScale, startingScale, startingScale);
          }

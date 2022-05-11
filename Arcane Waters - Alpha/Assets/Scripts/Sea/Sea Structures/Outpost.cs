@@ -36,6 +36,9 @@ public class Outpost : SeaStructureTower, IObserver
    // A child object that will pass on onTriggerEnter2D events for food filling
    public TriggerDetector foodFillDetector;
 
+   // The food bar we use to display food
+   public FoodBar foodBar;
+
    #endregion
 
    protected override void Awake () {
@@ -44,6 +47,21 @@ public class Outpost : SeaStructureTower, IObserver
       foodFillDetector.onTriggerStay += onFoodFillTriggerStay;
 
       _spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+      if (NetworkClient.active) {
+         _outline = GetComponent<SpriteOutline>();
+         _outline.setNewColor(Color.white);
+         _outline.setVisibility(false);
+      }
+   }
+
+   public void onPointerExit () {
+      _hovered = false;
+      _outline.setVisibility(false);
+   }
+
+   public void onPointerEnter () {
+      _hovered = true;
    }
 
    public override void OnStartClient () {
@@ -57,9 +75,38 @@ public class Outpost : SeaStructureTower, IObserver
    protected override void Update () {
       base.Update();
 
-      if (isServer && isDead()) {
+      if (NetworkClient.active && _isActivated) {
+         _outline.setVisibility(canPlayerInteract(Global.player) && _hovered);
+      }
+
+
+      if (!_isActivated || !isServer) {
+         return;
+      }
+
+      if (isDead() || currentFood <= 0) {
          NetworkServer.Destroy(this.gameObject);
       }
+
+      currentFood = Mathf.Clamp(currentFood - FOOD_PER_SECOND * Time.deltaTime, 0, maxFood);
+   }
+
+   public void onClick () {
+      if (!canPlayerInteract(Global.player)) {
+         return;
+      }
+
+      // Only works when the player is close enough
+      if (!Util.distanceLessThan2D(transform.position, Global.player.transform.position, 1f)) {
+         FloatingCanvas.instantiateAt(transform.position).asTooFar();
+         return;
+      }
+
+      PanelManager.self.get<OutpostPanel>(Panel.Type.Outpost).open(this);
+   }
+
+   public bool canPlayerInteract (NetEntity entity) {
+      return entity != null && (entity.guildId == guildId || entity.guildAllies.Contains(guildId));
    }
 
    public override void setAreaParent (Area area, bool worldPositionStays) {
@@ -91,7 +138,7 @@ public class Outpost : SeaStructureTower, IObserver
 
       if (collider.TryGetComponent(out PlayerShipEntity entity)) {
          // Check if entity can receive food from us
-         if (entity.guildId == guildId || entity.guildId == 0) {
+         if (entity.guildId == guildId || entity.guildAllies.Contains(guildId) || entity.guildId == 0) {
             entity.currentFood = Mathf.Clamp(entity.currentFood + Time.deltaTime * FOOD_FILL_PER_SECOND, 0, entity.maxFood);
          }
       }
@@ -121,7 +168,7 @@ public class Outpost : SeaStructureTower, IObserver
 
    protected override bool isValidTarget (NetEntity entity) {
       return
-         entity != null && entity.isPlayerShip() &&
+         entity != null &&
          !entity.isAllyOf(this) && entity.isEnemyOf(this);
    }
 
@@ -142,6 +189,8 @@ public class Outpost : SeaStructureTower, IObserver
          Util.setAlpha(ren, validBuild ? 1f : 0.5f);
       }
 
+      foodBar.gameObject.SetActive(false);
+
       setDirection(direction);
    }
 
@@ -155,6 +204,9 @@ public class Outpost : SeaStructureTower, IObserver
       }
 
       dockRenderer.sprite = dockDirectionSprites[spriteIndex];
+
+      // Add collider to dock here so it gets generated based on sprite
+      dockRenderer.gameObject.AddComponent<PolygonCollider2D>();
    }
 
    public IEnumerator CO_ActivateAfter (float delay) {
@@ -168,6 +220,9 @@ public class Outpost : SeaStructureTower, IObserver
 
    // All the sprite renderers that the outpost has
    private SpriteRenderer[] _spriteRenderers;
+
+   // Are we hovered right now (client)
+   private bool _hovered = false;
 
    #endregion
 }

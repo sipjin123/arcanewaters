@@ -17,7 +17,24 @@ public class WorldMapPanelPin : MonoBehaviour
    // Tooltip
    public ToolTipComponent tooltip;
 
+   // The label of the pin
+   public TMPro.TextMeshProUGUI label;
+
    #endregion
+
+   public void setLabel (string text) {
+      _name = text;
+
+      if (label == null) {
+         return;
+      }
+
+      label.SetText(text);
+   }
+
+   public string getLabel () {
+      return _name;
+   }
 
    public void setSprite(Sprite sprite) {
       if (image == null) {
@@ -31,12 +48,31 @@ public class WorldMapPanelPin : MonoBehaviour
       gameObject.SetActive(show);
 
    }
-   
+
+   public void toggleLabel (bool show) {
+      if (label == null) {
+         return;
+      }
+
+      label.gameObject.SetActive(show);
+   }
+
+   public void setLabelColor (Color color) {
+      if (label == null) {
+         return;
+      }
+
+      label.color = color;
+   }
+
    public void setTooltip (string displayName) {
       tooltip.message = displayName;
-   }   
+   }
 
    #region Private Variables
+
+   // The content of the label
+   private string _name;
 
    #endregion
 

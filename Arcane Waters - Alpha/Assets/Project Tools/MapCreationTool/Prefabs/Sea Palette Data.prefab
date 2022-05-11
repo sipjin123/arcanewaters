@@ -9957,11 +9957,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -10137,11 +10137,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0

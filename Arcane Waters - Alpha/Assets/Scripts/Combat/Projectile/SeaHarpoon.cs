@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 
-public class SeaHarpoon : SeaProjectile {
+public class SeaHarpoon : SeaProjectile
+{
    #region Public Variables
 
    // A reference to the line renderer used to display the harpoon rope
@@ -18,6 +16,10 @@ public class SeaHarpoon : SeaProjectile {
 
    // A reference the to transform that shows where the rope will attach to this projectile
    public Transform ropeAttachPoint;
+
+   // If the rope is being dragged and reeled
+   [SyncVar]
+   public bool isDragging, isReeling;
 
    #endregion
 
@@ -42,6 +44,10 @@ public class SeaHarpoon : SeaProjectile {
 
       if (isClient && _attachedEntityNetId != 0) {
          onAttachToEntityClient(_attachedEntityNetId);
+      }
+
+      if (isClient) {
+         playSfx(SoundEffectManager.HarpoonEvent.Fire);
       }
    }
 
@@ -88,6 +94,7 @@ public class SeaHarpoon : SeaProjectile {
 
          // Don't apply a force if the rope's length isn't greater than the max length
          if (ropeLength <= _lineMaxLength) {
+            isDragging = isReeling = false;
             return;
          }
 
@@ -109,11 +116,18 @@ public class SeaHarpoon : SeaProjectile {
             springForceOnSource = Vector2.zero;
          }
 
+         isReeling = _sourceEntity.isReelingIn;
+         if (!isDragging && !isReeling) {
+            isDragging = true;
+         }
+
          forceOnSource += springForceOnSource;
          forceOnAttached += springForceOnAttached;
 
          _sourceEntity.getRigidbody().AddForce(forceOnSource);
          _attachedEntity.getRigidbody().AddForce(forceOnAttached);
+      } else {
+         isDragging = false;
       }
    }
 
@@ -174,6 +188,16 @@ public class SeaHarpoon : SeaProjectile {
       } else {
          harpoonRope.material.SetFloat("_FlashAmount", 0.0f);
       }
+
+      if (isClient) {
+         if (isDragging) {
+            playSfx(SoundEffectManager.HarpoonEvent.Drag);
+         } else if (isReeling) {
+            playSfx(SoundEffectManager.HarpoonEvent.Reel);
+         } else {
+            playSfx(SoundEffectManager.HarpoonEvent.Stop);
+         }
+      }
    }
 
    protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
@@ -199,11 +223,48 @@ public class SeaHarpoon : SeaProjectile {
       _attachedEntity = entity;
       _attachedEntityNetId = entity.netId;
       _sourceEntityNetId = _sourceEntity.netId;
+
       Rpc_OnAttachToEntity(entity.netId);
+
       _circleCollider.enabled = false;
 
       _sourceEntity.attachedByHarpoonNetIds.Add(_attachedEntityNetId);
       _attachedEntity.attachedByHarpoonNetIds.Add(_sourceEntityNetId);
+   }
+
+   private void playSfx (SoundEffectManager.HarpoonEvent sfxType) {
+      if (!_sfxEvent.isValid()) {
+         _sfxEvent = SoundEffectManager.self.createEventInstance(SoundEffectManager.HARPOON);
+      }
+
+      _sfxEvent.getParameterByName(SoundEffectManager.AMB_SW_PARAM, out float currParam);
+      _sfxEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
+
+      SoundEffectManager.HarpoonEvent currEvent = (SoundEffectManager.HarpoonEvent) currParam;
+
+      // The stop action should be valid only when the Drag or Reel sfx are playing
+      if (sfxType == SoundEffectManager.HarpoonEvent.Stop) {
+         if (state != FMOD.Studio.PLAYBACK_STATE.STOPPED && (currEvent == SoundEffectManager.HarpoonEvent.Drag || currEvent == SoundEffectManager.HarpoonEvent.Reel)) {
+            _sfxEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         }
+         return;
+      }
+
+      if (sfxType == SoundEffectManager.HarpoonEvent.Fire) {
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(_sfxEvent, transform, _rigidbody);
+      } else if ((sfxType == SoundEffectManager.HarpoonEvent.Hit || sfxType == SoundEffectManager.HarpoonEvent.Drag) && _attachedEntity) {
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(_sfxEvent, _attachedEntity.transform, _attachedEntity.getRigidbody());
+      } else if (sfxType == SoundEffectManager.HarpoonEvent.Reel && _sourceEntity) {
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(_sfxEvent, _sourceEntity.transform, _sourceEntity.getRigidbody());
+      }
+
+      _sfxEvent.setParameterByName(SoundEffectManager.AMB_SW_PARAM, (int) sfxType);
+      if (state != FMOD.Studio.PLAYBACK_STATE.PLAYING) {
+         _sfxEvent.start();
+      }
+      if (sfxType == SoundEffectManager.HarpoonEvent.Snap) {
+         _sfxEvent.release();
+      }
    }
 
    [ClientRpc]
@@ -230,6 +291,8 @@ public class SeaHarpoon : SeaProjectile {
       foreach (SpriteRenderer renderer in spriteRenderers) {
          renderer.enabled = false;
       }
+
+      playSfx(SoundEffectManager.HarpoonEvent.Hit);
    }
 
    private void OnDisable () {
@@ -266,6 +329,10 @@ public class SeaHarpoon : SeaProjectile {
       }
 
       bool hitLand = Util.hasLandTile(transform.position) || hitSeaStructureIsland();
+
+      if (_hitEnemy) {
+         playSfx(SoundEffectManager.HarpoonEvent.Snap);
+      }
 
       playHitSound(hitLand, _hitEnemy);
 
@@ -320,6 +387,9 @@ public class SeaHarpoon : SeaProjectile {
 
    // How often we will call 'note attacker' on the attached entity
    private const float NOTE_ATTACKER_UPDATE_INTERVAL = 5.0f;
+
+   // FMOD event
+   private FMOD.Studio.EventInstance _sfxEvent;
 
    #endregion
 }

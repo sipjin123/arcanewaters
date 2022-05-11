@@ -23,6 +23,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       CustomMaps = 38, StepCompletedNotification = 39, Auction = 41, Keybindings = 42,
       ReturnToCurrentVoyagePanel = 43, CharacterInfo = 44, AdminVoyage = 45, PvpScoreBoard = 46,
       PvpArena = 47, Admin = 48, PvpShop = 49, VisitPanel = 50, GIFReplaySettings = 51, PvpNpc = 52,
+      Outpost = 53
    }
 
    // The type of Panel this is

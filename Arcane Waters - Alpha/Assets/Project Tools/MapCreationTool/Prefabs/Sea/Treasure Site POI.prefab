@@ -45,6 +45,9 @@ MonoBehaviour:
   dataFields: []
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
+  validObjectStateValues: []
 --- !u!114 &5370176125132370153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,6 +74,7 @@ GameObject:
   - component: {fileID: 1672593925247915049}
   - component: {fileID: 4149986912359220426}
   - component: {fileID: 6006510612307488333}
+  - component: {fileID: 148705263476083303}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -158,6 +162,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 0
+--- !u!225 &148705263476083303
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8425760695720007432}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &9086277778196802850
 GameObject:
   m_ObjectHideFlags: 0

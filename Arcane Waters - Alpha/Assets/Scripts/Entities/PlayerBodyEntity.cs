@@ -819,10 +819,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
       }
 
-      if (InputManager.self.inputMaster.Land.Action.WasPerformedThisFrame()) {
-         triggerInteractAction();
-      }
-
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
       if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame()) {
          tryToOpenChest();

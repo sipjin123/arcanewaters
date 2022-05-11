@@ -222,10 +222,10 @@ public class AdminManager : NetworkBehaviour
 
    private void requestSetInputDebugger (string parameters) {
       if (parameters == "1" || parameters == "true") {
-         InputDebugger.debuggingEnabled = true;
+         InputDebugger.setEnabled(true);
          D.debug("Enabled input debugging.");
       } else if (parameters == "0" || parameters == "false") {
-         InputDebugger.debuggingEnabled = false;
+         InputDebugger.setEnabled(false);
          D.debug("Disabled input debugging.");
       }
    }
@@ -1615,22 +1615,21 @@ public class AdminManager : NetworkBehaviour
                }
 
                PenaltyInfo currPenaltyInfo = DB_Main.getPenaltyForAccount(targetInfo.accountId, penaltyTypes);
+               PenaltyInfo newPenaltyInfo = new PenaltyInfo(_player, targetInfo, penaltyType, reason, seconds);
+
+               if (penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
+                  newPenaltyInfo.penaltyType = targetInfo.forceSinglePlayer ? PenaltyInfo.ActionType.LiftForceSinglePlayer : PenaltyInfo.ActionType.ForceSinglePlayer;
+               }
 
                if (currPenaltyInfo != null && !currPenaltyInfo.isLiftType()) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat(string.Format("{0} is already {1}.", targetInfo.username, pastAction), ChatInfo.Type.Error);
                   });
-               } else if (currPenaltyInfo == null && currPenaltyInfo.isLiftType()) {
+               } else if (currPenaltyInfo == null && newPenaltyInfo.isLiftType()) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat(string.Format("{0} is not {1}.", targetInfo.username, pastAction), ChatInfo.Type.Error);
                   });
                } else {
-                  PenaltyInfo newPenaltyInfo = new PenaltyInfo(_player, targetInfo, penaltyType, reason, seconds);
-
-                  if (penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
-                     newPenaltyInfo.penaltyType = targetInfo.forceSinglePlayer ? PenaltyInfo.ActionType.LiftForceSinglePlayer : PenaltyInfo.ActionType.ForceSinglePlayer;
-                  }
-
                   if (DB_Main.savePenalty(newPenaltyInfo)) {
                      string successMessage = $"{targetInfo.username} ";
 

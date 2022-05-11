@@ -683,7 +683,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    protected IEnumerator CO_LaunchProjectile (SeaEntity target, int abilityId, float attackDelay, float launchDelay) {
       _isPerformingAttack = true;
-      
+
       yield return new WaitForSeconds(attackDelay);
       
       this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(target, sortPoint.transform.position);

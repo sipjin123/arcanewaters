@@ -16,9 +16,6 @@ public class PlayerShipEntity : ShipEntity
 {
    #region Public Variables
 
-   // How much food is consumed every second
-   public const float FOOD_PER_SECOND = 2f;
-
    // How much damage is received when player has no food
    public const float STARVE_TICK_DELAY = 5f;
    public const int STARVE_TICK_DAMAGE = 100;
@@ -390,6 +387,7 @@ public class PlayerShipEntity : ShipEntity
          gamePadDashPressed = true;
       }
    }
+
    private void OnSeaDashCanceled (InputAction.CallbackContext ctx) {
       if (gamePadDashPressed != false) {
          releaseBoost();
@@ -500,7 +498,7 @@ public class PlayerShipEntity : ShipEntity
                int switchValue = scrollVal < 0 ? 1 : -1;
                int targetAbility = Mathf.Clamp(_currentAbilitySlotIndex + switchValue, 0, 4);
                selectAbility(targetAbility);
-            } 
+            }
          }
       }
 
@@ -654,6 +652,21 @@ public class PlayerShipEntity : ShipEntity
       _healEffect.gameObject.SetActive(isEnable);
       if (isEnable) {
          _healEffect.SetTrigger(SHOW_HEAL);
+      }
+   }
+
+   // Play or stop heal FMOD event
+   protected override void triggerHealSfx (bool isPlay) {
+      if (!_healEvent.isValid()) {
+         _healEvent = SoundEffectManager.self.createEventInstance(SoundEffectManager.RUFFIAN_REPAIRS);
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(_healEvent, transform, _body);
+      }
+
+      if (!isPlay) {
+         _healEvent.setParameterByName(SoundEffectManager.AUDIO_SW, 1);
+         _healEvent.release();
+      } else {
+         _healEvent.start();
       }
    }
 
@@ -1233,6 +1246,9 @@ public class PlayerShipEntity : ShipEntity
       if (!Util.isBatch()) {
          InputManager.self.inputMaster.Sea.Dash.performed -= OnSeaDashPerformed;
          InputManager.self.inputMaster.Sea.Dash.canceled -= OnSeaDashCanceled;
+
+         // Stop heal sound effect
+         triggerHealSfx(false);
       }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
@@ -1245,6 +1261,11 @@ public class PlayerShipEntity : ShipEntity
 
    [ServerOnly]
    private void onBeingDestroyedServer () {
+      // Stop heal vfx for allies
+      if (!Util.isBatch()) {
+         CheckHealingAllies(EntityManager.self.getEntitiesWithVoyageId(voyageGroupId), Attack.Type.Heal);
+      }
+
       // If the player is in a pvp game, remove them from the game
       PvpGame activeGame = PvpManager.self.getGameWithPlayer(this);
       if (activeGame != null && activeGame.areaKey == this.areaKey) {
@@ -2551,6 +2572,9 @@ public class PlayerShipEntity : ShipEntity
 
    // A reference to the player's heal effect
    private Animator _healEffect;
+
+   // A reference to the player's heal FMOD event
+   private FMOD.Studio.EventInstance _healEvent;
 
    // When was the last time player was damaged to due to starvation
    private float _lastStarveTick = 0;

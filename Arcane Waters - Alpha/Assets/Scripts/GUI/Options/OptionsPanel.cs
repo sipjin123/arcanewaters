@@ -143,6 +143,9 @@ public class OptionsPanel : Panel
    // Reference to Discord confirmation window description
    public const string DISCORD_CONFIRMATION_DESC = "You are about to open Arcane Waters Discord Channel. Are you sure?";
 
+   // Reference to the Wishlist Button
+   public Button wishlistButton;
+
    #endregion
 
    public override void Awake () {
@@ -490,6 +493,8 @@ public class OptionsPanel : Panel
       ScreenSettingsManager.self.refreshMouseLockState();
       
       activePlayersAdminTooltip.gameObject.SetActive(isAdmin);
+
+      toggleWishlistButton();
    }
 
    public override void hide () {
@@ -692,6 +697,15 @@ public class OptionsPanel : Panel
    public void onDiscordButtonPress () {
       // Open discord game-talk channel upon player confirmation
       PanelManager.self.showConfirmationPanel(DISCORD_CONFIRM_TITLE, onConfirm: () => Application.OpenURL(DISCORD_URL_INVITE), description: DISCORD_CONFIRMATION_DESC);
+   }
+
+   private void toggleWishlistButton () {
+      if (wishlistButton == null) {
+         return;
+      }
+
+      // Activate the button if the player has logged in through Steam
+      wishlistButton.interactable = SteamManager.Initialized;
    }
 
    #region Private Variables

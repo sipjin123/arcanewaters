@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
@@ -57,12 +58,21 @@ public class ItemSelectionScreen : SubPanel
       show(itemIdsToExclude);
    }
 
-   public void show (List<int> itemIdsToExclude) {
+   public void show (List<int> itemIdsToExclude, Func<Item, string> descriptionTextHandler = null) {
       List<Item.Category> categoryFilter = new List<Item.Category>();
-      show(itemIdsToExclude, categoryFilter);
+      show(itemIdsToExclude, categoryFilter, descriptionTextHandler);
    }
 
-   public void show (List<int> itemIdsToExclude, List<Item.Category> categoryFilter) {
+   public void show (List<int> itemIdsToExclude, List<Item.Category> categoryFilter, Func<Item, string> descriptionTextHandler = null) {
+      // Handle description text
+      _descriptionTextHandler = descriptionTextHandler;
+      foreach (GameObject ob in _descriptionRowObjects) {
+         ob.SetActive(_descriptionTextHandler != null);
+      }
+      if (_descriptionTextHandler != null) {
+         _descriptionText.text = _descriptionTextHandler(null);
+      }
+
       // Set the filters to be used every time the items are listed
       _categoryFilter = categoryFilter;
       _itemIdsToExclude = itemIdsToExclude;
@@ -154,8 +164,8 @@ public class ItemSelectionScreen : SubPanel
       itemCountSlider.value = selectedItem.count;
 
       // This is a small hack to make sure the slider's handle is on the right side when there's only 1 item available
-      itemCountSlider.direction = itemCountSlider.minValue == itemCountSlider.maxValue 
-         ? Slider.Direction.RightToLeft 
+      itemCountSlider.direction = itemCountSlider.minValue == itemCountSlider.maxValue
+         ? Slider.Direction.RightToLeft
          : Slider.Direction.LeftToRight;
 
       updateSelectedItemCount();
@@ -167,6 +177,16 @@ public class ItemSelectionScreen : SubPanel
    public void updateSelectedItemCount () {
       selectedItemCount = (int) itemCountSlider.value;
       itemCountText.text = selectedItemCount.ToString();
+
+      if (_descriptionTextHandler != null) {
+         if (selectedItem == null) {
+            _descriptionText.text = _descriptionTextHandler(null);
+         } else {
+            Item i = selectedItem.Clone().getCastItem();
+            i.count = selectedItemCount;
+            _descriptionText.text = _descriptionTextHandler(i);
+         }
+      }
    }
 
    public void nextPage () {
@@ -232,6 +252,17 @@ public class ItemSelectionScreen : SubPanel
 
    // The list of item cells
    private List<ItemCell> _cells = new List<ItemCell>();
+
+   // Items we activate for description row
+   [SerializeField]
+   private List<GameObject> _descriptionRowObjects = new List<GameObject>();
+
+   // Description text
+   [SerializeField]
+   private Text _descriptionText = null;
+
+   // Logic for updating description text
+   private Func<Item, string> _descriptionTextHandler = null;
 
    #endregion
 }

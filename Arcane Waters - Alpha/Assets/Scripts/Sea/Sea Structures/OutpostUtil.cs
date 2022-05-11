@@ -196,6 +196,19 @@ public class OutpostUtil
       return true;
    }
 
+   public static int getFoodAmountFromItems (Item item) {
+      if (item.category != Item.Category.Crop) {
+         return 0;
+      }
+
+      // For now, item's food value is it's cost
+      if (CropsDataManager.self.tryGetCropData(item.itemTypeId, out CropsData cropData)) {
+         return cropData.cost * item.count;
+      }
+
+      return 0;
+   }
+
    public static void disableTreesAroundOutpost (Area area, Outpost outpost) {
       foreach (SeaTree tree in area.GetComponentsInChildren<SeaTree>()) {
          if (Util.distanceLessThan2D(outpost.buildingsParent.transform.position, tree.transform.position, 0.48f)) {

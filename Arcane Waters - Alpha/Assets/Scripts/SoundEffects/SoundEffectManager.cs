@@ -18,7 +18,7 @@ public class SoundEffectManager : GenericGameManager
 
    #region PARAMS
 
-   public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
+   public const string AUDIO_SW = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMB_SW_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
@@ -307,7 +307,7 @@ public class SoundEffectManager : GenericGameManager
       FMOD.Studio.EventInstance hitInstance;
 
       string eventPath = CANNONBALL_IMPACT;
-      string parameterName = AUDIO_SWITCH_PARAM;
+      string parameterName = AUDIO_SW;
       int parameterValue = 0;
 
       switch (projectileType) {
@@ -524,7 +524,7 @@ public class SoundEffectManager : GenericGameManager
 
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipSailingEvent, shipTransform, shipBody);
 
-      _shipSailingEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) shipSailingType);
+      _shipSailingEvent.setParameterByName(AUDIO_SW, (int) shipSailingType);
 
       _shipSailingEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
 
@@ -533,17 +533,17 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
-      if (isPlay) {
-         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-            playRuffianRepairs(netId);
-         }
-      } else {
-         if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
-            stopRuffianRepairs(netId);
-         }
-      }
-   }
+   //public void triggerSeaAbilitySfx (uint netId, SeaAbilityType seaAbilityType, bool isPlay) {
+   //   if (isPlay) {
+   //      if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+   //         playRuffianRepairs(netId);
+   //      }
+   //   } else {
+   //      if (seaAbilityType == SeaAbilityType.Ruffian_Repairs) {
+   //         stopRuffianRepairs(netId);
+   //      }
+   //   }
+   //}
 
    public void playAnimalCry (string path, Transform target) {
       string[] splits = path.Split('/');
@@ -584,7 +584,7 @@ public class SoundEffectManager : GenericGameManager
 
          if (param > -1) {
             FMOD.Studio.EventInstance animalEvent = createEventInstance(CRITTER_INFLECTION);
-            animalEvent.setParameterByName(AUDIO_SWITCH_PARAM, param);
+            animalEvent.setParameterByName(AUDIO_SW, param);
             animalEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(target.position));
             animalEvent.start();
             animalEvent.release();
@@ -667,7 +667,7 @@ public class SoundEffectManager : GenericGameManager
       FMOD.Studio.EventInstance weaponEvent = createEventInstance(WEAPON_SWING);
 
       //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
-      weaponEvent.setParameterByName(AUDIO_SWITCH_PARAM, 3); // Using the same parameter, for now.
+      weaponEvent.setParameterByName(AUDIO_SW, 3); // Using the same parameter, for now.
 
       weaponEvent.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
       weaponEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
@@ -679,7 +679,7 @@ public class SoundEffectManager : GenericGameManager
    public void playSeaEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, GameObject source) {
       FMOD.Studio.EventInstance hitEvent = createEventInstance(ENEMY_SHIP_IMPACT);
 
-      hitEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
+      hitEvent.setParameterByName(AUDIO_SW, isShip ? 0 : 1);
       hitEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 0 : 1);
 
       switch (effectorType) {
@@ -765,7 +765,7 @@ public class SoundEffectManager : GenericGameManager
 
       int param = attackType == HorrorAttackType.Cluster ? 1 : 0;
 
-      eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, param);
+      eventInstance.setParameterByName(AUDIO_SW, param);
       eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
       eventInstance.start();
       eventInstance.release();
@@ -795,7 +795,7 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      shipCannonEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+      shipCannonEvent.setParameterByName(AUDIO_SW, audioParam);
 
       if (projectileTransform != null && projectileBody != null) {
          FMODUnity.RuntimeManager.AttachInstanceToGameObject(shipCannonEvent, projectileTransform, projectileBody);
@@ -918,7 +918,7 @@ public class SoundEffectManager : GenericGameManager
       if (!_footstepsLastSound.ContainsKey(audioParam) || Time.time - _footstepsLastSound[audioParam] > .25f) {
          FMOD.Studio.EventInstance footstepEvent = createEventInstance(FOOTSTEP);
 
-         footstepEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+         footstepEvent.setParameterByName(AUDIO_SW, audioParam);
          footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
          footstepEvent.start();
          footstepEvent.release();
@@ -969,7 +969,7 @@ public class SoundEffectManager : GenericGameManager
 
             FMOD.Studio.EventInstance landEvent = createEventInstance(JUMP_LAND);
 
-            landEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+            landEvent.setParameterByName(AUDIO_SW, audioParam);
             landEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
             landEvent.start();
             landEvent.release();
@@ -990,34 +990,6 @@ public class SoundEffectManager : GenericGameManager
       }
 
       playFmodSfx(path, position);
-   }
-
-   #region Ruffian Repairs
-
-   private void playRuffianRepairs (uint netId) {
-      NetEntity entity = EntityManager.self.getEntityByNetId(netId);
-      if (entity != null && !_ruffianRepairsEvents.ContainsKey(netId)) {
-         FMOD.Studio.EventInstance eventInstance = createEventInstance(RUFFIAN_REPAIRS);
-         FMODUnity.RuntimeManager.AttachInstanceToGameObject(eventInstance, entity.transform, entity.getRigidbody());
-         eventInstance.start();
-         _ruffianRepairsEvents.Add(netId, eventInstance);
-      }
-   }
-
-   private void stopRuffianRepairs (uint netId) {
-      if (_ruffianRepairsEvents.ContainsKey(netId)) {
-         if (_ruffianRepairsEvents.TryGetValue(netId, out FMOD.Studio.EventInstance eventInstance)) {
-            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
-            eventInstance.release();
-         }
-         _ruffianRepairsEvents.Remove(netId);
-      }
-   }
-
-   #endregion
-
-   public void stopSfxForEntity (uint netId) {
-      stopRuffianRepairs(netId);
    }
 
    public void playTreeChop (Vector3 position, bool isLastHit) {
@@ -1072,9 +1044,6 @@ public class SoundEffectManager : GenericGameManager
 
    // Cementery area key
    private const string _cementeryAreaKey = "Tutorial Town Cemetery v2";
-
-   // Ruffian Repairs events
-   private Dictionary<uint, FMOD.Studio.EventInstance> _ruffianRepairsEvents = new Dictionary<uint, FMOD.Studio.EventInstance>();
 
    public enum BgType
    {

@@ -219,30 +219,33 @@ public class WorldMapManager : MonoBehaviour
                areaX = entityPositionFromAreaTopLeftCornerUnscaled.x,
                areaY = entityPositionFromAreaTopLeftCornerUnscaled.y
             };
-         } else {
-            IEnumerable<WorldMapSpot> warpSpots = _spots.Where(_ => _.type == WorldMapSpot.SpotType.Warp);
-            WorldMapSpot warpToCurrentArea = warpSpots.FirstOrDefault(_ => _.target == areaKey);
-
-            if (warpToCurrentArea != null) {
-               return new WorldMapSpot {
-                  areaWidth = warpToCurrentArea.areaWidth,
-                  areaHeight = warpToCurrentArea.areaHeight,
-                  worldX = warpToCurrentArea.worldX,
-                  worldY = warpToCurrentArea.worldY,
-                  areaX = warpToCurrentArea.areaX,
-                  areaY = warpToCurrentArea.areaY,
-                  subAreaX = entityPositionFromAreaTopLeftCornerUnscaled.x,
-                  subAreaY = entityPositionFromAreaTopLeftCornerUnscaled.y,
-                  subAreaKey = areaKey
-               };
-            } else {
-               // A spot for the current position couldn't be computed,
-               // so instead use the latest known position of the player as a fallback
-               if (_playerSpotCache.TryGetValue(Global.player.userId, out WorldMapSpot value)) {
-                  return value;
-               }
-            }
          }
+
+         IEnumerable<WorldMapSpot> warpSpots = _spots.Where(_ => _.type == WorldMapSpot.SpotType.Warp);
+         WorldMapSpot warpToCurrentArea = warpSpots.FirstOrDefault(_ => _.target == areaKey);
+
+         if (warpToCurrentArea != null) {
+            return new WorldMapSpot {
+               areaWidth = warpToCurrentArea.areaWidth,
+               areaHeight = warpToCurrentArea.areaHeight,
+               worldX = warpToCurrentArea.worldX,
+               worldY = warpToCurrentArea.worldY,
+               areaX = warpToCurrentArea.areaX,
+               areaY = warpToCurrentArea.areaY,
+               subAreaX = entityPositionFromAreaTopLeftCornerUnscaled.x,
+               subAreaY = entityPositionFromAreaTopLeftCornerUnscaled.y,
+               subAreaKey = areaKey
+            };
+         }
+
+         // A spot for the current position couldn't be computed,
+         // so instead use the latest known position of the player as a fallback
+         if ( Global.player != null && _playerSpotCache.TryGetValue(Global.player.userId, out WorldMapSpot value)) {
+            return value;
+         }
+
+         // Ultimate fallback: biome location
+         return getSpotFromGeoCoords(getGeoCoordsFromWorldMapAreaCoords(getAreaCoordsForBiome(AreaManager.self.getDefaultBiome(areaKey))));
       } catch {
       }
 

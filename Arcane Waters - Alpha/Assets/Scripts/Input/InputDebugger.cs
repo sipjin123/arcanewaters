@@ -12,8 +12,14 @@ public class InputDebugger : MonoBehaviour {
    // When set to true, this script will track various input variables for debugging purposes
    public static bool debuggingEnabled = false;
 
+   // Singleton instance
+   public static InputDebugger self;
+
    // The canvas group responsible for displaying debug information
    public CanvasGroup debugCanvasGroup;
+
+   // A reference to the image that displays the scroll bar
+   public Image scrollBarImage;
 
    // References to text elements for each variable
    public TextMeshProUGUI isActionInputEnabled;
@@ -48,8 +54,12 @@ public class InputDebugger : MonoBehaviour {
    public TextMeshProUGUI notShipIsPerformingAttack;
    public TextMeshProUGUI notShipIsChargingCannon;
    public TextMeshProUGUI shipHasReloaded;
-   
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
 
    private void Update () {
       float canvasTargetAlpha = (debuggingEnabled) ? 0.8f : 0.0f;
@@ -134,6 +144,11 @@ public class InputDebugger : MonoBehaviour {
 
    private string getBoolString (bool value) {
       return (value) ? "True" : "False";
+   }
+
+   public static void setEnabled (bool value) {
+      debuggingEnabled = value;
+      self.scrollBarImage.raycastTarget = value;
    }
 
    #region Private Variables

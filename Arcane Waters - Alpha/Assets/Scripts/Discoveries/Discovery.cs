@@ -266,7 +266,7 @@ public class Discovery : NetworkBehaviour, IObserver
       }
 
       _fmodEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
-      _fmodEvent.getParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, out float value);
+      _fmodEvent.getParameterByName(SoundEffectManager.AUDIO_SW, out float value);
 
       int paramValue = (int) value;
 
@@ -281,7 +281,7 @@ public class Discovery : NetworkBehaviour, IObserver
          _canPlayAppearSound = _canPlayInvestigateAppearSound = soundEvent == SoundEvent.None;
          _canPlayInvestigateHoldSound = true;
       } else {
-         _fmodEvent.setParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, (int) soundEvent);
+         _fmodEvent.setParameterByName(SoundEffectManager.AUDIO_SW, (int) soundEvent);
          _fmodEvent.start();
 
          if (soundEvent == SoundEvent.Appear) {

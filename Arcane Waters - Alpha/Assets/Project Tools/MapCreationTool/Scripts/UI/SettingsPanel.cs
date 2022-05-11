@@ -26,8 +26,34 @@ namespace MapCreationTool
 
       private Action<Key> onAnyKey;
 
+      // General tab
+      [SerializeField]
+      public Transform generalTab;
+
+      // Prefab for a generic button
+      [SerializeField]
+      public Button buttonPrefab;
+
+      // Generic methods we might want to trigger with buttons from generic tab
+      private List<(string msg, Action method)> genericMethods = new List<(string, Action)>() {
+         ("Toggle Map Generation UI", () => WorldMapTranslator.instance.toggleMapGenerator()),
+         ("Render All Open World Maps", () => Overlord.instance.renderAllWorldMaps()),
+         ("Glue World Maps Together", () => Overlord.instance.glueRenderedMaps())
+      };
+
       protected override void Awake () {
          base.Awake();
+
+         // Initialize generic method buttons
+         foreach (var entry in genericMethods) {
+            Button b = Instantiate(buttonPrefab, generalTab);
+            b.GetComponent<RectTransform>().sizeDelta = new Vector2(600, b.GetComponent<RectTransform>().sizeDelta.y);
+            b.onClick.AddListener(() => entry.method());
+            if (b.GetComponentInChildren<Text>()) {
+               b.GetComponentInChildren<Text>().text = entry.msg;
+            }
+         }
+
 
          for (int i = 0; i < tabsButtons.Length; i++) {
             int index = i;

@@ -62,7 +62,10 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    // The transform that holds the visuals for the button border
    public Transform borderVisuals;
-
+   
+   // Reference to ability button pending indicator
+   public GameObject pendingIndicator;
+   
    // Ability tooltip
    public ToolTipComponent tooltip;
 
@@ -233,6 +236,11 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       abilityIcon.color = Color.gray;
       isEnabled = false;
    }
+   
+   public void togglePendingIndicator (bool isPending) {
+      // Show/Hide ability button pending indicator
+      pendingIndicator.SetActive(isPending);
+   }
 
    public void clearButton () {
       abilityIndex = -1;
@@ -242,6 +250,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       disableButton("ClearButton");
       enabled = false;
       gameObject.SetActive(false);
+      togglePendingIndicator(false);
    }
 
    public Button getButton () {

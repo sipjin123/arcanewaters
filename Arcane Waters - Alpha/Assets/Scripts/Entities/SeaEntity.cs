@@ -329,7 +329,6 @@ public class SeaEntity : NetEntity
 
       // Register achievements for player damaging things
       if (sourceEntity is PlayerShipEntity) {
-
          tryRegisterAttackTypeAchievement(attackType, sourceEntity, false);
          if (targetEntity is SeaMonsterEntity) {
             if (targetEntity.currentHealth <= 0) {
@@ -371,7 +370,6 @@ public class SeaEntity : NetEntity
    }
 
    private void tryRegisterAttackTypeAchievement (Attack.Type attackType, NetEntity achievementEarner, bool wasDamageReceiver) {
-
       // Register achievements for being hit by various attack types
       if (wasDamageReceiver) {
          switch (attackType) {
@@ -508,7 +506,7 @@ public class SeaEntity : NetEntity
          }
 
          rewardXPToAllAttackers();
-
+         _buffs.Clear();
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }
@@ -1663,7 +1661,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   private void checkEnemiesToAggro () {
+   protected void checkEnemiesToAggro () {
       if (instanceId <= 0) {
          D.log("AI SeaEntity needs to be placed in an instance");
          return;
@@ -2408,6 +2406,12 @@ public class SeaEntity : NetEntity
       showHealEffect(isEnable);
    }
 
+
+   [ClientRpc]
+   protected void Rpc_TriggerHealSfx (bool isPlay) {
+      triggerHealSfx(isPlay);
+   }
+
    [ClientRpc]
    public void Rpc_ShowReceivedAbilityBuff (uint buffSourceNetId, ShipAbilityData shipAbilityData) {
       // Don't show an icon for buffs received from self
@@ -2420,6 +2424,10 @@ public class SeaEntity : NetEntity
 
    protected virtual void showHealEffect (bool isEnable) {
       // Override this method to implement heal effect on inheriting class
+   }
+
+   protected virtual void triggerHealSfx (bool isPlay) {
+      // Override this method to implement heal sound effect on inheriting class
    }
 
    public float getBuffValue (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {

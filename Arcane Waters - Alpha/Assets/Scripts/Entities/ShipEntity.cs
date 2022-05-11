@@ -397,13 +397,11 @@ public class ShipEntity : SeaEntity
       List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
       float value = shipAbilityData.damageModifier;
       float refreshDuration = 0.5f;
-
-      // Handle start sfx trigger here            
-      Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, true);
+     
       if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+         Rpc_TriggerHealSfx(true);
          Rpc_TriggerHealEffect(true);
       }
-      //D.debug("---- Casting ability now: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
 
       // Retain the buffs within the allies status while within proximity and time duration
       while (NetworkTime.time < endTimeVal) {
@@ -458,15 +456,25 @@ public class ShipEntity : SeaEntity
          }
       }
 
+      CheckHealingAllies(allyEntities, shipAbilityData.selectedAttackType);
+
+      if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+         Rpc_TriggerHealSfx(false);
+         Rpc_TriggerHealEffect(false);
+      }
+   }
+
+   [ServerOnly]
+   protected void CheckHealingAllies (List<NetEntity> allyEntities, Attack.Type attackType) {
       // After the buff time duration check all ally entity for existing heal buff and remove it
       foreach (NetEntity allyEntity in allyEntities) {
          // Skip self
          if (allyEntity.userId == userId) {
             continue;
          }
-         
+
          PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
-         if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+         if (attackType == Attack.Type.Heal) {
             if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
                SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
                allyShip._buffs.Remove(healBuff);
@@ -474,13 +482,6 @@ public class ShipEntity : SeaEntity
             }
          }
       }
-
-      // Handle stop sfx trigger here
-      Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, false);
-      if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
-         Rpc_TriggerHealEffect(false);
-      }
-      //D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
    }
 
    [ClientRpc]
@@ -495,7 +496,7 @@ public class ShipEntity : SeaEntity
       }
 
       // Play The effect of the buff
-      if (showCastVfx) {
+      if (showCastVfx && !string.IsNullOrEmpty(shipAbilityData.castSpritePath)) {
          EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, Vector2.zero, shipAbilityData.abilitySpriteFXPerFrame, abilityCastEffectHolder, true);
       }
 
@@ -519,15 +520,19 @@ public class ShipEntity : SeaEntity
       }
    }
 
-   [ClientRpc]
-   public void Rpc_PlaySFXTrigger (SoundEffectManager.SeaAbilityType seaAbilityType, uint netId, bool isPlay) {
-      switch (seaAbilityType) {
-         case SoundEffectManager.SeaAbilityType.Berzerkers_Call:
-         case SoundEffectManager.SeaAbilityType.Ruffian_Repairs:
-            SoundEffectManager.self.triggerSeaAbilitySfx(netId, seaAbilityType, isPlay);
-            break;
-      }
-   }
+   //[ClientRpc]
+   //public void Rpc_PlaySFXTrigger (SoundEffectManager.SeaAbilityType seaAbilityType, uint netId, bool isPlay) {
+   //   switch (seaAbilityType) {
+   //      case SoundEffectManager.SeaAbilityType.Ruffian_Repairs:
+   //         SoundEffectManager.self.triggerSeaAbilitySfx(netId, seaAbilityType, isPlay);
+   //         break;
+   //   }
+   //}
+
+   //[ClientRpc]
+   //public void Rpc_StopSFX (uint netId) {
+   //   SoundEffectManager.self.stopSfxForEntity(netId);
+   //}
 
    [Command]
    public void Cmd_FireMainCannonAtSpot (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition) {

@@ -13,6 +13,9 @@ public class NetEntity : NetworkBehaviour
 {
    #region Public Variables
 
+   // How much food is consumed every second
+   public const float FOOD_PER_SECOND = 2f;
+
    [Header("UserData")]
 
    // If this entity is participating in pvp
@@ -153,6 +156,9 @@ public class NetEntity : NetworkBehaviour
    // GameObject that holds the name of the entity
    public GameObject entityNameGO;
 
+   // Demo tag object
+   public GameObject demoTag;
+
    [Header("Stats")]
 
    // The direction we're facing
@@ -268,7 +274,7 @@ public class NetEntity : NetworkBehaviour
    public int guildInventoryId;
 
    // The demo status of account
-   [SyncVar]
+   [SyncVar(hook = nameof(isDemoChanged))]
    public bool isDemoUser;
 
    [Header("Warping")]
@@ -467,6 +473,8 @@ public class NetEntity : NetworkBehaviour
    public override void OnStartClient () {
       base.OnStartClient();
 
+      isDemoChanged(isDemoUser, isDemoUser);
+
       updateInvisibilityAlpha(isInvisible);
 
 
@@ -480,6 +488,12 @@ public class NetEntity : NetworkBehaviour
          if (isLocalPlayer) {
             ClientManager.self.setDemoSuffixInVersionText(isDemoUser);
          }
+      }
+   }
+
+   private void isDemoChanged (bool oldVal, bool newVal) {
+      if (demoTag != null) {
+         demoTag.SetActive(newVal);
       }
    }
 
@@ -663,7 +677,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public int muteTimeRemaining () {
-      return (int)(new DateTime(this.muteExpirationDate) - DateTime.UtcNow).TotalSeconds;
+      return (int) (new DateTime(this.muteExpirationDate) - DateTime.UtcNow).TotalSeconds;
    }
 
    [TargetRpc]
@@ -750,7 +764,7 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
-      
+
       this.isDemoUser = userInfo.isDemoUser();
 
       this.guildName = guildInfo.guildName;
@@ -909,8 +923,6 @@ public class NetEntity : NetworkBehaviour
          } else {
             D.editorLog("No trinket found", Color.red);
          }
-      } else {
-         D.editorLog("No trinket assigned", Color.red);
       }
 
       // TODO: If necklace or rings have powerups, do logic here

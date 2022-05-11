@@ -212,6 +212,12 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       if (selectedButton != null) {
+         // Disable current pending ability button upon triggering ability
+         if (_pendingSelectedButton != null) {
+            _pendingSelectedButton.togglePendingIndicator(false);
+            _pendingSelectedButton = default;
+         }
+
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
             bool hasNoCooldownBlocker = selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f;
             if (BattleManager.self.getPlayerBattler().canCastAbility() && hasNoCooldownBlocker) {
@@ -457,7 +463,38 @@ public class BattleUIManager : MonoBehaviour {
                } else {
                   D.debug("This unit is still attacking! Cant change target");
                }
+            } 
+         }
+         
+         // Fire/Re-enable pending ability button when input is clicked
+         if (InputManager.self.inputMaster.LandBattle.FirePending.WasPressedThisFrame()) {
+            // Fire current pending ability button or set pending button with previous/initial pending index
+            if (_pendingSelectedButton != default) {
+               // If player is in the middle of an attack, ignore input
+               if (_playerLocalBattler != null) {
+                  triggerAbilityByKey(_pendingAbilityIndex);
+               }
+            } else {
+               setPendingAbility(_pendingAbilityIndex);
             }
+         }
+         
+         // Ensure that chat panel is not in focus before doing ability switch
+         if (!ChatManager.self.chatPanel.inputField.isFocused) {
+            // Read input mouse scroll value and check if scroll value is not equal to 0
+            float scrollVal = InputManager.self.inputMaster.LandBattle.AbilitySwitch.ReadValue<float>();
+            if (scrollVal != 0f) {
+               int targetAbility = _pendingAbilityIndex;
+               // Check if user has current pending button, if not just re-enable previous/initial pending index 
+               if (_pendingSelectedButton != default) {
+                  // Check if scroll value is positive or negative to switch between previous or next ability
+                  int switchValue = scrollVal < 0 ? 1 : -1;
+                  targetAbility = Mathf.Clamp(targetAbility + switchValue, 0, 4);
+               } 
+               
+               // Set pending ability button
+               setPendingAbility(targetAbility);
+            } 
          }
 
          Battler localBattler = BattleManager.self.getPlayerBattler();
@@ -483,6 +520,21 @@ public class BattleUIManager : MonoBehaviour {
          }
 
          updateStanceGUI();
+      }
+   }
+
+   private void setPendingAbility (int keySlot) {
+      AbilityButton targetButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
+
+      // Ensure there is button to switch is not null before doing any changes
+      if (targetButton != null) {
+         // Disable pending indicator of previous pending selection
+         _pendingSelectedButton?.togglePendingIndicator(false);
+         
+         // Make necessary changes on index and target ability button 
+         _pendingAbilityIndex = keySlot;
+         _pendingSelectedButton = targetButton;
+         _pendingSelectedButton.togglePendingIndicator(true);
       }
    }
 
@@ -985,6 +1037,12 @@ public class BattleUIManager : MonoBehaviour {
 
    #region Private Variables
 
+   // Reference to current pending selected button
+   private AbilityButton _pendingSelectedButton;
+   
+   // Reference for the current pending selected ability index
+   private int _pendingAbilityIndex = 0;
+   
    // Reference for the local player battler, used for setting the bars information only
    private Battler _playerLocalBattler;
 

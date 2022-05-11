@@ -1,4 +1,7 @@
-﻿public class WorldMapSpot
+﻿using System;
+
+[Serializable]
+public class WorldMapSpot
 {
    #region Public Variables
 
@@ -66,7 +69,10 @@
       Discovery = 3,
 
       // Waypoint
-      Waypoint = 4
+      Waypoint = 4,
+
+      // Player
+      Player = 5
    }
 
    #endregion

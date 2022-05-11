@@ -39,6 +39,9 @@ public class WorldMapPanel : Panel
    // Reference to the container holding the Coords indicator
    public WorldMapPanelCoordsIndicatorContainer coordsIndicatorContainer;
 
+   // Reference to the container holding the Player Pins
+   public WorldMapPanelPinsContainer playerPinsContainer;
+
    // Reference to the Sites Menu
    public WorldMapPanelMenu menu;
 
@@ -99,6 +102,9 @@ public class WorldMapPanel : Panel
 
       // For now hide the coords indicator
       coordsIndicatorContainer.toggleIndicator(false);
+
+      // Request the position of the team members
+      requestGroupMembersLocations();
 
       show();
    }
@@ -223,6 +229,24 @@ public class WorldMapPanel : Panel
 
       // Close any opened panel
       PanelManager.self.unlinkPanel();
+   }
+
+   public void requestGroupMembersLocations () {
+      if (Global.player == null) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_RequestGroupMemberLocations();
+   }
+
+   public void onReceiveGroupMemberLocations(WorldMapSpot[] groupMemberLocations) {
+      if (groupMemberLocations == null || !groupMemberLocations.Any()) {
+         return;
+      }
+
+      // Refresh player pins
+      playerPinsContainer.clearPins();
+      playerPinsContainer.addPins(groupMemberLocations);
    }
 
    #region Private Variables

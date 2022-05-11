@@ -191,7 +191,6 @@ public class UserInfo
 #endif
 
    public bool isDemoUser () {
-      return true;
       return accountName.Contains("@demo");
    }
 

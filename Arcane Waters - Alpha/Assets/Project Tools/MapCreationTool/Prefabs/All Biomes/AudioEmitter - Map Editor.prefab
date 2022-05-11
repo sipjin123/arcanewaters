@@ -67,6 +67,9 @@ MonoBehaviour:
   dataFields: []
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
+  validObjectStateValues: []
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +169,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 348709929472331973}
     m_Modifications:
+    - target: {fileID: 4337389950530126658, guid: f49e9f3717534da418f410fbd48bc29e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6545020249626345382, guid: f49e9f3717534da418f410fbd48bc29e,
         type: 3}
       propertyPath: m_Name

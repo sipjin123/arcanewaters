@@ -1439,7 +1439,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceivePowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
       StartCoroutine(PowerupManager.self.CO_CreatingFloatingPowerupIcon(powerupType, rarity, (PlayerShipEntity) _player, spawnSource));
    }
-   
+
    [TargetRpc]
    public void Target_ReceiveUniquePowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
       StartCoroutine(PowerupManager.self.CO_CreatingUniqueFloatingPowerupIcon(powerupType, rarity, (PlayerShipEntity) _player, spawnSource));
@@ -10393,6 +10393,7 @@ public class RPCManager : NetworkBehaviour
             outpost.guildIconBackPalettes = _player.guildIconBackPalettes;
             outpost.guildIconSigil = _player.guildIconSigil;
             outpost.guildIconSigilPalettes = _player.guildIconSigilPalettes;
+            outpost.guildName = _player.guildName;
 
             InstanceManager.self.addOutpostToInstance(outpost, instance);
             NetworkServer.Spawn(outpost.gameObject);
@@ -10403,6 +10404,45 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, 500);
             });
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_SupplyOutpost (uint outpostNetId, int itemId, int count) {
+      if (!InstanceManager.self.tryGetInstance(_player.instanceId, out Instance instance)) {
+         return;
+      }
+
+      Outpost outpost = null;
+      foreach (NetEntity en in instance.entities) {
+         if (en != null && en.netId == outpostNetId) {
+            outpost = en as Outpost;
+            break;
+         }
+      }
+
+      if (outpost == null) {
+         return;
+      }
+
+      if (!outpost.canPlayerInteract(_player)) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item existingItem = DB_Main.getItem(itemId);
+         // Make sure we don't supply more than we want and more than we have
+         existingItem.count = Mathf.Min(existingItem.count, count);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (outpost != null) {
+               outpost.currentFood = Mathf.Clamp(outpost.currentFood + OutpostUtil.getFoodAmountFromItems(existingItem), 0, outpost.maxFood);
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.decreaseQuantityOrDeleteItem(_player.userId, existingItem.id, existingItem.count);
+               });
+            }
          });
       });
    }
@@ -11043,11 +11083,11 @@ public class RPCManager : NetworkBehaviour
             bool updated = DB_Main.useRewardCode(rewardCode.id);
             if (!updated) {
                // The use status of the code failed to update, so we log and abort
-               D.debug($"Reward Code used. Code: {rewardCode.code}, Player: {steamId}.");
+               D.debug($"Reward Code redeem failed. Code: {rewardCode.code}, Player: {steamId}.");
                continue;
             }
 
-            D.debug($"Reward Code used. Code: {rewardCode.code}, Player: {steamId}.");
+            D.debug($"Reward Code redeemed successfully. Code: {rewardCode.code}, Player: {steamId}.");
 
             // Assinging the reward to the System User, so that it can be attached to the mail
             ArmorStatData armorData = EquipmentXMLManager.self.armorStatList[0];
@@ -11059,7 +11099,7 @@ public class RPCManager : NetworkBehaviour
                continue;
             }
 
-            D.debug($"Reward created and ready for delivery. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
+            D.debug($"Reward Item created and ready for delivery. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 });
@@ -11067,9 +11107,10 @@ public class RPCManager : NetworkBehaviour
                if (!wasPlayerNotified) {
                   wasPlayerNotified = true;
                   Target_ReceiveCheckRewardCodes();
+                  D.debug($"Reward Notification sent. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
                }
 
-               D.debug($"Reward Code delivered. Code: {rewardCode.code}, PlayerId: {steamId}.");
+               D.debug($"Reward Item delivered successfully. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
             });
          }
       });
@@ -11102,7 +11143,6 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveRequestWishlist (NetworkConnection connection, string computedUrl, string playerIdentifier) {
-      D.debug($"Wishlist Page URL received. URL: {computedUrl}");
       if (PanelManager.self == null) {
          return;
       }
@@ -11115,6 +11155,59 @@ public class RPCManager : NetworkBehaviour
       string title = "Opening Wishlist";
       string desc = "You are about to navigate to the Wishlist Web Page. Do you want to proceed?";
       PanelManager.self.showConfirmationPanel(title, onConfirm: () => Application.OpenURL(computedUrl), description: desc);
+   }
+
+   #endregion
+
+   #region World Map Panel
+
+   [Command]
+   public void Cmd_RequestGroupMemberLocations () {
+      // Returns the position of the player and the position of group members (if any)
+      if (_player == null) {
+         return;
+      }
+
+      List<WorldMapSpot> playerLocations = new List<WorldMapSpot>();
+
+      // Check if the player is in a group
+      if (_player.tryGetGroup(out VoyageGroupInfo group)) {
+         // Get the group members and get the location of each of the team members
+         foreach (int userId in group.members) {
+            NetEntity entity = EntityManager.self.getEntity(userId);
+
+            if (entity != null) {
+               WorldMapSpot spot = WorldMapManager.self.getSpotFromPosition(entity.areaKey, entity.transform.localPosition);
+
+               if (spot != null) {
+                  spot.type = WorldMapSpot.SpotType.Player;
+                  spot.displayName = entity.entityName;
+                  playerLocations.Add(spot);
+               }
+            }
+         }
+      } else {
+         // Add the player's position
+         WorldMapSpot spot = WorldMapManager.self.getSpotFromPosition(_player.areaKey, _player.transform.localPosition);
+
+         if (spot != null) {
+            spot.type = WorldMapSpot.SpotType.Player;
+            spot.displayName = _player.entityName;
+            playerLocations.Add(spot);
+         }
+      }
+
+      // Return the locations
+      Target_ReceiveGroupMemberLocations(_player.connectionToClient, playerLocations.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGroupMemberLocations (NetworkConnection connection, WorldMapSpot[] groupMemberLocations) {
+      if (WorldMapPanel.self == null) {
+         return;
+      }
+
+      WorldMapPanel.self.onReceiveGroupMemberLocations(groupMemberLocations);
    }
 
    #endregion

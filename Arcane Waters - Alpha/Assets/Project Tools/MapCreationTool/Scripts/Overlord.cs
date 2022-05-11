@@ -460,35 +460,49 @@ namespace MapCreationTool
          }
       }
 
-      private void glueMaps () {
-         StartCoroutine(glueMaps(5, 5, 0, 0, "desert"));
-         StartCoroutine(glueMaps(5, 4, 0, 5, "forest"));
+      public void glueRenderedMaps () {
+         List<UnityThreading.Task> tasks = new List<UnityThreading.Task>();
 
-         StartCoroutine(glueMaps(5, 5, 5, 0, "pine"));
-         StartCoroutine(glueMaps(6, 4, 5, 5, "snow"));
+         UI.loadingPanel.display("Gluing rendered maps to each other (saving to AppData)");
 
-         StartCoroutine(glueMaps(5, 5, 10, 0, "lava"));
-         StartCoroutine(glueMaps(4, 4, 11, 5, "shroom"));
+         StartCoroutine(glueMaps(5, 5, 0, 0, "desert", tasks));
+         StartCoroutine(glueMaps(5, 4, 0, 5, "forest", tasks));
+
+         StartCoroutine(glueMaps(5, 5, 5, 0, "pine", tasks));
+         StartCoroutine(glueMaps(6, 4, 5, 5, "snow", tasks));
+
+         StartCoroutine(glueMaps(5, 5, 10, 0, "lava", tasks));
+         StartCoroutine(glueMaps(4, 4, 11, 5, "shroom", tasks));
       }
 
-      private IEnumerator glueMaps (int mapsX, int mapsY, int offsetX, int offsetY, string outputName) {
+      private IEnumerator glueMaps (int mapsX, int mapsY, int offsetX, int offsetY, string outputName, List<UnityThreading.Task> currentTaskList) {
          string path = Application.persistentDataPath + "/" + outputName + ".bmp";
          List<Color32>[,] textures = new List<Color32>[mapsX, mapsY];
-         Texture2D tempTex = new Texture2D(4096, 4096);
 
-         for (int i = offsetX; i < mapsX + offsetX; i++) {
-            for (int j = offsetY; j < mapsY + offsetY; j++) {
-               string mapName = "world_map_" + WorldMapManager.WORLD_MAP_COORDS_X[i] + WorldMapManager.WORLD_MAP_COORDS_Y[j];
-               tempTex.LoadImage(System.IO.File.ReadAllBytes(Application.persistentDataPath + "/world map renders/" + mapName + ".png"));
-               Color32[] cols = tempTex.GetPixels32();
-               textures[i - offsetX, j - offsetY] = new List<Color32>();
-               textures[i - offsetX, j - offsetY].AddRange(cols);
+         yield return new WaitForSeconds(0.1f);
+
+         try {
+            Texture2D tempTex = new Texture2D(4096, 4096);
+
+            for (int i = offsetX; i < mapsX + offsetX; i++) {
+               for (int j = offsetY; j < mapsY + offsetY; j++) {
+                  string mapName = "world_map_" + WorldMapManager.WORLD_MAP_COORDS_X[i] + WorldMapManager.WORLD_MAP_COORDS_Y[j];
+                  string thisPath = Application.persistentDataPath + "/world map renders/" + mapName + ".png";
+                  tempTex.LoadImage(System.IO.File.ReadAllBytes(thisPath));
+                  Color32[] cols = tempTex.GetPixels32();
+                  textures[i - offsetX, j - offsetY] = new List<Color32>();
+                  textures[i - offsetX, j - offsetY].AddRange(cols);
+               }
             }
+
+            Debug.Log("Textures cached for " + outputName);
+         } catch (Exception ex) {
+            UI.loadingPanel.close();
+            UI.messagePanel.displayError($"Error reading image" + Environment.NewLine + ex.ToString());
+            yield break;
          }
 
-         Debug.Log("Textures cached for " + outputName);
          yield return new WaitForSeconds(0.5f);
-
          UnityThreading.Task t = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             System.IO.File.Delete(path);
 
@@ -512,8 +526,6 @@ namespace MapCreationTool
                writeBytes(fs, BitConverter.GetBytes((uint) 0)); // Resolution
                writeBytes(fs, BitConverter.GetBytes(0)); // Colors used
                writeBytes(fs, BitConverter.GetBytes(0)); // Colors important
-
-
 
                for (int j = 0; j < mapsY; j++) {
                   for (int k = 0; k < 4096; k++) {
@@ -540,9 +552,20 @@ namespace MapCreationTool
             }
          });
 
+         currentTaskList.Add(t);
+
          while (!t.HasEnded) {
             yield return new WaitForEndOfFrame();
          }
+
+         if (currentTaskList.All(task => task.HasEnded || task.IsFailed)) {
+            UI.loadingPanel.close();
+            UI.messagePanel.displayInfo("Finished", "Finished gluing world maps together, saved to AppData");
+         }
+      }
+
+      public void renderAllWorldMaps () {
+         StartCoroutine(renderAllWorldMaps(DB_Main.getMaps()));
       }
 
       private IEnumerator renderAllWorldMaps (List<Map> maps) {
@@ -550,7 +573,7 @@ namespace MapCreationTool
             foreach (char y in WorldMapManager.WORLD_MAP_COORDS_Y) {
                string mapName = "world_map_" + x + y;
                // Download the map data
-               UI.loadingPanel.display($"Downloading and rendering the latest version for world map {mapName}");
+               UI.loadingPanel.display($"Downloading and rendering the latest version for world map {mapName}, saving to AppData");
                string error = null;
                MapVersion version = null;
                UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -592,6 +615,8 @@ namespace MapCreationTool
                yield return new WaitForEndOfFrame();
             }
          }
+         UI.loadingPanel.close();
+         UI.messagePanel.displayInfo("Rendering complete", "All maps rendered, saved to AppData");
       }
 
       #endregion

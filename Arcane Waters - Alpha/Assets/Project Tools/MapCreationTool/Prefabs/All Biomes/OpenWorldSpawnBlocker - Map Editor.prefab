@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6297656283209476803}
   - component: {fileID: 8851371156256450890}
   - component: {fileID: 4296486446759380302}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: New Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,6 +159,9 @@ MonoBehaviour:
     type: 1
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
+  validObjectStateValues: []
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0
