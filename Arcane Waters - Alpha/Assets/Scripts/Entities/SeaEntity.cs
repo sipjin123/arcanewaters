@@ -108,6 +108,15 @@ public class SeaEntity : NetEntity
    // The initial position of this monster spawn
    public Vector3 initialPosition;
 
+   // Freezes pathfinding
+   public bool freezeMovement;
+
+   // Is submerging
+   public bool isSubmerging;
+
+   // The submerge speed
+   public const float SUBMERGE_SPEED = 1.1f;
+
    // The distance gap between current position to the starting position
    public float distanceFromInitialPosition;
 
@@ -673,7 +682,7 @@ public class SeaEntity : NetEntity
       base.FixedUpdate();
 
       // Return if we're not a living AI on the server
-      if (!isServer || isDead() || !useSeaEnemyAI()) {
+      if (!isServer || isDead() || !useSeaEnemyAI() || freezeMovement) {
          return;
       }
 
@@ -1076,6 +1085,18 @@ public class SeaEntity : NetEntity
       noteAttacker(netId);
    }
 
+   [ClientRpc]
+   public void Rpc_ToggleColliders (bool isEnabled) {
+      foreach (Collider2D newCollider in colliderList) {
+         newCollider.enabled = isEnabled;
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_ToggleSprites (bool isEnabled) {
+      spritesContainer.SetActive(isEnabled);
+   }
+
    public virtual void noteAttacker (NetEntity entity) {
       if (entity != null) {
          noteAttacker(entity.netId);
@@ -1163,6 +1184,37 @@ public class SeaEntity : NetEntity
    public void Cmd_MeleeAtSpot (Vector2 spot, Attack.Type attackType) {
       // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
       meleeAtSpot(spot, attackType);
+   }
+
+   [Server]
+   public void meleeAtSpot (Vector2 spot, int selectedAbilityId, float distanceGap) {
+      if (isDead() || !hasReloaded()) {
+         return;
+      }
+
+      // Note the time at which we last successfully attacked
+      _lastAttackTime = NetworkTime.time;
+
+      float distance = Vector2.Distance(this.transform.position, spot);
+      float delay = Mathf.Clamp(distance, .5f, 1.5f);
+
+      switch (this.facing) {
+         case Direction.North:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
+            break;
+         case Direction.South:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
+            break;
+         default:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
+            break;
+      }
+
+      // Have the server check for collisions after the attack reaches the target
+      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, Attack.Type.None, true, distanceGap, currentImpactMagnitude, selectedAbilityId));
+
+      // Make note on the clients that the ship just attacked
+      Rpc_NoteAttack();
    }
 
    [Server]
