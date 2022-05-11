@@ -72,6 +72,15 @@ public class ShipAbilityData
    // The strength of the impact
    public Attack.ImpactMagnitude impactMagnitude = Attack.ImpactMagnitude.None;
 
+   // The number of units that can be spawned
+   public int summonCount;
+
+   // The seamonster id of the summoned unit
+   public int summonSeamonsterId;
+
+   // The number of attacks/moves before this ability can be available again
+   public int attackBufferCount = 1;
+
    // Determines if the projectile is arching
    public bool hasArch;
 

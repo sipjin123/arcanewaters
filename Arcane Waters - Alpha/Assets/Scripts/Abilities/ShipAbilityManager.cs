@@ -43,12 +43,18 @@ public class ShipAbilityManager : MonoBehaviour {
 
                   if (!shipAbilityDataList.Exists(_ => _.abilityId == rawData.xmlId) && rawData.isEnabled) {
                      shipAbilityData.abilityId = rawData.xmlId;
-
-                     shipAbilityDataList.Add(new ShipAbilityPair {
+                     ShipAbilityPair newAbilityDataPair = new ShipAbilityPair {
                         abilityId = rawData.xmlId,
                         abilityName = shipAbilityData.abilityName,
                         shipAbilityData = shipAbilityData
-                     });
+                     };
+
+                     // TODO: Remove when web tool is updated
+                     if (newAbilityDataPair.abilityId == 50) {
+                        newAbilityDataPair.shipAbilityData.summonCount = 5;
+                        newAbilityDataPair.shipAbilityData.summonSeamonsterId = 5;
+                     }
+                     shipAbilityDataList.Add(newAbilityDataPair);
                   }
                }
                hasInitialized = true;
@@ -64,12 +70,18 @@ public class ShipAbilityManager : MonoBehaviour {
          foreach (ShipAbilityPair data in dataCollection) {
             if (!shipAbilityDataList.Exists(_=>_.abilityId == data.abilityId)) {
                data.shipAbilityData.abilityId = data.abilityId;
-
-               shipAbilityDataList.Add(new ShipAbilityPair { 
+               ShipAbilityPair newAbilityDataPair = new ShipAbilityPair {
                   abilityName = data.abilityName,
                   abilityId = data.abilityId,
                   shipAbilityData = data.shipAbilityData
-               });
+               };
+
+               // TODO: Remove when web tool is updated
+               if (newAbilityDataPair.abilityId == 50) {
+                  newAbilityDataPair.shipAbilityData.summonCount = 5;
+                  newAbilityDataPair.shipAbilityData.summonSeamonsterId = 5;
+               }
+               shipAbilityDataList.Add(newAbilityDataPair);
             }
          }
          hasInitialized = true;
