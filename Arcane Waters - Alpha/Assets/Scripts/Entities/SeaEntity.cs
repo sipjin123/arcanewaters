@@ -350,10 +350,6 @@ public class SeaEntity : NetEntity
             AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitPlayerWithCannon);
             AchievementManager.registerUserAchievement(sourceEntity, ActionType.HitEnemyShips);
          }
-
-         if (attackType == Attack.Type.Ice) {
-            AchievementManager.registerUserAchievement(sourceEntity, ActionType.Frozen);
-         }
       }
 
       // Register achievements for player getting damaged by things
@@ -363,9 +359,6 @@ public class SeaEntity : NetEntity
          }
 
          tryRegisterAttackTypeAchievement(attackType, targetEntity, true);
-         if (attackType is Attack.Type.Ice) {
-            AchievementManager.registerUserAchievement(targetEntity, ActionType.Frozen);
-         }
       }
    }
 
@@ -1369,124 +1362,75 @@ public class SeaEntity : NetEntity
       bool hitEnemy = false;
       List<NetEntity> enemyHitList = new List<NetEntity>();
       Collider2D[] getColliders = attackType == Attack.Type.Tentacle_Range ? getHitColliders(circleCenter, .1f) : getHitColliders(circleCenter);
+
       // Check for collisions inside the circle
       foreach (Collider2D hit in getColliders) {
          if (hit != null) {
             SeaEntity targetEntity = hit.GetComponent<SeaEntity>();
-
             if (targetEntity != null && !enemyHitList.Contains(targetEntity)) {
-               if (targetPlayersOnly && hit.GetComponent<ShipEntity>() == null) {
+               // Check all conditions if this target can be damaged
+               if (!canDamageTargetUsingCircleCollision(attacker, targetEntity, targetPlayersOnly)) {
                   continue;
                }
 
-               // Make sure we don't hit ourselves
-               if (targetEntity == this) {
-                  continue;
-               }
+               hitEnemy = true;
 
-               // Check if the attacker and the target are allies
-               if (attacker.isAllyOf(targetEntity)) {
-                  continue;
-               }
+               if (!targetEntity.getIsInvulnerable()) {
+                  int damage = 0;
 
-               // Prevent players from damaging each other in PvE voyage instances
-               if (attacker.isAdversaryInPveInstance(targetEntity)) {
-                  continue;
-               }
-
-               // Make sure the target is in our same instance
-               if (targetEntity.instanceId == this.instanceId) {
-                  // Prevent players from being damaged by other players if they have not entered PvP yet
-                  if (attacker.isPlayerShip() && !targetEntity.canBeAttackedByPlayers()) {
-                     continue;
+                  // If no ability assigned, get damage based on attack type
+                  if (abilityId <= 0) {
+                     damage = getDamageForShot(attackType, distanceModifier);
                   }
+                  
+                  if (abilityId > 0) {
+                     ShipAbilityData shipAbilityData = getSeaAbility(abilityId);
+                     ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
+                     float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
+                     float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
 
-                  hitEnemy = true;
-
-                  if (!targetEntity.getIsInvulnerable()) {
-                     int damage = getDamageForShot(attackType, distanceModifier);
-                     if (abilityId > 0) {
-                        ShipAbilityData shipAbilityData = getSeaAbility(abilityId);
-                        ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
-                        float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
-                        float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
-
-                        damage = getDamageForShot((int) baseSkillDamage, distanceModifier);
-
-                        // TODO: Observe damage formula on live build
-                        D.adminLog("Damage fetched for sea entity logic"
-                           + " DistanceDamage: " + damage
-                           + " Computed: " + baseSkillDamage
-                           + " Ability: " + abilityDamageModifier
-                           + " Dist Modifier: " + distanceModifier
-                           + " Name: " + getSeaAbility(abilityId).abilityName
-                           + " ID: " + getSeaAbility(abilityId).abilityId
-                           + " Projectile ID: " + projectileData.projectileId, D.ADMIN_LOG_TYPE.Sea);
-                     }
-
-                     int finalDamage = targetEntity.applyDamage(damage, attacker.netId, attackType);
-                     int targetHealthAfterDamage = targetEntity.currentHealth - finalDamage;
-
-                     if (this is PlayerShipEntity) {
-                        if (targetEntity is SeaMonsterEntity) {
-                           if (targetHealthAfterDamage <= 0) {
-                              // Registers the action Sea Monster Killed to the achievement database for recording
-                              AchievementManager.registerUserAchievement(this, ActionType.KillSeaMonster);
-                           }
-                           // Registers the sea monster cannon hit
-                           AchievementManager.registerUserAchievement(this, ActionType.HitSeaMonster);
-                        } else if (targetEntity is BotShipEntity) {
-                           if (targetHealthAfterDamage <= 0) {
-                              // Registers the action Sunked Ships to the achievement database for recording
-                              AchievementManager.registerUserAchievement(this, ActionType.SinkedShips);
-                           }
-                           // Registers the cannon hit action specifically for other player ship to the achievement database 
-                           AchievementManager.registerUserAchievement(this, ActionType.HitEnemyShips);
-                        } else if (targetEntity is PlayerShipEntity) {
-                           if (targetHealthAfterDamage <= 0) {
-                              // Registers the ship death action of the user to the achievement database for recording of death count
-                              AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
-                           }
-                           // Registers the cannon hit action specifically for other player ship to the achievement database 
-                           AchievementManager.registerUserAchievement(this, ActionType.HitPlayerWithCannon);
-                        }
-
-                        // Registers the cannon hit action of the user to the achievement database for recording of accuracy
-                        AchievementManager.registerUserAchievement(this, ActionType.CannonHits);
-                     }
+                     damage = getDamageForShot((int) baseSkillDamage, distanceModifier);
 
                      if (this is SeaMonsterEntity) {
-                        if (targetEntity is PlayerShipEntity && targetHealthAfterDamage <= 0) {
-                           // Registers the ship death action of the user to the achievement database for recording of death count
-                           AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
+                        SeaMonsterEntity seamonsterEntity = (SeaMonsterEntity) this;
+                        if (seamonsterEntity.seaMonsterData.roleType == RoleType.Master) {
+                           D.editorLog("{" + seamonsterEntity.monsterType + "} CO Circle Collision: {" + shipAbilityData.abilityName + "} {" + attackType + "} {" + damage + "}", Color.yellow);
                         }
                      }
 
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, finalDamage, attackType, false);
+                     // TODO: Observe damage formula on live build
+                     D.adminLog("Damage fetched for sea entity logic"
+                        + " DistanceDamage: " + damage
+                        + " Computed: " + baseSkillDamage
+                        + " Ability: " + abilityDamageModifier
+                        + " Dist Modifier: " + distanceModifier
+                        + " Name: " + getSeaAbility(abilityId).abilityName
+                        + " ID: " + getSeaAbility(abilityId).abilityId
+                        + " Projectile ID: " + projectileData.projectileId, D.ADMIN_LOG_TYPE.Sea);
+                  }
 
-                     if (attackType == Attack.Type.Shock_Ball) {
+                  int finalDamage = targetEntity.applyDamage(damage, attacker.netId, attackType);
+                  processAchievements(targetEntity, finalDamage, attackType);
+
+                  targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, finalDamage, attackType, false);
+
+                  // Trigger status based effects here
+                  switch (attackType) {
+                     case Attack.Type.Shock_Ball:
                         chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.netId);
-                     }
-                  } else {
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, 0, Attack.Type.None, false);
+                        break;
+                     case Attack.Type.Ice:
+                        StatusManager.self.create(Status.Type.Stunned, 1.0f, 2f, targetEntity.netId);
+                        break;
+                     case Attack.Type.Venom:
+                        StatusManager.self.create(Status.Type.Slowed, 0.3f, 1f, targetEntity.netId);
+                        break;
                   }
-
-                  // Apply any status effects from the attack
-                  if (attackType == Attack.Type.Ice) {
-                     // If enemy ship freezes a player ship
-                     if (this is BotShipEntity) {
-                        if (targetEntity is PlayerShipEntity) {
-                           // Registers the frozen action status to the achievementdata for recording
-                           AchievementManager.registerUserAchievement(targetEntity, ActionType.Frozen);
-                        }
-                     }
-
-                     StatusManager.self.create(Status.Type.Stunned, 1.0f, 2f, targetEntity.netId);
-                  } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.Slowed, 0.3f, 1f, targetEntity.netId);
-                  }
-                  enemyHitList.Add(targetEntity);
+               } else {
+                  targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, 0, Attack.Type.None, false);
                }
+
+               enemyHitList.Add(targetEntity);
             }
          }
       }
@@ -1512,6 +1456,90 @@ public class SeaEntity : NetEntity
       // If we didn't hit an enemy, show an effect based on whether we hit land or water
       if (!hitEnemy) {
          Rpc_ShowTerrainHit(circleCenter, impactMagnitude);
+      }
+   }
+
+   private bool canDamageTargetUsingCircleCollision (SeaEntity attacker, NetEntity targetEntity, bool targetPlayersOnly) {
+      if (targetPlayersOnly && targetEntity.GetComponent<ShipEntity>() == null) {
+         return false;
+      }
+
+      // Make sure we don't hit ourselves
+      if (targetEntity == this) {
+         return false;
+      }
+
+      // Check if the attacker and the target are allies
+      if (attacker.isAllyOf(targetEntity)) {
+         return false;
+      }
+
+      // Prevent players from damaging each other in PvE voyage instances
+      if (attacker.isAdversaryInPveInstance(targetEntity)) {
+         return false;
+      }
+
+      // Make sure the target is in our same instance
+      if (targetEntity.instanceId != this.instanceId) {
+         return false;
+      }
+
+      // Prevent players from being damaged by other players if they have not entered PvP yet
+      if (attacker.isPlayerShip() && !targetEntity.canBeAttackedByPlayers()) {
+         return false;
+      }
+
+      return true;
+   }
+
+   private void processAchievements (NetEntity targetEntity, int finalDamage, Attack.Type attackType) {
+      int targetHealthAfterDamage = targetEntity.currentHealth - finalDamage;
+
+      if (this is PlayerShipEntity) {
+         if (targetEntity is SeaMonsterEntity) {
+            if (targetHealthAfterDamage <= 0) {
+               // Registers the action Sea Monster Killed to the achievement database for recording
+               AchievementManager.registerUserAchievement(this, ActionType.KillSeaMonster);
+            }
+            // Registers the sea monster cannon hit
+            AchievementManager.registerUserAchievement(this, ActionType.HitSeaMonster);
+         } else if (targetEntity is BotShipEntity) {
+            if (targetHealthAfterDamage <= 0) {
+               // Registers the action Sunked Ships to the achievement database for recording
+               AchievementManager.registerUserAchievement(this, ActionType.SinkedShips);
+            }
+            // Registers the cannon hit action specifically for other player ship to the achievement database 
+            AchievementManager.registerUserAchievement(this, ActionType.HitEnemyShips);
+         } else if (targetEntity is PlayerShipEntity) {
+            if (targetHealthAfterDamage <= 0) {
+               // Registers the ship death action of the user to the achievement database for recording of death count
+               AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
+            }
+            // Registers the cannon hit action specifically for other player ship to the achievement database 
+            AchievementManager.registerUserAchievement(this, ActionType.HitPlayerWithCannon);
+         }
+
+         // Registers the cannon hit action of the user to the achievement database for recording of accuracy
+         AchievementManager.registerUserAchievement(this, ActionType.CannonHits);
+      }
+
+      if (this is SeaMonsterEntity) {
+         if (targetEntity is PlayerShipEntity && targetHealthAfterDamage <= 0) {
+            // Registers the ship death action of the user to the achievement database for recording of death count
+            AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
+         }
+      }
+
+      switch (attackType) {
+         case Attack.Type.Ice:
+            // If enemy ship freezes a player ship
+            if (this is BotShipEntity) {
+               if (targetEntity is PlayerShipEntity) {
+                  // Registers the frozen action status to the achievementdata for recording
+                  AchievementManager.registerUserAchievement(targetEntity, ActionType.Frozen);
+               }
+            }
+            break;
       }
    }
 
