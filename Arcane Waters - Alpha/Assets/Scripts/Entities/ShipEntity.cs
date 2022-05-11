@@ -400,7 +400,9 @@ public class ShipEntity : SeaEntity
 
       // Handle start sfx trigger here            
       Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, true);
-      Rpc_TriggerHealEffect(true);
+      if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+         Rpc_TriggerHealEffect(true);
+      }
       //D.debug("---- Casting ability now: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
 
       // Retain the buffs within the allies status while within proximity and time duration
@@ -426,6 +428,10 @@ public class ShipEntity : SeaEntity
                      }
                      break;
                   case Attack.Type.SpeedBoost:
+                     if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost) == null) {
+                        allyShip.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData, endTimeVal);
+                        allyShip.Rpc_ShowBuffAlly(allyShip.netId, shipAbilityData.selectedAttackType);
+                     }
                      break;
                }
             } else {
@@ -441,6 +447,11 @@ public class ShipEntity : SeaEntity
                      }
                      break;
                   case Attack.Type.SpeedBoost:
+                     if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost) != null) {
+                        SeaBuffData speedBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost);
+                        allyShip._buffs.Remove(speedBuff);
+                        allyShip.Rpc_RemoveBuffAlly(allyShip.netId, shipAbilityData.selectedAttackType);
+                     }
                      break;
                }
             }
@@ -466,7 +477,9 @@ public class ShipEntity : SeaEntity
 
       // Handle stop sfx trigger here
       Rpc_PlaySFXTrigger(shipAbilityData.sfxType, this.netId, false);
-      Rpc_TriggerHealEffect(false);
+      if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+         Rpc_TriggerHealEffect(false);
+      }
       //D.debug("-{" + (NetworkServer.active ? "Server" : "Client") + "} The aoe Buff has ended here: " + shipAbilityData.abilityId + " " + shipAbilityData.abilityName);
    }
 

@@ -80,7 +80,7 @@ public class ShipAbilityManager : MonoBehaviour {
    public ShipAbilityData getAbility (int id) {
       ShipAbilityPair shipAbility = shipAbilityDataList.Find(_ => _.shipAbilityData.abilityId == id);
       if (shipAbility == null) {
-         D.debug("ERROR: Ship Ability Manager Missing ability: {" + id + "}");
+         D.editorLog("ERROR: Ship Ability Manager Missing ability: {" + id + "}", Color.red);
          return shipAbilityDataList[0].shipAbilityData;
       }
       return shipAbility.shipAbilityData;
