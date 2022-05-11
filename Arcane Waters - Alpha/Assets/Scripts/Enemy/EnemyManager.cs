@@ -356,6 +356,7 @@ public class EnemyManager : MonoBehaviour {
       int randomEnemyTypeVal = Random.Range(0, 100);
       int spawnsPerSpot = getSpawnsPerSpot(instance.difficulty);
       float spawnShipChance = 60;
+      double startTime = NetworkTime.time;
 
       // Override random value to fix ship spawning only if the map does not allow seamonsters
       MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(instance.areaKey);
@@ -366,44 +367,66 @@ public class EnemyManager : MonoBehaviour {
          }
       }
 
+      int spawnedEntities = 0;
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          // Spawning ships has a 60% chance
          if (randomEnemyTypeVal < spawnShipChance) {
             for (int i = 0; i < spawnsPerSpot; i++) {
-               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i!=0, false);
+               spawnedEntities++;
+               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty);
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
+               spawnedEntities++;
                if (mapInfo.spawnsSeaMonsters) {
-                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId);
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId, (Voyage.Difficulty) instance.difficulty);
                } else {
-                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false);
+                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty);
                }
             }
          }
       }
+
+      string currentCpuUsage = PerformanceUtil.getZabbixCpuUsage().ToString("f1");
+      string currentRamUsage = PerformanceUtil.getZabbixRamUsage().ToString("f1");
+      D.adminLog("Spawning Ships on Server:: Area:{" + instance.areaKey + "} SpawnsPerSpot:{" + spawnsPerSpot + "} " +
+         "Type:{" + (randomEnemyTypeVal < spawnShipChance ? "Ships" : (mapInfo.spawnsSeaMonsters ? "Seamonsters" : "Ships")) + "} Difficulty:{" + instance.difficulty + "} " +
+         "Spawners:{" + (_spawners.ContainsKey(instance.areaKey) ? _spawners[instance.areaKey].Count.ToString() : "0") + "} SuccessfulSpawn:{" + spawnedEntities + "} " +
+         "Duration{" + (NetworkTime.time - startTime).ToString("f1") + "} Ended at:{" + NetworkTime.time.ToString("f1") + "} " +
+         "CPU:{" + currentCpuUsage + "} Ram:{" + currentRamUsage + "}", D.ADMIN_LOG_TYPE.Performance);
    }
 
    private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       Ship.Type shipType = Ship.Type.Type_1;
       int shipXmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
 
+      SeaMonsterEntityData seaEnemyData = null;
       if (difficulty == Voyage.Difficulty.None) {
          shipType = randomizeShipType(instance.biome);
+         seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType);
       } else {
          SeaMonsterEntityData randomShipByDifficulty = randomizeShipByDifficulty(difficulty, instance.biome);
          if (randomShipByDifficulty != null) {
             shipType = (Ship.Type) randomShipByDifficulty.subVarietyTypeId;
             shipXmlId = randomShipByDifficulty.xmlId;
+            seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType && ent.xmlId == shipXmlId);
          } else {
             shipType = randomizeShipType(instance.biome);
+            seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType);
          }
       }
 
-      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType && ent.xmlId == shipXmlId);
       if (seaEnemyData == null) {
-         D.debug("Ship type {" + shipType + "} does not have matching data registered in sea enemy manager!");
-         return;
+         D.debug("Ship type {" + shipType + "} does not have matching data registered in sea enemy manager! Using ship id {" + shipXmlId + "} {"+difficulty+"}");
+         
+         // Refer to default ship spawning instead
+         shipType = Ship.Type.Type_1;
+         shipXmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
+         seaEnemyData = SeaMonsterManager.self.getMonster(shipXmlId);
+         if (seaEnemyData == null) {
+            D.debug("Backup monster selection failed! {" + shipType + "}{" + difficulty + "}{" + shipXmlId + "}");
+            return;
+         }
       }
 
       if (isPositionRandomized && !useWorldPosition) {
@@ -464,7 +487,7 @@ public class EnemyManager : MonoBehaviour {
          if (randomEnemyByDifficulty != null) {
             seaMonsterType = randomEnemyByDifficulty.seaMonsterType;
          } else {
-            spawnBotShip(instance, area, localPosition, guildId, false, true, difficulty);
+            spawnBotShip(instance, area, localPosition, guildId, isPositionRandomized, useWorldPosition, difficulty);
             return;
          }
       }
@@ -514,7 +537,11 @@ public class EnemyManager : MonoBehaviour {
          // Ships have variety types
          && _.subVarietyTypeId > 0
          // There are biome filters that needs consideration
-         && _.biomes.Contains(biomeType));
+         && _.biomes.Contains(biomeType)
+         // Make sure that the enemy is enabled in database
+         && _.isXmlEnabled
+         );
+
       if (seaMonsterList.Count > 0) {
          return seaMonsterList.ChooseRandom();
       }

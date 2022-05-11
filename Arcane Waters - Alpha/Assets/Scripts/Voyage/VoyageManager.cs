@@ -248,8 +248,20 @@ public class VoyageManager : GenericGameManager {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.PvpArena && !k.StartsWith(WorldMapManager.WORLD_MAP_PREFIX)).ToList();
    }
 
-   public List<string> getLeagueAreaKeys () {
-      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.League).ToList();
+   public List<string> getLeagueAreaKeys (Biome.Type biomeType = Biome.Type.None) {
+      List<string> allLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.League).ToList();
+      if (biomeType == Biome.Type.None) {
+         return allLeagueArea;
+      } else {
+         List<string> biomedLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.League 
+         && (AreaManager.self.getMapInfo(k) != null && (AreaManager.self.getMapInfo(k).biome == biomeType || AreaManager.self.getMapInfo(k).biome == Biome.Type.None))).ToList();
+         if (biomedLeagueArea.Count > 0) {
+            return biomedLeagueArea;
+         } else {
+            D.debug("There are no league areas with biome type {" + biomeType + "}, gather all biomes instead");
+            return allLeagueArea;
+         }
+      }
    }
 
    public List<string> getLobbyAreaKeys () {
@@ -632,7 +644,7 @@ public class VoyageManager : GenericGameManager {
             areaKey = getLeagueSeaBossAreaKeys()[UnityEngine.Random.Range(0, getLeagueSeaBossAreaKeys().Count)];
          } else {
             // Get the list of league maps
-            List<string> mapList = getLeagueAreaKeys();
+            List<string> mapList = getLeagueAreaKeys(biome);
 
             if (mapList.Count == 0) {
                D.error("No league maps available!");
