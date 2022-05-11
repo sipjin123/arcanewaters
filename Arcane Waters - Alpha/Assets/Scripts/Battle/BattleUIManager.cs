@@ -148,8 +148,12 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (abilityButton.abilityType == abilityType && !abilityButton.cooldownImage.enabled) {
-            abilityButton.enableButton();
+         if (abilityButton.abilityType == abilityType) {
+            if (!abilityButton.cooldownImage.enabled) {
+               abilityButton.enableButton();
+            } else {
+               D.debug("Cannot enable a button {" + abilityButton.abilityIndex + "},already enabled!");
+            }
          } else {
             if (abilityType != AbilityType.Undefined) {
                D.adminLog("Disabled Ability Button :: " +
@@ -158,8 +162,7 @@ public class BattleUIManager : MonoBehaviour {
                   " ButtonType: " + abilityButton.abilityType +
                   " AbilityType: " + abilityType, D.ADMIN_LOG_TYPE.Ability);
             }
-
-            abilityButton.disableButton();
+            abilityButton.disableButton("AbilityType:{" + abilityButton.abilityType + ":" + abilityType + "}::{" + abilityButton.cooldownImage.enabled + "}");
          }
       }
    }
@@ -222,7 +225,7 @@ public class BattleUIManager : MonoBehaviour {
             }
          } else {
             D.debug("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
-               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "}");
+               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}");
             selectedButton.invalidButtonClick();
          }
       }
@@ -348,7 +351,7 @@ public class BattleUIManager : MonoBehaviour {
                }
 
                if (indexCounter > 0 && !isAbilityValid) {
-                  D.adminLog("Disabled because Invalid! " + currentAbility.itemName + " : " + currentAbility.itemID + " : " + currentAbility.abilityType, D.ADMIN_LOG_TYPE.Ability);
+                  D.debug("Disabled because Invalid! " + currentAbility.itemName + " : " + currentAbility.itemID + " : " + currentAbility.abilityType);
                   abilityButton.clearButton();
                   abilityButton.isInvalidAbility = true;
                }

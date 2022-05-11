@@ -65,7 +65,10 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    // Ability tooltip
    public ToolTipComponent tooltip;
-   
+
+   // The last disable trigger for tracking
+   public string lastDisableTrigger;
+
    #endregion
 
    public void setAbility (AbilityType abilityType) {
@@ -211,7 +214,8 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       isEnabled = true;
    }
 
-   public void disableButton () {
+   public void disableButton (string triggerState) {
+      lastDisableTrigger = triggerState;
       Image buttonImage = GetComponent<Image>();
       if (buttonImage != null) {
          buttonImage.raycastTarget = false;
@@ -235,7 +239,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       abilityTypeIndex = -1;
       abilityType = AbilityType.Undefined;
       abilityIcon.sprite = ImageManager.self.blankSprite;
-      disableButton();
+      disableButton("ClearButton");
       enabled = false;
       gameObject.SetActive(false);
    }

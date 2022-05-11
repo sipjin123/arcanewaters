@@ -2953,6 +2953,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public void setBattlerCanCastAbility (bool canCast) {
       _canCastAbility = canCast;
       isAttacking = false;
+
+      if (isLocalBattler()) {
+         AttackPanel.AbilityRequest lastAbilityRequest = BattleUIManager.self.attackPanel.recentAbilityRequest;
+         if (lastAbilityRequest != null) {
+            int lastAbility = lastAbilityRequest.abilityIndex;
+            if (lastAbility < BattleUIManager.self.abilityTargetButtons.Length) {
+               AbilityButton lastAbilityButton = BattleUIManager.self.abilityTargetButtons[lastAbility];
+               if (lastAbilityButton.cooldownImage.enabled == true) {
+                  lastAbilityButton.startCooldown(.5f);
+               }
+            }
+         }
+      }
    }
 
    public static HashSet<Battler> getHoveredBattlers () {
