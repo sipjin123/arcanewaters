@@ -1482,7 +1482,7 @@ public class RPCManager : NetworkBehaviour
          if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
-            MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome);
+            MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome, MapManager.MapDownloadType.Cache);
             return;
          }
       }

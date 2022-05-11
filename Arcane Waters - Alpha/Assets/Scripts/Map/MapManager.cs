@@ -30,6 +30,9 @@ public class MapManager : MonoBehaviour
    // Open World Map Prefix
    public const string OPEN_WORLD_MAP_PREFIX = "world_map_";
 
+   // The type of map download for logging
+   public enum MapDownloadType { None = 0, Nubis = 1, Cache = 2, DBMain = 3 };
+
    #endregion
 
    private void Awake () {
@@ -44,7 +47,9 @@ public class MapManager : MonoBehaviour
       createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null, voyageBiome);
    }
 
-   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
+   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome, MapManager.MapDownloadType mapDownloadType = MapDownloadType.None) {
+      double startTime = NetworkTime.time;
+
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
          D.debug("The area already exists and won't be created again: " + areaKey);
@@ -80,6 +85,9 @@ public class MapManager : MonoBehaviour
                string rawMapInfo = DB_Main.getMapInfo(mapInfo.mapName);
                if (rawMapInfo.Length > 0) {
                   mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
+                  if (mapDownloadType == MapDownloadType.None) {
+                     mapDownloadType = MapDownloadType.DBMain;
+                  }
                } else {
                   // For non cloud builds, attempt to fetch nubis data if database fetch does not succeed
                   if (!Util.isCloudBuild()) {
@@ -107,7 +115,7 @@ public class MapManager : MonoBehaviour
                D.debug($"Could not find entry for map { areaKey } in the database, proceeding to Nubis fetch");
 
                // If db_main fails to return due to connection issues, attempt nubis connection
-               processNubisData(areaKey, mapPosition, customizationData, biome);
+               processNubisData(startTime, areaKey, mapPosition, customizationData, biome);
             } else if (string.IsNullOrEmpty(mapInfo.gameData)) {
                D.error($"Could not find gameData from map { areaKey } in the database. Ensure that the map has a published version available.");
             } else {
@@ -115,16 +123,16 @@ public class MapManager : MonoBehaviour
                ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
                if (exportedProject != null) {
-                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, biome));
+                  StartCoroutine(CO_InstantiateMapData(startTime, mapInfo, exportedProject, areaKey, mapPosition, customizationData, biome, mapDownloadType));
                }
             }
          });
       });
    }
 
-   private async void processNubisData (string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
+   private async void processNubisData (double startTime, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       D.editorLog("Attempting to fetch using Nubis Data for area {" + areaKey + "}", Color.green);
-
+      
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call<string>(nameof(DB_Main.getMapInfo), areaKey);
       if (mapData != null) {
@@ -141,12 +149,12 @@ public class MapManager : MonoBehaviour
          ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
          if (exportedProject != null) {
-            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome));
+            StartCoroutine(CO_InstantiateMapData(startTime, mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome, MapDownloadType.Nubis));
          }
       }
    }
 
-   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
+   private IEnumerator CO_InstantiateMapData (double startTime, MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome, MapDownloadType mapDownloadType = MapDownloadType.None) {
       AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
@@ -156,11 +164,13 @@ public class MapManager : MonoBehaviour
       if (exportedProject.biome == Biome.Type.None) {
          // Biome should never be None, redownload map data using nubis and overwrite the cached map data
          D.error("Map Log: Invalid biome type NONE in map data. Redownloading map data using Nubis");
+         D.adminLog("Redownload and Create map {" + areaKey + "}! Invalid Biome, current process time: {" + (NetworkTime.time - startTime).ToString("f1") + " secs}" +
+            "{" + mapDownloadType + "} EndTime:{" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.Performance);
          downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData, biome);
       } else {
          // Create the area
          Area area = result.area;
-
+         
          // Overwrite the default area biome if another is given
          if (biome != Biome.Type.None) {
             exportedProject.biome = biome;
@@ -280,6 +290,15 @@ public class MapManager : MonoBehaviour
          area.vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
          onAreaCreationIsFinished(area, biome);
+
+         string zabbixData = "";
+         if (Mirror.NetworkServer.active) {
+            string currentCpuUsage = PerformanceUtil.getZabbixCpuUsage().ToString("f1");
+            string currentRamUsage = PerformanceUtil.getZabbixRamUsage().ToString("f1");
+            zabbixData = "CPU:{" + currentCpuUsage + "} Ram:{" + currentRamUsage + "}";
+         }
+         D.adminLog("Proceed to Map Creation {" + areaKey + "}, current process time: {" + (NetworkTime.time - startTime).ToString("f1") + " secs}" +
+            "Type:{" + mapDownloadType + "} EndTime:{" + NetworkTime.time.ToString("f1") + "}" + zabbixData, D.ADMIN_LOG_TYPE.Performance);
 
          float elapsedTime = (float) (NetworkTime.time - functionStartTime);
          D.debug("[Timing] MapManager CO_InstantiateMapData for area: " + areaKey + " took " + elapsedTime.ToString("F2") + "seconds.");
@@ -598,7 +617,7 @@ public class MapManager : MonoBehaviour
          D.debug("Map Log: Creating map data fetched from Nubis: (" + areaKey + ") Ver: " + version);
 
          // Spawn the Area using the map data
-         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData, biome);
+         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData, biome, MapManager.MapDownloadType.Nubis);
       }
    }
 

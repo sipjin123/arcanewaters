@@ -189,7 +189,11 @@ public class EnemyManager : MonoBehaviour {
                D.debug("No compatible layer for Easy difficulty");
             }
          }
-         D.adminLog("Open World {" + areaKey + "} Enemies Finished spawning: {" + (NetworkTime.time - initialTime).ToString("f1") + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+
+         string currentCpuUsage = PerformanceUtil.getZabbixCpuUsage().ToString("f1");
+         string currentRamUsage = PerformanceUtil.getZabbixRamUsage().ToString("f1");
+         D.adminLog("Spawned Open Sea Enemies:: ProcessTime:{" + (NetworkTime.time - initialTime).ToString("f1") + "} EndTime:{" + NetworkTime.time.ToString("f1") + "} " +
+            "InstanceId:{" + instance.id + "} Area:{" + areaTarget.areaKey + "} CPU:{" + currentCpuUsage + "} Ram:{" + currentRamUsage + "}", D.ADMIN_LOG_TYPE.Performance);
       }
    }
 

@@ -350,9 +350,9 @@ public class AdminManager : NetworkBehaviour
 
       float testDuration = (float) NetworkTime.time - testStartTime;
       D.debug("Testing Open World complete - reporting results to the player.");
-      D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + " areas. The test took " + testDuration + " seconds.");
-      D.debug("[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage);
-      D.debug("[Test Open World Results] Final Cpu: " + currentCpuUsage + ", Final Ram: " + currentRamUsage);
+      D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + " areas. The test took " + testDuration.ToString("f1") + " seconds.");
+      D.debug("[Test Open World Results] Baseline Cpu: " + baselineCpuUsage.ToString("f1") + ", Baseline Ram: " + baselineRamUsage);
+      D.debug("[Test Open World Results] Final Cpu: " + currentCpuUsage.ToString("f1") + ", Final Ram: " + currentRamUsage);
 
       Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage, currentCpuUsage, currentRamUsage);
 
@@ -377,9 +377,9 @@ public class AdminManager : NetworkBehaviour
    [TargetRpc]
    private void Target_ReportTestOpenWorldResults (NetworkConnection connectionToClient, int numAreasCreated, float testDuration, float baselineCpuUsage, float baselineRamUsage, float finalCpuUsage, float finalRamUsage) {
       ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] A performance limit was hit after creating " + numAreasCreated
-         + ". The test took " + testDuration + " seconds.", DateTime.Now, ChatInfo.Type.System));
-      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Final Cpu: " + finalCpuUsage + ", Final Ram: " + finalRamUsage, DateTime.Now, ChatInfo.Type.System));
-      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage, DateTime.Now, ChatInfo.Type.System));
+         + ". The test took " + testDuration.ToString("f1") + " seconds.", DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Final Cpu: " + finalCpuUsage.ToString("f1") + ", Final Ram: " + finalRamUsage, DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Baseline Cpu: " + baselineCpuUsage.ToString("f1") + ", Baseline Ram: " + baselineRamUsage, DateTime.Now, ChatInfo.Type.System));
    }
 
    private void requestCreateOpenWorld (string parameters) {

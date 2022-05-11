@@ -187,9 +187,11 @@ public class PerformanceUtil : MonoBehaviour {
    }
 
    public static float getZabbixCpuUsage () {
-      string cpuString = self._zabbixContext.History.GetByType(History.HistoryType.FloatType, null, self._cpuHistParams).FirstOrDefault()?.value;
-      if (float.TryParse(cpuString, out float cpuUsage)) {
-         return cpuUsage;
+      if (self._zabbixContext != null) {
+         string cpuString = self._zabbixContext.History.GetByType(History.HistoryType.FloatType, null, self._cpuHistParams).FirstOrDefault()?.value;
+         if (float.TryParse(cpuString, out float cpuUsage)) {
+            return cpuUsage;
+         }
       }
       return 0.0f;
    }
@@ -207,17 +209,19 @@ public class PerformanceUtil : MonoBehaviour {
 
       string memoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._ramHistParams).FirstOrDefault()?.value;
       if (long.TryParse(memoryString, out long memoryUsage)) {
-         return (float)(100 * memoryUsage / self._zabbixTotalRamBytes);
+         return (float) (100 * memoryUsage / self._zabbixTotalRamBytes);
       }
       return 0.0f;
    }
 
    private static void updateZabbixTotalRam () {
-      string totalMemoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._totalRamHistParams).FirstOrDefault()?.value;
-      if (long.TryParse(totalMemoryString, out long totalRamBytes)) {
-         self._zabbixTotalRamBytes = totalRamBytes;
-      } else {
-         D.error("PerformanceUtil couldn't get total ram amount from zabbix.");
+      if (self._zabbixContext != null && self._zabbixContext.History != null) {
+         string totalMemoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._totalRamHistParams).FirstOrDefault()?.value;
+         if (long.TryParse(totalMemoryString, out long totalRamBytes)) {
+            self._zabbixTotalRamBytes = totalRamBytes;
+         } else {
+            D.error("PerformanceUtil couldn't get total ram amount from zabbix.");
+         }
       }
    }
 
