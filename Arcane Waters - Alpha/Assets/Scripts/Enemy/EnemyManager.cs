@@ -461,6 +461,48 @@ public class EnemyManager : MonoBehaviour {
       NetworkServer.Spawn(botShip.gameObject);
    }
 
+   [Server]
+   public void spawnSeaMonsters (Vector2 spawnPosition, int seaMonsterId, int instanceId, string areaKey, int spawnCount) {
+      SeaMonsterEntityData monsterData = SeaMonsterManager.self.getMonster(seaMonsterId);
+      if (monsterData == null) {
+         return;
+      }
+
+      float distanceGap = .5f;
+      float diagonalDistanceGap = Vector2.Distance(new Vector2(0, 0), new Vector2(distanceGap, distanceGap));
+      List<Vector2> spawnOptions = new List<Vector2>();
+      spawnOptions.Add(spawnPosition + new Vector2(diagonalDistanceGap, -diagonalDistanceGap));
+      spawnOptions.Add(spawnPosition + new Vector2(-diagonalDistanceGap, -diagonalDistanceGap));
+      spawnOptions.Add(spawnPosition + new Vector2(diagonalDistanceGap, diagonalDistanceGap));
+      spawnOptions.Add(spawnPosition + new Vector2(-diagonalDistanceGap, diagonalDistanceGap));
+      spawnOptions.Add(spawnPosition + new Vector2(-distanceGap, 0));
+      spawnOptions.Add(spawnPosition + new Vector2(distanceGap, 0));
+
+      int index = 0;
+      for (int i = 0; i < spawnCount; i++) {
+         if (index > spawnOptions.Count - 1) {
+            index = 0;
+         }
+         spawnSeaMonster(spawnOptions[index], monsterData, instanceId, areaKey);
+         index++;
+      }
+   }
+
+   private void spawnSeaMonster (Vector2 spawnPosition, SeaMonsterEntityData monsterData, int instanceId, string areaKey) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaKey = areaKey;
+      bot.monsterType = monsterData.seaMonsterType;
+      bot.entityName = monsterData.monsterName;
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      instance.entities.Add(bot);
+   }
+
    private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
