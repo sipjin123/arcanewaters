@@ -2318,6 +2318,13 @@ public class SeaEntity : NetEntity
 
    [Server]
    public void setIsInvulnerable (bool value) {
+      // Do not disable invulnerability if this is a master type monster that still has minions
+      if (value == false && this is SeaMonsterEntity) {
+         SeaMonsterEntity monsterEntity = (SeaMonsterEntity) this;
+         if (monsterEntity.hasActiveMinions() && monsterEntity.seaMonsterData.roleType == RoleType.Master) {
+            return;
+         }
+      }
       _isInvulnerable = value;
    }
 
