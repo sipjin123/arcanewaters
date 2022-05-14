@@ -52,7 +52,18 @@ public class ShipAbilityManager : MonoBehaviour {
                      // TODO: Remove when web tool is updated
                      if (newAbilityDataPair.abilityId == 50) {
                         newAbilityDataPair.shipAbilityData.summonCount = 5;
-                        newAbilityDataPair.shipAbilityData.summonSeamonsterId = 5;
+                        newAbilityDataPair.shipAbilityData.summonSeamonsterId = 41;
+                        newAbilityDataPair.shipAbilityData.attackBufferCountMin = 10;
+                        newAbilityDataPair.shipAbilityData.attackBufferCountMax = 15;
+                        newAbilityDataPair.shipAbilityData.isMelee = true;
+                     }
+                     if (newAbilityDataPair.abilityId == 52) {
+                        newAbilityDataPair.shipAbilityData.isMelee = true;
+                     }
+                     if (newAbilityDataPair.abilityId == 51) {
+                        newAbilityDataPair.shipAbilityData.isMelee = true;
+                        newAbilityDataPair.shipAbilityData.attackBufferCountMin = 10;
+                        newAbilityDataPair.shipAbilityData.attackBufferCountMax = 15;
                      }
                      shipAbilityDataList.Add(newAbilityDataPair);
                   }
@@ -79,7 +90,18 @@ public class ShipAbilityManager : MonoBehaviour {
                // TODO: Remove when web tool is updated
                if (newAbilityDataPair.abilityId == 50) {
                   newAbilityDataPair.shipAbilityData.summonCount = 5;
-                  newAbilityDataPair.shipAbilityData.summonSeamonsterId = 5;
+                  newAbilityDataPair.shipAbilityData.summonSeamonsterId = 41;
+                  newAbilityDataPair.shipAbilityData.attackBufferCountMin = 10;
+                  newAbilityDataPair.shipAbilityData.attackBufferCountMax = 15;
+                  newAbilityDataPair.shipAbilityData.isMelee = true;
+               }
+               if (newAbilityDataPair.abilityId == 52) {
+                  newAbilityDataPair.shipAbilityData.isMelee = true;
+               }
+               if (newAbilityDataPair.abilityId == 51) {
+                  newAbilityDataPair.shipAbilityData.isMelee = true;
+                  newAbilityDataPair.shipAbilityData.attackBufferCountMin = 10;
+                  newAbilityDataPair.shipAbilityData.attackBufferCountMax = 15;
                }
                shipAbilityDataList.Add(newAbilityDataPair);
             }

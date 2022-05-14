@@ -78,11 +78,15 @@ public class ShipAbilityData
    // The seamonster id of the summoned unit
    public int summonSeamonsterId;
 
-   // The number of attacks/moves before this ability can be available again
-   public int attackBufferCount = 1;
+   // The number of attacks/moves in seconds before this ability can be available again
+   public int attackBufferCountMin = 1;
+   public int attackBufferCountMax = 3;
 
    // Determines if the projectile is arching
    public bool hasArch;
+
+   // If this can only be casted within melee range
+   public bool isMelee;
 
    // Adjusts the height of the projectile sprite based in an arch
    public bool syncHeightToArch = true;
