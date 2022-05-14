@@ -43,7 +43,6 @@ public class SeaEntity : NetEntity
    public float reloadDelay = 1.5f;
 
    // Keeps track of the consecutive attack count
-   [SyncVar]
    public float attackCounter = 0f;
 
    // The buff content this user currently has
@@ -159,6 +158,7 @@ public class SeaEntity : NetEntity
    #endregion
 
    // The xml id of this enemy data
+   [SyncVar]
    public int dataXmlId;
 
    [Header("Components")]
@@ -248,7 +248,7 @@ public class SeaEntity : NetEntity
       }
 
       // If we're invulnerable, take 0 damage
-      if (_isInvulnerable) {
+      if (getIsInvulnerable()) {
          damageMultiplier = 0.0f;
       }
 
@@ -985,7 +985,7 @@ public class SeaEntity : NetEntity
          if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
             // If tentacle attack, calls tentacle collision effect
             Instantiate(PrefabsManager.self.tentacleCollisionPrefab, this.transform.position + new Vector3(0f, 0), Quaternion.identity);
-         } else if (attackType == Attack.Type.Venom) {
+         } else if (attackType == Attack.Type.Venom || attackType == Attack.Type.Poison) {
             // If worm attack, calls slime collision effect
             ExplosionManager.createSlimeExplosion(pos);
 
@@ -1434,19 +1434,30 @@ public class SeaEntity : NetEntity
                   if (abilityId <= 0) {
                      damage = getDamageForShot(attackType, distanceModifier);
                   }
-                  
+                  ShipAbilityData shipAbilityData = null;
+                  ProjectileStatData projectileData = null;
+                  string abilityName = "";
+                  string projectileName = "";
+
                   if (abilityId > 0) {
-                     ShipAbilityData shipAbilityData = getSeaAbility(abilityId);
-                     ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
+                     shipAbilityData = getSeaAbility(abilityId);
+                     projectileData = getProjectileDataFromAbility(abilityId);
                      float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
                      float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
+                     abilityName = shipAbilityData.abilityName;
+                     projectileName = projectileData.projectileName;
+
+                     // Ability data attack type will be followed
+                     if (attackType == Attack.Type.None) {
+                        attackType = shipAbilityData.selectedAttackType;
+                     }
 
                      damage = getDamageForShot((int) baseSkillDamage, distanceModifier);
 
                      if (this is SeaMonsterEntity) {
                         SeaMonsterEntity seamonsterEntity = (SeaMonsterEntity) this;
                         if (seamonsterEntity.seaMonsterData.roleType == RoleType.Master) {
-                           D.editorLog("{" + seamonsterEntity.monsterType + "} CO Circle Collision: {" + shipAbilityData.abilityName + "} {" + attackType + "} {" + damage + "}", Color.yellow);
+                           D.editorLog("{" + seamonsterEntity.monsterType + "} CO Circle Collision: {" + shipAbilityData.abilityName + "} {" + attackType + "} {" + damage + "} {" + projectileName + "}", Color.yellow);
                         }
                      }
 
@@ -1465,7 +1476,7 @@ public class SeaEntity : NetEntity
                   processAchievements(targetEntity, finalDamage, attackType);
 
                   targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, finalDamage, attackType, false);
-
+                  
                   // Trigger status based effects here
                   switch (attackType) {
                      case Attack.Type.Shock_Ball:
@@ -1476,6 +1487,9 @@ public class SeaEntity : NetEntity
                         break;
                      case Attack.Type.Venom:
                         StatusManager.self.create(Status.Type.Slowed, 0.3f, 1f, targetEntity.netId);
+                        break;
+                     case Attack.Type.Poison:
+                        targetEntity.applyStatus(Status.Type.Poisoned, 1, shipAbilityData == null ? 1 : shipAbilityData.statusDuration, netId);
                         break;
                   }
                } else {
