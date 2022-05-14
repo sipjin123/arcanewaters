@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using static EquipmentToolManager;
+using System.Xml.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -230,6 +231,10 @@ public class XMLPair {
 
    // The xml content 
    public string rawXmlData;
+
+   // The xml name in the database
+   [XmlIgnore]
+   public string xmlName;
 
    // Tag classifying palette
    public string tag;

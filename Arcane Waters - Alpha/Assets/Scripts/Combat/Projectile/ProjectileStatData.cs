@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Xml.Serialization;
 
 [Serializable]
 public class ProjectileStatData  {
    #region Public Variables
+
+   // The projectile name
+   [XmlIgnore]
+   public string projectileName = "";
 
    // The primary id that is referenced by dependent objects, this is a unique id
    public int projectileId = -1;

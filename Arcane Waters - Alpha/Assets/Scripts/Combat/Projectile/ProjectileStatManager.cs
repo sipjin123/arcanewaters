@@ -35,6 +35,7 @@ public class ProjectileStatManager : MonoBehaviour {
                      ProjectileStatData projectileData = Util.xmlLoad<ProjectileStatData>(newTextAsset);
                      projectileData.projectileId = xmlPair.xmlId;
                      int uniqueID = projectileData.projectileId;
+                     projectileData.projectileName = xmlPair.xmlName;
 
                      // Save the projectile data in the memory cache
                      if (!_projectileData.ContainsKey(uniqueID)) {
