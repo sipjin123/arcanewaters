@@ -462,7 +462,9 @@ public class EnemyManager : MonoBehaviour {
    }
 
    [Server]
-   public void spawnSeaMonsters (Vector2 spawnPosition, int seaMonsterId, int instanceId, string areaKey, int spawnCount) {
+   public void summonSeaMonsters (Vector2 spawnPosition, int seaMonsterId, int instanceId, string areaKey, int spawnCount, SeaMonsterEntity summoner) {
+      // TODO: Setup Horror tentacle monsters to use this functions as well instead of hard coding
+
       SeaMonsterEntityData monsterData = SeaMonsterManager.self.getMonster(seaMonsterId);
       if (monsterData == null) {
          return;
@@ -483,24 +485,29 @@ public class EnemyManager : MonoBehaviour {
          if (index > spawnOptions.Count - 1) {
             index = 0;
          }
-         spawnSeaMonster(spawnOptions[index], monsterData, instanceId, areaKey);
+         summonSeaMonster(spawnOptions[index], monsterData, instanceId, areaKey, summoner);
          index++;
       }
    }
 
-   private void spawnSeaMonster (Vector2 spawnPosition, SeaMonsterEntityData monsterData, int instanceId, string areaKey) {
-      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaKey = areaKey;
-      bot.monsterType = monsterData.seaMonsterType;
-      bot.entityName = monsterData.monsterName;
+   private void summonSeaMonster (Vector2 spawnPosition, SeaMonsterEntityData monsterData, int instanceId, string areaKey, SeaMonsterEntity summoner) {
+      SeaMonsterEntity newSeaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
+      newSeaMonster.instanceId = instanceId;
+      newSeaMonster.facing = Util.randomEnum<Direction>();
+      newSeaMonster.areaKey = areaKey;
+      newSeaMonster.monsterType = monsterData.seaMonsterType;
+      newSeaMonster.entityName = monsterData.monsterName;
+      newSeaMonster.dataXmlId = monsterData.xmlId;
 
       // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
+      NetworkServer.Spawn(newSeaMonster.gameObject);
+
+      // Bind minion to summoner and vice versa
+      summoner.seaMonsterChildrenList.Add(newSeaMonster);
+      newSeaMonster.seaMonsterParentEntity = summoner;
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
-      instance.entities.Add(bot);
+      instance.entities.Add(newSeaMonster);
    }
 
    private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
@@ -548,6 +555,7 @@ public class EnemyManager : MonoBehaviour {
       // Basic setup
       seaEntity.monsterType = data.seaMonsterType;
       seaEntity.areaKey = instance.areaKey;
+      seaEntity.dataXmlId = data.xmlId;
       seaEntity.facing = Direction.South;
       seaEntity.setAreaParent(area, true);
 
