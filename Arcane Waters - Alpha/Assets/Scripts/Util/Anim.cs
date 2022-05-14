@@ -62,7 +62,8 @@ public class Anim : MonoBehaviour {
       Wisp = 12,
       Snake = 13,
       Shroom = 14,
-      Elemental = 15
+      Elemental = 15,
+      DesertSerpent = 16
    }
       
    #endregion

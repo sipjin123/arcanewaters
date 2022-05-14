@@ -25,6 +25,9 @@ public class EffectManager : MonoBehaviour {
    // The effects when interacting a crate
    public GameObject interactCrateEffects;
 
+   // A reference to the effector that will provide the knockback force
+   public PointEffector2D knockbackEffector;
+
    // Self
    public static EffectManager self;
 
@@ -45,9 +48,14 @@ public class EffectManager : MonoBehaviour {
    }
 
    public static void createDynamicEffect (string spritePath, Vector2 pos, float timePerFrame, Transform parent, bool setLocalPosition = false) {
+      // If sprite path is empty, cancel effect creation
+      if (string.IsNullOrEmpty(spritePath)) {
+         return;
+      }
+
       Sprite[] sprites = ImageManager.getSprites(spritePath);
 
-      //If we do not have any effect sprites we cancel
+      // If we do not have any effect sprites we cancel
       if (sprites.Length <= 0) {
          return;
       }

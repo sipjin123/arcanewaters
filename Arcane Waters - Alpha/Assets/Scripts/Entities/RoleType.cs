@@ -4,5 +4,6 @@ public enum RoleType
    None = 0,
    Standalone = 1,
    Minion = 2,
-   Master = 3
+   Master = 3,
+   AutonomousMinion = 4
 }

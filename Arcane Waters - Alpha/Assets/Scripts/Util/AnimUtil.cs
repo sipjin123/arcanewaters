@@ -444,6 +444,33 @@ public class AnimUtil : MonoBehaviour {
                default:
                   return new AnimInfo(animType, 0, 3);
             }
+         case Anim.Group.DesertSerpent:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 0, 3);
+
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 4, 7);
+
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 8, 15);
+               case Anim.Type.Attack_North:
+                  return new AnimInfo(animType, 8, 15);
+               case Anim.Type.Attack_South:
+                  return new AnimInfo(animType, 8, 15);
+
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 16, 22);
+            }
+            break;
       }
 
       D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType + ", Game obj is {" + objReference == null ? "Null" : objReference.name + "}");

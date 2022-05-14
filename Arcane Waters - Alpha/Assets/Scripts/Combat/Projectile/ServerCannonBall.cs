@@ -244,6 +244,7 @@ public class ServerCannonBall : SeaProjectile
    #region Private Variables
 
    // All effectors that will apply effects to this cannonball
+   [SerializeField]
    private List<CannonballEffector> _effectors = new List<CannonballEffector>();
 
    // The projectile id for the explosive shot projectile
