@@ -215,7 +215,7 @@ public class SeaStructureTower : SeaStructure
       }
    }
 
-   protected override bool isInRange (Vector2 position) {
+   protected override bool isInRange (Vector2 position, bool logData = false) {
       Vector2 toTarget = position - (Vector2) transform.position;
       return (toTarget.sqrMagnitude < getAttackRange() * getAttackRange());
    }
@@ -372,7 +372,7 @@ public class SeaStructureTower : SeaStructure
       return PvpTower.WARNING_RANGE;
    }
 
-   protected override NetEntity getAttackerInRange () {
+   protected override NetEntity getAttackerInRange (bool logData = false) {
       // If we're targeting a player ship that's in our range, don't find a new target
       if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(_aimTarget.transform.position)) {
          return _aimTarget;

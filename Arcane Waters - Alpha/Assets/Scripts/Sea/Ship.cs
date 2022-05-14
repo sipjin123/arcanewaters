@@ -72,14 +72,6 @@ public class Ship : SeaEntity {
       return ShipDataManager.self.getShipData(xmlId).baseHealth;
    }
 
-   public static int getBaseSailors (int xmlId) {
-      return ShipDataManager.self.getShipData(xmlId).baseSailors;
-   }
-
-   public static int getBaseSuppliesRoom (int xmlId) {
-      return ShipDataManager.self.getShipData(xmlId).baseSupplyRoom;
-   }
-
    public static int getBaseSpeed (int xmlId) {
       return ShipDataManager.self.getShipData(xmlId).baseSpeed;
    }
@@ -155,8 +147,6 @@ public class Ship : SeaEntity {
 
    private static ShipInfo generateTheShip (ShipData fetchedShipData, Ship.Type shipType, Rarity.Type rarity) {
       System.Random rand = new System.Random();
-      int sailors = rand.Next(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
-      int suppliesRoom = rand.Next(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
       int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
       float damage = rand.NextFloat(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
       int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
@@ -167,8 +157,6 @@ public class Ship : SeaEntity {
       speed = Mathf.Clamp(speed, 70, 130);
 
       // Let's use nice numbers
-      sailors = Util.roundToPrettyNumber(sailors);
-      suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
       cargoRoom = Util.roundToPrettyNumber(cargoRoom);
       health = Util.roundToPrettyNumber(health);
       food = Util.roundToPrettyNumber(food);
@@ -176,7 +164,7 @@ public class Ship : SeaEntity {
       attackRange = Util.roundToPrettyNumber(attackRange);
 
       ShipInfo ship = new ShipInfo(-1, 0, shipType, fetchedShipData.shipID, SkinType.None, MastType.Type_1, SailType.Type_1, getDisplayName(shipType),
-         "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, food, food, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+         "", "", "", "", cargoRoom, health, health, food, food, damage, attackRange, speed, rarity, new ShipAbilityInfo(true));
       ship.price = price;
 
       return ship;

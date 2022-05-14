@@ -74,6 +74,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
 
       // Basic setup
       seaEntity.monsterType = data.seaMonsterType;
+      seaEntity.dataXmlId = data.xmlId;
       seaEntity.areaKey = instance.areaKey;
       seaEntity.facing = Direction.South;
       seaEntity.isPvpAI = true;

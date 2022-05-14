@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using TMPro;
-using System.Linq;
 
 public class MouseManager : ClientMonoBehaviour
 {
@@ -550,7 +547,8 @@ public class MouseManager : ClientMonoBehaviour
 
       coordsIndicator.toggle(false);
 
-      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
+      // Check if right/left alt key is currently clicked
+      if (KeyUtils.GetAltKey()) {
          if (Global.player == null || AreaManager.self.getArea(Global.player.areaKey) == null) {
             return;
          }

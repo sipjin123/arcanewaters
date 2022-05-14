@@ -152,6 +152,9 @@ public class ChatPanel : MonoBehaviour {
    public Sprite friendsSprite;
    public Sprite systemSprite;
 
+   // Return true if mouse is currently hovering the chat panel
+   public bool isHoveringChat;
+
    #endregion
 
    void Awake () {
@@ -296,6 +299,11 @@ public class ChatPanel : MonoBehaviour {
          default:
             break;
       }
+   }
+
+   public void setIsHoveringChatPanel (bool isHovering) {
+      // Update chat hovering flag when mouse enter chat panel
+      isHoveringChat = isHovering;
    }
 
    private void updateBottomBarHeight () {

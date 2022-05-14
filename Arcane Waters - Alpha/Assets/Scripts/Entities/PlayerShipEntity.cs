@@ -490,7 +490,9 @@ public class PlayerShipEntity : ShipEntity
             } else if (InputManager.self.inputMaster.Sea.ReelIn.WasReleasedThisFrame()) {
                Cmd_SetIsReelingIn(false);
             }
+         }
 
+         if (!ChatManager.self.chatPanel.isHoveringChat) {
             // Read input mouse scroll value and check if scroll value is not equal to 0
             float scrollVal = InputManager.self.inputMaster.Sea.AbilitySwitch.ReadValue<float>();
             if (scrollVal != 0f) {
@@ -498,7 +500,7 @@ public class PlayerShipEntity : ShipEntity
                int switchValue = scrollVal < 0 ? 1 : -1;
                int targetAbility = Mathf.Clamp(_currentAbilitySlotIndex + switchValue, 0, 4);
                selectAbility(targetAbility);
-            }
+            } 
          }
       }
 

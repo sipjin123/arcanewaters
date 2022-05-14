@@ -480,7 +480,7 @@ public class BattleUIManager : MonoBehaviour {
          }
          
          // Ensure that chat panel is not in focus before doing ability switch
-         if (!ChatManager.self.chatPanel.inputField.isFocused) {
+         if (!ChatManager.self.chatPanel.isHoveringChat) {
             // Read input mouse scroll value and check if scroll value is not equal to 0
             float scrollVal = InputManager.self.inputMaster.LandBattle.AbilitySwitch.ReadValue<float>();
             if (scrollVal != 0f) {

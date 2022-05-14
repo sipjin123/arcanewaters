@@ -61,6 +61,10 @@ public static class KeyUtils {
       }
    }
 
+   public static bool GetAltKey () {
+      return GetKey(Key.LeftAlt) || GetKey(Key.RightAlt);
+   }
+
    public static bool GetEnterKey() {
       return GetKey(Key.Enter) || GetKey(Key.NumpadEnter);
    }

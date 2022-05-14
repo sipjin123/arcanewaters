@@ -38,7 +38,9 @@ public class ShipInfo {
    public string shipName;
 
    // The amount of supplies
+   [Obsolete("This stat is removed - discussed in task 5960. TODO: remove column from DB.")]
    public int supplies;
+   [Obsolete("This stat is removed - discussed in task 5960. TODO: remove column from DB.")]
    public int suppliesMax;
 
    // The cargo space
@@ -66,6 +68,7 @@ public class ShipInfo {
    public int speed;
 
    // The number of sailors it takes to run the ship
+   [Obsolete("This stat is removed - discussed in task 5960. TODO: remove column from DB.")]
    public int sailors;
 
    // The rarity of the ship
@@ -110,15 +113,12 @@ public class ShipInfo {
       this.skinType = (Ship.SkinType) DataUtil.getInt(dataReader, "skinType");
       this.mastType = (Ship.MastType) DataUtil.getInt(dataReader, "mastType");
       this.sailType = (Ship.SailType) DataUtil.getInt(dataReader, "sailType");
-      this.supplies = DataUtil.getInt(dataReader, "supplies");
-      this.suppliesMax = DataUtil.getInt(dataReader, "suppliesMax");
       this.cargoMax = DataUtil.getInt(dataReader, "cargoMax");
       this.maxHealth = DataUtil.getInt(dataReader, "maxHealth");
       this.maxFood = DataUtil.getInt(dataReader, "maxFood");
       this.damage = DataUtil.getFloat(dataReader, "damage");
       this.attackRange = DataUtil.getInt(dataReader, "attackRange");
       this.speed = DataUtil.getInt(dataReader, "speed");
-      this.sailors = DataUtil.getInt(dataReader, "sailors");
       this.rarity = (Rarity.Type) DataUtil.getInt(dataReader, "rarity");
 
       // Colors
@@ -139,8 +139,8 @@ public class ShipInfo {
    #endif
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType, int shipXmlId, Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
-      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int food, int maxFood, float damage,
-      int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
+      string palette1, string palette2, string sailPalette1, string sailPalette2, int cargoMax, int health, int maxHealth, int food, int maxFood, float damage,
+      int attackRange, int speed, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
       this.userId = userId;
       this.shipType = shipType;
@@ -152,8 +152,6 @@ public class ShipInfo {
       this.palette2 = palette2;
       this.sailPalette1 = sailPalette1;
       this.sailPalette2 = sailPalette2;
-      this.supplies = supplies;
-      this.suppliesMax = suppliesMax;
       this.cargoMax = cargoMax;
       this.health = health;
       this.maxHealth = maxHealth;
@@ -162,7 +160,6 @@ public class ShipInfo {
       this.damage = damage;
       this.attackRange = attackRange;
       this.speed = speed;
-      this.sailors = sailors;
       this.rarity = rarity;
       this.shipAbilities = shipAbilities;
       this.shipXmlId = shipXmlId;

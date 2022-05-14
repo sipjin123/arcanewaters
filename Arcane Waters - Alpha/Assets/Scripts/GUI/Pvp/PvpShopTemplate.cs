@@ -116,8 +116,7 @@ public class PvpShopTemplate : MonoBehaviour {
             PvpShopPanel.self.shipSpeedText.text = serverDeclaredData.speed.ToString();
             PvpShopPanel.self.shipRangeText.text = serverDeclaredData.attackRange.ToString();
             PvpShopPanel.self.shipCargoText.text = serverDeclaredData.cargoMax.ToString();
-            PvpShopPanel.self.shipSupplyText.text = serverDeclaredData.supplies.ToString();
-            PvpShopPanel.self.shipSailorsText.text = serverDeclaredData.sailors.ToString();
+            PvpShopPanel.self.shipSupplyText.text = serverDeclaredData.maxFood.ToString();
             PvpShopPanel.self.shipDefenseText.text = serverDeclaredData.health.ToString();
 
             int index = 0;

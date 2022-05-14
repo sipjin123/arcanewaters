@@ -500,6 +500,28 @@ public class PowerupManager : MonoBehaviour {
 
       return powerups;
    }
+   
+   public List<Powerup> getPowerupOfUserWithType (int userId, Powerup.Type type) {
+      List<Powerup> powerups = new List<Powerup>();
+
+      // Return empty list when collection doesn't contain userId
+      if (!_serverPlayerPowerups.ContainsKey(userId)) {
+         return powerups;
+      }
+
+      // Filter user's powerup and filter powerup type
+      PlayerPowerups userPowerups = _serverPlayerPowerups[userId];
+      powerups = userPowerups[type];
+      
+      return powerups;
+   }
+
+   public bool doesUserHasPowerupType (int userId, Powerup.Type type) {
+      List<Powerup> powerups = getPowerupsForUser(userId);
+      
+      // Return if any powerup with type exist within the powerup collection
+      return powerups.Any(item => item.powerupType == type);
+   }
 
    public void awardRandomPowerupToUser (int userId) {
       Powerup.Type type = Util.randomEnumStartAt<Powerup.Type>(1);

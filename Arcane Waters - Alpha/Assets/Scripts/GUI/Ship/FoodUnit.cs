@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using DG.Tweening;
 
 public class FoodUnit : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class FoodUnit : MonoBehaviour
       if (amount > 0) {
          foodFillImage.fillAmount = Mathf.Clamp01(amount);
       }
+   }
+
+   public void blink () {
+      transform.DORewind();
+      transform.DOShakeRotation(0.2f, Vector3.forward * 70.0f, vibrato: 40);
    }
 
    public void activate () {

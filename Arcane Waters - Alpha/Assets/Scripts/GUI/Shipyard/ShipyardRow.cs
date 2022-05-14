@@ -32,7 +32,6 @@ public class ShipyardRow : MonoBehaviour {
    public Text cargoText;
    public Text speedText;
    public Text attackRangeText;
-   public Text sailorsText;
    public Text levelRequirementText;
 
    // Skill prefabs setup
@@ -65,11 +64,10 @@ public class ShipyardRow : MonoBehaviour {
       // Fill in the stats
       damageText.text = (shipInfo.damage * 100).ToString("f1") + "%";
       healthText.text = "" + shipInfo.maxHealth;
-      suppliesText.text = "" + shipInfo.suppliesMax;
+      suppliesText.text = "" + shipInfo.maxFood;
       cargoText.text = "" + shipInfo.cargoMax;
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
-      sailorsText.text = "" + shipInfo.sailors;
       levelRequirementText.text = "" + shipData.shipLevelRequirement;
 
       // Associate a new function with the confirmation button

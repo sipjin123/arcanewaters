@@ -58,11 +58,10 @@ public class FlagshipRow : MonoBehaviour {
       // Fill in the stats
       damageText.text = (shipInfo.damage * 100).ToString("f1") + "%";
       healthText.text = "" + shipInfo.maxHealth;
-      suppliesText.text = "" + shipInfo.suppliesMax;
+      suppliesText.text = "" + shipInfo.maxFood;
       cargoText.text = "" + shipInfo.cargoMax;
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
-      sailorsText.text = "" + shipInfo.sailors;
 
       ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipXmlId);
       if (shipData != null) {

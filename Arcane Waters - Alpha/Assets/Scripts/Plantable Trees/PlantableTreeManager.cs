@@ -70,6 +70,17 @@ public class PlantableTreeManager : MonoBehaviour
       }
    }
 
+   [Client]
+   public void updatePlantableTrees (int id, string areaKey, PlantableTreeInstanceData data, bool client) {
+      if (AreaManager.self.tryGetArea(areaKey, out Area area)) {
+         updatePlantableTrees(id, area, data, client);
+      } else {
+         // It's possible the player received plantable trees before the area was created
+         // In that case, we'll cache them and apply once the area is created
+         _queuedTreeData.AddLast(data);
+      }
+   }
+
    public void updatePlantableTrees (int id, Area area, PlantableTreeInstanceData data, bool client) {
       // Can be called on both client and server
       if (data != null) {
@@ -303,6 +314,7 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       if (tree.data == null) {
+         D.error($"Can't chop tree in { tree.data.areaKey} because missing tree data!");
          return false;
       }
 
@@ -319,6 +331,7 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       if (!_treeDefinitions.TryGetValue(tree.data.treeDefinitionId, out PlantableTreeDefinition def)) {
+         D.error($"Can't chop tree in { tree.data.areaKey} because missing tree definition data " + tree.data.treeDefinitionId + "!");
          return false;
       }
 

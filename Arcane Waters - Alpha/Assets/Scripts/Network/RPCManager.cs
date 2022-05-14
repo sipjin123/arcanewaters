@@ -401,10 +401,7 @@ public class RPCManager : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_UpdatePlantableTrees (int id, string areaKey, PlantableTreeInstanceData data) {
-      Area area = AreaManager.self.getArea(areaKey);
-      if (area != null) {
-         PlantableTreeManager.self.updatePlantableTrees(id, area, data, true);
-      }
+      PlantableTreeManager.self.updatePlantableTrees(id, areaKey, data, true);
    }
 
    [TargetRpc]
@@ -1249,7 +1246,7 @@ public class RPCManager : NetworkBehaviour
             } else {
                string ipAddress = Util.formatIpAddress(connectionToClient.address);
 
-               SupportTicketInfo ticket = new SupportTicketInfo(details, string.Empty, _player.accountId, _player.userId, _player.entityName,
+               SupportTicketInfo ticket = new SupportTicketInfo($"Complaint about {targetInfo.username}", details, _player.accountId, _player.userId, _player.entityName,
                   targetInfo.accountId, targetInfo.userId, targetInfo.username, ipAddress, WebToolsUtil.SupportTicketType.Complaint);
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -4735,9 +4732,9 @@ public class RPCManager : NetworkBehaviour
             foreach (PvpShopItem shopItem in shopItemList) {
                if ((PvpConsumableItem) shopItem.itemId == PvpConsumableItem.RepairTool) {
                   // Weakest ship max is 10, strongest ship max is 52
-                  // Increase item cost in percentage depending on sailor count
-                  int roundDownVal = playerShip.sailors % 5;
-                  int newItemCost = shopItem.itemCost + (int) (playerShip.sailors - roundDownVal);
+                  // Increase item cost in percentage depending on max health
+                  int roundDownVal = playerShip.maxHealth % 500;
+                  int newItemCost = shopItem.itemCost + (int) (playerShip.maxHealth - roundDownVal);
                   shopItem.itemCost = newItemCost;
                }
             }

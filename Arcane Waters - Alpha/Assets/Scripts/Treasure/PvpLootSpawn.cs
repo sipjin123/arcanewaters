@@ -110,6 +110,20 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
             };
             
             if (nonStackableType.Contains(powerup.powerupType)) {
+               // Check if user contains powerup with powerup type 
+               if (PowerupManager.self.doesUserHasPowerupType(playerEntity.userId, powerup.powerupType)) {
+                  // Get user's powerup and check if incoming powerup has longer duration, Receive powerup is longer and ignore if not
+                  List<Powerup> powerupOfType = PowerupManager.self.getPowerupOfUserWithType(playerEntity.userId, powerup.powerupType);
+                  if (powerupOfType.Any(item => item.powerupDuration > powerupDuration)) {
+                     // Add system chat if powerup is ignored
+                     string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
+                     string msg = string.Format("Ignoring <color=red>{0}</color> powerup, You have stronger <color=red>{0}</color> powerup!", powerupName);
+                     ChatManager.self.addChat(msg, ChatInfo.Type.System);
+                     
+                     return;
+                  }
+               }
+               
                // Replace existing entry with type and create new entry if no entry with type
                playerEntity.rpc.Target_ReceiveUniquePowerup(powerupType, rarity, collision.transform.position);
                PowerupManager.self.addReplacePowerupServer(playerEntity.userId, powerup);

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool;
 using System;
+using System.Linq;
+using SeaBuff;
 
 public class ShipEntity : SeaEntity
 {
@@ -28,10 +30,6 @@ public class ShipEntity : SeaEntity
    // The range of attack - in percentage of the base range
    [SyncVar]
    public int attackRangeModifier = 100;
-
-   // The number of sailors it takes to run this ship
-   [SyncVar]
-   public int sailors;
 
    // The primary ability id used by this ship
    [SyncVar]
@@ -80,7 +78,6 @@ public class ShipEntity : SeaEntity
       attackRangeModifier = data.baseRange;
 
       speed = data.baseSpeed;
-      sailors = data.baseSailors;
       rarity = Rarity.Type.None;
       damage = data.baseDamage;
 
@@ -111,7 +108,6 @@ public class ShipEntity : SeaEntity
       reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
 
       speed = shipData.baseSpeed;
-      sailors = shipData.baseSailors;
       rarity = Rarity.Type.None;
 
       // TODO: Confirm if damage should be based on the projectile instead of per ship type
@@ -145,7 +141,6 @@ public class ShipEntity : SeaEntity
       attackRangeModifier = info.attackRange;
 
       speed = info.speed;
-      sailors = info.sailors;
       rarity = info.rarity;
       damage = info.damage;
 
@@ -187,7 +182,7 @@ public class ShipEntity : SeaEntity
       return this.shipType.ToString().ToLower().Contains(skinClass.ToLower());
    }
 
-   protected override bool isInRange (Vector2 position) {
+   protected override bool isInRange (Vector2 position, bool logData = false) {
       return Vector2.SqrMagnitude(position - (Vector2) transform.position) <= getAttackRange() * getAttackRange();
    }
 
@@ -417,7 +412,11 @@ public class ShipEntity : SeaEntity
             if (distanceToTarget < shipAbilityData.buffRadius) {
                switch (shipAbilityData.selectedAttackType) {
                   case Attack.Type.Heal:
-                     if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) == null) {
+                     // Get all existing heal buff data of ally
+                     List<SeaBuffData> buffData = allyShip.getAllBuffDataWithType(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+
+                     // Add heal buff when heal buff data dont exist or caster id is different
+                     if (buffData == null  || !buffData.Exists(item => item.casterId == netId)) {
                         allyShip.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
                         allyShip.Rpc_TriggerHealEffect(true);
                         
@@ -436,9 +435,20 @@ public class ShipEntity : SeaEntity
                switch (shipAbilityData.selectedAttackType) {
                   case Attack.Type.Heal:
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
-                        SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
-                        allyShip._buffs.Remove(healBuff);
-                        allyShip.Rpc_TriggerHealEffect(false);
+                        // Get all existing heal buff data of ally
+                        List<SeaBuffData> healBuffs = allyShip.getAllBuffDataWithType(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+                        
+                        // Check if any of the existing heal buff caster id is same with your id
+                        if (healBuffs.Any(item => item.casterId == netId)) {
+                           // Get your casted heal buff data and remove
+                           SeaBuffData buffData = healBuffs.First(item => item.casterId == netId);
+                           allyShip._buffs.Remove(buffData);
+                           
+                           // Disable heal if no existing heal buff data
+                           if (!allyShip.hasBuffDataWithType(Category.Buff, SeaBuff.Type.Heal)) {
+                              allyShip.Rpc_TriggerHealEffect(false);
+                           }
+                        }
 
                         // TODO: If ally should have local sfx playing, should stop here
                         // Rpc_PlaySFXTrigger(false, "Play End AOE SFX HERE");
@@ -458,7 +468,8 @@ public class ShipEntity : SeaEntity
 
       CheckHealingAllies(allyEntities, shipAbilityData.selectedAttackType);
 
-      if (shipAbilityData.selectedAttackType == Attack.Type.Heal) {
+      // Disable heal effect and sfx if player has no existing heal buff data
+      if (shipAbilityData.selectedAttackType == Attack.Type.Heal && !hasBuffDataWithType(Category.Buff, SeaBuff.Type.Heal)) {
          Rpc_TriggerHealSfx(false);
          Rpc_TriggerHealEffect(false);
       }
@@ -468,17 +479,36 @@ public class ShipEntity : SeaEntity
    protected void CheckHealingAllies (List<NetEntity> allyEntities, Attack.Type attackType) {
       // After the buff time duration check all ally entity for existing heal buff and remove it
       foreach (NetEntity allyEntity in allyEntities) {
+         if (allyEntity == null) {
+            continue;
+         }
+
          // Skip self
          if (allyEntity.userId == userId) {
             continue;
          }
 
-         PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
-         if (attackType == Attack.Type.Heal) {
-            if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
-               SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
-               allyShip._buffs.Remove(healBuff);
-               allyShip.Rpc_TriggerHealEffect(false);
+         if (allyEntity is PlayerShipEntity) {
+            PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+            
+            // Check if selected Attack type is a heal
+            if (attackType == Attack.Type.Heal) {
+               // Check if ally has existing buff heal data
+               if (allyShip.hasBuffDataWithType(SeaBuff.Category.Buff, SeaBuff.Type.Heal)) {
+                  // Get all existing heal buff data of ally
+                  List<SeaBuffData> healBuffs = allyShip.getAllBuffDataWithType(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+                  // Check if any of the existing buff data is owned by entity
+                  if (healBuffs.Any(item => item.casterId == netId)) {
+                     // Find the casted heal ability of entity and remove
+                     SeaBuffData buffData = healBuffs.First(item => item.casterId == netId);
+                     allyShip._buffs.Remove(buffData);
+                     // Disable heal effect if no existing heal buff data exist
+                     if (!allyShip.hasBuffDataWithType(Category.Buff, SeaBuff.Type.Heal)) {
+                        allyShip.Rpc_TriggerHealEffect(false);
+                        allyShip.Rpc_TriggerHealSfx(false);
+                     }
+                  }
+               }
             }
          }
       }

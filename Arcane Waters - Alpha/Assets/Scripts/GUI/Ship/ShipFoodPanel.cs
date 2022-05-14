@@ -71,6 +71,17 @@ public class ShipFoodPanel : ClientMonoBehaviour
          _foods[i].setAmountLeft(hpF);
       }
 
+      int curUnits = Mathf.CeilToInt(Global.player.currentFood / foodPerUnit);
+      int prevUnits = Mathf.CeilToInt(_lastFood / foodPerUnit);
+
+      if (prevUnits - curUnits == 1 && curUnits < unitsNeeded && prevUnits <= unitsNeeded) {
+         for (int i = 0; i < _foods.Count; i++) {
+            if (_foods[i].gameObject.activeSelf) {
+               _foods[i].blink();
+            }
+         }
+      }
+
       _lastFood = Global.player.currentFood;
       _lastMaxFood = Global.player.maxFood;
 

@@ -144,7 +144,7 @@ public class Outpost : SeaStructureTower, IObserver
       }
    }
 
-   protected override NetEntity getAttackerInRange () {
+   protected override NetEntity getAttackerInRange (bool logData = false) {
       // If we're targeting a player ship that's in our range, don't find a new target
       if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(_aimTarget.transform.position)) {
          return _aimTarget;

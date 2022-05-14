@@ -92,7 +92,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    public List<PvpShipIconPair> pvpShipIconDisabledList = new List<PvpShipIconPair>();
 
    // The ship stats
-   public Text shipAttackText, shipSpeedText, shipRangeText, shipDefenseText, shipCargoText, shipSupplyText, shipSailorsText;
+   public Text shipAttackText, shipSpeedText, shipRangeText, shipDefenseText, shipCargoText, shipSupplyText;
 
    // The stat tab of the ship
    public GameObject shipStatTab;
@@ -189,7 +189,6 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipRangeText.text = "";
       shipCargoText.text = "";
       shipSupplyText.text = "";
-      shipSailorsText.text = "";
       shipDefenseText.text = "";
 
       foreach (Text abilityText in abilityTexts) {

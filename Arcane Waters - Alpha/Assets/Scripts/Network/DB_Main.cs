@@ -965,7 +965,7 @@ public class DB_Main : DB_MainStub
       List<XMLPair> rawDataList = new List<XMLPair>();
 
       using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand("SELECT xmlId, xmlContent FROM global.projectiles_xml_v3", conn)) {
+      using (MySqlCommand cmd = new MySqlCommand("SELECT xmlId, xmlContent, xmlName FROM global.projectiles_xml_v3", conn)) {
          conn.Open();
          cmd.Prepare();
          DebugQuery(cmd);
@@ -973,11 +973,13 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  var rawXmlData = dataReader.GetString("xmlContent");
-                  var xmlId = dataReader.GetInt32("xmlId");
+                  string rawXmlData = dataReader.GetString("xmlContent");
+                  int xmlId = dataReader.GetInt32("xmlId");
+                  string xmlName = dataReader.GetString("xmlName");
                   XMLPair xmlPair = new XMLPair {
                      rawXmlData = rawXmlData,
                      xmlId = xmlId,
+                     xmlName = xmlName
                   };
                   rawDataList.Add(xmlPair);
                }
@@ -9150,8 +9152,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shipXmlId, damage, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities, food, maxFood) " +
-            "VALUES(@usrId, @shipXmlId, @damage, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
+            "INSERT INTO ships (usrId, shipXmlId, damage, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, cargoMax, health, maxHealth, attackRange, speed, rarity, shipAbilities, food, maxFood) " +
+            "VALUES(@usrId, @shipXmlId, @damage, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9166,8 +9168,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@shipName", shipInfo.shipName);
             cmd.Parameters.AddWithValue("@sailPalette1", shipInfo.sailPalette1);
             cmd.Parameters.AddWithValue("@sailPalette2", shipInfo.sailPalette2);
-            cmd.Parameters.AddWithValue("@supplies", shipInfo.supplies);
-            cmd.Parameters.AddWithValue("@suppliesMax", shipInfo.suppliesMax);
             cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
@@ -9176,7 +9176,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
             cmd.Parameters.AddWithValue("@damage", shipInfo.damage);
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
-            cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
             cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
             DebugQuery(cmd);
@@ -9223,8 +9222,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shipXmlId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities, food, maxFood) " +
-            "VALUES(@usrId, @shipXmlId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
+            "INSERT INTO ships (usrId, shipXmlId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, cargoMax, health, maxHealth, damage, attackRange, speed, rarity, shipAbilities, food, maxFood) " +
+            "VALUES(@usrId, @shipXmlId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @cargoMax, @health, @maxHealth, @damage, @attackRange, @speed, @rarity, @shipAbilities, @food, @maxFood)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9239,8 +9238,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipName);
             cmd.Parameters.AddWithValue("@sailPalette1", shipyardInfo.sailPalette1);
             cmd.Parameters.AddWithValue("@sailPalette2", shipyardInfo.sailPalette2);
-            cmd.Parameters.AddWithValue("@supplies", shipyardInfo.supplies);
-            cmd.Parameters.AddWithValue("@suppliesMax", shipyardInfo.suppliesMax);
             cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipyardInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipyardInfo.maxHealth);
@@ -9248,7 +9245,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@maxFood", shipyardInfo.maxFood);
             cmd.Parameters.AddWithValue("@attackRange", shipyardInfo.attackRange);
             cmd.Parameters.AddWithValue("@damage", shipyardInfo.damage);
-            cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
             cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
             cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
