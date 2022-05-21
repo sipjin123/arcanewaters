@@ -349,8 +349,15 @@ MonoBehaviour:
     defaultValue: 10
     toolTip: Max enemy count
     type: 0
+  - name: respawn time
+    defaultValue: -1
+    toolTip: The respawn timer of each enemy
+    type: 1
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
+  validObjectStateValues: []
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0

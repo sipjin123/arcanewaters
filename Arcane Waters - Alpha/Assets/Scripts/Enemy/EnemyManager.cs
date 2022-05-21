@@ -14,7 +14,20 @@ public class EnemyManager : MonoBehaviour {
 
    // Self
    public static EnemyManager self;
-   
+
+   // The respawn data needed for respawning in an open world sea
+   public class OpenWorldRespawnData {
+      public Instance instance;
+      public Area area;
+      public Vector2 localPosition;
+      public bool isPositionRandomized;
+      public bool useWorldPosition;
+      public int guildId;
+      public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+      public bool isOpenWorldSpawn;
+      public float respawnTime;
+   }
+
    #endregion
 
    public void Awake () {
@@ -45,11 +58,11 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   public void spawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
-      processSpawnOpenWorldEnemies(instance, areaKey, targetSpawns);
+   public void spawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns, float respawnTime) {
+      processSpawnOpenWorldEnemies(instance, areaKey, targetSpawns, respawnTime);
    }
 
-   private void processSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
+   private void processSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns, float respawnTime) {
       double initialTime = NetworkTime.time;
       Area areaTarget = AreaManager.self.getArea(areaKey);
       if (areaTarget == null) {
@@ -152,7 +165,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Hard, spawnsPerLayer, mostCompatibleLayer, deepWaterTiles));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Hard, spawnsPerLayer, mostCompatibleLayer, deepWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Hard difficulty");
             }
@@ -168,7 +181,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Medium, spawnsPerLayer, mostCompatibleLayer, midWaterTiles));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Medium, spawnsPerLayer, mostCompatibleLayer, midWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Medium difficulty");
             }
@@ -184,7 +197,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Easy, spawnsPerLayer, mostCompatibleLayer, shallowWaterTiles));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Easy, spawnsPerLayer, mostCompatibleLayer, shallowWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Easy difficulty");
             }
@@ -197,7 +210,7 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_OpenWorldSpawnByDifficulty (Instance instance, Area areaTarget, Voyage.Difficulty difficulty, int spawnsPerLayer, TilemapLayer layer, List<Vector3Int> availableTiles) {
+   private IEnumerator CO_OpenWorldSpawnByDifficulty (Instance instance, Area areaTarget, Voyage.Difficulty difficulty, int spawnsPerLayer, TilemapLayer layer, List<Vector3Int> availableTiles, float respawnTime) {
       yield return new WaitForSeconds(.1f);
       int maxAttempts = 30;
       int successfulSpawns = 0;
@@ -262,12 +275,12 @@ public class EnemyManager : MonoBehaviour {
                         // Spawning ships has a 60% chance
                         Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
                         if (randomEnemyTypeVal < spawnShipChance) {
-                           spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                           spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty, true, respawnTime);
                         } else {
                            if (mapInfo.spawnsSeaMonsters || forceSpawnSeamonsters) {
-                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, guildId, difficulty);
+                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, guildId, difficulty, true, respawnTime);
                            } else {
-                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty, true, respawnTime);
                            }
                         }
 
@@ -285,8 +298,7 @@ public class EnemyManager : MonoBehaviour {
 
    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
         // If we don't have any spawners defined for this Area, then we're done
-        if (instance == null)
-        {
+        if (instance == null) {
             D.warning("Invalid instance received when trying to spawn enemy " + enemyType);
             return;
         }
@@ -373,15 +385,15 @@ public class EnemyManager : MonoBehaviour {
          if (randomEnemyTypeVal < spawnShipChance) {
             for (int i = 0; i < spawnsPerSpot; i++) {
                spawnedEntities++;
-               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty);
+               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty, false);
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
                spawnedEntities++;
                if (mapInfo.spawnsSeaMonsters) {
-                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId, (Voyage.Difficulty) instance.difficulty);
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId, (Voyage.Difficulty) instance.difficulty, false);
                } else {
-                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty);
+                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty, false);
                }
             }
          }
@@ -396,7 +408,7 @@ public class EnemyManager : MonoBehaviour {
          "CPU:{" + currentCpuUsage + "} Ram:{" + currentRamUsage + "}", D.ADMIN_LOG_TYPE.Performance);
    }
 
-   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
       Ship.Type shipType = Ship.Type.Type_1;
       int shipXmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
 
@@ -456,6 +468,9 @@ public class EnemyManager : MonoBehaviour {
       }
       botShip.guildId = guildId;
       botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);
+      if (isOpenWorldSpawn) {
+         botShip.setOpenWorldData(instance, area, localPosition, isPositionRandomized, useWorldPosition, guildId, difficulty, isOpenWorldSpawn, respawnTimer);
+      }
 
       InstanceManager.self.addSeaMonsterToInstance(botShip, instance);
       NetworkServer.Spawn(botShip.gameObject);
@@ -510,7 +525,29 @@ public class EnemyManager : MonoBehaviour {
       instance.entities.Add(newSeaMonster);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+   public void processBotshipSpawn (OpenWorldRespawnData respawnData) {
+      StartCoroutine(CO_WaitforSpawnBotship(respawnData));
+   }
+
+   public void processSeamonsterSpawn (OpenWorldRespawnData respawnData) {
+      StartCoroutine(CO_WaitforSpawnSeamonster(respawnData));
+   }
+
+   private IEnumerator CO_WaitforSpawnBotship (OpenWorldRespawnData respawnData) {
+      yield return new WaitForSeconds(respawnData.respawnTime);
+      spawnBotShip(respawnData.instance, respawnData.area, respawnData.localPosition, 
+         respawnData.guildId, respawnData.isPositionRandomized, respawnData.useWorldPosition, 
+         respawnData.difficulty, respawnData.isOpenWorldSpawn, respawnData.respawnTime);
+   }
+
+   private IEnumerator CO_WaitforSpawnSeamonster (OpenWorldRespawnData respawnData) {
+      yield return new WaitForSeconds(respawnData.respawnTime);
+      spawnSeaMonster(respawnData.instance, respawnData.area, respawnData.localPosition,
+         respawnData.isPositionRandomized, respawnData.useWorldPosition, respawnData.guildId,
+         respawnData.difficulty, respawnData.isOpenWorldSpawn, respawnData.respawnTime);
+   }
+
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
 
@@ -536,7 +573,7 @@ public class EnemyManager : MonoBehaviour {
          if (randomEnemyByDifficulty != null) {
             seaMonsterType = randomEnemyByDifficulty.seaMonsterType;
          } else {
-            spawnBotShip(instance, area, localPosition, guildId, isPositionRandomized, useWorldPosition, difficulty);
+            spawnBotShip(instance, area, localPosition, guildId, isPositionRandomized, useWorldPosition, difficulty, isOpenWorldSpawn, respawnTimer);
             return;
          }
       }
@@ -564,6 +601,9 @@ public class EnemyManager : MonoBehaviour {
          seaEntity.transform.position = localPosition;
       } else {
          seaEntity.transform.localPosition = localPosition;
+      }
+      if (isOpenWorldSpawn) {
+         seaEntity.setOpenWorldData(instance, area, localPosition, isPositionRandomized, useWorldPosition, guildId, difficulty, isOpenWorldSpawn, respawnTimer);
       }
 
       // Network Setup

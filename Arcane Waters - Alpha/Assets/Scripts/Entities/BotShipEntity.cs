@@ -46,6 +46,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // References to the sprites used for targeting
    public Sprite aimingReticle, lockedReticle;
 
+   // The respawn parameters set
+   public Instance.RespawnParameters respawnParams = null;
+
+   // The respawn time
+   public float respawnTime = -1;
+
    #endregion
 
    protected override void Awake () {
@@ -109,6 +115,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             D.error("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
          }
 
+         if (respawnParams!= null && respawnTime > 0) {
+            InstanceManager.self.getInstance(instanceId).processSpawnBotShip(respawnParams.dataField, respawnParams.localPos, respawnParams.area, respawnParams.biome, respawnTime);
+         }
          _powerups.Clear();
          hideTargetingEffects();
          Rpc_NotifyCancelCharge();

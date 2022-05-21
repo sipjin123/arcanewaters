@@ -155,11 +155,18 @@ MonoBehaviour:
     defaultValue: True
     toolTip: if ships should be randomized
     type: 3
+  - name: respawn time
+    defaultValue: -1
+    toolTip: The respawn time if any
+    type: 1
   selectDataFields: []
   customDataFields:
   - name: ship data
     toolTip: Ship from the Database that is spawned here
     type: 12
+  hasVariableObjectState: 0
+  objectStateDescription: 
+  validObjectStateValues: []
 --- !u!114 &1767334834277260193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,5 +305,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
