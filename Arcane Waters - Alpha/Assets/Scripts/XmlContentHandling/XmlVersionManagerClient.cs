@@ -954,13 +954,15 @@ public class XmlVersionManagerClient : GenericGameManager {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
                // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
+               if (xmlSubGroup.Length >= 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
+                  string xmlName = "";
                   ProjectileStatData actualData = Util.xmlLoad<ProjectileStatData>(xmlSubGroup[1]);
                   actualData.projectileId = dataId;
+                  actualData.projectileName = xmlName;
                   projectileDataList.Add(new ProjectileStatPair {
                      projectileData = actualData,
-                     xmlId = dataId
+                     xmlId = dataId,
                   });
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }

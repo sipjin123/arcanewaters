@@ -512,6 +512,24 @@ public class TreasureChest : NetworkBehaviour {
                image.sprite = ImageManager.getSprite(hatStatData.equipmentIconPath);
                itemName = hatStatData.equipmentName;
             }
+         } else if (item.category == Item.Category.Ring) {
+            RingStatData ringStatData = EquipmentXMLManager.self.getRingData(item.itemTypeId);
+            if (ringStatData != null) {
+               image.sprite = ImageManager.getSprite(ringStatData.equipmentIconPath);
+               itemName = ringStatData.equipmentName;
+            }
+         } else if (item.category == Item.Category.Trinket) {
+            TrinketStatData trinketStatData = EquipmentXMLManager.self.getTrinketData(item.itemTypeId);
+            if (trinketStatData != null) {
+               image.sprite = ImageManager.getSprite(trinketStatData.equipmentIconPath);
+               itemName = trinketStatData.equipmentName;
+            }
+         } else if (item.category == Item.Category.Necklace) {
+            NecklaceStatData necklaceStatData = EquipmentXMLManager.self.getNecklaceData(item.itemTypeId);
+            if (necklaceStatData != null) {
+               image.sprite = ImageManager.getSprite(necklaceStatData.equipmentIconPath);
+               itemName = necklaceStatData.equipmentName;
+            }
          } else if (item.category == Item.Category.Quest_Item) {
             QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
             if (questItem != null) {
