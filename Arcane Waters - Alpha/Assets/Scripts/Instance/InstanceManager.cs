@@ -616,15 +616,17 @@ public class InstanceManager : MonoBehaviour
    }
 
    public void removeEmptyInstance (Instance instance) {
+      string areaKey = instance.areaKey;
+
       // Make sure there's no one inside
       if (instance.getPlayerCount() > 0) {
-         D.log("Not going to destroy instance with active connections: " + instance.id);
+         D.debug("Not going to destroy instance with active connections: " + instance.id);
          return;
       }
 
       // Make sure it exists in our mapping
       if (!_instances.ContainsKey(instance.id)) {
-         D.log("Instance Manager does not contain instance id: " + instance.id);
+         D.debug("Instance Manager does not contain instance id: " + instance.id);
          return;
       }
 
@@ -658,6 +660,31 @@ public class InstanceManager : MonoBehaviour
 
       // Then destroy the instance
       NetworkServer.Destroy(instance.gameObject);
+
+      // Remove area game object if there are no instances using it
+      if (WorldMapManager.isWorldMapArea(areaKey)) {
+         List<Instance> allInstancesWithArea = _instances.Values.ToList().FindAll(_ => _.areaKey == areaKey);
+         if (allInstancesWithArea.Count == 0) {
+            Area areaReference = AreaManager.self.getArea(areaKey);
+            if (areaReference != null) {
+               Destroy(areaReference.gameObject);
+            }
+            AreaManager.self.removeArea(areaKey);
+
+            NetworkedServer netServerReference = ServerNetworkingManager.self.server;
+            if (netServerReference != null) {
+               if (netServerReference.areaBeingGenerated.ContainsKey(areaKey)) {
+                  netServerReference.areaBeingGenerated.Remove(areaKey);
+               }
+               if (netServerReference.playerCountPerArea.ContainsKey(areaKey)) {
+                  netServerReference.playerCountPerArea.Remove(areaKey);
+               }
+               if (netServerReference.areaToInstanceCount.ContainsKey(areaKey)) {
+                  netServerReference.areaToInstanceCount.Remove(areaKey);
+               }
+            }
+         }
+      }
    }
 
    public int getPlayerCountInInstance (int instanceId) {

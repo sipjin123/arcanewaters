@@ -33,6 +33,9 @@ public class MapManager : MonoBehaviour
    // The type of map download for logging
    public enum MapDownloadType { None = 0, Nubis = 1, Cache = 2, DBMain = 3 };
 
+   // The queuedMapCreation
+   public List<LiveMapData> queuedMapCreation = new List<LiveMapData>();
+
    #endregion
 
    private void Awake () {
@@ -44,14 +47,67 @@ public class MapManager : MonoBehaviour
    }
 
    public void createLiveMap (string areaKey, string baseMapAreaKey, Biome.Type voyageBiome) {
-      createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null, voyageBiome);
+      LiveMapData newLiveMapData = new LiveMapData {
+         areaKey = areaKey,
+         mapInfo = new MapInfo(baseMapAreaKey, null, -1),
+         mapPos = getNextMapPosition(),
+         mapCustomData = null,
+         biome = voyageBiome
+      };
+
+      // Set this to false to revert to old system without the queueing
+      bool useMapQueueing = true;
+      if (useMapQueueing) {
+         if (queuedMapCreation.Count > 0) {
+            queuedMapCreation.Add(newLiveMapData);
+            if (Mirror.NetworkServer.active) {
+               if (!ServerNetworkingManager.self.doesLocalServerHaveQueuedArea(areaKey)) {
+                  if (ServerNetworkingManager.self.server != null) {
+                     ServerNetworkingManager.self.server.addAreaToQueueList(areaKey);
+                  }
+               }
+            }
+            string message = "Added new content to queue {" + areaKey + "}{" + newLiveMapData.biome + "}{" + newLiveMapData.mapPos + "}{" + queuedMapCreation.Count + "}";
+            if (Util.isCloudBuild()) {
+               D.debug(">>>==<<<" + message);
+            } else {
+               D.editorLog(message, Color.yellow);
+            }
+         } else {
+            string message = "Creating new map {" + newLiveMapData.areaKey + "}{" + newLiveMapData.biome + "}{" + newLiveMapData.mapPos + "}{" + queuedMapCreation.Count + "}";
+            if (Util.isCloudBuild()) {
+               D.debug("===>>>" + message);
+            } else {
+               D.editorLog(message, Color.green);
+            }
+            queuedMapCreation.Add(newLiveMapData);
+            if (Mirror.NetworkServer.active) {
+               if (!ServerNetworkingManager.self.doesLocalServerHaveQueuedArea(areaKey)) {
+                  if (ServerNetworkingManager.self.server != null) {
+                     ServerNetworkingManager.self.server.addAreaToQueueList(areaKey);
+                  }
+               }
+            }
+            createLiveMap(newLiveMapData.areaKey, newLiveMapData.mapInfo, newLiveMapData.mapPos, newLiveMapData.mapCustomData, newLiveMapData.biome);
+         }
+      } else {
+         createLiveMap(newLiveMapData.areaKey, newLiveMapData.mapInfo, newLiveMapData.mapPos, newLiveMapData.mapCustomData, newLiveMapData.biome);
+      }
    }
 
    public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome, MapManager.MapDownloadType mapDownloadType = MapDownloadType.None) {
       double startTime = NetworkTime.time;
+      D.editorLog("Creating Live Map {" + startTime.ToString("f1") + "}{" + areaKey + "}", Color.yellow);
 
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
+         List<LiveMapData> queuedMap = queuedMapCreation.FindAll(_ => _.areaKey == areaKey
+         && _.mapPos == mapPosition
+         && _.biome == biome);
+         if (queuedMap.Count > 0) {
+            queuedMapCreation.Remove(queuedMap[0]);
+            continueQueue();
+         }
          D.debug("The area already exists and won't be created again: " + areaKey);
          return;
       }
@@ -132,7 +188,7 @@ public class MapManager : MonoBehaviour
 
    private async void processNubisData (double startTime, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       D.editorLog("Attempting to fetch using Nubis Data for area {" + areaKey + "}", Color.green);
-      
+
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call<string>(nameof(DB_Main.getMapInfo), areaKey);
       if (mapData != null) {
@@ -151,6 +207,20 @@ public class MapManager : MonoBehaviour
          if (exportedProject != null) {
             StartCoroutine(CO_InstantiateMapData(startTime, mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome, MapDownloadType.Nubis));
          }
+      }
+   }
+
+   private void continueQueue () {
+      string message = "";
+      if (queuedMapCreation.Count > 0) {
+         LiveMapData nextQueuedMap = queuedMapCreation[0];
+         message = "MAP_QUEUE: Processing Next QUEUE: {" + nextQueuedMap.areaKey + "}{" + nextQueuedMap.biome + "}{" + nextQueuedMap.mapPos + "}{" + queuedMapCreation.Count + "}";
+         if (Util.isCloudBuild()) {
+            D.debug("--->>>" + message);
+         } else {
+            D.editorLog(message, Color.green);
+         }
+         createLiveMap(nextQueuedMap.areaKey, nextQueuedMap.mapInfo, nextQueuedMap.mapPos, nextQueuedMap.mapCustomData, nextQueuedMap.biome);
       }
    }
 
@@ -302,6 +372,39 @@ public class MapManager : MonoBehaviour
 
          float elapsedTime = (float) (NetworkTime.time - functionStartTime);
          D.debug("[Timing] MapManager CO_InstantiateMapData for area: " + areaKey + " took " + elapsedTime.ToString("F2") + "seconds.");
+
+         List<LiveMapData> queuedMap = queuedMapCreation.FindAll(_ => _.areaKey == areaKey);
+         if (queuedMap.Count > 0) {
+            queuedMapCreation.Remove(queuedMap[0]);
+            if (Mirror.NetworkServer.active) {
+               if (ServerNetworkingManager.self.doesLocalServerHaveQueuedArea(areaKey)) {
+                  D.adminLog("Removed area being generated for area {" + areaKey + "}", D.ADMIN_LOG_TYPE.Performance);
+                  ServerNetworkingManager.self.server.areaBeingGenerated.Remove(areaKey);
+               } else {
+                  D.adminLog("Server does not have queued map {" + areaKey + "}", D.ADMIN_LOG_TYPE.Performance);
+               }
+            }
+            string message = "MAP_QUEUE: Cleared map queue for area {" + areaKey + "}{" + biome + "}{" + mapPosition + "}{" + queuedMapCreation.Count + "}";
+            if (Util.isCloudBuild()) {
+               D.debug("<<<===" + message);
+            } else {
+               D.editorLog(message, Color.green);
+            }
+
+            continueQueue();
+         } else {
+            if (queuedMapCreation.Count > 0) {
+               string message = "MAP_QUEUE: Failed to Clear map queue for area {" + areaKey + "}{" + biome + "}{" + mapPosition + "}{" + queuedMapCreation.Count + "}!!";
+               if (Util.isCloudBuild()) {
+                  D.debug(">>>xxx<<<" + message);
+               } else {
+                  D.editorLog(message, Color.red);
+               }
+               foreach (var temp in queuedMapCreation) {
+                  D.editorLog("--" + temp.areaKey + " " + temp.biome + " " + temp.mapInfo.displayName, Color.white);
+               }
+            }
+         }
       }
    }
 

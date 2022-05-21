@@ -460,6 +460,24 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, voyageId, groupId, userId, userName);
    }
 
+   public bool doesLocalServerHaveQueuedArea (string areaKey) {
+      if (server == null) {
+         D.debug("Missing Local Server!");
+         return false;
+      }
+
+      if (server.areaBeingGenerated == null) {
+         D.debug("Missing List!");
+         return false;
+      }
+
+      if (server.areaBeingGenerated.ContainsKey(areaKey)) {
+         return true;
+      }
+
+      return false;
+   }
+
    public List<int> getAllOnlineUsers () {
       List<int> userIds = new List<int>();
 

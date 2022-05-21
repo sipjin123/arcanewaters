@@ -112,8 +112,13 @@ public class RedirectionManager : GenericGameManager
       if (!isSinglePlayer) {
          // Check if there is an open area on the server the user is currently connected to
          NetworkedServer currentServer = ServerNetworkingManager.self.getServer(currentServerPort);
-         if (currentServer.hasOpenArea(destinationAreaKey)) {
-            D.adminLog("Current Server has the Open Area {" + currentServer.networkedPort.Value + "} Player {" + userId + ":" + userName + ":" + voyageId + "} " +
+         if (currentServer.hasOpenArea(destinationAreaKey) || currentServer.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
+            string message = "[Current] Server has the {Open Area}";
+            if (currentServer.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
+               message = "[Current] Server has an {Area being Generated}";
+            }
+
+            D.adminLog(message + " {" + currentServer.networkedPort.Value + "} Player {" + userId + ":" + userName + ":" + voyageId + "} " +
                "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
             return currentServer;
          }
@@ -124,9 +129,21 @@ public class RedirectionManager : GenericGameManager
                continue;
             }
 
-            if (server.hasOpenArea(destinationAreaKey)) {
-               D.adminLog("Other Server has Open Area, Switching from [" + currentServerPort + "] to [" + server.networkedPort.Value + "] Player {" + userId + ":" + userName + ":" + voyageId + "} " +
+            if (server.hasOpenArea(destinationAreaKey) || server.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
+               string message = "[Other] Server has {Open Area}, Switching from";
+               if (server.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
+                  message = "[Other] server has an {Area being Generated}, Switching from";
+                  D.adminLog("Here are the Other server areas being generated: " + server.areaBeingGenerated.Count, D.ADMIN_LOG_TYPE.AreaClearing);
+                  foreach (KeyValuePair<string, double> temp in server.areaBeingGenerated) {
+                     if (WorldMapManager.isWorldMapArea(destinationAreaKey)) {
+                        D.adminLog("--> " + temp.Key, D.ADMIN_LOG_TYPE.AreaClearing);
+                     }
+                  }
+               }
+
+               D.adminLog(message + " [" + currentServerPort + "] to [" + server.networkedPort.Value + "] Player {" + userId + ":" + userName + ":" + voyageId + "} " +
                   "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
+
                return server;
             }
          }
@@ -137,6 +154,15 @@ public class RedirectionManager : GenericGameManager
 
       if (bestServer == null) {
          D.error("Couldn't find a good server to connect to, server count: " + ServerNetworkingManager.self.servers.Count);
+      } else {
+         if (!bestServer.areaToInstanceCount.ContainsKey(destinationAreaKey)) {
+            if (WorldMapManager.isWorldMapArea(destinationAreaKey)) {
+               D.adminLog("Redirecting: Server [" + bestServer.networkedPort.Value.ToString() + "] registered Queued Network Area {" + destinationAreaKey + "}", D.ADMIN_LOG_TYPE.AreaClearing);
+               bestServer.areaBeingGenerated.Add(destinationAreaKey, NetworkTime.time);
+            }
+         } else {
+            D.adminLog("Redirecting: Server [" + bestServer.networkedPort.Value.ToString() + "] already has area {" + destinationAreaKey + "} generated", D.ADMIN_LOG_TYPE.AreaClearing);
+         }
       }
 
       try {
