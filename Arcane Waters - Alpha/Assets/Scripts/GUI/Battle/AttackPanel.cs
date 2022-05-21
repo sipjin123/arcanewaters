@@ -34,7 +34,8 @@ public class AttackPanel : MonoBehaviour {
       _button = GetComponentInChildren<Button>();
    }
 
-   public void clearCachedAbilityCast () {
+   public void clearCachedAbilityCast (string reason) {
+      D.debug("Clearing Ability Cache due to {" + reason + "}");
       recentAbilityRequest.abilityType = AbilityType.Undefined;
       recentAbilityRequest.abilityIndex = -1;
    }

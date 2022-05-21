@@ -1874,7 +1874,7 @@ public class SeaEntity : NetEntity
       yield break;
    }
 
-   protected virtual bool isInRange (Vector2 position) {
+   protected virtual bool isInRange (Vector2 position, bool logData = false) {
       return false;
    }
 
@@ -1913,7 +1913,7 @@ public class SeaEntity : NetEntity
       _editorConeAggroGizmoMesh.SetIndices(triangles, MeshTopology.Triangles, 0);
    }
 
-   protected virtual NetEntity getAttackerInRange () {
+   protected virtual NetEntity getAttackerInRange (bool logData = false) {
       // Check if any of our attackers are within range
       foreach (uint attackerId in _attackers.Keys) {
          NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
@@ -1922,7 +1922,7 @@ public class SeaEntity : NetEntity
          }
 
          Vector2 attackerPosition = attacker.transform.position;
-         if (!isInRange(attackerPosition)) {
+         if (!isInRange(attackerPosition, logData)) {
             continue;
          }
 

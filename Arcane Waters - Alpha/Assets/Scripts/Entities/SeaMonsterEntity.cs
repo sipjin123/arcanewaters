@@ -917,15 +917,24 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       if (seaMonsterData.isMelee && seaMonsterData.isRanged && seaMonsterData.roleType == RoleType.Master) {
          if (!isWithinMeleeAttackDistance(sqrDistance)) {
             bool isWithinRangedDistance = isWithinRangedAttackDistance(sqrDistance) && isRangedAbilityAvailable;
+            if (logData && isWithinRangedDistance) {
+               D.editorLog("Target is Within Backup Attack Range: {" + isRangedAbilityAvailable + "}", Color.red);
+            }
             return isWithinRangedDistance;
          }
       }
 
       if (seaMonsterData.isMelee) {
          bool isWithinMeleeRange = isWithinMeleeAttackDistance(sqrDistance);
+         if (logData) {
+            D.editorLog("Target is Within Melee Range", Color.red);
+         }
          return isWithinMeleeRange;
       } else {
          bool isWithinProjectileRange = isWithinRangedAttackDistance(sqrDistance);
+         if (logData) {
+            D.editorLog("Target is Within Projectile Range", Color.red);
+         }
          return isWithinProjectileRange;
       }
    }
@@ -1019,6 +1028,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
                   if (!hasActiveChildren) {
                      // Summoning ability logic
+                     D.editorLog("{" + monsterType + "} Summon skill: {" + attackType + "} {" + seaEntityAbilityData.abilityName + "}", Color.green);
                      EnemyManager.self.summonSeaMonsters(transform.position, seaEntityAbilityData.summonSeamonsterId, instanceId, areaKey, seaEntityAbilityData.summonCount, this);
                      setIsInvulnerable(true);
                      _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
@@ -1026,6 +1036,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                      return;
                   } else {
                      resetToDefaultAttack = true;
+                     D.debug("Currently has active {" + (seaMonsterChildrenList.Count - deadMinions) + "} children, prevent summoning");
                   }
                   break;
             }
@@ -1046,6 +1057,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          isRangedCooledDown = NetworkTime.time - _abilityCooldownTracker[selectedAbilityId] > seaEntityAbilityData.coolDown && !seaEntityAbilityData.isMelee;
          if (isRangedCooledDown) {
             resetToDefaultAttack = false;
+            D.editorLog("Grant Ranged Attack: {"+ seaEntityAbilityData .abilityName+ "} Cooldown: " + (NetworkTime.time - _abilityCooldownTracker[selectedAbilityId]).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1") + ":" + seaEntityAbilityData.isMelee, Color.magenta);
          }
       }
 
@@ -1054,6 +1066,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          selectedAbilityId = seaMonsterData.skillIdList[0];
          seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
          attackType = seaEntityAbilityData.selectedAttackType;
+         D.editorLog("Revert to Melee Attack, Cooldown is: " + (NetworkTime.time - _abilityCooldownTracker[selectedAbilityId]).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1"), Color.magenta);
+      }
+
       // Attack
       if (attackType != Attack.Type.None) {
          if ((seaMonsterData.isRanged && seaMonsterData.roleType != RoleType.Master) || isRangedCooledDown) {
@@ -1068,6 +1083,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                   Invoke(nameof(resetRangedAttackBool), shipAbility.coolDown + 1);
                }
 
+               if (seaMonsterData.roleType == RoleType.Master) {
+                  D.editorLog("{" + monsterType + "} Ranged skill: {" + abilityName + "}{" + attackType + "}{" + abilityId + "}", Color.green);
+               }
             }
 
             // TODO: Confirm later on if this needs to be dynamic
@@ -1098,6 +1116,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                Invoke(nameof(resetMeleeParameters), 1);
 
                if (seaMonsterData.roleType == RoleType.Master) {
+                  D.editorLog("{" + monsterType + "} Melee skill: {" + attackType + "}", Color.green);
                   meleeAtSpot(targetEntity.transform.position, selectedAbilityId, seaMonsterData.maxMeleeDistanceGap);
                   _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
                } else {

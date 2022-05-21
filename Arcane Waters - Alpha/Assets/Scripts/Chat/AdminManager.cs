@@ -131,7 +131,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
       cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
-      cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
+      cm.addCommand(new CommandData("log", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
@@ -147,7 +147,7 @@ public class AdminManager : NetworkBehaviour
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
+      cm.addCommand(new CommandData("set_log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
@@ -298,6 +298,7 @@ public class AdminManager : NetworkBehaviour
          string areaName = getOpenWorldMapName(i);
          initialAreas.Add(areaName);
          MapManager.self.createLiveMap(areaName);
+         InstanceManager.self.createNewInstance(areaName, false, -1, "", "", Direction.South);
       }
 
       // New areas won't be completed straight away, so wait a small delay
@@ -325,6 +326,7 @@ public class AdminManager : NetworkBehaviour
          string areaName = getOpenWorldMapName(numAreasCreated);
          D.debug("TestOpenWorld: Creating map for area: " + areaName + ", cpuUsage: " + currentCpuUsage + ", ramUsage: " + currentRamUsage);
          MapManager.self.createLiveMap(areaName);
+         InstanceManager.self.createNewInstance(areaName, false, -1, "", "", Direction.South);
          numAreasCreated++;
 
          float mapCreationStartTime = (float) NetworkTime.time;
@@ -478,7 +480,7 @@ public class AdminManager : NetworkBehaviour
       for (int i = 0; i < numAreas; i++) {
          int areaIndex = areaOrder[i];
          string areaName = getOpenWorldMapName(areaIndex);
-         AreaManager.self.destroyArea(areaName);
+         AreaManager.self.destroyAreaForAdmin(areaName);
       }
 
       // After 'duration' has elapsed, report results to the user who ran this command
@@ -921,6 +923,32 @@ public class AdminManager : NetworkBehaviour
                ServerNetworkingManager.self.logRequest(message);
                Target_ReceiveServerLogs(message);
                return;
+            case "enemy":
+               if (_player is PlayerShipEntity) {
+                  foreach (SeaEntity enemyRef in InstanceManager.self.getInstance(_player.instanceId).getSeaEnemyEntities()) {
+                     if (enemyRef is BotShipEntity) {
+                        BotShipEntity botship = (BotShipEntity) enemyRef;
+                        SeaMonsterEntityData botShipData = SeaMonsterManager.self.getMonster(botship.dataXmlId);
+                        if (botShipData != null) {
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {" + botShipData.monsterName + ":" + (Ship.Type) botShipData.subVarietyTypeId + ":" + botShipData.difficultyLevel + "}\n";
+                        } else {
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {Null:" + botship.shipType + ":" + botship.seaEntityData.difficultyLevel + "}\n";
+                        }
+                     }
+                     if (enemyRef is SeaMonsterEntity) {
+                        SeaMonsterEntity seaMonster = (SeaMonsterEntity) enemyRef;
+                        SeaMonsterEntityData monsterData = SeaMonsterManager.self.getMonster(seaMonster.dataXmlId);
+                        if (monsterData != null) {
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {" + monsterData.monsterName + ":" + seaMonster.monsterType + ":" + monsterData.difficultyLevel + "}\n";
+                        } else {
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {Null:" + seaMonster.monsterType + ":" + seaMonster.difficulty + "}\n";
+                        }
+                     }
+                  }
+                  ServerNetworkingManager.self.logRequest(message);
+                  Target_ReceiveServerLogs(message);
+               }
+               return;
             case "voyages":
                Instance instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
@@ -949,9 +977,33 @@ public class AdminManager : NetworkBehaviour
                ServerNetworkingManager.self.logRequest(message);
                Target_ReceiveServerLogs(message);
                return;
+            case "areas":
+               foreach (Area areaRef in AreaManager.self.getAreas()) {
+                  message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "]Areas: {" + areaRef.areaKey + ":" + areaRef.biome + "}\n";
+               }
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
+            case "queue":
+               foreach (KeyValuePair<string, double> areaRef in ServerNetworkingManager.self.server.areaBeingGenerated) {
+                  message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "]NetworkAreaOnQueue: {" + areaRef.Key + "}\n";
+               }
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
+            case "mapqueue":
+               foreach (LiveMapData areaRef in MapManager.self.queuedMapCreation) {
+                  message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "]MapOnQueue: {" + areaRef.areaKey + "}\n";
+               }
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
             case "user":
+            case "info":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
-               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.isPvP)) + "} in server {" + ServerNetworkingManager.self.server.networkedPort.Value + "}";
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" :
+                  (instInfo.id + " A:" + instInfo.areaKey + " B:" + instInfo.biome + " D:" + instInfo.difficulty + " S:" + instInfo.isPvP + " C:" + instInfo.entityCount)) + "} " +
+                  "Server {" + ServerNetworkingManager.self.server.networkedPort.Value + "}";
                ServerNetworkingManager.self.logRequest(message);
                Target_ReceiveServerLogs(message);
                return;
