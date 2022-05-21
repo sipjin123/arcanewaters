@@ -11,6 +11,9 @@ public class OpenWorldController : MonoBehaviour, IMapEditorDataReceiver {
    // The max enemy count
    public int maxEnemyCount = 10;
 
+   // The respawn time
+   public float respawnTimer = -1;
+
    #endregion
 
    public void receiveData (DataField[] dataFields) {
@@ -21,6 +24,15 @@ public class OpenWorldController : MonoBehaviour, IMapEditorDataReceiver {
                maxEnemyCount = newVal;
             } catch {
                D.debug("Failed to process: " + DataField.OPEN_WORLD_ENEMY_COUNT);
+            }
+         }
+
+         if (field.k.CompareTo(DataField.RESPAWN_TIME) == 0) {
+            try {
+               float newVal = int.Parse(field.v.Split(':')[0]);
+               respawnTimer = newVal;
+            } catch {
+               D.debug("Failed to process: " + DataField.RESPAWN_TIME);
             }
          }
       }

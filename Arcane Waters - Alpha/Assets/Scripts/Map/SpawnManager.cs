@@ -147,8 +147,17 @@ public partial class SpawnManager : MonoBehaviour
    }
 
    public Spawn getFirstSpawnAround (string areaKey, Vector2 localCenterPosition, float radius) {
+      if (instantiatedMapSpawns == null) {
+         D.debug("Missing Instantiated Spawns!");
+         return null;
+      }
+
       if (instantiatedMapSpawns.TryGetValue(areaKey, out List<Spawn> mapSpawnList)) {
          foreach (Spawn spawn in mapSpawnList) {
+            if (spawn == null) {
+               D.debug("Null reference spawn");
+               continue;
+            }
             if (Vector2.Distance(localCenterPosition, spawn.transform.localPosition) < radius) {
                return spawn;
             }

@@ -358,6 +358,7 @@ namespace MapCreationTool.Serialization
 
       public const string SHIP_DATA_KEY = "ship data";
       public const string RANDOMIZE_SHIP = "randomize ship";
+      public const string RESPAWN_TIME = "respawn time";
 
       public const string MAP_OBJECT_STATE_MODEL_KEY = "map obejct state model";
       public const string PLACED_PREFAB_ID = "id";

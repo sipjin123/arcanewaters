@@ -415,6 +415,17 @@ public class SeaEntity : NetEntity
       }
 
       if (isServer) {
+         if (openWorldRespawnData != null) {
+            if (openWorldRespawnData.respawnTime > 0) {
+               if (this is SeaMonsterEntity) {
+                  EnemyManager.self.processSeamonsterSpawn(openWorldRespawnData);
+               }
+               if (this is BotShipEntity) {
+                  EnemyManager.self.processBotshipSpawn(openWorldRespawnData);
+               }
+            }
+         }
+         
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
 
          int healthValMAx = maxHealth + totalHealed;
@@ -1476,7 +1487,7 @@ public class SeaEntity : NetEntity
                   processAchievements(targetEntity, finalDamage, attackType);
 
                   targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, finalDamage, attackType, false);
-                  
+
                   // Trigger status based effects here
                   switch (attackType) {
                      case Attack.Type.Shock_Ball:
@@ -2736,7 +2747,24 @@ public class SeaEntity : NetEntity
 
    #endregion
 
+   public void setOpenWorldData (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTime) {
+      openWorldRespawnData = new EnemyManager.OpenWorldRespawnData {
+         instance = instance,
+         area = area,
+         localPosition = localPosition,
+         isPositionRandomized = isPositionRandomized,
+         useWorldPosition = useWorldPosition,
+         guildId = guildId,
+         difficulty = difficulty,
+         isOpenWorldSpawn = isOpenWorldSpawn,
+         respawnTime = respawnTime
+      };
+   }
+
    #region Private Variables
+
+   // The data needed for respawning in open world
+   private EnemyManager.OpenWorldRespawnData openWorldRespawnData = null;
 
    // The cached sea ability list
    private List<ShipAbilityData> _cachedSeaAbilityList = new List<ShipAbilityData>();

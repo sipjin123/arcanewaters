@@ -169,6 +169,14 @@ public class Instance : NetworkBehaviour
    // The number of times the instance must be found empty before being removed (see checkIfInstanceIsEmpty for time between checks)
    public const int CHECKS_BEFORE_REMOVAL = 10;
 
+   // The respawn data class
+   public class RespawnParameters {
+      public ExportedPrefab001 dataField;
+      public Vector3 localPos;
+      public Area area;
+      public Biome.Type biome;
+   }
+
    #endregion
 
    public void Awake () {
@@ -816,7 +824,7 @@ public class Instance : NetworkBehaviour
 
          if (Area.isWorldMap(area.areaKey) && area.openWorldController != null) {
             D.adminLog("Generating open world enemies at area {" + area.areaKey + "}, max of {" + area.openWorldController.maxEnemyCount + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
-            EnemyManager.self.spawnOpenWorldEnemies(this, area.areaKey, area.openWorldController.maxEnemyCount);
+            EnemyManager.self.spawnOpenWorldEnemies(this, area.areaKey, area.openWorldController.maxEnemyCount, area.openWorldController.respawnTimer);
          }
       } else {
          EnemyManager.self.spawnEnemiesOnServerForInstance(this);
@@ -970,7 +978,23 @@ public class Instance : NetworkBehaviour
       return seaMonster;
    }
 
+   public void processSpawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area, Biome.Type biome, float respawnTime) {
+      StartCoroutine(CO_WaitforSpawnBotship(dataField, localPos, area, biome, respawnTime));
+   }
+
+   IEnumerator CO_WaitforSpawnBotship (ExportedPrefab001 dataField, Vector3 localPos, Area area, Biome.Type biome, float respawnTime) {
+      yield return new WaitForSeconds(respawnTime);
+      spawnBotShip(dataField, localPos, area, biome);
+   }
+   
    public BotShipEntity spawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area, Biome.Type biome) {
+      RespawnParameters respawnParams = new RespawnParameters {
+         dataField = dataField,
+         localPos = localPos,
+         area = area,
+         biome = biome
+      };
+
       int xmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
       int guildId = 1;
       bool randomizeShip = true;
@@ -978,6 +1002,7 @@ public class Instance : NetworkBehaviour
       // Randomize xml id of ships by biome as default
       xmlId = EnemyManager.self.randomizeShipXmlId(biome);
       int xmlIdOverride = 0;
+      float respawnTime = 0;
       foreach (DataField field in dataField.d) {
          if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
             guildId = int.Parse(field.v.Split(':')[0]);
@@ -993,6 +1018,12 @@ public class Instance : NetworkBehaviour
          if (field.k.CompareTo(DataField.RANDOMIZE_SHIP) == 0) {
             string randomizeShipData = field.v.Split(':')[0];
             randomizeShip = randomizeShipData.ToLower() == "true" ? true : false;
+         }
+         if (field.k.CompareTo(DataField.RESPAWN_TIME) == 0) {
+            float newRespawnTime;
+            if (float.TryParse(field.v.Split(':')[0], out newRespawnTime)) {
+               respawnTime = newRespawnTime;
+            }
          }
       }
 
@@ -1011,6 +1042,8 @@ public class Instance : NetworkBehaviour
       botShip.areaKey = this.areaKey;
       botShip.facing = Direction.South;
       botShip.transform.localPosition = localPos;
+      botShip.respawnParams = respawnParams;
+      botShip.respawnTime = respawnTime;
 
       botShip.seaEntityData = seaMonsterData;
       botShip.maxHealth = seaMonsterData.maxHealth;
