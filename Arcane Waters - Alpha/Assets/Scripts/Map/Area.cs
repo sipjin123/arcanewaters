@@ -152,6 +152,9 @@ public class Area : MonoBehaviour
    // The list of whirlpools to be loaded by the server
    public List<ExportedPrefab001> whirlpoolPrefabs = new List<ExportedPrefab001>();
 
+   // The list of pvp npcs to be loaded by the server
+   public List<ExportedPrefab001> pvpNpcPrefabs = new List<ExportedPrefab001>();
+
    // The open world spawn blockers
    public List<OpenWorldSpawnBlocker> openWorldSpawnBlockers = new List<OpenWorldSpawnBlocker>();
 
@@ -201,7 +204,7 @@ public class Area : MonoBehaviour
       List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners,
       List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController, OpenWorldController openWorldController,
       List<ExportedPrefab001> windowDataFields, List<ExportedPrefab001> largeWindowDataFields, List<ExportedPrefab001> varyingStatePrefabs,
-      List<ExportedPrefab001> whirlpoolPrefabs) {
+      List<ExportedPrefab001> whirlpoolPrefabs, List<ExportedPrefab001> pvpNpcPrefabs) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -222,6 +225,7 @@ public class Area : MonoBehaviour
       this.largeWindowDataFields = largeWindowDataFields;
       this.varyingStatePrefabs = varyingStatePrefabs;
       this.whirlpoolPrefabs = whirlpoolPrefabs;
+      this.pvpNpcPrefabs = pvpNpcPrefabs;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();

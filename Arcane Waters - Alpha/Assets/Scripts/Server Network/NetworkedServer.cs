@@ -349,6 +349,9 @@ public class NetworkedServer : NetworkedBehaviour
       location.voyageGroupId = ownerEntity.voyageGroupId;
       location.localPositionX = ownerEntity.transform.localPosition.x;
       location.localPositionY = ownerEntity.transform.localPosition.y;
+      if (ulong.TryParse(ownerEntity.steamId, out ulong steamId)) {
+         location.steamId = steamId;
+      }
 
       // Override local position if the spawn location is found
       if (location.areaKey.Length > 0) {
@@ -783,6 +786,37 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
+   [ServerRPC]
+   public void MasterServer_FindUserLocationForSteamFriendJoin (int userId, ulong steamFriendId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<int> userIds = DB_Main.getAssociatedUserIdsWithSteamId(steamFriendId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (ServerNetworkingManager.self.tryGetServerContainingAnyUser(userIds, out NetworkedServer targetServer, out int targetUserId)) {
+               targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationForJoinFriend, userId, targetUserId);
+            }
+         });
+      });
+   }
+
+   [ClientRPC]
+   public void Server_FindUserLocationForJoinFriend (int joinerUserId, int friendUserId) {
+      NetEntity player = EntityManager.self.getEntity(friendUserId);
+      if (player != null) {
+         UserLocationBundle location = new UserLocationBundle();
+         location.userId = player.userId;
+         location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+         location.areaKey = player.areaKey;
+         location.instanceId = player.instanceId;
+         location.localPositionX = player.transform.localPosition.x;
+         location.localPositionY = player.transform.localPosition.y;
+         location.voyageGroupId = player.voyageGroupId;
+         if (ulong.TryParse(player.steamId, out ulong steamId)) {
+            location.steamId = steamId;
+         }
+         InvokeServerRpc(MasterServer_ReturnUserLocationForJoinFriend, joinerUserId, location);
+      }
+   }
+
    [ClientRPC]
    public void Server_FindUserLocationForAdminGoTo (int adminUserId, int userId) {
       NetEntity player = EntityManager.self.getEntity(userId);
@@ -795,7 +829,18 @@ public class NetworkedServer : NetworkedBehaviour
          location.localPositionX = player.transform.localPosition.x;
          location.localPositionY = player.transform.localPosition.y;
          location.voyageGroupId = player.voyageGroupId;
+         if (ulong.TryParse(player.steamId, out ulong steamId)) {
+            location.steamId = steamId;
+         }
          InvokeServerRpc(MasterServer_ReturnUserLocationForAdminGoTo, adminUserId, location);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnUserLocationForJoinFriend (int joinerUserId, UserLocationBundle location) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(joinerUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReturnUserLocationForJoinFriend, joinerUserId, location);
       }
    }
 
@@ -805,6 +850,11 @@ public class NetworkedServer : NetworkedBehaviour
       if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ReturnUserLocationForAdminGoTo, adminUserId, location);
       }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUserLocationForJoinFriend (int joinerUserId, UserLocationBundle location) {
+      SteamFriendsManager.pickedFriendJoinLocation(joinerUserId, location);
    }
 
    [ClientRPC]

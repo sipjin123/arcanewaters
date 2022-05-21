@@ -29,6 +29,9 @@ public class RemoteSetting
    // The type of the value
    public RemoteSettingValueType valueType;
 
+   // The time the setting was updated last
+   public DateTime timestamp;
+
    // Represents the type of a RemoteSetting
    public enum RemoteSettingValueType
    {
@@ -64,6 +67,7 @@ public class RemoteSetting
          setting.description = DataUtil.getString(dataReader, "rsDescription");
          setting.defaultValue = DataUtil.getString(dataReader, "rsDefaultValue");
          setting.valueType = (RemoteSettingValueType) DataUtil.getInt(dataReader, "rsValueType");
+         setting.timestamp = DataUtil.getDateTime(dataReader, "rsTimestamp");
       } catch (Exception ex) {
          D.debug("Error in parsing MySqlData for RemoteSetting " + ex.ToString());
          return null;
@@ -81,6 +85,7 @@ public class RemoteSetting
       setting.description = settingDescription;
       setting.defaultValue = settingDefaultValue;
       setting.valueType = settingValueType;
+      setting.timestamp = DateTime.UtcNow;
       return setting;
    }
 

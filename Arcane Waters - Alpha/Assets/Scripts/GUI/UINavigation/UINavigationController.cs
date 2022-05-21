@@ -83,7 +83,7 @@ public class UINavigationController : MonoBehaviour
          actionButton != null &&
          !_itemsData[_currItemId].isButton
       ) {
-         if (actionButton.interactable) {
+         if (actionButton.interactable && actionButton.gameObject.activeInHierarchy) {
             actionButton.onClick.Invoke();
          }
       }
@@ -303,15 +303,15 @@ public class UINavigationController : MonoBehaviour
       }
 
       public void interactItem () {
-         if (isButton && button.interactable) {
+         if (isButton && button.interactable && button.gameObject.activeInHierarchy) {
             button.onClick.Invoke();
          }
 
-         if (isToggle) {
+         if (isToggle && toggle.gameObject.activeInHierarchy) {
             toggle.isOn = !toggle.isOn;
          }
 
-         if (isDropdown) {
+         if (isDropdown && dropdown.gameObject.activeInHierarchy) {
             if (isDropdownOpen) {
                isDropdownOpen = false;
                dropdown.Hide();

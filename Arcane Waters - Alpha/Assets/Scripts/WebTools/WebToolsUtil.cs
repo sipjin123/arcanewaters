@@ -100,10 +100,3 @@ public enum TicketSourceType
    Email = 3
 }
 
-public enum SessionEvent
-{
-   GameAccountLogin = 1,
-   GameUserCreate = 2,
-   GameUserDestroy = 3,
-   WebToolsLogin = 4
-}

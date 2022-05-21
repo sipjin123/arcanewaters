@@ -156,9 +156,6 @@ public class NetEntity : NetworkBehaviour
    // GameObject that holds the name of the entity
    public GameObject entityNameGO;
 
-   // Demo tag object
-   public GameObject demoTag;
-
    [Header("Stats")]
 
    // The direction we're facing
@@ -436,6 +433,15 @@ public class NetEntity : NetworkBehaviour
 
          if (isPlayerEntity()) {
             StartCoroutine(CO_LoadWeather());
+
+            // Store the game user create session event
+            if (!isServer) {
+               try {
+                  rpc.Cmd_StoreSessionEvent(SystemInfo.deviceName, SessionEventInfo.Type.UserCreate, Util.getDeploymentId());
+               } catch {
+                  D.debug("Error: Failed to store session event!");
+               }
+            }
          }
 
          // Start auto-move and/or auto-basic-actions
@@ -451,11 +457,6 @@ public class NetEntity : NetworkBehaviour
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
-
-      // Registering the game user create event
-      if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
-         Util.tryToRunInServerBackground(() => DB_Main.storeGameUserCreateEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
-      }
    }
 
    public virtual PlayerBodyEntity getPlayerBodyEntity () {
@@ -472,8 +473,6 @@ public class NetEntity : NetworkBehaviour
 
    public override void OnStartClient () {
       base.OnStartClient();
-
-      isDemoChanged(isDemoUser, isDemoUser);
 
       updateInvisibilityAlpha(isInvisible);
 
@@ -492,8 +491,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    private void isDemoChanged (bool oldVal, bool newVal) {
-      if (demoTag != null) {
-         demoTag.SetActive(newVal);
+      if (getPlayerBodyEntity() != null) {
+         getPlayerBodyEntity().recolorNameText();
+      } else if (getPlayerShipEntity() != null) {
+         getPlayerShipEntity().updateNameColor();
       }
    }
 
@@ -639,9 +640,9 @@ public class NetEntity : NetworkBehaviour
          PowerupPanel.self.clearSeaPowerups();
       }
 
-      // Registering the game user destroy event
+      // Store the game user destroy session event
       if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
-         Util.tryToRunInServerBackground(() => DB_Main.storeGameUserDestroyEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
+         Util.tryToRunInServerBackground(() => DB_Main.saveSessionEvent(new SessionEventInfo(this.accountId, this.userId, this.entityName, this.connectionToClient.address, SessionEventInfo.Type.UserDestroy, null, 0)));
       }
 
       // Remove the entity from the manager
@@ -2506,6 +2507,12 @@ public class NetEntity : NetworkBehaviour
       if (isLocalPlayer) {
          yield return null;
 
+         // If player is trying to join a steam friend, handle it here
+         if (Global.joinSteamFriendID > 0) {
+            Global.player.rpc.Cmd_WarpToFriend(Global.joinSteamFriendID);
+            Global.joinSteamFriendID = 0;
+         }
+
          // If the player is still outside of the area bounds, send him back home and show an error
          if (!area.cameraBounds.bounds.Contains((Vector2) transform.position)) {
             Global.player.Cmd_GoHome();
@@ -2527,12 +2534,18 @@ public class NetEntity : NetworkBehaviour
          }
 
          // Show the Area name
+         string displayname = "";
+
          if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
-            LocationBanner.self.setText("League " + Voyage.getLeagueAreaName(getInstance().leagueIndex));
+            displayname = "League " + Voyage.getLeagueAreaName(getInstance().leagueIndex);
          } else {
+            displayname = Area.getName(this.areaKey);
             D.adminLog("User {" + entityName + " " + userId + "} Is Now in Area: {" + areaKey + "}!", D.ADMIN_LOG_TYPE.Visit);
-            LocationBanner.self.setText(Area.getName(this.areaKey));
          }
+         LocationBanner.self.setText(displayname);
+
+         // Show area name in steam
+         SteamFriendsManager.setSteamDisplayStatus("In " + displayname);
 
          // Update the tutorial
          TutorialManager3.self.onUserSpawns(this.userId);

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8079220892609644879}
   - component: {fileID: 1823572792617302038}
   - component: {fileID: 6044262868038105403}
-  - component: {fileID: 6950366645423427023}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -124,22 +123,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ignoredRenderers: []
   _renderers: []
---- !u!58 &6950366645423427023
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2565243244338463733}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.62
 --- !u!1 &7131161212277015359
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,6 +135,7 @@ GameObject:
   - component: {fileID: 6283983459027116069}
   - component: {fileID: 8818561694372453239}
   - component: {fileID: 5823859800188256044}
+  - component: {fileID: 7002291177142154718}
   m_Layer: 11
   m_Name: WhirlpoolMapEditor
   m_TagString: Untagged
@@ -240,5 +224,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetZ: 0
   inheritedOffsetZ: 0
-  isActive: 1
+  isActive: 0
   sortPoint: {fileID: 0}
+--- !u!58 &7002291177142154718
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7131161212277015359}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.62

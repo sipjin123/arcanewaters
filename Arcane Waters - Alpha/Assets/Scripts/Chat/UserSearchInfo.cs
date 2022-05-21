@@ -20,7 +20,10 @@
       Biome = 2,
 
       // By Level
-      Level = 3
+      Level = 3,
+
+      // By account's steam id
+      SteamId = 4
    }
 
    // The page to return

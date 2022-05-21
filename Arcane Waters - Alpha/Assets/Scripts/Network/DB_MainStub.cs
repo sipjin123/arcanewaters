@@ -811,6 +811,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<UserInfo>();
    }
 
+   public static List<int> getAssociatedUserIdsWithSteamId (ulong steamId) {
+      return new List<int>();
+   }
+
    public static List<UserInfo> getDeletedUsersForAccount (int accId, int userId = 0) {
       return new List<UserInfo>();
    }
@@ -1661,17 +1665,21 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void storeGameAccountLoginEvent (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
-
+   public static void saveSessionEvent (SessionEventInfo sessionEvent) {
+      
    }
 
-   public static void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
+   //public static void storeGameAccountLoginEvent (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
 
-   }
+   //}
 
-   public static void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
+   //public static void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
 
-   }
+   //}
+
+   //public static void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
+
+   //}
 
    public static void setAdmin (int userId, int adminFlag) {
 

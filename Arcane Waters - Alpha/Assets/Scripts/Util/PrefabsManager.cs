@@ -220,6 +220,9 @@ public class PrefabsManager : MonoBehaviour
    // The prefab we use for creating whirlpools in sea maps
    public WhirlpoolEffector whirlpoolPrefab;
 
+   // The prefab we use for creating pvp npcs in land maps
+   public PvpNpc pvpNpcPrefab;
+
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;

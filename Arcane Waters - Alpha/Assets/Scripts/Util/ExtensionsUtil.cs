@@ -140,6 +140,21 @@ public static class ExtensionsUtil {
       return null;
    }
 
+   public static Color setLightness (this Color color, float lightness) {
+      Color.RGBToHSV(color, out float h, out float s, out float v);
+      return Color.HSVToRGB(h, s, lightness);
+   }
+
+   public static Color setSaturation (this Color color, float saturation) {
+      Color.RGBToHSV(color, out float h, out float s, out float v);
+      return Color.HSVToRGB(h, saturation, v);
+   }
+
+   public static float getSaturation (this Color color) {
+      Color.RGBToHSV(color, out float _, out float s, out float _);
+      return s;
+   }
+
    public static void Invoke (this MonoBehaviour source, Action f, float delay) {
       source.Invoke(f.Method.Name, delay);
    }

@@ -55,6 +55,13 @@ public class Outpost : SeaStructureTower, IObserver
       }
    }
 
+   protected override void Start () {
+      base.Start();
+      if (NetworkClient.active) {
+         Minimap.self.addOutpostIcon(this);
+      }
+   }
+
    public void onPointerExit () {
       _hovered = false;
       _outline.setVisibility(false);
@@ -118,6 +125,10 @@ public class Outpost : SeaStructureTower, IObserver
 
    protected override void OnDestroy () {
       base.OnDestroy();
+
+      if (NetworkClient.active) {
+         Minimap.self.deleteOutpostIcon(this);
+      }
 
       int index = outpostsClient.IndexOf(this);
       if (index >= 0) {

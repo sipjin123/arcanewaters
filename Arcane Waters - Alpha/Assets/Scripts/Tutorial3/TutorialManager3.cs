@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 
-public class TutorialManager3 : MonoBehaviour {
+public class TutorialManager3 : MonoBehaviour
+{
 
    #region Public Variables
 
@@ -14,6 +15,7 @@ public class TutorialManager3 : MonoBehaviour {
    public static string SELECTED = "Tutorial_Selected_";
    public static string STEP = "Tutorial_Step_";
    public static string COMPLETED = "Tutorial_Completed_";
+   public static string LATEST_COMPLETED_STEP = "Tutorial_Last_Step_Completed_";
 
    // A reference to the tutorial panel
    public TutorialPanel3 panel;
@@ -63,6 +65,8 @@ public class TutorialManager3 : MonoBehaviour {
             if (PlayerPrefs.HasKey(COMPLETED + _userId + "_" + tutorial.key)) {
                tutorial.isCompleted = true;
             }
+
+            tutorial.latestCompletedStep = PlayerPrefs.GetInt(LATEST_COMPLETED_STEP + _userId + "_" + tutorial.key, 0);
          }
       }
 
@@ -132,6 +136,7 @@ public class TutorialManager3 : MonoBehaviour {
       // Check if the completion conditions are already met - and skip the step if so
       tryCompletingStepByLocation();
       tryCompletingStepByWeaponEquipped();
+      tryCompletingStepIfDoneAndRequiresBlueprint();
    }
 
    public void previousStep () {
@@ -147,7 +152,9 @@ public class TutorialManager3 : MonoBehaviour {
    }
 
    public void nextStep () {
-      _currentStep++;
+      _currentTutorial.latestCompletedStep = Mathf.Max(_currentTutorial.latestCompletedStep, _currentStep);
+
+       _currentStep++;
       if (_currentStep >= _currentTutorial.steps.Count) {
          completeTutorial();
       }
@@ -158,7 +165,10 @@ public class TutorialManager3 : MonoBehaviour {
       // Check if the completion conditions are already met - and skip the step if so
       tryCompletingStepByLocation();
       tryCompletingStepByWeaponEquipped();
-   }
+      tryCompletingStepIfDoneAndRequiresBlueprint();
+
+      saveConfigAndProgress();
+    }
 
    public void tryCompletingStep (TutorialTrigger key) {
       if (!isActive()) {
@@ -235,6 +245,18 @@ public class TutorialManager3 : MonoBehaviour {
       }
    }
 
+   public void tryCompletingStepIfDoneAndRequiresBlueprint () {
+      // If the tutorial requires a blueprint at any point in the tutorial, and the steps were done already, skips
+      if (!isActive() || _currentTutorial == null) {
+         return;
+      }
+
+      TutorialStep3 step = _currentTutorial.steps[_currentStep];
+      if (step != null && _currentTutorial.latestCompletedStep >= _currentStep  && step.completionTrigger == TutorialTrigger.Loot_Blueprint) {
+         nextStep();
+      }
+   }
+
    public TutorialTrigger getCurrentTrigger () {
       if (isActive()) {
          return _currentTutorial.steps[_currentStep].completionTrigger;
@@ -299,11 +321,11 @@ public class TutorialManager3 : MonoBehaviour {
 
       // Handle dynamic npc speechs
       if (npcSpeech.Contains("[")) {
-         string moveUp = InputManager.self.inputMaster.General.MoveUp.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
-         string moveRight = InputManager.self.inputMaster.General.MoveRight.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
-         string moveDown = InputManager.self.inputMaster.General.MoveDown.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
-         string moveLeft = InputManager.self.inputMaster.General.MoveLeft.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
-         
+         string moveUp = InputManager.self.inputMaster.General.MoveUp.bindings[(int) InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveRight = InputManager.self.inputMaster.General.MoveRight.bindings[(int) InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveDown = InputManager.self.inputMaster.General.MoveDown.bindings[(int) InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveLeft = InputManager.self.inputMaster.General.MoveLeft.bindings[(int) InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+
          npcSpeech = npcSpeech.Replace("[northp]", moveUp);
          npcSpeech = npcSpeech.Replace("[norths]", moveUp);
          npcSpeech = npcSpeech.Replace("[eastp]", moveRight);
@@ -339,6 +361,8 @@ public class TutorialManager3 : MonoBehaviour {
          } else {
             PlayerPrefs.DeleteKey(prefsKey);
          }
+         
+         PlayerPrefs.SetInt(LATEST_COMPLETED_STEP + _userId + "_" + tutorial.key, tutorial.latestCompletedStep);
       }
    }
 
@@ -376,6 +400,24 @@ public class TutorialManager3 : MonoBehaviour {
       _currentTutorial = tutorialDataList[0];
    }
 
+   public bool isAtLastStepOfLastTutorial () {
+      if (tutorialDataList.Count == 0) {
+         return true;
+      }
+
+      if (_currentTutorial == null) {
+         return false;
+      }
+
+      if (_currentTutorial == tutorialDataList[tutorialDataList.Count - 1]) {
+         if (_currentStep >= _currentTutorial.steps.Count - 1) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    public bool isActive () {
       switch (panel.getMode()) {
          case TutorialPanel3.Mode.TutorialList:
@@ -386,7 +428,7 @@ public class TutorialManager3 : MonoBehaviour {
             return false;
       }
    }
-      
+
    public void checkUneqipHammerStep () {
       // Check if we have to uneqip the hammer as trigger
       if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.UnequipHammer) {

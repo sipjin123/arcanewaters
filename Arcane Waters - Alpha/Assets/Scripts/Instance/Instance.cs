@@ -788,6 +788,21 @@ public class Instance : NetworkBehaviour
 
       }
 
+      if (area.pvpNpcPrefabs.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.pvpNpcPrefabs) {
+            PvpNpc pvpNpc = Instantiate(PrefabsManager.self.pvpNpcPrefab);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpNpc.transform.localPosition = targetLocalPos;
+
+            // The map editor data for the pvp npc will be set here
+            IMapEditorDataReceiver receiver = pvpNpc.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            NetworkServer.Spawn(pvpNpc.gameObject);
+         }
+      }
 
       recalculateVaryingObjectRelations();
 

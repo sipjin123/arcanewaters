@@ -47,6 +47,9 @@ public class TutorialPanel3 : MonoBehaviour
    // The blinking animation of the expand button
    public GameObject expandButtonAnim;
 
+   // The blinking animation of the close button
+   public GameObject closeButtonAnim;
+
    // The blinking animation of the right button
    public GameObject rightButtonAnim;
 
@@ -144,6 +147,14 @@ public class TutorialPanel3 : MonoBehaviour
       } else {
          expandButtonAnim.SetActive(false);
       }
+
+      // Special case: if we are at an ending
+      if (TutorialManager3.self.isAtLastStepOfLastTutorial()) {
+         closeButtonAnim.SetActive(true);
+         rightButtonAnim.SetActive(false);
+      } else {
+         closeButtonAnim.SetActive(false);
+      }
    }
 
    public void Update () {
@@ -155,7 +166,7 @@ public class TutorialPanel3 : MonoBehaviour
             AutoTyper.FinishText(npcSpeechText);
             _timeSinceWarp = 0;
          }
-      } else if (!canvasGroup.IsShowing()){
+      } else if (!canvasGroup.IsShowing()) {
          // After a warp, we wait a little before showing the tutorial panel again
          _timeSinceWarp += Time.deltaTime;
          if (_timeSinceWarp > DELAY_AFTER_WARP) {

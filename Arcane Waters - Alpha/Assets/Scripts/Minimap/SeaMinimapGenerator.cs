@@ -174,6 +174,20 @@ namespace MinimapGeneration
          }
          paintIcons(target, mapSize, preset.tree2Icon, positions);
 
+         // Paint warps that lead to town
+         positions.Clear();
+         foreach (var pref in prefabs) {
+            if (pref.TryGetComponent(out Warp warp)) {
+               if (AreaManager.self.tryGetAreaInfo(warp.areaTarget, out var areaInfo)) {
+                  if (area.isSea && areaInfo.specialType == Area.SpecialType.Town) {
+                     positions.Add(getPixelPosition(pref.transform, gridLayout, mapSize, preset.warpToTownIcon) 
+                        + (Vector3) Util.getDirectionFromFacing(warp.newFacingDirection) * 4 + Vector3.back * 10);
+                  }
+               }
+            }
+         }
+         paintIcons(target, mapSize, preset.warpToTownIcon, positions);
+
          // Paint other legacy icons that might be added
          foreach (TileIcon icon in preset._tileIconLayers) {
             if (icon.iconLayerName == treasureSiteIconName) {
@@ -190,12 +204,13 @@ namespace MinimapGeneration
                   if (pref.name.StartsWith(icon.iconLayerName)) {
                      // Special case of prefab icon - warps
                      if (icon.iconLayerName == warpIconName) {
-                        if (area.isSea && pref.GetComponent<Warp>()?.targetInfo?.specialType == Area.SpecialType.Town) {
-                           Sprite warpTownSprite = Minimap.self.getTownWarpSprite(pref.GetComponent<Warp>().targetInfo.biome);
-                           if (warpTownSprite != null) {
-                              paintIcon(area, target, mapSize, pref.transform, warpTownSprite, new Vector2Int(-3, -3));
-                           }
-                        }
+                        // Note(Andrius): this has been replaced with code above
+                        //if (area.isSea && pref.GetComponent<Warp>()?.targetInfo?.specialType == Area.SpecialType.Town) {
+                        //   Sprite warpTownSprite = Minimap.self.getTownWarpSprite(pref.GetComponent<Warp>().targetInfo.biome);
+                        //   if (warpTownSprite != null) {
+                        //      paintIcon(area, target, mapSize, pref.transform, warpTownSprite, new Vector2Int(-3, -3));
+                        //   }
+                        //}
                         break;
                      }
 

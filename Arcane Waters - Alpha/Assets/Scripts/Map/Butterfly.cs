@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 public class Butterfly : MonoBehaviour {
    #region Public Variables
@@ -9,7 +7,7 @@ public class Butterfly : MonoBehaviour {
    public enum MoveState { Rising, Landing }
 
    // The current State that this butterfly is in
-   public MoveState moveState = MoveState.Rising;
+   public MoveState moveState;
 
    // The highest off the ground we'll be allowed to fly
    public float maxY = .2f;
@@ -23,9 +21,13 @@ public class Butterfly : MonoBehaviour {
    // Our Butterfly
    public SpriteRenderer sprite;
 
+   // Reference to areaKey where butterfly is spawned
+   public string areaKey;
+   
    #endregion
 
    void Start () {
+      moveState = MoveState.Rising;
       _animator = GetComponentInChildren<Animator>();
       _body = GetComponent<Rigidbody2D>();
       _renderer = GetComponent<SpriteRenderer>();
@@ -49,15 +51,31 @@ public class Butterfly : MonoBehaviour {
       // Keep track of where we started out at
       _startPos = transform.position;
 
-      // Pick a new move target every second
-      InvokeRepeating("pickMoveTarget", 0f, 1f);
-      InvokeRepeating("maybeLand", 0f, 3f);
-
       // Make the butterfly return to the starting position every 6 seconds
       // loopLength = 6f;
 
       // Start our animation timer
       reset();
+   }
+
+   public void OnEnable () {
+      // Ensure that we clean invoke repeating methods to avoid invoking method twice
+      cleanInvokeRepeat();
+      
+      // Pick a new move target every second
+      InvokeRepeating(nameof(pickMoveTarget), 0f, 1f);
+      // Chance to land every 3 seconds if butterfly is not on water
+      InvokeRepeating(nameof(maybeLand), 0f, 3f);
+   }
+
+   public void OnDisable () {
+      // Clean invoke repeating methods if butterfly is disabled
+      cleanInvokeRepeat();
+   }
+
+   private void cleanInvokeRepeat () {
+      CancelInvoke(nameof(pickMoveTarget));
+      CancelInvoke(nameof(maybeLand));
    }
 
    public void Update () {
@@ -176,9 +194,49 @@ public class Butterfly : MonoBehaviour {
    }
 
    protected void maybeLand () {
-      // Every few seconds, we have a 50% chance of landing
-      moveState = (Random.Range(0f, 1f) <= .5f) ?
-          MoveState.Landing : MoveState.Rising;
+      // Every second 50% chance of butterfly to land
+      float randChance =  Random.Range(0f, 1f);
+      if (randChance > 0.5f) {
+         moveState = MoveState.Rising;
+         return;
+      }
+
+      // If player is still null cancel landing
+      if (Global.player == null) {
+         return;
+      }
+
+      // Ensure that character is local before checking condition for landing
+      NetEntity entity = Global.player;
+      if (!entity.isLocalPlayer) {
+         return;
+      } 
+      
+      // Cancel landing if areaKey is not the same with entity area key
+      if (areaKey != entity.areaKey) {
+         return; 
+      }
+      
+      // Cancel if area manager has no instance of entity area key
+      if (!AreaManager.self.hasArea(areaKey)) { 
+         return;
+      } 
+         
+      // Get instance of area and check if butterfly position is a water tile
+      bool isWater = AreaManager.self.getArea(areaKey).hasWaterTile(sprite.transform.position); 
+      if (isWater) { 
+         // Cancel landing if butterfly position is a water tile
+         moveState = MoveState.Rising;
+         return;
+      }
+      
+      // Land butterfly tile is not a water tile
+      moveState = MoveState.Landing;
+   }
+   
+   public void setAreaKey (string key) {
+      // Update areaKey of butterfly instance
+      areaKey = key;
    }
 
    #region Private Variables

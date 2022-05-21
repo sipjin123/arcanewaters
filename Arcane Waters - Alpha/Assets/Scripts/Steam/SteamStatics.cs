@@ -1,29 +1,32 @@
-﻿namespace Steam
+﻿using System.Collections.Generic;
+
+namespace Steam
 {
    public class SteamStatics
    {
       #region Public Variables
 
-      #if IS_SERVER_BUILD 
-      
+#if IS_SERVER_BUILD
+
       // Steam key parameters for web api request
       public const string STEAM_WEB_USER_API_KEY = "1EB0664926636257A9861504BE93721B";
       public const string STEAM_WEB_PUBLISHER_API_KEY = "16FBA4602CFF4C139DC40E01D58F8869";
       // https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?appid1266340=&key=16FBA4602CFF4C139DC40E01D58F8869&steamid=
       // https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=1EB0664926636257A9861504BE93721B&steamids=76561198067124199
 
-      #else
+#else
 
       // Steam key parameters for web api request
       public static string STEAM_WEB_USER_API_KEY = "";
       public static string STEAM_WEB_PUBLISHER_API_KEY = "";
 
-      #endif
+#endif
 
       // The arcane waters steam app id
       public const string GAMEPLAYTEST_APPID = "1489170";
       public const string GAME_APPID = "1266340";
       public const string NEXTFEST_DEMO_APPID = "1960130";
+      public static HashSet<string> ALL_CLIENT_APPIDS = new HashSet<string> { GAMEPLAYTEST_APPID, GAME_APPID, NEXTFEST_DEMO_APPID };
 
       // The various parameters used for the web api requests
       public const string PARAM_STEAM_ID = "steamid=";

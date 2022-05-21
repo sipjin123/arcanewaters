@@ -100,6 +100,22 @@ public class ServerNetworkingManager : MonoBehaviour
       return null;
    }
 
+   public bool tryGetServerContainingAnyUser (List<int> userIds, out NetworkedServer server, out int userId) {
+      foreach (NetworkedServer s in servers) {
+         foreach(int id in userIds) {
+            if (s.connectedUserIds.Contains(id)) {
+               server = s;
+               userId = id;
+               return true;
+            }
+         }
+      }
+
+      server = null;
+      userId = 0;
+      return false;
+   }
+
    public NetworkedServer getServerContainingPrivateFarmInstance (int userId) {
       foreach (NetworkedServer server in servers) {
          if (server.privateFarmInstances.Contains(userId)) {
@@ -297,6 +313,10 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void findUserLocationForAdminGoTo (int adminUserId, int userId) {
       server.InvokeServerRpc(server.MasterServer_FindUserLocationForAdminGoTo, adminUserId, userId);
+   }
+
+   public void findUserLocationForSteamFriendJoin (int userId, ulong steamFriendId) {
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationForSteamFriendJoin, userId, steamFriendId);
    }
 
    public void getUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {

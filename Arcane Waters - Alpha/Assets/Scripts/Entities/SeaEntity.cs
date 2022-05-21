@@ -2544,11 +2544,35 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public SeaBuffData getBuffData (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
-      // Returns the magnitude of the powerup of the specified type and category, with the highest value.
+   public bool hasBuffDataWithType (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
+      // Get all existing buff data of player with buff category
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
       if (buffList != null) {
-         if (buffList.FindAll(_ => _.buffType == buffType).Count > 0) {
+         return buffList.Any(_ => _.buffType == buffType);
+      }
+
+      return false;
+   }
+
+   [Server]
+   public List<SeaBuffData> getAllBuffDataWithType (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
+      // Get all existing buff data of player with buff category
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         if (buffList.Any(_ => _.buffType == buffType)) {
+            return buffList.FindAll(_ => _.buffType == buffType);
+         }
+      }
+
+      return null;
+   }
+
+   [Server]
+   public SeaBuffData getBuffData (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
+      // Get all existing buff data of player with buff category
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         if (buffList.Any(_ => _.buffType == buffType)) {
             return buffList.FindAll(_ => _.buffType == buffType)[0];
          }
       }
@@ -2585,6 +2609,14 @@ public class SeaEntity : NetEntity
          // If this buff has expired, remove it from the list
          if (NetworkTime.time > buffData.buffEndTime) {
             categoryBuffs.Remove(buffData);
+            // Check if expired buff data is a heal
+            if (buffData.buffType == SeaBuff.Type.Heal) {
+               // Disable heal effect and sfx if no existing heal buff data left
+               if (!hasBuffDataWithType(Category.Buff, SeaBuff.Type.Heal)) {
+                  Rpc_TriggerHealEffect(false);
+                  Rpc_TriggerHealSfx(false);
+               }
+            }
          }
       }
    }

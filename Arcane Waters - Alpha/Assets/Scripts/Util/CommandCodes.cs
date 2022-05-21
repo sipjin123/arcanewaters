@@ -34,7 +34,7 @@ public class CommandCodes : MonoBehaviour {
       }
       
       if (!cache.ContainsKey(commandType)) {
-         cache[commandType] = System.Environment.CommandLine.Contains(commandType + "");
+         cache.Add(commandType, System.Environment.CommandLine.Contains(commandType + ""));
       }
       return cache[commandType];
    }

@@ -119,11 +119,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The default color of the outline around a player's name
    public Color playerNameOutlineColor = Color.black;
 
-   // The color of the local player's name
-   public Color localPlayerNameColor = Color.white;
+   // The color of the label for demo user
+   public Color32 playerDemoUserColor;
 
-   // The color of the outline around the local player's name
-   public Color localPlayerNameOutlineColor = Color.blue;
+   // The color of the label for admin user
+   public Color32 playerAdminUserColor;
+
+   // The saturation of color for local player
+   public float playerNameColorSaturationLocalPlayer;
 
    // A transform that will follow the player as they jump, as will child objects of it
    public Transform followJumpHeight;
@@ -1222,21 +1225,31 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public override void recolorNameText () {
       nameText.fontMaterial = new Material(nameText.fontSharedMaterial);
-
       nameTextOutline.enabled = true;
       nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
+
+      Color fillColor = playerNameColor;
+      if (isDemoUser) {
+         fillColor = playerDemoUserColor;
+      }
+      if (isAdmin()) {
+         fillColor = playerAdminUserColor;
+      }
+
+      if (isLocalPlayer) {
+         if (fillColor.getSaturation() > 0) {
+            fillColor = fillColor.setSaturation(playerNameColorSaturationLocalPlayer);
+         } else {
+            fillColor = fillColor.setLightness(playerNameColorSaturationLocalPlayer);
+         }
+      }
+
       nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", playerNameOutlineWidth);
       nameTextOutline.text = this.entityName;
 
-      if (isLocalPlayer) {
-         nameText.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
-         nameTextOutline.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
-         nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerNameOutlineColor);
-      } else {
-         nameText.fontMaterial.SetColor("_FaceColor", playerNameColor);
-         nameTextOutline.fontMaterial.SetColor("_FaceColor", playerNameColor);
-         nameTextOutline.fontMaterial.SetColor("_OutlineColor", playerNameOutlineColor);
-      }
+      nameText.fontMaterial.SetColor("_FaceColor", fillColor);
+      nameTextOutline.fontMaterial.SetColor("_FaceColor", fillColor);
+      nameTextOutline.fontMaterial.SetColor("_OutlineColor", playerNameOutlineColor);
    }
 
    protected override void autoMove () {

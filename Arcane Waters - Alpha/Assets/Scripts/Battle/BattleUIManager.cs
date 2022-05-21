@@ -212,21 +212,18 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       if (selectedButton != null) {
-         // Disable current pending ability button upon triggering ability
          if (_pendingSelectedButton != null) {
             _pendingSelectedButton.togglePendingIndicator(false);
-            _pendingSelectedButton = default;
          }
 
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-            bool hasNoCooldownBlocker = selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f;
-            if (BattleManager.self.getPlayerBattler().canCastAbility() && hasNoCooldownBlocker) {
+            if (BattleManager.self.getPlayerBattler().canCastAbility() && !selectedButton.onCooldown) {
                //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
                SoundEffectManager.self.playGuiButtonConfirmSfx();
 
                triggerAbility(selectedButton, selectedButton.abilityType);
             } else {
-               D.debug("{" + (hasNoCooldownBlocker ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
+               D.debug("{" + (!selectedButton.onCooldown ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
                   "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}");
             }
          } else {
@@ -465,35 +462,44 @@ public class BattleUIManager : MonoBehaviour {
                }
             } 
          }
-         
-         // Fire/Re-enable pending ability button when input is clicked
-         if (InputManager.self.inputMaster.LandBattle.FirePending.WasPressedThisFrame()) {
-            // Fire current pending ability button or set pending button with previous/initial pending index
-            if (_pendingSelectedButton != default) {
-               // If player is in the middle of an attack, ignore input
-               if (_playerLocalBattler != null) {
-                  triggerAbilityByKey(_pendingAbilityIndex);
+
+         if (_playerLocalBattler != null) {
+            // Fire/Re-enable pending ability button when input is clicked
+            if (InputManager.self.inputMaster.LandBattle.FirePending.WasPressedThisFrame()) {
+               // Fire current pending ability button or set pending button with previous/initial pending index
+               if (_pendingSelectedButton != default && _pendingSelectedButton.isAbilityPending) {
+                  // Disable current pending ability button upon triggering ability
+                  if (!_pendingSelectedButton.onCooldown && !_playerLocalBattler.isAttacking) {
+                     triggerAbilityByKey(_pendingAbilityIndex);
+                  }
+               } else {
+                  if (_pendingSelectedButton != null) {
+                     _pendingAbilityIndex = _pendingSelectedButton.abilityIndex;
+                     _pendingSelectedButton.togglePendingIndicator(true);      
+                  }
                }
-            } else {
-               setPendingAbility(_pendingAbilityIndex);
             }
          }
-         
+
          // Ensure that chat panel is not in focus before doing ability switch
          if (!ChatManager.self.chatPanel.isHoveringChat) {
             // Read input mouse scroll value and check if scroll value is not equal to 0
             float scrollVal = InputManager.self.inputMaster.LandBattle.AbilitySwitch.ReadValue<float>();
             if (scrollVal != 0f) {
                int targetAbility = _pendingAbilityIndex;
+               int switchValue = 0;
                // Check if user has current pending button, if not just re-enable previous/initial pending index 
                if (_pendingSelectedButton != default) {
                   // Check if scroll value is positive or negative to switch between previous or next ability
-                  int switchValue = scrollVal < 0 ? 1 : -1;
-                  targetAbility = Mathf.Clamp(targetAbility + switchValue, 0, 4);
-               } 
-               
-               // Set pending ability button
-               setPendingAbility(targetAbility);
+                  switchValue = scrollVal < 0 ? 1 : -1;
+
+                  // Set pending ability button
+                  setPendingAbility(targetAbility, switchValue);
+               } else {
+                  // Set first available button as initial pending button
+                  AbilityButton availableButton = abilityTargetButtons.First(item => item.abilityType != AbilityType.Undefined);
+                  setPendingButton(availableButton);
+               }
             } 
          }
 
@@ -523,19 +529,52 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   private void setPendingAbility (int keySlot) {
-      AbilityButton targetButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
-
-      // Ensure there is button to switch is not null before doing any changes
-      if (targetButton != null) {
-         // Disable pending indicator of previous pending selection
-         _pendingSelectedButton?.togglePendingIndicator(false);
-         
-         // Make necessary changes on index and target ability button 
-         _pendingAbilityIndex = keySlot;
-         _pendingSelectedButton = targetButton;
-         _pendingSelectedButton.togglePendingIndicator(true);
+   private void setPendingAbility (int keySlot, int increment) {
+      // Get all available ability
+      List<AbilityButton> availableButton = abilityTargetButtons.ToList().FindAll(item => item.abilityType != AbilityType.Undefined);
+      if (!availableButton.Any()) {
+         return;
       }
+
+      // Get index of keyslot on list of available buttons
+      int pendingIndexChange = availableButton.FindIndex(item => item.abilityIndex == keySlot);
+      int availableCount = availableButton.Count;
+
+      // Return if all available button is on cooldown
+      if (availableButton.All(item => item.onCooldown)) {
+         return;
+      }
+      
+      // Get the next available button that is not on cooldown
+      AbilityButton targetButton;
+      do {
+         pendingIndexChange += increment;
+         if (pendingIndexChange >= availableCount) {
+            pendingIndexChange = 0;
+         } else if (pendingIndexChange < 0) {
+            pendingIndexChange = availableCount - 1;
+         }
+         
+         targetButton = availableButton[pendingIndexChange];
+      } while (targetButton.onCooldown && increment != 0);
+
+      // Get target ability and check if ability return to current ability if yes ignore
+      if (targetButton.abilityIndex == keySlot && _pendingSelectedButton != null) {
+         _pendingSelectedButton.togglePendingIndicator(true);
+         return;
+      }
+
+      setPendingButton(targetButton);
+   }
+
+   private void setPendingButton (AbilityButton targetButton) {
+      // Disable pending indicator of previous pending selection
+      _pendingSelectedButton?.togglePendingIndicator(false);
+         
+      // Make necessary changes on index and target ability button 
+      _pendingAbilityIndex = targetButton.abilityIndex;
+      _pendingSelectedButton = targetButton;
+      _pendingSelectedButton.togglePendingIndicator(true);
    }
 
    private void updateAbilityButtons () {

@@ -42,14 +42,17 @@ public class ShipBarsPlayer : ShipBars
    // The color the outline
    public Color32 nameOutlineColor;
 
-   // The color of the label
+   // The color of the label for regular user
    public Color32 nameColor;
 
-   // The color the outline for the local player
-   public Color32 nameOutlineColorLocalPlayer;
+   // The color of the label for demo user
+   public Color32 demoUserColor;
 
-   // The color of the label for the local Player
-   public Color32 nameColorLocalPlayer;
+   // The color of the label for admin user
+   public Color32 adminUserColor;
+
+   // The saturation of color for local player
+   public float nameColorSaturationLocalPlayer;
 
    #endregion
 

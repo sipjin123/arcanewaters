@@ -22,7 +22,8 @@ public class CraftingIngredients : RecipeItem
       Ectoplasm = 22, Brimstone = 23, Spectral_Ash = 24, Luminous_Powder = 25, Eldritch_Aura = 26,
       Bark = 27, Thorn = 28, Wood_Louse = 29, Polypore = 30, Sap = 31,
       Spores = 32, Toadstool_Cap = 33, Fungal_Chunk = 34, Mycelium_Fiber = 35, Grey_Slime = 36, Rib_Bone = 37, Grave_Dirt = 38,
-      Essence_Fire = 39, Essence_Earth = 40, Essence_Water = 41, Essence_Wind = 42, Ingot_Gold = 43, Ingot_Silver = 44, Ingot_Iron = 45
+      Essence_Fire = 39, Essence_Earth = 40, Essence_Water = 41, Essence_Wind = 42, Ingot_Gold = 43, Ingot_Silver = 44, Ingot_Iron = 45,
+      Hardware = 46, Empty_Bottle = 47, Sugarcane = 48, Molasses = 49
    }
 
    // The type

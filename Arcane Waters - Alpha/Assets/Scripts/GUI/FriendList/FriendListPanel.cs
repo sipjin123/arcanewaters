@@ -18,6 +18,9 @@ public class FriendListPanel : Panel
    // The container of the friend rows
    public GameObject friendRequestRowsContainer;
 
+   // The container of steam friends
+   public Transform steamFriendsContainer;
+
    // The prefab we use for creating friend rows
    public FriendListRow friendRowPrefab;
 
@@ -27,6 +30,9 @@ public class FriendListPanel : Panel
    // The prefab we use for creating sent friend request rows
    public FriendshipRequestSentRow friendshipRequestSentRowPrefab;
 
+   // The prefab for creating a steam friend row
+   public SteamFriendRow steamFriendRowPrefab;
+
    // The object wrapping the list used to display friends
    public GameObject friendList;
 
@@ -35,6 +41,9 @@ public class FriendListPanel : Panel
 
    // The object wrapping the list used to display the search result
    public GameObject searchResultsList;
+
+   // The object wrapping the list of steam friends
+   public GameObject steamFriendsList;
 
    // The input field holding the name of the user to send a friendship invitation
    public InputField inviteInputField;
@@ -61,12 +70,14 @@ public class FriendListPanel : Panel
    public CanvasGroup requestReceivedTabCanvasGroup;
    public CanvasGroup requestSentTabCanvasGroup;
    public CanvasGroup searchResultsTabCanvasGroup;
+   public CanvasGroup steamFriendsTabCanvasGroup;
 
    // The tab buttons
    public Button friendListTabButton;
    public Button requestReceivedTabButton;
    public Button requestSentTabButton;
    public Button searchResultsTabButton;
+   public Button steamFriendsTabButton;
 
    // Reference to the load blocker
    public GameObject loadBlocker;
@@ -115,7 +126,10 @@ public class FriendListPanel : Panel
       InvitesReceived = 3,
 
       // Search
-      Search = 4
+      Search = 4,
+
+      // Steam friends
+      SteamFriends = 5
    }
 
    #endregion
@@ -148,11 +162,11 @@ public class FriendListPanel : Panel
          }
       }
 
-      Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter);
+      Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter, _currentTab == FriendshipPanelTabs.SteamFriends);
    }
 
    public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, Friendship.Status friendshipStatus,
-      int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
+      int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount, bool isSteamFriendsTab) {
       _friendshipStatusFilter = friendshipStatus;
       FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
       if (FriendListManager.self.cachedFriendshipInfoList == null) {
@@ -201,6 +215,8 @@ public class FriendListPanel : Panel
       // Clear out any current items
       friendRowsContainer.DestroyChildren();
       friendRequestRowsContainer.DestroyChildren();
+      steamFriendsContainer.gameObject.DestroyChildren();
+      _steamFriendRows.Clear();
 
       disableAllTabs();
       hideAllContent();
@@ -224,31 +240,45 @@ public class FriendListPanel : Panel
             searchResultsTabCanvasGroup.alpha = 1f;
             searchResultsList.SetActive(true);
             break;
+         case FriendshipPanelTabs.SteamFriends:
+            steamFriendsTabCanvasGroup.alpha = 1f;
+            steamFriendsList.SetActive(true);
+            break;
          default:
             break;
       }
 
-      // Create the friend rows
-      foreach (FriendshipInfo friend in friendshipInfoList) {
-         // Use different prefabs and parameters for each tab
-         switch (friendshipStatus) {
-            case Friendship.Status.InviteSent:
-               // Instantiate and initialize the row
-               FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRequestRowsContainer.transform, false);
-               rowSent.setRowForFriendshipInfo(friend);
-               break;
-            case Friendship.Status.InviteReceived:
-               // Instantiate and initialize the row
-               FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRequestRowsContainer.transform, false);
-               rowReceived.setRowForFriendshipInfo(friend);
-               break;
-            case Friendship.Status.Friends:
-               // Instantiate and initialize the row
-               FriendListRow rowFriend = Instantiate(friendRowPrefab, friendRowsContainer.transform, false);
-               rowFriend.setRowForFriendshipInfo(friend);
-               break;
-            default:
-               break;
+      if (isSteamFriendsTab) {
+         List<SteamFriendData> datas = SteamFriendsManager.getSteamFriends();
+         foreach (SteamFriendData data in datas) {
+            SteamFriendRow row = Instantiate(steamFriendRowPrefab, steamFriendsContainer, false);
+            _steamFriendRows.Add(data.steamId, row);
+            row.setData(data);
+         }
+         SteamFriendsManager.requestFriendListImages(datas);
+      } else {
+         // Create the friend rows
+         foreach (FriendshipInfo friend in friendshipInfoList) {
+            // Use different prefabs and parameters for each tab
+            switch (friendshipStatus) {
+               case Friendship.Status.InviteSent:
+                  // Instantiate and initialize the row
+                  FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRequestRowsContainer.transform, false);
+                  rowSent.setRowForFriendshipInfo(friend);
+                  break;
+               case Friendship.Status.InviteReceived:
+                  // Instantiate and initialize the row
+                  FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRequestRowsContainer.transform, false);
+                  rowReceived.setRowForFriendshipInfo(friend);
+                  break;
+               case Friendship.Status.Friends:
+                  // Instantiate and initialize the row
+                  FriendListRow rowFriend = Instantiate(friendRowPrefab, friendRowsContainer.transform, false);
+                  rowFriend.setRowForFriendshipInfo(friend);
+                  break;
+               default:
+                  break;
+            }
          }
       }
 
@@ -259,6 +289,12 @@ public class FriendListPanel : Panel
       BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
       sendInvitesSection.SetActive(_currentTab != FriendshipPanelTabs.Search);
       toggleBlocker(show: false);
+   }
+
+   public void receiveSteamFriendAvatar (SteamFriendData friend, Sprite avatar) {
+      if (_steamFriendRows.TryGetValue(friend.steamId, out SteamFriendRow row)) {
+         row.setAvatarImage(avatar);
+      }
    }
 
    #region UI Callbacks
@@ -282,6 +318,14 @@ public class FriendListPanel : Panel
    public void onInvitesSentTabButtonPress () {
       _currentTab = FriendshipPanelTabs.InvitesSent;
       _friendshipStatusFilter = Friendship.Status.InviteSent;
+      _currentPage = 1;
+      _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
+      refreshPanel();
+   }
+
+   public void onSteamFriendsTabButtonPress () {
+      _currentTab = FriendshipPanelTabs.SteamFriends;
+      _friendshipStatusFilter = Friendship.Status.None;
       _currentPage = 1;
       _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
       refreshPanel();
@@ -385,6 +429,7 @@ public class FriendListPanel : Panel
       friendList.SetActive(false);
       requestList.SetActive(false);
       searchResultsList.SetActive(false);
+      steamFriendsList.SetActive(false);
    }
 
    private void disableAllTabs () {
@@ -393,11 +438,13 @@ public class FriendListPanel : Panel
       requestReceivedTabButton.interactable = false;
       requestSentTabButton.interactable = false;
       searchResultsTabButton.interactable = false;
+      steamFriendsTabButton.interactable = false;
 
       friendListTabCanvasGroup.alpha = 0.0f;
       requestReceivedTabCanvasGroup.alpha = 0.0f;
       requestSentTabCanvasGroup.alpha = 0.0f;
       searchResultsTabCanvasGroup.alpha = 0.0f;
+      steamFriendsTabCanvasGroup.alpha = 0.0f;
    }
 
    private void activateAllTabs () {
@@ -406,6 +453,7 @@ public class FriendListPanel : Panel
       requestReceivedTabButton.interactable = true;
       requestSentTabButton.interactable = true;
       searchResultsTabButton.interactable = true;
+      steamFriendsTabButton.interactable = true;
    }
 
    #region User Search
@@ -453,6 +501,9 @@ public class FriendListPanel : Panel
             return $"Search results for '/who in {resultCollection.searchInfo.input}'";
          case UserSearchInfo.FilteringMode.Level:
             return $"Search results for '/who level {resultCollection.searchInfo.input}'";
+         case UserSearchInfo.FilteringMode.SteamId:
+            ulong.TryParse(resultCollection.searchInfo.input, out ulong steamId);
+            return $"Viewing Characters of " + SteamFriendsManager.getFriendName(steamId);
       }
 
       return "";
@@ -475,7 +526,7 @@ public class FriendListPanel : Panel
       int page = _currentSearchResultsPage + 1;
       searchPreviousPageButton.gameObject.SetActive(page > 1);
       searchNextPageButton.gameObject.SetActive(page < _searchResultsTotalPages);
-      searchCurrentPageIndicatorText.text = $"Page {page} of {_searchResultsTotalPages}";
+      searchCurrentPageIndicatorText.text = $"Page {page} of {(_searchResultsTotalPages < 1 ? 1 : _searchResultsTotalPages)}";
    }
 
    public void nextSearchPage () {
@@ -520,6 +571,9 @@ public class FriendListPanel : Panel
 
    // The number of pages computed from the search results collection
    private int _searchResultsTotalPages = 0;
+
+   // Current steam friend rows
+   private Dictionary<ulong, SteamFriendRow> _steamFriendRows = new Dictionary<ulong, SteamFriendRow>();
 
    #endregion
 }

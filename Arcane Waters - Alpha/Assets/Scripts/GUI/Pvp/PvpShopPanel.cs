@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
@@ -60,7 +61,10 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
 
    // The ship ability display
    public GameObject shipAbilityPanel;
-
+   
+   // Reference to shop categories root
+   public GameObject shopCategoryRoot;
+   
    // The ability templates that display the info
    public Image[] abilityIcons;
    public Image[] abilityTooltipIcons;
@@ -75,6 +79,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    // The border sprites of the rarity
    public Sprite[] borderSprites;
 
+   // Reference to categories buttons
+   public GameObject[] shopCategories;
+   
    // The category icons on the left side of the panel
    public RectTransform shipCategoryObj, powerupCategoryObj, abilityCategoryObj, itemCategoryObj, landPowerupCategoryObj;
    public RectTransform shipCategoryObjHover, powerupCategoryObjHover, abilityCategoryObjHover, itemCategoryObjHover, landPowerupCategoryObjHover;
@@ -301,6 +308,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       itemCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Item));
       landPowerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.LandPowerup));
 
+      // Hide category root if single tab is available and show if more than 1
+      shopCategoryRoot.SetActive(shopCategories.Count(item => item.activeSelf) > 1);
+      
       foreach (PvpShopItem shopItemData in pvpItemDataList) {
          PvpShopTemplate shopTemplate = selectedCategory == PvpShopItemType.Ship ? 
             Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);

@@ -61,7 +61,6 @@ public class ChatManager : GenericGameManager
    private void Start () {
       // Add the various chat commands that we're going to allow
       _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReport, parameterNames: new List<string>() { "bugInformation" }));
-      _commandData.Add(new CommandData("/emote", "Sends a chat emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
       _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
       _commandData.Add(new CommandData("/global", "Send a message to all users", sendGlobalMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
@@ -248,10 +247,6 @@ public class ChatManager : GenericGameManager
       }
    }
 
-   public void sendEmoteMessageToServer (string message) {
-      sendMessageToServer(message, ChatInfo.Type.Emote);
-   }
-
    private string computeEmoteChatMessage(EmoteManager.EmoteTypes emoteType, string target) {
       switch (emoteType) {
          case EmoteManager.EmoteTypes.Dance:
@@ -331,7 +326,7 @@ public class ChatManager : GenericGameManager
 
       Direction playerFacingDirection = Global.player.getPlayerBodyEntity().facing;
       Global.player.getPlayerBodyEntity().playEmote(emote, playerFacingDirection);
-      sendEmoteMessageToServer(computeEmoteChatMessage(emote, target));
+      sendMessageToServer(computeEmoteChatMessage(emote, target), ChatInfo.Type.Emote);
    }
 
    public void sendGlobalMessageToServer (string message) {

@@ -11,7 +11,8 @@ using UnityEditor;
 using Random = UnityEngine.Random;
 using MapCreationTool.Serialization;
 
-public class Minimap : ClientMonoBehaviour {
+public class Minimap : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The distance scale the minimap is using
@@ -34,6 +35,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // The prefab we use for creating a discovery icon
    public MM_Icon discoveryIconPrefab;
+
+   // The prefab we use for creating an outpost icon
+   public MM_Icon outpostIconPrefab;
 
    // The prefab we use for marking sea monster entity
    public MM_SeaMonsterIcon seaMonsterIconPrefab;
@@ -370,7 +374,7 @@ public class Minimap : ClientMonoBehaviour {
          foreach (SeaMonsterEntity seaMonsterEntity in area.GetComponentsInChildren<SeaMonsterEntity>()) {
             addSeaMonsterIcon(area, seaMonsterEntity);
          }
-      } 
+      }
       // Create icons for all land monsters
       else if (!area.isInterior) {
          foreach (Enemy enemy in area.GetComponentsInChildren<Enemy>()) {
@@ -409,14 +413,14 @@ public class Minimap : ClientMonoBehaviour {
          // Adjust based on minimap translation (map is focused on player icon)
          relativePosition += mapPos;
       }
-      
+
       relativePosition -= (minimapSize - minimapMaskSize) * 0.5f;
       relativePosition -= minimapMaskSize * 0.5f;
 
       return relativePosition;
    }
 
-   private Sprite getBuildingSprite(string buildingName) {
+   private Sprite getBuildingSprite (string buildingName) {
       switch (buildingName) {
          case "Shipyard":
             return ImageManager.getSprite(_shopShipyardIconPath);
@@ -436,7 +440,21 @@ public class Minimap : ClientMonoBehaviour {
          D.debug("ERROR! Treasure Chest Icon is NULL in minimap!");
       }
    }
-   
+
+   public void addOutpostIcon (Outpost outpost) {
+      MM_Icon icon = Instantiate(outpostIconPrefab, this.discoveryIconContainer.transform);
+      icon.target = outpost.gameObject;
+      _outpostIcons.Add(icon);
+   }
+
+   public void deleteOutpostIcon (Outpost outpost) {
+      MM_Icon icon = _outpostIcons.Find(x => x.target == outpost.gameObject);
+
+      if (icon != null) {
+         Destroy(icon.gameObject);
+      }
+   }
+
    public void addDiscoveryIcon (Discovery discovery) {
       MM_Icon icon = Instantiate(discoveryIconPrefab, this.discoveryIconContainer.transform);
       icon.target = discovery.gameObject;
@@ -790,7 +808,7 @@ public class Minimap : ClientMonoBehaviour {
    }
 
    void generateAllStaticMinimaps () {
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
          // We only care about our map assets
          if (!assetPath.StartsWith(_mapsPath)) {
@@ -801,7 +819,7 @@ public class Minimap : ClientMonoBehaviour {
          GameObject area = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
          TilemapToTextureColorsStatic(area.GetComponent<Area>(), AreaManager.self.getDefaultBiome(area.GetComponent<Area>().name), true);
       }
-      #endif
+#endif
    }
 
    void TilemapToTextureColorsStatic (Area area, Biome.Type biome, bool saveMap) {
@@ -876,7 +894,7 @@ public class Minimap : ClientMonoBehaviour {
 
                   bool flipflop = true;
 
-                  if (string.Compare(layer.useFullName ? tilemapLayer.fullName : tilemapLayer.name, layer.Name, true) == 0) {                     
+                  if (string.Compare(layer.useFullName ? tilemapLayer.fullName : tilemapLayer.name, layer.Name, true) == 0) {
                      map = new Texture2D(layerSizeX, layerSizeY);
                      if (layer.isOnlyBorder) {
                         borderOnlyMap = new Texture2D(layerSizeX, layerSizeY);
@@ -1112,9 +1130,7 @@ public class Minimap : ClientMonoBehaviour {
                               }
                            }
                         }
-                     }
-
-                     else if (layer.useVerticalAlternatingColor) {
+                     } else if (layer.useVerticalAlternatingColor) {
                         // Cycle over all the Tile positions in this Tilemap layer
                         for (int y = 0; y <= layerSizeY; y++) {
                            flipflop = true;
@@ -1660,7 +1676,7 @@ public class Minimap : ClientMonoBehaviour {
                } else {
                   if (saveMap) {
                      ExportTexture(tex, preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);
-                  } else {                    
+                  } else {
                      // Use scale based on real texture size
                      TextureScale.Point(tex, tex.width, tex.height);
                      PresentMap(tex);
@@ -1673,9 +1689,9 @@ public class Minimap : ClientMonoBehaviour {
          }
       }
       if (saveMap) {
-         #if UNITY_EDITOR
+#if UNITY_EDITOR
          AssetDatabase.Refresh();
-         #endif
+#endif
       }
 
       _tileLayer = new TileLayer[0];
@@ -1733,7 +1749,7 @@ public class Minimap : ClientMonoBehaviour {
    /// <param name="texturesArray">textures array</param>
    /// <param name="fileName">file name</param>
    void ExportTextureArray (Texture2D[] texturesArray, string fileName = "texture") {
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       int i = 0;
       foreach (var tex in texturesArray) {
          byte[] atlasPng = tex.EncodeToPNG();
@@ -1742,7 +1758,7 @@ public class Minimap : ClientMonoBehaviour {
          AssetDatabase.Refresh();
          i++;
       }
-      #endif
+#endif
    }
 
    /// <summary>
@@ -1751,14 +1767,14 @@ public class Minimap : ClientMonoBehaviour {
    /// <param name="texture">texture</param>
    /// <param name="fileName">file name</param>
    void ExportTexture (Texture2D texture, string fileName = "texture") {
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       TextureScale.Point(texture, _textureSize.x, _textureSize.y);
 
       byte[] atlasPng = texture.EncodeToPNG();
       string path2 = Application.dataPath + _minimapsPath + fileName + ".png";
       File.WriteAllBytes(path2, atlasPng);
       AssetDatabase.Refresh();
-      #endif
+#endif
    }
 
    /// <summary>
@@ -1842,12 +1858,15 @@ public class Minimap : ClientMonoBehaviour {
    // Current list of discovery icons
    private List<MM_Icon> _discoveryIcons = new List<MM_Icon>();
 
+   // Current list of outpost icons
+   private List<MM_Icon> _outpostIcons = new List<MM_Icon>();
+
    // Current list of sea monster entity icons
    public List<MM_SeaMonsterIcon> _seaMonsterIcons = new List<MM_SeaMonsterIcon>();
 
    // Current list of land monster entity icons
    public List<MM_LandMonsterIcon> _landMonsterIcons = new List<MM_LandMonsterIcon>();
-   
+
    // Current list of waypoint icons
    public List<MM_WaypointIcon> _waypointIcons = new List<MM_WaypointIcon>();
 

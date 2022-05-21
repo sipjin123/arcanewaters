@@ -12,6 +12,9 @@ public class PvpNpc : MonoBehaviour, IMapEditorDataReceiver
    // How close we have to be in order to interact
    public static float INTERACT_DISTANCE = .75f;
 
+   // A reference to the simple animation component for this npc
+   public SimpleAnimation npcAnimation;
+
    #endregion
 
    private void Start () {
@@ -19,7 +22,16 @@ public class PvpNpc : MonoBehaviour, IMapEditorDataReceiver
    }
 
    public void receiveData (DataField[] dataFields) {
-      throw new System.NotImplementedException();
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.NPC_DIRECTION_KEY) == 0) {
+            try {
+               Direction newDirection = (Direction) System.Enum.Parse(typeof(Direction), field.v.Split(':')[0]);
+               updateFacingDirection(newDirection);
+            } catch {
+
+            }
+         }
+      }
    }
 
    public void onHoverObject () {
@@ -40,10 +52,20 @@ public class PvpNpc : MonoBehaviour, IMapEditorDataReceiver
       }
    }
 
+   private void updateFacingDirection (Direction newFacingDirection) {
+      int directionIndex = (int) newFacingDirection;
+      npcAnimation.minIndex = _idleStartFramesByDirection[directionIndex];
+      npcAnimation.maxIndex = _idleEndFramesByDirection[directionIndex];
+   }
+
    #region Private Variables
 
    // The outline component
    protected SpriteOutline _outline;
+
+   // Start and end frames for idle animations, indexed by direction enum
+   private readonly int[] _idleStartFramesByDirection = { 4, 0, 0, 0, 8, 0, 0, 0 };
+   private readonly int[] _idleEndFramesByDirection = { 7, 3, 3, 3, 11, 3, 3, 3 };
 
    #endregion
 }

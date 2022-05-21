@@ -51,6 +51,12 @@ public class AdminPanel : Panel
    // Text that displays how many servers we are fetching
    public Text serversTitleText = null;
 
+   // The toggle that sets whether the Gem Store should be accessible
+   public Toggle toggleEnableGemStore;
+
+   // The reference to the input field that displays the message shown to users when the Gem Store is disabled
+   public TMP_InputField txtGemStoreDisabledMessage;
+
    // Self
    public static AdminPanel self;
 
@@ -93,7 +99,9 @@ public class AdminPanel : Panel
          new string[] {
                   RemoteSettingsManager.SettingNames.PLAYERS_COUNT_MAX,
                   RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE,
-                  RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE
+                  RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE,
+                  RemoteSettingsManager.SettingNames.ENABLE_GEM_STORE,
+                  RemoteSettingsManager.SettingNames.GEM_STORE_DISABLED_MESSAGE
          });
    }
 
@@ -111,6 +119,8 @@ public class AdminPanel : Panel
       sliderPlayersCountMax.value = collection.getSetting(RemoteSettingsManager.SettingNames.PLAYERS_COUNT_MAX).toInt();
       toggleAdminOnlyMode.SetIsOnWithoutNotify(collection.getSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE).toBool());
       txtAdminOnlyModeMessage.text = collection.getSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE).value;
+      toggleEnableGemStore.SetIsOnWithoutNotify(collection.getSetting(RemoteSettingsManager.SettingNames.ENABLE_GEM_STORE).toBool());
+      txtGemStoreDisabledMessage.text = collection.getSetting(RemoteSettingsManager.SettingNames.GEM_STORE_DISABLED_MESSAGE).value;
 
       toggleBlocker(false);
    }
@@ -183,11 +193,15 @@ public class AdminPanel : Panel
       int newPlayersCountMax = Mathf.FloorToInt(sliderPlayersCountMax.value);
       bool newIsAdminOnlyModeEnabled = toggleAdminOnlyMode.isOn;
       string newAdminOnlyModeMessage = txtAdminOnlyModeMessage.text;
+      bool newIsGemStoreEnabled = toggleEnableGemStore.isOn;
+      string newGemStoreDisabledMessage = txtGemStoreDisabledMessage.text;
 
       RemoteSettingCollection collection = new RemoteSettingCollection();
       collection.addSetting(RemoteSetting.create(RemoteSettingsManager.SettingNames.PLAYERS_COUNT_MAX, newPlayersCountMax.ToString(), settingValueType: RemoteSetting.RemoteSettingValueType.INT));
       collection.addSetting(RemoteSetting.create(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE, newIsAdminOnlyModeEnabled.ToString(), settingValueType: RemoteSetting.RemoteSettingValueType.STRING));
       collection.addSetting(RemoteSetting.create(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE, newAdminOnlyModeMessage.ToString(), settingValueType: RemoteSetting.RemoteSettingValueType.STRING));
+      collection.addSetting(RemoteSetting.create(RemoteSettingsManager.SettingNames.ENABLE_GEM_STORE, newIsGemStoreEnabled.ToString(), settingValueType: RemoteSetting.RemoteSettingValueType.BOOL));
+      collection.addSetting(RemoteSetting.create(RemoteSettingsManager.SettingNames.GEM_STORE_DISABLED_MESSAGE, newGemStoreDisabledMessage.ToString(), settingValueType: RemoteSetting.RemoteSettingValueType.STRING));
 
       Global.player.rpc.Cmd_SetRemoteSettings(collection);
    }

@@ -25,19 +25,12 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
          return;
       }
 
-      // Clear World Map Spots
-      clearWorldMapSpotsAllAreas();
-
       // Generate World Map Spots
       uploadWorldMapSpotsAllAreas();
 
       Debug.Log($"{TOOL_NAME}: Spots Generation Completed.");
       EditorUtility.ClearProgressBar();
       EditorUtility.DisplayDialog($"{TOOL_NAME}", "Spots Generation Completed.", "Yes");
-   }
-
-   public static void clearWorldMapSpotsAllAreas () {
-      DB_Main.clearWorldMapSpots();
    }
 
    public static void uploadWorldMapSpotsAllAreas (bool silent = false) {
@@ -47,11 +40,12 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
       int mapListCount = mapList.Count;
       int counter = 0;
 
+      List<WorldMapSpot> totalSpots = new List<WorldMapSpot>();
       foreach (string map in mapList) {
          string msg = $"{TOOL_NAME}: Uploading the world map spots for map: '{map}'...";
          
          Debug.Log(msg);
-         uploadWorldMapSpots(map, discoveriesList);
+         totalSpots.AddRange(computeWorldMapSpotsToUpload(map, discoveriesList));
          
          counter++;
 
@@ -59,11 +53,16 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
             break;
          }
       }
+
+      if (totalSpots != null && totalSpots.Count > 0) {
+         DB_Main.uploadWorldMapSpots(totalSpots);
+         Debug.Log($"{TOOL_NAME}: {totalSpots.Count} Spots for World Map Area successfully uploaded.");
+      }
    }
 
-   public static void uploadWorldMapSpots (string areaKey, Dictionary<int, DiscoveryData> discoveriesList) {
+   private static IEnumerable<WorldMapSpot> computeWorldMapSpotsToUpload (string areaKey, Dictionary<int, DiscoveryData> discoveriesList) {
       if (string.IsNullOrWhiteSpace(areaKey)) {
-         return;
+         return Array.Empty<WorldMapSpot>();
       }
 
       MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(DB_Main.getMapInfo(areaKey));
@@ -72,7 +71,7 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
       ExportedProject001 downloadedMap = MapImporter.deserializeMapData(mapInfo, areaKey);
 
       if (downloadedMap == null) {
-         return;
+         return Array.Empty<WorldMapSpot>();
       }
 
       List<WorldMapSpot> spots = new List<WorldMapSpot>();
@@ -158,10 +157,7 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
          }
       }
 
-      if (spots != null && spots.Count > 0) {
-         DB_Main.uploadWorldMapSpots(spots);
-         Debug.Log($"{TOOL_NAME}: Spots for World Map Area '{areaKey}' successfully uploaded.");
-      }
+      return spots;
    }
 
    #endregion

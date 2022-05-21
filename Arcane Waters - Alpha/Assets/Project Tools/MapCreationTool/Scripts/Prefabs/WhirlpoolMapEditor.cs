@@ -12,7 +12,7 @@ namespace MapCreationTool
       #region Public Variables
 
       // Scale of this object when displayed in the palette panel
-      public const float PALETTE_SCALE = 0.3f;
+      public const float PALETTE_SCALE = 0.5f;
 
       // The starting scale of the model if its not fixed to one
       public float startingScale = 1;
@@ -24,6 +24,7 @@ namespace MapCreationTool
 
       private void Awake () {
          _outline = GetComponentInChildren<SpriteOutline>();
+         _collider = GetComponent<CircleCollider2D>();
          startingScale = transform.localScale.x;
       }
 
@@ -39,6 +40,7 @@ namespace MapCreationTool
             try {
                float newRadius = float.Parse(field.v);
                whirlpoolSprite.transform.localScale = Vector3.one * (newRadius / SPRITE_RADIUS);
+               _collider.radius = (newRadius / SPRITE_RADIUS);
             } catch {
 
             }
@@ -59,8 +61,11 @@ namespace MapCreationTool
 
       #region Private Variables
 
-      // The outline
+      // A reference to our outline
       private SpriteOutline _outline;
+
+      // A reference to the collider
+      private CircleCollider2D _collider;
 
       // The radius needed to match the sprite for this whirlpool
       private const float SPRITE_RADIUS = 0.62f;

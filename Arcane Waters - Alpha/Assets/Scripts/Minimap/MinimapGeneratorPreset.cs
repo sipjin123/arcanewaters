@@ -90,5 +90,7 @@ namespace MinimapGeneration
       public TileIcon tree1Icon;
       [Tooltip("Icon of trees")]
       public TileIcon tree2Icon;
+      [Tooltip("Icon of warp that leads to town")]
+      public TileIcon warpToTownIcon;
    }
 }

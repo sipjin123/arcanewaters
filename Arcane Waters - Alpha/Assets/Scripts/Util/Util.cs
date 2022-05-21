@@ -785,7 +785,7 @@ public class Util : MonoBehaviour
    }
 
    public static void tryToRunInServerBackground (Action action) {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -798,11 +798,11 @@ public class Util : MonoBehaviour
          action();
       });
 
-#endif
+      #endif
    }
 
    public static void dbBackgroundExec (Action<object> commandAction) {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -815,7 +815,7 @@ public class Util : MonoBehaviour
          DB_Main.exec(cmd => commandAction(cmd));
       });
 
-#endif
+      #endif
    }
 
    public static string removeNumbers (string input) {
@@ -1298,8 +1298,11 @@ public class Util : MonoBehaviour
    }
 
    public static string formatIpAddress (string address) {
-      string finalAddress = address;
+      if (string.IsNullOrEmpty(address)) {
+         return null;
+      }
 
+      string finalAddress = address;
       if (finalAddress.StartsWith("::ffff:")) {
          string[] finalAddressArray = address.Split(':');
          finalAddress = finalAddressArray[finalAddressArray.Length - 1];

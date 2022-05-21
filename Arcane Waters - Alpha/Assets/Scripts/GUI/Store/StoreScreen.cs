@@ -1,14 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using UnityEngine.EventSystems;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Store;
-using static Store.StoreItem;
-using Newtonsoft.Json;
 using Steamworks;
+using Store;
+using UnityEngine;
+using UnityEngine.UI;
 using static PaletteToolManager;
 
 public class StoreScreen : Panel
@@ -66,6 +61,9 @@ public class StoreScreen : Panel
    // The reference to the Help Button
    public GameObject helpButton;
 
+   // The reference to the control holding the store boxes
+   public GridLayoutGroup gridLayout;
+
    // Self
    public static StoreScreen self;
 
@@ -122,13 +120,29 @@ public class StoreScreen : Panel
       Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: false);
    }
 
-   public void onReceiveStoreResources (List<StoreItem> storeItems) {
+   public void onReceiveStoreResources (StoreResourcesResponse resources) {
+      // The store is disabled
+      if (!resources.isStoreEnabled) {
+         if (PanelManager.self) {
+            PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+            PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => {
+               PanelManager.self.noticeScreen.hide();
+            });
+            PanelManager.self.noticeScreen.show(resources.gemStoreIsDisabledMessage);
+         }
+
+         hide();
+         return;
+      }
+
       deselectAllItems();
 
       if (Global.userObjects != null) {
          this.nameText.text = Global.userObjects.userInfo.username;
          updateCharacterPreview(showPreview: true);
       }
+
+      List<StoreItem> storeItems = resources.items;
 
       if (storeItems == null || storeItems.Count == 0) {
          storeItems = _storeItemsCache;
@@ -219,81 +233,83 @@ public class StoreScreen : Panel
          this.descriptionText.text = "";
          descPriceText.text = "---";
          this.characterStack.updateLayers(Global.userObjects);
-      } else {
-         this.selectedItem = itemBox;
-         itemTitleText.text = itemBox.itemName;
-         descriptionText.text = itemBox.itemDescription;
-         descPriceText.text = itemBox.itemCost.ToString();
 
-         if (string.IsNullOrWhiteSpace(descriptionText.text) && itemBox is StoreDyeBox dyeItemBox) {
-            // Try to compute a description text
-            descriptionText.text = computeDyeDescription(dyeItemBox.palette);
-         }
-
-         if (itemBox is StoreGemBox storeGemBox) {
-            descPriceText.text = storeGemBox.getDisplayCost();
-         } else {
-            descPriceText.text += " GEMS";
-         }
-
-         if (itemBox is StoreHairDyeBox hairDyeBox) {
-            string mergedPalette = Item.parseItmPalette(Item.overridePalette(hairDyeBox.palette.paletteName, Global.userObjects.userInfo.hairPalettes));
-            characterStack.updateHair(Global.userObjects.userInfo.hairType, mergedPalette);
-
-         } else if (itemBox is StoreHaircutBox hairBox) {
-            characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
-
-         } else if (itemBox is StoreArmorDyeBox armorDyeBox) {
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
-            string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.armor.paletteNames));
-
-            if (armorData == null) {
-               armorData = EquipmentXMLManager.self.armorStatList.First();
-            }
-
-            if (armorData != null) {
-               characterStack.updateArmor(Global.player.gender, armorData.armorType, mergedPalette);
-            }
-
-         } else if (itemBox is StoreWeaponDyeBox weaponDyeBox) {
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.userObjects.weapon.itemTypeId);
-            string mergedPalette = Item.parseItmPalette(Item.overridePalette(weaponDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
-
-            if (weaponData == null) {
-               weaponData = EquipmentXMLManager.self.weaponStatList.First();
-            }
-
-            if (weaponData != null) {
-               characterStack.updateWeapon(Global.player.gender, weaponData.weaponType, mergedPalette);
-            }
-
-         } else if (itemBox is StoreHatDyeBox hatDyeBox) {
-            HatStatData hatData = EquipmentXMLManager.self.getHatData(Global.userObjects.hat.itemTypeId);
-            string mergedPalette = Item.parseItmPalette(Item.overridePalette(hatDyeBox.palette.paletteName, Global.userObjects.hat.paletteNames));
-
-            if (hatData == null) {
-               hatData = EquipmentXMLManager.self.hatStatList.First();
-            }
-
-            if (hatData != null) {
-               characterStack.updateHats(Global.player.gender, hatData.hatType, mergedPalette);
-            }
-
-         } else if (itemBox is StoreHatBox hatBox) {
-            HatStatData hatData = EquipmentXMLManager.self.getHatData(hatBox.hat.sqlId);
-
-            if (hatData == null) {
-               hatData = EquipmentXMLManager.self.hatStatList.First();
-            }
-
-            if (hatData != null) {
-               characterStack.updateHats(Global.player.gender, hatData.hatType, string.Empty);
-            }
-         }
-
-         itemBox.select();
+         characterStack.synchronizeAnimationIndexes();
+         return;
       }
 
+      this.selectedItem = itemBox;
+      itemTitleText.text = itemBox.itemName;
+      descriptionText.text = itemBox.itemDescription;
+      descPriceText.text = itemBox.itemCost.ToString();
+
+      if (string.IsNullOrWhiteSpace(descriptionText.text) && itemBox is StoreDyeBox dyeItemBox) {
+         // Try to compute a description text
+         descriptionText.text = computeDyeDescription(dyeItemBox.palette);
+      }
+
+      if (itemBox is StoreGemBox storeGemBox) {
+         descPriceText.text = storeGemBox.getDisplayCost();
+      } else {
+         descPriceText.text += " GEMS";
+      }
+
+      if (itemBox is StoreHairDyeBox hairDyeBox) {
+         string mergedPalette = Item.parseItmPalette(Item.overridePalette(hairDyeBox.palette.paletteName, Global.userObjects.userInfo.hairPalettes));
+         characterStack.updateHair(Global.userObjects.userInfo.hairType, mergedPalette);
+
+      } else if (itemBox is StoreHaircutBox hairBox) {
+         characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
+
+      } else if (itemBox is StoreArmorDyeBox armorDyeBox) {
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
+         string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.armor.paletteNames));
+
+         if (armorData == null) {
+            armorData = EquipmentXMLManager.self.armorStatList.First();
+         }
+
+         if (armorData != null) {
+            characterStack.updateArmor(Global.player.gender, armorData.armorType, mergedPalette);
+         }
+
+      } else if (itemBox is StoreWeaponDyeBox weaponDyeBox) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.userObjects.weapon.itemTypeId);
+         string mergedPalette = Item.parseItmPalette(Item.overridePalette(weaponDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
+
+         if (weaponData == null) {
+            weaponData = EquipmentXMLManager.self.weaponStatList.First();
+         }
+
+         if (weaponData != null) {
+            characterStack.updateWeapon(Global.player.gender, weaponData.weaponType, mergedPalette);
+         }
+
+      } else if (itemBox is StoreHatDyeBox hatDyeBox) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(Global.userObjects.hat.itemTypeId);
+         string mergedPalette = Item.parseItmPalette(Item.overridePalette(hatDyeBox.palette.paletteName, Global.userObjects.hat.paletteNames));
+
+         if (hatData == null) {
+            hatData = EquipmentXMLManager.self.hatStatList.First();
+         }
+
+         if (hatData != null) {
+            characterStack.updateHats(Global.player.gender, hatData.hatType, mergedPalette);
+         }
+
+      } else if (itemBox is StoreHatBox hatBox) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(hatBox.hat.sqlId);
+
+         if (hatData == null) {
+            hatData = EquipmentXMLManager.self.hatStatList.First();
+         }
+
+         if (hatData != null) {
+            characterStack.updateHats(Global.player.gender, hatData.hatType, string.Empty);
+         }
+      }
+
+      itemBox.select();
       characterStack.synchronizeAnimationIndexes();
    }
 
@@ -312,7 +328,7 @@ public class StoreScreen : Panel
    private void deselectAllItems () {
       this.selectedItem = null;
 
-      foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
+      foreach (StoreItemBox itemBox in _storeItemBoxes) {
          itemBox.toggleHover(false);
          itemBox.toggleSelection(false);
       }
@@ -320,7 +336,8 @@ public class StoreScreen : Panel
 
    public void filterItems () {
       // Go through all of our items and toggle which ones are showing
-      foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
+      _currentFilterOption = storeFilter.getCurrentOptionText();
+      foreach (StoreItemBox itemBox in _storeItemBoxes) {
          bool show = itemBox.storeTabCategory == _currentStoreTabType;
          itemBox.gameObject.SetActive(show);
 
@@ -329,8 +346,6 @@ public class StoreScreen : Panel
          }
 
          if (shouldShowStoreFilter()) {
-            _currentFilterOption = storeFilter.getCurrentOptionText();
-
             if (!Util.areStringsEqual(_currentFilterOption, StoreFilterConstants.ALL)) {
                if (isDyeTab()) {
                   // Apply the filter (if necessary)
@@ -369,8 +384,6 @@ public class StoreScreen : Panel
    }
 
    private void updateBoxContainerLayout (StoreTab.StoreTabType tabType) {
-      GridLayoutGroup gridLayout = itemsContainer.GetComponent<GridLayoutGroup>();
-
       if (gridLayout == null) {
          return;
       }
@@ -384,9 +397,9 @@ public class StoreScreen : Panel
          gridLayout.spacing = new Vector2(0, 0);
          gridLayout.constraintCount = 4;
       } else {
-         gridLayout.cellSize = new Vector2(100, 150);
-         gridLayout.spacing = new Vector2(20, 16);
-         gridLayout.constraintCount = 5;
+         gridLayout.cellSize = new Vector2(87, 150);
+         gridLayout.spacing = new Vector2(12, 16);
+         gridLayout.constraintCount = 6;
       }
    }
 
@@ -532,9 +545,50 @@ public class StoreScreen : Panel
       return box;
    }
 
+   protected StoreHairDyeBox createPetBox (StoreItem storeItem) {
+      StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      tryOverrideNameAndDescription(storeItem, box);
+      return box;
+   }
+
+   protected StoreConsumableBox createConsumableBox (StoreItem storeItem) {
+      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
+
+      if (consumableData == null) {
+         return null;
+      }
+
+      StoreConsumableBox box = Instantiate(PrefabsManager.self.consumableBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      box.consumable = consumableData;
+      box.itemName = box.consumable.itemName;
+      box.itemDescription = box.consumable.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
+      return box;
+   }
+
+   protected StoreHatBox createHatBox(StoreItem storeItem) {
+      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(storeItem.itemId);
+
+      if (hatStatData == null) {
+         return null;
+      }
+
+      StoreHatBox box = Instantiate(PrefabsManager.self.hatBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      box.hat = hatStatData;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
+      return box;
+   }
+
+   #region Dye
+
    protected StoreItemBox createDyeBox (StoreItem storeItem) {
       PaletteToolData palette = PaletteSwapManager.self.getPalette(storeItem.itemId);
-      
+
       if (palette == null) {
          return null;
       }
@@ -637,44 +691,7 @@ public class StoreScreen : Panel
       return box;
    }
 
-   protected StoreHairDyeBox createPetBox (StoreItem storeItem) {
-      StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
-      prepareStoreItemBox(storeItem, box);
-      tryOverrideNameAndDescription(storeItem, box);
-      return box;
-   }
-
-   protected StoreConsumableBox createConsumableBox (StoreItem storeItem) {
-      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
-
-      if (consumableData == null) {
-         return null;
-      }
-
-      StoreConsumableBox box = Instantiate(PrefabsManager.self.consumableBoxPrefab);
-      prepareStoreItemBox(storeItem, box);
-      box.consumable = consumableData;
-      box.itemName = box.consumable.itemName;
-      box.itemDescription = box.consumable.itemDescription;
-      tryOverrideNameAndDescription(storeItem, box);
-      box.initialize();
-      return box;
-   }
-
-   protected StoreHatBox createHatBox(StoreItem storeItem) {
-      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(storeItem.itemId);
-
-      if (hatStatData == null) {
-         return null;
-      }
-
-      StoreHatBox box = Instantiate(PrefabsManager.self.hatBoxPrefab);
-      prepareStoreItemBox(storeItem, box);
-      box.hat = hatStatData;
-      tryOverrideNameAndDescription(storeItem, box);
-      box.initialize();
-      return box;
-   }
+   #endregion
 
    private void destroyStoreBoxes () {
       if (itemsContainer == null) {
@@ -843,25 +860,30 @@ public class StoreScreen : Panel
    }
 
    private string[] computeShipNames () {
-      List<ShipData> shipDatas = ShipDataManager.self.shipDataList;
-      List<ShipData> validShipData = new List<ShipData>();
-      List<string> validShipNames = new List<string>();
+      // Return the cached ship names if available
+      if (_shipNamesOptionsCache == null) {
+         List<ShipData> shipDatas = ShipDataManager.self.shipDataList;
+         List<ShipData> validShipData = new List<ShipData>();
+         List<string> validShipNames = new List<string>();
 
-      foreach (ShipData ship in shipDatas) {
-         if (validShipData.Any(_=>_.shipType == ship.shipType)){
-            continue;
+         foreach (ShipData ship in shipDatas) {
+            if (validShipData.Any(_ => _.shipType == ship.shipType)) {
+               continue;
+            }
+
+            if (validShipData.Find(_ => _.shipType == ship.shipType) == null) {
+               validShipData.Add(ship);
+            }
          }
 
-         if (validShipData.Find(_ => _.shipType == ship.shipType) == null) {
-            validShipData.Add(ship);
+         foreach (ShipData validShip in validShipData) {
+            validShipNames.Add(validShip.shipName);
          }
+
+         _shipNamesOptionsCache = validShipNames.ToArray();
       }
 
-      foreach (ShipData validShip in validShipData) {
-         validShipNames.Add(validShip.shipName);
-      }
-
-      return validShipNames.ToArray();
+      return _shipNamesOptionsCache;
    }
 
    private string computeDyeDescription (PaletteToolData palette) {
@@ -914,7 +936,6 @@ public class StoreScreen : Panel
       return result.Trim();
    }
 
-
    #endregion
 
    #region Private Variables
@@ -933,6 +954,9 @@ public class StoreScreen : Panel
 
    // Current value of the store filter
    private string _currentFilterOption;
+
+   // Cache for the ship names used in the ship skins dropdown
+   private string[] _shipNamesOptionsCache;
 
    #endregion
 }

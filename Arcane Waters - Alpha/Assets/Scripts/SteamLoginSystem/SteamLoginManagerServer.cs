@@ -94,8 +94,14 @@ namespace SteamLoginSystem
 
       private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent, string steamAppId) {
          appOwnershipEventActiveList.Add(newOwnershipEvent);
-       
+
          // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
+
+#if UNITY_EDITOR
+         // Override in Unity editor
+         steamAppId = Steam.SteamStatics.GAME_APPID;
+#endif
+
          string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + steamAppId;
          if (isLogActive) {
             D.editorLog("Requesting: " + webRequest, Color.red);

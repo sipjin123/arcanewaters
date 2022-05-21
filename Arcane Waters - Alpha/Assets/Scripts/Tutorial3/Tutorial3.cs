@@ -27,6 +27,9 @@ public class Tutorial3
    // Gets set to true when the tutorial is active
    public bool isActive = true;
 
+   // Store the latest step completed
+   public int latestCompletedStep = 0;
+
    #endregion
 
    public Tutorial3 () { }

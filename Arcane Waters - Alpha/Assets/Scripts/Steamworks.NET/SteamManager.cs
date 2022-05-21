@@ -128,6 +128,20 @@ public class SteamManager : MonoBehaviour
 #endif
    }
 
+   public static void testTryInitializeUnityEditor() {
+#if UNITY_EDITOR
+      s_instance.m_bInitialized = SteamAPI.Init();
+      if (!s_instance.m_bInitialized) {
+         D.debug("[Steamworks.NET] SteamAPI_Init() failed. Refer to Valve's documentation or the comment above this line for more information.");
+
+         return;
+      }
+
+      s_EverInitialized = true;
+
+#endif //UNITY_EDITOR
+   }
+
    // This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
    protected virtual void OnEnable () {
       if (s_instance == null) {

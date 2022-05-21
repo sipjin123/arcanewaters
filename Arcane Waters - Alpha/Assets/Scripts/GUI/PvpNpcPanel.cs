@@ -16,9 +16,12 @@ public class PvpNpcPanel : Panel {
       self = this;
    }
 
-   public void onClosePanelPressed () {
-      // hide();
-      PanelManager.self.unlinkPanel();
+   public void onItemClicked () {
+      // Show confirmation screen
+   }
+
+   public void onPurchaseConfirmed () {
+
    }
 
    #region Private Variables

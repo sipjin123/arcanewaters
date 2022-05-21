@@ -1048,7 +1048,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo,
-      Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
+      Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount, bool isSteamFriendsTab) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
 
       // Make sure the panel is showing
@@ -1059,7 +1059,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
+      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
    }
 
    [TargetRpc]
@@ -1785,25 +1785,48 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_RequestStoreResources (bool requestStoreItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<StoreItem> storeItems = null;
+         StoreResourcesResponse resources = new StoreResourcesResponse();
+         resources.isStoreEnabled = false;
+         resources.items = null;
+         resources.userObjects = DB_Main.getUserObjects(_player.userId);
+         BKG_getStoreStatusInfo(out resources.isStoreEnabled, out resources.gemStoreIsDisabledMessage);
 
-         if (requestStoreItems) {
+         if (resources.isStoreEnabled && requestStoreItems) {
             List<StoreItem> allStoreItems = DB_Main.getAllStoreItems();
-            storeItems = allStoreItems.Where(isStoreItemEnabled).ToList();
+            resources.items = allStoreItems.Where(isStoreItemEnabled).ToList();
          }
 
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveStoreResources(storeItems, userObjects);
+            Target_ReceiveStoreResources(resources);
          });
       });
    }
 
+   private void BKG_getStoreStatusInfo (out bool isGemStoreEnabled, out string gemStoreIsDisabledMessage) {
+      isGemStoreEnabled = false;
+      gemStoreIsDisabledMessage = string.Empty;
+
+      RemoteSettingCollection collection = DB_Main.getRemoteSettings(new[] {
+            RemoteSettingsManager.SettingNames.ENABLE_GEM_STORE,
+            RemoteSettingsManager.SettingNames.GEM_STORE_DISABLED_MESSAGE
+         });
+
+      RemoteSetting rsIsGemStoreEnabled = collection.getSetting(RemoteSettingsManager.SettingNames.ENABLE_GEM_STORE);
+      RemoteSetting rsGemStoreIsDisabledMessage = collection.getSetting(RemoteSettingsManager.SettingNames.GEM_STORE_DISABLED_MESSAGE);
+
+      if (rsIsGemStoreEnabled != null) {
+         isGemStoreEnabled = rsIsGemStoreEnabled.toBool();
+      }
+
+      if (rsGemStoreIsDisabledMessage != null) {
+         gemStoreIsDisabledMessage = rsGemStoreIsDisabledMessage.value;
+      }
+   }
+
    [TargetRpc]
-   public void Target_ReceiveStoreResources (List<StoreItem> items, UserObjects userObjects) {
-      Global.userObjects = userObjects;
-      StoreScreen.self.onReceiveStoreResources(items);
+   public void Target_ReceiveStoreResources (StoreResourcesResponse resources) {
+      Global.userObjects = resources.userObjects;
+      StoreScreen.self.onReceiveStoreResources(resources);
    }
 
    [Command]
@@ -2190,6 +2213,15 @@ public class RPCManager : NetworkBehaviour
    [Server]
    private void buyItem (ulong itemId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the Gem Store is enabled
+         BKG_getStoreStatusInfo(out bool isGemStoreEnabled, out string gemStoreIsDisabledMessage);
+
+         if (!isGemStoreEnabled) {
+            D.error($"Store Purchase Error: Store is disabled. PlayerId: {_player.userId}, itemId: {itemId}.");
+            reportStorePurchaseFailed(gemStoreIsDisabledMessage);
+            return;
+         }
+
          // Look up the item box for the specified item id
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
          Item storeReferencedItem = null;
@@ -2408,6 +2440,15 @@ public class RPCManager : NetworkBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          try {
+            // Check if the Gem Store is enabled
+            BKG_getStoreStatusInfo(out bool isGemStoreEnabled, out string gemStoreIsDisabledMessage);
+
+            if (!isGemStoreEnabled) {
+               D.error($"Steam Purchase Error: Store is disabled. PlayerId: '{_player.userId}', OrderId: '{orderId}', PurchaseAuthorized: {purchaseAuthorized}");
+               reportStorePurchaseFailed(gemStoreIsDisabledMessage);
+               return;
+            }
+
             // Check if the order exists
             SteamOrder order = DB_Main.getSteamOrder(orderId);
 
@@ -4011,7 +4052,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestFriendshipInfoFromServer (int pageNumber, int itemsPerPage, Friendship.Status friendshipStatus) {
+   public void Cmd_RequestFriendshipInfoFromServer (int pageNumber, int itemsPerPage, Friendship.Status friendshipStatus, bool isSteamFriendsTab) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -4064,7 +4105,7 @@ public class RPCManager : NetworkBehaviour
                friend.isOnline = ServerNetworkingManager.self.isUserOnline(friend.friendUserId);
             }
 
-            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
+            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
          });
       });
    }
@@ -4154,6 +4195,11 @@ public class RPCManager : NetworkBehaviour
 
       // On first spawn check for rewards
       Cmd_CheckRewardCodes();
+
+      // Create a steam matching making lobby so friends can join
+      if (SteamManager.Initialized) {
+         Steamworks.SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypeFriendsOnly, 16);
+      }
    }
 
    [Command]
@@ -4219,6 +4265,12 @@ public class RPCManager : NetworkBehaviour
             });
             return;
          }
+
+         // Check message for any filtered words before mail creation
+         message = BadWordManager.ReplaceAll(message);
+
+         // Check mail header for filtered message before mail creation
+         mailSubject = BadWordManager.ReplaceAll(mailSubject);
 
          // Create the mail
          int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
@@ -6128,7 +6180,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Initialize pallete names to empty string
-         resultItem.paletteNames = "";
+         // resultItem.paletteNames = "";
 
          // Get the crafting requirement data
          CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
@@ -8904,7 +8956,7 @@ public class RPCManager : NetworkBehaviour
       D.adminLog("Battler can now cast again! After Refresh Casting: " + reason, D.ADMIN_LOG_TYPE.AbilityCast);
       BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(true);
       if (refreshAbilityCache) {
-         AttackPanel.self.clearCachedAbilityCast();
+         AttackPanel.self.clearCachedAbilityCast(reason);
       }
    }
 
@@ -9641,6 +9693,13 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_BaseMapUpdated (string customMapKey, int baseMapId) {
       PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).baseMapUpdated(customMapKey, baseMapId);
+   }
+
+   [Command]
+   public void Cmd_StoreSessionEvent (string machineIdentifier, SessionEventInfo.Type eventType, int deploymentId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.saveSessionEvent(new SessionEventInfo(this._player.accountId, this._player.userId, this._player.entityName, this._player.connectionToClient.address, eventType, machineIdentifier, deploymentId));
+      });
    }
 
    [Command]
@@ -10562,13 +10621,13 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_SetRemoteSettings (RemoteSettingCollection collection) {
       if (_player == null) {
-         D.warning("No player object found.");
+         D.warning("RemoteSettings Update Failed: No player object found.");
          return;
       }
 
       // Make sure this is an admin
       if (!_player.isAdmin()) {
-         D.warning("Received admin command from non-admin!");
+         D.warning($"RemoteSettings Update Failed: Player is not admin. PlayerId: {_player.userId}");
          return;
       }
 
@@ -10848,6 +10907,15 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_WarpToFriend (ulong friendSteamId) {
+      if (_player == null) {
+         return;
+      }
+
+      SteamFriendsManager.joinFriend(_player, friendSteamId);
+   }
+
    #region User Search
 
    [Command]
@@ -10950,6 +11018,31 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
+         if (searchInfo.filter == UserSearchInfo.FilteringMode.SteamId) {
+            if (ulong.TryParse(searchInfo.input, out ulong steamId)) {
+               List<int> associatedIds = DB_Main.getAssociatedUserIdsWithSteamId(steamId);
+               if (associatedIds.Count > 0) {
+                  Dictionary<int, UserInfo> userInfoRegistry = DB_Main.getUserInfosByIds(associatedIds);
+
+                  foreach (int id in associatedIds) {
+                     if (userInfoRegistry.TryGetValue(id, out UserInfo info)) {
+                        UserSearchResult result = new UserSearchResult {
+                           name = info.username,
+                           level = LevelUtil.levelForXp(info.XP),
+                           userId = _player.isAdmin() ? info.userId : 0,
+                           area = _player.isAdmin() ? info.areaKey : "",
+                           biome = AreaManager.self.getDefaultBiome(info.areaKey),
+                           lastTimeOnline = info.lastLoginTime,
+                           isOnline = true,
+                           isSameServer = EntityManager.self.getEntity(info.userId) != null,
+                        };
+                        results.Add(result);
+                     }
+                  }
+               }
+            }
+         }
+
          resultsCollection.searchInfo = searchInfo;
          resultsCollection.results = results.ToArray();
 
@@ -10961,6 +11054,13 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveUserSearchResults (NetworkConnection connection, UserSearchResultCollection resultCollection) {
+      // Handle steam search results differently
+      if (resultCollection.searchInfo.filter == UserSearchInfo.FilteringMode.SteamId) {
+         PanelManager.self.linkIfNotShowing(Panel.Type.FriendList);
+         FriendListPanel.self.showSearchResults(resultCollection);
+         return;
+      }
+
       if (resultCollection == null || resultCollection.results == null || resultCollection.results.Length == 0) {
          ChatManager.self.addChat($"Search complete! No users found...", ChatInfo.Type.System);
          return;

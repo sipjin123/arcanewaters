@@ -12,6 +12,9 @@ public class UserLocationBundle
    // The user id
    public int userId;
 
+   // The steam id of the user
+   public ulong steamId;
+
    // The server where the user is located
    public int serverPort;
 

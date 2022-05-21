@@ -72,8 +72,11 @@ public class ShipData
    public int basePrice = 5000;
    
    // Number of sailors the ship has
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSailors = 10;
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSailorsMin = 1;
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSailorsMax = 10;
 
    // Count of cargo rooms in the ship
@@ -82,8 +85,11 @@ public class ShipData
    public int baseCargoRoomMax = 18;
 
    // Count of supply rooms in the ship
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSupplyRoom = 10;
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSupplyRoomMin = 1;
+   [Obsolete("This stat is removed - discussed in task 5960")]
    public int baseSupplyRoomMax = 10;
 
    // Type of sail the ship uses

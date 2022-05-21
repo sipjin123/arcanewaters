@@ -99,7 +99,7 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.steamAppId == SteamStatics.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@playtest";
             }
-            if (logInUserMessage.steamAppId == SteamStatics.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
+            if ((logInUserMessage.steamAppId == SteamStatics.GAME_APPID || Application.isEditor) && !logInUserMessage.accountName.Contains("@steam")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
             }
             if (logInUserMessage.steamAppId == SteamStatics.NEXTFEST_DEMO_APPID && !logInUserMessage.accountName.Contains("@demo")) {
@@ -339,7 +339,7 @@ public class ServerMessageManager : MonoBehaviour
                // Storing login info
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   if (conn != null && logInUserMessage.isFirstLogin) {
-                     DB_Main.storeGameAccountLoginEvent(logInUserMessage.selectedUserId, accountId, selectedUsrName, conn.address, logInUserMessage.machineIdentifier ?? "", logInUserMessage.deploymentId);
+                     DB_Main.saveSessionEvent(new SessionEventInfo(accountId, logInUserMessage.selectedUserId, selectedUsrName, conn.address, SessionEventInfo.Type.Login, logInUserMessage.machineIdentifier, logInUserMessage.deploymentId));
                   }
                });
 
@@ -707,7 +707,7 @@ public class ServerMessageManager : MonoBehaviour
          DB_Main.insertNewArmor(userId, Armor.Type.Tunic, ColorType.Blue, ColorType.White);
       }*/
 
-      DB_Main.storeGameAccountLoginEvent(userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
+      DB_Main.saveSessionEvent(new SessionEventInfo(accountId, userId, userInfo.username, conn.address, SessionEventInfo.Type.Login, msg.machineIdentifier, msg.deploymentId));
 
       // Forget any user previously deleted at the same character spot
       if (deletedCharacter != null) {

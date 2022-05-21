@@ -71,6 +71,12 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    // The last disable trigger for tracking
    public string lastDisableTrigger;
+   
+   // Flag if ability is currently on cooldown
+   public bool onCooldown => cooldownValue < cooldownTarget - .1f;
+
+   // Flag if ability is a pending ability
+   public bool isAbilityPending;
 
    #endregion
 
@@ -239,6 +245,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    
    public void togglePendingIndicator (bool isPending) {
       // Show/Hide ability button pending indicator
+      isAbilityPending = isPending;
       pendingIndicator.SetActive(isPending);
    }
 

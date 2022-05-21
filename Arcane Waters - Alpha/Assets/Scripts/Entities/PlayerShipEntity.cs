@@ -498,8 +498,7 @@ public class PlayerShipEntity : ShipEntity
             if (scrollVal != 0f) {
                // Check if scroll value is positive or negative to switch between previous or next ability
                int switchValue = scrollVal < 0 ? 1 : -1;
-               int targetAbility = Mathf.Clamp(_currentAbilitySlotIndex + switchValue, 0, 4);
-               selectAbility(targetAbility);
+               switchAbility(switchValue);
             } 
          }
       }
@@ -592,6 +591,27 @@ public class PlayerShipEntity : ShipEntity
       if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
       }
+   }
+
+   private void switchAbility(int increment) {
+      int targetAbility = _currentAbilitySlotIndex;
+      
+      // Cancel if entire ability is on cooldown
+      if (isEntireAbilityOnCooldown()) { 
+         return;
+      }
+
+      // Get the next/previous ability that is not on cooldown
+      do {
+         targetAbility += increment;
+         if (targetAbility > MAX_ABILITY_INDEX) {
+            targetAbility = 0;
+         } else if (targetAbility < 0) {
+            targetAbility = MAX_ABILITY_INDEX;
+         }
+      } while (isAbilityOnCooldown(targetAbility) && increment != 0);
+      
+      selectAbility(targetAbility);      
    }
 
    private void LateUpdate () {
@@ -1985,20 +2005,36 @@ public class PlayerShipEntity : ShipEntity
       // Assign the ship name
       if (!Util.isEmpty(entityName)) {
          entityNameGO.SetActive(true);
-         ShipBarsPlayer sbp = entityNameGO.GetComponentInParent<ShipBarsPlayer>();
-         sbp.nameTextInside.text = this.entityName;
-         sbp.nameTextOutside.text = this.entityName;
-         sbp.nameTextInside.fontMaterial = new Material(sbp.nameTextInside.fontSharedMaterial);
-         sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", sbp.nameColor);
-         sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
-         sbp.nameTextInside.fontMaterial.SetFloat("_OutlineWidth", sbp.nameOutlineWidth);
 
-         if (isLocalPlayer) {
-            sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", sbp.nameColorLocalPlayer);
-            sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
-         }
-
+         updateNameColor();
       }
+   }
+
+   public void updateNameColor () {
+      ShipBarsPlayer sbp = entityNameGO.GetComponentInParent<ShipBarsPlayer>();
+      sbp.nameTextInside.text = this.entityName;
+      sbp.nameTextOutside.text = this.entityName;
+      sbp.nameTextInside.fontMaterial = new Material(sbp.nameTextInside.fontSharedMaterial);
+
+      Color fillColor = sbp.nameColor;
+      if (isDemoUser) {
+         fillColor = sbp.demoUserColor;
+      }
+      if (isAdmin()) {
+         fillColor = sbp.adminUserColor;
+      }
+
+      if (isLocalPlayer) {
+         if (fillColor.getSaturation() > 0) {
+            fillColor = fillColor.setSaturation(sbp.nameColorSaturationLocalPlayer);
+         } else {
+            fillColor = fillColor.setLightness(sbp.nameColorSaturationLocalPlayer);
+         }
+      }
+
+      sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", fillColor);
+      sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
+      sbp.nameTextInside.fontMaterial.SetFloat("_OutlineWidth", sbp.nameOutlineWidth);
    }
 
    protected override void onMaxHealthChanged (int oldValue, int newValue) {
@@ -2290,6 +2326,17 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public bool isEntireAbilityOnCooldown () {
+      // Check the entire ability index if on cooldown
+      for (var index = 0; index <= MAX_ABILITY_INDEX; index++) {
+         // Break loop if one of abilities is not on cooldown and return false
+         if (!isAbilityOnCooldown(index)) {
+            return false;
+         }
+      }
+      return true;
+   }
+   
    public bool isAbilityOnCooldown (int abilityIndex) {
       return _currentAbilityCooldowns[abilityIndex] > Mathf.Epsilon;
    }
@@ -2568,7 +2615,7 @@ public class PlayerShipEntity : ShipEntity
 
    // Current ability index
    private int _currentAbilitySlotIndex = 0;
-
+   
    // A list of references to any active sea mines
    private List<SeaMine> _seaMines = new List<SeaMine>();
 
@@ -2584,6 +2631,9 @@ public class PlayerShipEntity : ShipEntity
    // The maximum number of active sea mines the player can have at a time
    private const int SEA_MINE_LIMIT = 4;
 
+   // The max number of ship's ability index
+   private const int MAX_ABILITY_INDEX = 4;
+   
    // Trigger parameter for the heal animation
    private const string SHOW_HEAL = "Show";
 

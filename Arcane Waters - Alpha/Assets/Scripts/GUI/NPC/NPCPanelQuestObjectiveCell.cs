@@ -69,8 +69,13 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
                icon.sprite = blueprintSprite;
             }
             break;
+         case Item.Category.Crop:
+            if (CropsDataManager.self.tryGetCropData(item.itemTypeId, out CropsData cropData)) {
+               icon.sprite = ImageManager.getSprite("Cargo/" + (Crop.Type)cropData.cropsType);
+            }
+            break;
          default:
-            D.debug("Invalid Item Category: "+item.category);
+            D.debug("Invalid Item Category: " + item.category);
             icon.sprite = null;
             break;
       }

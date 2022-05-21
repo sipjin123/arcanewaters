@@ -16,6 +16,12 @@
       // The "Sandbox mode switch for Steam purchases" Setting
       public const string STEAM_PURCHASES_SANDBOX_MODE_ACTIVE = "STEAM_PURCHASES_SANDBOX_MODE_ACTIVE";
 
+      // The "Enable Gem Store" Setting
+      public const string ENABLE_GEM_STORE = "ENABLE_GEM_STORE";
+
+      // The "Gem Store Disabled Message"
+      public const string GEM_STORE_DISABLED_MESSAGE = "GEM_STORE_DISABLED_MESSAGE";
+
       #endregion
-   } 
+   }
 }

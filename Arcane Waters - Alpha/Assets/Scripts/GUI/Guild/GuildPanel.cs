@@ -315,6 +315,7 @@ public class GuildPanel : Panel {
 
    public void leaveGuildPressed () {
       // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmedLeaveGuild());
 

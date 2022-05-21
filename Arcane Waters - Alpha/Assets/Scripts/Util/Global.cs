@@ -61,7 +61,7 @@ public class Global
 
    // If the heal text must be showed
    public static bool showHealText = false;
-   
+
    // Keeps track of the last account name we provided
    public static string lastUsedAccountName;
 
@@ -74,6 +74,9 @@ public class Global
    // Keeps track of the steam settings and info
    public static bool isSteamLogin;
    public static string lastSteamId;
+
+   // If user is joining a friend, this is the friend's steam ID
+   public static ulong joinSteamFriendID = 0;
 
    // Determine if the player should sprint without holding down sprint button
    public static bool sprintConstantly;

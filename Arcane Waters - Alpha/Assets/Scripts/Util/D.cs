@@ -55,7 +55,8 @@ public class D : MonoBehaviour {
       Achievement = 42,
       DeathAnimDelay = 43,
       Performance = 44,
-      Disconnection = 45
+      Disconnection = 45,
+      AreaClearing = 46
    }
 
    // Any log files older than this will be deleted
