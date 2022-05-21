@@ -331,9 +331,20 @@ public class EnemyManager : MonoBehaviour {
           return;
        }
 
+      int maxRandomizeCounter = 5;
+      Enemy.Type previousEnemyType = Enemy.Type.None;
        foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          Enemy.Type enemyType = spawner.getEnemyType(instance.biome);
+         while (enemyType == previousEnemyType && maxRandomizeCounter > 0) {
+            maxRandomizeCounter--;
+            enemyType = spawner.getEnemyType(instance.biome);
+            D.debug("Reset Randomize Enemy for Biome:{" + instance.biome + "} Area:{" + instance.areaKey + "} Counter:{" + maxRandomizeCounter + "}");
+         }
+         
          if (enemyType != Enemy.Type.PlayerBattler) {
+            previousEnemyType = enemyType;
+            maxRandomizeCounter = 5;
+
             // Create an Enemy in this instance
             Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
             enemy.transform.localPosition = spawner.transform.localPosition;
@@ -622,8 +633,19 @@ public class EnemyManager : MonoBehaviour {
    }
 
    private SeaMonsterEntityData randomizeShipByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+      // Instance difficulties reach up to 6 max while tier difficulties only reach 3 types only, normalize data here
+      int difficultyValue = (int) difficulty;
+      Voyage.Difficulty normalizeDifficulty = difficulty;
+      if (difficultyValue <= 2) {
+         normalizeDifficulty = Voyage.Difficulty.Easy;
+      } else if (difficultyValue <= 4) {
+         normalizeDifficulty = Voyage.Difficulty.Medium;
+      } else {
+         normalizeDifficulty = Voyage.Difficulty.Hard;
+      }
+
       List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(
-         _ => _.difficultyLevel == difficulty
+         _ => _.difficultyLevel == normalizeDifficulty
          // Ships have variety types
          && _.subVarietyTypeId > 0
          // There are biome filters that needs consideration
@@ -640,8 +662,19 @@ public class EnemyManager : MonoBehaviour {
    }
 
    private SeaMonsterEntityData randomizeMonsterByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+      // Instance difficulties reach up to 6 max while tier difficulties only reach 3 types only, normalize data here
+      int difficultyValue = (int) difficulty;
+      Voyage.Difficulty normalizeDifficulty = difficulty;
+      if (difficultyValue <= 2) {
+         normalizeDifficulty = Voyage.Difficulty.Easy;
+      } else if (difficultyValue <= 4) {
+         normalizeDifficulty = Voyage.Difficulty.Medium;
+      } else {
+         normalizeDifficulty = Voyage.Difficulty.Hard;
+      }
+
       List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(
-            _ => _.difficultyLevel == difficulty
+            _ => _.difficultyLevel == normalizeDifficulty
             // Sea monsters do not have variety types (for now)
             && _.subVarietyTypeId < 1 
             // There are biome filters that needs consideration

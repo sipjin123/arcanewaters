@@ -268,8 +268,20 @@ public class VoyageManager : GenericGameManager {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueLobby).ToList();
    }
 
-   public List<string> getLeagueSeaBossAreaKeys () {
-      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss).ToList();
+   public List<string> getLeagueSeaBossAreaKeys (Biome.Type biomeType = Biome.Type.None) {
+      var allBossLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss).ToList();
+      if (biomeType == Biome.Type.None) {
+         return allBossLeagueArea;
+      } else {
+         List<string> biomedLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => 
+         // Fetch all league boss areas
+         AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss
+         // Make sure map info is not null
+         && (AreaManager.self.getMapInfo(k) != null 
+         // Retrieve all boss maps with biome type or none biome type
+         && (AreaManager.self.getMapInfo(k).biome == biomeType || AreaManager.self.getMapInfo(k).biome == Biome.Type.None))).ToList();
+         return biomedLeagueArea;
+      }
    }
 
    [Server]
