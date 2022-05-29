@@ -300,35 +300,45 @@ public class TreasureChest : NetworkBehaviour {
          : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
       string itemList = "Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
 
-      // Try to fetch biome based drops if no treasure content is found
-      if (treasureDropsList.Count < 1) {
-         treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
-         itemList = "Processing Chest Contents from Biome {" + biome + "}:{" + rarity + "}:{" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
-      }
-      D.adminLog(itemList, D.ADMIN_LOG_TYPE.Treasure);
-
-      if (treasureDropsList.Count < 1) {
-         // If no treasure content was fetched still, find the next viable content
-         D.error("There are no treasure drops generated for user {" + userId + "} Biome:{" + biome + "} Checking alternative item: G:{" + lootGroupId + "} R:{" + rarity + "}");
-         Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
-         if (nextAvailableItem != null) {
-            return nextAvailableItem;
+      int randomChestItemCounter = 3;
+      for (int i = 0; i < randomChestItemCounter; i ++) {
+         // Try to fetch biome based drops if no treasure content is found
+         if (treasureDropsList.Count < 1) {
+            treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
+            itemList = "Processing Chest Contents from Biome {" + biome + "}:{" + rarity + "}:{" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
          }
-      } else {
-         // Process random entry between the fetched content
-         TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
-         if (randomEntry.item != null) {
-            randomEntry.item.count = assignItemCount(randomEntry);
-            if (Item.isValidItem(randomEntry.item)) {
-               return randomEntry.item;
+         D.adminLog(itemList, D.ADMIN_LOG_TYPE.Treasure);
+
+         if (treasureDropsList.Count < 1) {
+            // If no treasure content was fetched still, find the next viable content
+            D.error("There are no treasure drops generated for user {" + userId + "} Biome:{" + biome + "} Checking alternative item: G:{" + lootGroupId + "} R:{" + rarity + "}");
+            Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
+            if (nextAvailableItem != null && Item.isValidItem(nextAvailableItem)) {
+               D.debug("Treasure Chest-A: Valid item selected! Id:{" + lootGroupId + "} Rarity:{" + rarity + "} Biome:{" + biome + "} " +
+                  ":: Item:{" + nextAvailableItem.category + ":" + nextAvailableItem.itemTypeId + ":" + nextAvailableItem.data + "}");
+               return nextAvailableItem;
             } else {
-               D.error("This is not a valid item {" + randomEntry.item.category + ":" + randomEntry.item.itemTypeId + "}{" + randomEntry.item.data + ":" + randomEntry.item.id + "}");
+               D.error("Treasure Chest: There is no next available item by rarity! Returning Wood! Id:{" + lootGroupId + "} Rarity:{" + rarity + "} Biome:{" + biome + "}");
             }
          } else {
-            D.error("Random Entry found is: NULL for biome {" + biome + "}");
+            // Process random entry between the fetched content
+            TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
+            if (randomEntry.item != null) {
+               randomEntry.item.count = assignItemCount(randomEntry);
+               if (Item.isValidItem(randomEntry.item)) {
+                  D.debug("Treasure Chest-B: Valid item selected! Id:{" + lootGroupId + "} Rarity:{" + rarity + "} Biome:{" + biome + "} " +
+                     ":: Item:{" + randomEntry.item.category + ":" + randomEntry.item.itemTypeId + ":" + randomEntry.item.data + "}");
+                  return randomEntry.item;
+               } else {
+                  D.error("Treasure Chest: This is not a valid item {" + randomEntry.item.category + ":" + randomEntry.item.itemTypeId + "}{" + randomEntry.item.data + ":" + randomEntry.item.id + "}");
+               }
+            } else {
+               D.error("Treasure Chest: Random Entry found is: NULL for biome {" + biome + "}");
+            }
          }
-      }
 
+         D.error("Treasure Chest: was generating incorrect item, retry {" + i + "/" + randomChestItemCounter + "} Id:{" + lootGroupId + "} Rarity:{" + rarity + "} Biome:{" + biome + "}");
+      }
       return Item.defaultLootItem();
    }
 
@@ -461,6 +471,8 @@ public class TreasureChest : NetworkBehaviour {
                      "Category: " + randomSubstituteData.item.category + " " +
                      "Type: " + randomSubstituteData.item.itemTypeId);
                   return randomSubstituteData.item;
+               } else {
+                  D.debug("Could not process next available item! Invalid: " + randomSubstituteData.item.category + ":" + randomSubstituteData.item.itemTypeId);
                }
             }
          }

@@ -3492,6 +3492,10 @@ public class RPCManager : NetworkBehaviour
             // Get the quest progress status of the user for this npc
             List<QuestStatusInfo> totalQuestStatus = DB_Main.getQuestStatuses(npcId, _player.userId);
 
+            // Give gold reward to player
+            if (questDialogue != null && questDialogue.goldReward > 0) {
+               DB_Main.addGold(_player.userId, questDialogue.goldReward);
+            }
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
                bool hasCompletedAllQuests = true;
@@ -3546,6 +3550,7 @@ public class RPCManager : NetworkBehaviour
                   }
                }
 
+               // Give item reward to player
                if (questDialogue.itemRewards != null) {
                   if (questDialogue.itemRewards.Length > 0) {
                      int validItemCount = 0;
@@ -3559,8 +3564,21 @@ public class RPCManager : NetworkBehaviour
                      }
                   }
                }
+
+               // Give ability reward to player
                if (questDialogue.abilityIdReward > 0) {
                   giveAbilityToPlayer(_player.userId, new int[1] { questDialogue.abilityIdReward });
+               }
+
+               // Give gold reward to player
+               if (questDialogue != null && questDialogue.goldReward > 0) {
+                  // Send confirmation back to the player who issued the command
+                  string message = string.Format("Added {0} gold to your inventory.", questDialogue.goldReward);
+
+                  // Registers the gold gains to achievement data for recording
+                  AchievementManager.registerUserAchievement(_player, ActionType.EarnGold, questDialogue.goldReward);
+
+                  _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
                }
 
                // Register quest completion with achievement manager
