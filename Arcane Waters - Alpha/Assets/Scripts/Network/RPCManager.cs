@@ -5300,15 +5300,22 @@ public class RPCManager : NetworkBehaviour
             if (guildLeader > 0) {
                NetEntity invitedUserEntity = EntityManager.self.getEntity(guildLeader);
                if (invitedUserEntity == null || guildInfo == null || guildAllyInfo == null) {
-                  _player.Target_ReceiveNormalChat("Failed to initialize guild alliance: {"
+                  string errorMsg = "Failed to initialize guild alliance: {"
                      + (invitedUserEntity == null ? "Missing Target User" : "") + " "
                      + (guildInfo == null ? "Missing Guild Info" : "") + " "
-                     + (guildAllyInfo == null ? "Missing Ally Guild Info" : "") + "}", ChatInfo.Type.System);
+                     + (guildAllyInfo == null ? "Missing Ally Guild Info" : "") + "}";
+                  D.debug(errorMsg);
+                  if (invitedUserEntity == null) {
+                     D.debug("Ally Entity failed to fetch {" + guildId + "}");
+                     _player.Target_ReceiveNormalChat("GuildInviteFailed! No permission to invite!", ChatInfo.Type.System);
+                  }
                   if (guildInfo == null) {
-                     D.debug("Guild info failed to fetch {" + guildId + "}");
+                     D.debug("Guild info failed to fetch Guild Info: {" + guildId + "}");
+                     _player.Target_ReceiveNormalChat("GuildInviteFailed! Could not form alliance at this time!", ChatInfo.Type.System);
                   }
                   if (guildAllyInfo == null) {
-                     D.debug("Guild Ally info failed to fetch {" + allyGuildId + "}");
+                     D.debug("Guild info failed to fetch Guild Ally Info: {" + allyGuildId + "}");
+                     _player.Target_ReceiveNormalChat("GuildInviteFailed! Could not form alliance at this time!", ChatInfo.Type.System);
                   }
                   return;
                }

@@ -94,6 +94,27 @@ public class MonsterManager : MonoBehaviour {
       if (!isInitialized) {
          foreach (BattlerData battlerData in battlerDataList) {
             if (!_monsterDataList.Exists(_=>_.battler.enemyType == battlerData.enemyType)) {
+               switch (battlerData.enemyType) {
+                  case Enemy.Type.Skelly_Captain:
+                  case Enemy.Type.Skelly_Tank:
+                  case Enemy.Type.Skelly_Assassin:
+                     battlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.fireDefenseMultiplier = -1;
+                     battlerData.baseDefenseMultiplierSet.airDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.waterDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.earthDefenseMultiplier = 3;
+                     battlerData.elementalWeakness = new Element[] { Element.Fire };
+                     break;
+                  case Enemy.Type.Skelly_Shooter:
+                  case Enemy.Type.Skelly_Healer:
+                     battlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.fireDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.airDefenseMultiplier = 3;
+                     battlerData.baseDefenseMultiplierSet.waterDefenseMultiplier = -1;
+                     battlerData.baseDefenseMultiplierSet.earthDefenseMultiplier = 3;
+                     battlerData.elementalWeakness = new Element[] { Element.Water };
+                     break;
+               }
                BattlerXMLContent newContent = new BattlerXMLContent {
                   battler = battlerData,
                   battlerName = battlerData.enemyName,
@@ -127,13 +148,34 @@ public class MonsterManager : MonoBehaviour {
             foreach (XMLPair xmlPair in rawXMLData) {
                try {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-                  BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+                  BattlerData battlerData = Util.xmlLoad<BattlerData>(newTextAsset);
 
                   // Save the monster data in the memory cache
                   if (xmlPair.isEnabled) {
+                     switch (battlerData.enemyType) {
+                        case Enemy.Type.Skelly_Captain:
+                        case Enemy.Type.Skelly_Assassin:
+                        case Enemy.Type.Skelly_Tank:
+                           battlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.fireDefenseMultiplier = -1;
+                           battlerData.baseDefenseMultiplierSet.airDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.waterDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.earthDefenseMultiplier = 3;
+                           battlerData.elementalWeakness = new Element[] { Element.Fire };
+                           break;
+                        case Enemy.Type.Skelly_Shooter:
+                        case Enemy.Type.Skelly_Healer:
+                           battlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.fireDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.airDefenseMultiplier = 3;
+                           battlerData.baseDefenseMultiplierSet.waterDefenseMultiplier = -1;
+                           battlerData.baseDefenseMultiplierSet.earthDefenseMultiplier = 3;
+                           battlerData.elementalWeakness = new Element[] { Element.Water };
+                           break;
+                     }
                      BattlerXMLContent newXmlContent = new BattlerXMLContent {
-                        battler = monsterData,
-                        battlerName = monsterData.enemyName,
+                        battler = battlerData,
+                        battlerName = battlerData.enemyName,
                         xmlId = xmlPair.xmlId,
                         isEnabled = true
                      };
@@ -142,7 +184,7 @@ public class MonsterManager : MonoBehaviour {
                   }
 
                   if (battleManager != null) {
-                     battleManager.registerBattler(monsterData);
+                     battleManager.registerBattler(battlerData);
                   }
                } catch {
                   D.editorLog("Failed to process this data: " + xmlPair.xmlId, Color.red);
