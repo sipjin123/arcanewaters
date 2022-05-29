@@ -109,6 +109,9 @@ public class ShipData
    // The player level requirement to use this ship
    public int shipLevelRequirement;
 
+   // The sailor level requirement, job xp to level
+   public int sailorLevelRequirement;
+
    // List of ship ability names
    public List<ShipAbilityPair> shipAbilities = new List<ShipAbilityPair>();
 }

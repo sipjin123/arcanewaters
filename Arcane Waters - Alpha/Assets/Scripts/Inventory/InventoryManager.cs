@@ -16,7 +16,7 @@ public class InventoryManager : MonoBehaviour
 
    #endregion
 
-   public static void tryEquipOrUseItem (Item castedItem) {
+   public static void tryEquipOrUseItem (Item castedItem, Jobs jobsData = null) {
       // If level requirements are met
       int level = LevelUtil.levelForXp(Global.player.XP);
       if (!EquipmentXMLManager.self.isLevelValid(level, castedItem)) {
@@ -25,7 +25,7 @@ public class InventoryManager : MonoBehaviour
 
       // Equip the item if it is equippable
       if (castedItem.canBeEquipped()) {
-         equipOrUnequipItem(castedItem);
+         equipOrUnequipItem(castedItem, jobsData);
          return;
       }
 
@@ -36,7 +36,7 @@ public class InventoryManager : MonoBehaviour
       }
    }
 
-   public static void equipOrUnequipItem (Item castedItem) {
+   public static void equipOrUnequipItem (Item castedItem, Jobs jobsData = null) {
       InventoryPanel inventoryPanel = (InventoryPanel)PanelManager.self.get(Panel.Type.Inventory);
 
       // Check which type of item we requested to equip/unequip

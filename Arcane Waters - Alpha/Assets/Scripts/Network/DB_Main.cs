@@ -9502,6 +9502,36 @@ public class DB_Main : DB_MainStub
       return jobs;
    }
 
+   public static new string getJobXPString (int userId) {
+      string newString = "";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM jobs WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  newString += dataReader.GetInt32("farming") + "[space]";
+                  newString += dataReader.GetInt32("exploring") + "[space]";
+                  newString += dataReader.GetInt32("sailing") + "[space]";
+                  newString += dataReader.GetInt32("trading") + "[space]";
+                  newString += dataReader.GetInt32("crafting") + "[space]";
+                  newString += dataReader.GetInt32("mining") + "[space]";
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return newString;
+   }
+
    public static new List<int> getGuildAlliance (int guildId) {
       List<int> guildAllies = new List<int>();
       if (guildId < 1) {

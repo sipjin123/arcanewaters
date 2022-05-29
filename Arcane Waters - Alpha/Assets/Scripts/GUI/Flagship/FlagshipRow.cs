@@ -34,16 +34,18 @@ public class FlagshipRow : MonoBehaviour {
    public Text attackRangeText;
    public Text sailorsText;
    public Text levelRequirementText;
+   public Text sailorLevelRequirementText;
+   public GameObject sailorLevelDisplay;
 
    // The ability row references
    public FlagShipAbilityRow[] abilityTemplates;
 
    // Indicator showing level requirement does not meet
-   public GameObject levelRequirementWarning;
+   public GameObject levelRequirementWarning, sailorLevelRequirementWarning;
 
    #endregion
 
-   public void setRowForItem (ShipInfo shipInfo, int level) {
+   public void setRowForItem (ShipInfo shipInfo, int level, int sailorLevel) {
       this.shipInfo = shipInfo;
 
       // Update the icon name and text
@@ -62,14 +64,21 @@ public class FlagshipRow : MonoBehaviour {
       cargoText.text = "" + shipInfo.cargoMax;
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
+      sailorLevelDisplay.SetActive(true);
 
       ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipXmlId);
       if (shipData != null) {
          levelRequirementWarning.SetActive(level < shipData.shipLevelRequirement);
          levelRequirementText.text = "" + shipData.shipLevelRequirement;
+
+         sailorLevelRequirementWarning.SetActive(sailorLevel < shipData.sailorLevelRequirement);
+         sailorLevelRequirementText.text = "" + shipData.sailorLevelRequirement;
       } else {
          levelRequirementText.text = "";
          levelRequirementWarning.SetActive(false);
+
+         sailorLevelRequirementText.text = "";
+         sailorLevelRequirementWarning.SetActive(false);
       }
 
       // Disable the flagship button at sea
@@ -79,6 +88,9 @@ public class FlagshipRow : MonoBehaviour {
       bool isCurrentShip = shipInfo.shipId == FlagshipPanel.playerFlagshipId;
       flagshipIcon.gameObject.SetActive(isCurrentShip);
       flagshipButton.gameObject.SetActive(!isCurrentShip);
+      if (level < shipData.shipLevelRequirement || sailorLevel < shipData.sailorLevelRequirement) {
+         flagshipButton.interactable = false;
+      }
 
       setAbilities(shipInfo.shipAbilities);
    }

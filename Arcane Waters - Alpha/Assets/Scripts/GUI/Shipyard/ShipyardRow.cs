@@ -40,7 +40,7 @@ public class ShipyardRow : MonoBehaviour {
 
    #endregion
 
-   public void setRowForItem (ShipInfo shipInfo, ShipData shipData) {
+   public void setRowForItem (ShipInfo shipInfo, ShipData shipData, int sailorLevel) {
       this.shipInfo = shipInfo;
       
       Sprite[] shipSprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
@@ -71,8 +71,13 @@ public class ShipyardRow : MonoBehaviour {
       levelRequirementText.text = "" + shipData.shipLevelRequirement;
 
       // Associate a new function with the confirmation button
-      buyButton.onClick.RemoveAllListeners();
-      buyButton.onClick.AddListener(() => ShipyardScreen.self.buyButtonPressed(shipInfo.shipId));
+      if (sailorLevel >= shipData.sailorLevelRequirement) {
+         buyButton.interactable = true;
+         buyButton.onClick.RemoveAllListeners();
+         buyButton.onClick.AddListener(() => ShipyardScreen.self.buyButtonPressed(shipInfo.shipId));
+      } else {
+         buyButton.interactable = false;
+      }
    }
 
    #region Private Variables

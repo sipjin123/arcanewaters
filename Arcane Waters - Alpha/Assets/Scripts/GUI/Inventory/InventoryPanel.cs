@@ -56,6 +56,13 @@ public class InventoryPanel : Panel
    // The equipment stats section
    public EquipmentStatsGrid equipmentStats;
 
+   // The generic warning components
+   public GameObject genericWarningPanel;
+   public Text genericWarningMessage;
+
+   // The cached job data
+   public Jobs jobsData;
+
    // Self
    public static InventoryPanel self;
 
@@ -98,10 +105,12 @@ public class InventoryPanel : Panel
    }
 
    public void receiveItemForDisplay (List<Item> itemArray, UserObjects userObjects, GuildInfo guildInfo, List<Item.Category> categoryFilter,
-      int pageIndex, int totalItems, bool overrideEquipmentCache) {
+      int pageIndex, int totalItems, bool overrideEquipmentCache, Jobs jobsData) {
       hideBlocker();
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
+      this.jobsData = jobsData;
+      closeWarningPanel();
 
       // Update the current page number
       _currentPage = pageIndex;
@@ -209,7 +218,7 @@ public class InventoryPanel : Panel
          }
       } else {
          cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-         cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
+         cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem(), jobsData));
          cell.shiftClickEvent.AddListener(() => {
             if (ChatPanel.self != null) {
                ChatPanel.self.addItemInsertToInput(cell.getItem());
@@ -262,10 +271,16 @@ public class InventoryPanel : Panel
 
       // Add the context menu buttons
       if (castedItem.canBeEquipped()) {
-         if (InventoryManager.isEquipped(castedItem.id)) {
-            PanelManager.self.contextMenuPanel.addButton("Unequip", () => InventoryManager.equipOrUnequipItem(castedItem));
+         if (EquipmentXMLManager.self.isJobLevelValid(jobsData, castedItem)) {
+            if (InventoryManager.isEquipped(castedItem.id)) {
+               PanelManager.self.contextMenuPanel.addButton("Unequip", () => InventoryManager.equipOrUnequipItem(castedItem, jobsData));
+            } else {
+               PanelManager.self.contextMenuPanel.addButton("Equip", () => InventoryManager.equipOrUnequipItem(castedItem, jobsData));
+            }
          } else {
-            PanelManager.self.contextMenuPanel.addButton("Equip", () => InventoryManager.equipOrUnequipItem(castedItem));
+            if (!InventoryManager.isEquipped(castedItem.id)) {
+               PanelManager.self.contextMenuPanel.addButton("Equip", () => InventoryManager.equipOrUnequipItem(castedItem, jobsData), forceFalseVal);
+            }
          }
       }
 
@@ -280,6 +295,10 @@ public class InventoryPanel : Panel
       PanelManager.self.contextMenuPanel.addButton("Link In Chat", () => ChatPanel.self.addItemInsertToInput(castedItem));
 
       PanelManager.self.contextMenuPanel.show("");
+   }
+   
+   public bool forceFalseVal () {
+      return false;
    }
 
    public void tryGrabItem (ItemCellInventory itemCell) {
@@ -329,14 +348,19 @@ public class InventoryPanel : Panel
 
          if ((equipped && droppedInInventory) ||
             (!equipped && droppedInEquipmentSlots)) {
-
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_DROP, transform);
 
-            // Equip or unequip the item
-            InventoryManager.equipOrUnequipItem(_grabbedItemCell.getItem());
-
             // Deactivate the grabbed item object
-            grabbedItem.deactivate();
+            if (EquipmentXMLManager.self.isJobLevelValid(jobsData, _grabbedItemCell.getItem())) {
+               // Equip or unequip the item
+               InventoryManager.equipOrUnequipItem(_grabbedItemCell.getItem(), jobsData);
+               grabbedItem.deactivate();
+            } else {
+               string warningMsg = "Insufficient job level requirement!";
+               triggerWarningPanel(warningMsg);
+               return;
+            }
+
             _grabbedItemCell = null;
 
             return;
@@ -384,6 +408,15 @@ public class InventoryPanel : Panel
 
       // Make sure to also hide perks panel in case of hiding inventory
       PerksPanel.self.hide();
+   }
+
+   public void triggerWarningPanel (string warningMessage) {
+      genericWarningPanel.SetActive(true);
+      genericWarningMessage.text = warningMessage; 
+   }
+
+   public void closeWarningPanel () {
+      genericWarningPanel.SetActive(false);
    }
 
    public void showBlocker (bool large = false, bool forced = false) {

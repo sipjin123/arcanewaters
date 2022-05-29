@@ -589,6 +589,81 @@ public class EquipmentXMLManager : MonoBehaviour {
       return userLevel >= equipmentLevelRequirement;
    }
 
+   public bool isJobLevelValid (Jobs jobsData, Item item) {
+      if (jobsData == null) {
+         D.debug("Jobs data is corrupted!");
+         return false;
+      }
+      
+      int equipmentJobLevelRequirement = 0;
+      Jobs.Type jobTypeRequirement = Jobs.Type.None;
+      switch (item.category) {
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = getWeaponData(item.itemTypeId);
+            if (weaponData != null) {
+               equipmentJobLevelRequirement = weaponData.jobLevelRequirement;
+               jobTypeRequirement = weaponData.jobRequirement;
+            }
+            break;
+         case Item.Category.Armor:
+            ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
+            if (armorData != null) {
+               equipmentJobLevelRequirement = armorData.jobLevelRequirement;
+               jobTypeRequirement = armorData.jobRequirement;
+            }
+            break;
+         case Item.Category.Hats:
+            HatStatData hatData = getHatData(item.itemTypeId);
+            if (hatData != null) {
+               equipmentJobLevelRequirement = hatData.jobLevelRequirement;
+               jobTypeRequirement = hatData.jobRequirement;
+            }
+            break;
+         case Item.Category.Ring:
+            RingStatData ringData = getRingData(item.itemTypeId);
+            if (ringData != null) {
+               equipmentJobLevelRequirement = ringData.jobLevelRequirement;
+               jobTypeRequirement = ringData.jobRequirement;
+            }
+            break;
+         case Item.Category.Necklace:
+            NecklaceStatData necklaceData = getNecklaceData(item.itemTypeId);
+            if (necklaceData != null) {
+               equipmentJobLevelRequirement = necklaceData.jobLevelRequirement;
+               jobTypeRequirement = necklaceData.jobRequirement;
+            }
+            break;
+         case Item.Category.Trinket:
+            TrinketStatData trinketData = getTrinketData(item.itemTypeId);
+            if (trinketData != null) {
+               equipmentJobLevelRequirement = trinketData.jobLevelRequirement;
+               jobTypeRequirement = trinketData.jobRequirement;
+            }
+            break;
+      }
+
+      if (jobTypeRequirement == Jobs.Type.None || equipmentJobLevelRequirement < 1) {
+         return true;
+      }
+
+      switch (jobTypeRequirement) {
+         case Jobs.Type.Farmer:
+            return LevelUtil.levelForXp(jobsData.farmerXP) >= equipmentJobLevelRequirement;
+         case Jobs.Type.Explorer:
+            return LevelUtil.levelForXp(jobsData.explorerXP) >= equipmentJobLevelRequirement;
+         case Jobs.Type.Sailor:
+            return LevelUtil.levelForXp(jobsData.sailorXP) >= equipmentJobLevelRequirement;
+         case Jobs.Type.Trader:
+            return LevelUtil.levelForXp(jobsData.traderXP) >= equipmentJobLevelRequirement;
+         case Jobs.Type.Crafter:
+            return LevelUtil.levelForXp(jobsData.crafterXP) >= equipmentJobLevelRequirement;
+         case Jobs.Type.Miner:
+            return LevelUtil.levelForXp(jobsData.minerXP) >= equipmentJobLevelRequirement;
+         default:
+            return false;
+      }
+   }
+
    public string getItemName (Item item) {
       string newName = "";
       

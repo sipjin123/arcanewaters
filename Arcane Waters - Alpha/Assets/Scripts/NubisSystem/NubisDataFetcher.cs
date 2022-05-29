@@ -402,7 +402,7 @@ namespace NubisDataHandling
 
          InventoryBundle inventoryBundle = null;
 
-         // Request the inventory to Nubis
+         // Request the inventory from Nubis
          string inventoryBundleString = await NubisClient.callDirect<string>("getUserInventoryPage",
             userId,
             categoryFilter.ToArray(),
@@ -410,6 +410,26 @@ namespace NubisDataHandling
             itemsPerPage,
             itemDurabilityFilter);
 
+         // Request the jobs from Nubis
+         string jobsBundleString = await NubisClient.call<string>(nameof(DB_Main.getJobXPString), userId);
+         Jobs jobsData = new Jobs();
+         if (jobsBundleString != null && jobsBundleString.Length > 0) {
+            string splitter = "[space]";
+            string[] xmlGroup = jobsBundleString.Split(new string[] { splitter }, StringSplitOptions.None);
+            if (xmlGroup.Length >= 6) {
+               try {
+                  jobsData.farmerXP = int.Parse(xmlGroup[0]);
+                  jobsData.explorerXP = int.Parse(xmlGroup[1]);
+                  jobsData.sailorXP = int.Parse(xmlGroup[2]);
+                  jobsData.traderXP = int.Parse(xmlGroup[3]);
+                  jobsData.crafterXP = int.Parse(xmlGroup[4]);
+                  jobsData.minerXP = int.Parse(xmlGroup[5]);
+               } catch {
+                  D.debug("Error! Something went wrong translating jobs data!");
+               }
+            }
+         }
+         
          try {
             inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
          } catch {
@@ -485,7 +505,7 @@ namespace NubisDataHandling
 
             UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat,
             ring = inventoryBundle.equippedRing, necklace = inventoryBundle.equippedNecklace, trinket = inventoryBundle.equippedTrinket };
-            inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
+            inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true, jobsData);
          } else if (panelType == Panel.Type.Craft) {
             // Get the crafting panel
             CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);

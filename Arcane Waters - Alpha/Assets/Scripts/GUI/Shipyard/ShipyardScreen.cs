@@ -69,7 +69,7 @@ public class ShipyardScreen : Panel {
       Global.player.rpc.Cmd_BuyShip(shipId);
    }
 
-   public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText) {
+   public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText, int sailorLevel) {
       if (greetingText.Length < 1) {
          greetingText = AdventureShopScreen.UNAVAILABLE_ITEMS;
       }
@@ -113,7 +113,7 @@ public class ShipyardScreen : Panel {
                string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
                template.skillIcon.sprite = ImageManager.getSprite(iconPath);
             }
-            row.setRowForItem(shipInfo, shipData);
+            row.setRowForItem(shipInfo, shipData, sailorLevel);
          } else {
             D.debug("Cannot create shop entry Ship: " + shipInfo.shipType + " not existing in data file");
          }

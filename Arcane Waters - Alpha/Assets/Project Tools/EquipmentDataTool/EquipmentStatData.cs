@@ -23,6 +23,11 @@ public class EquipmentStatData {
    // The level requiremetn to use this item
    public int levelRequirement;
 
+   // The job level requirement and job type
+   [XmlElement(Namespace = "JobType")]
+   public Jobs.Type jobRequirement = Jobs.Type.None;
+   public int jobLevelRequirement = 0;
+
    // The id of the item
    public int sqlId = 0;
 

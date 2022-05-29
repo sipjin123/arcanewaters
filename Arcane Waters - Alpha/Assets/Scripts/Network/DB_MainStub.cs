@@ -1277,6 +1277,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static string getJobXPString (int userId) {
+      return "";
+   }
+
    public static bool isGuildAlly (int guildId, int allyId) {
       return false;
    }

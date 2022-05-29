@@ -702,7 +702,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText) {
+   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText, int sailorLevel) {
       List<ShipInfo> newShipInfo = new List<ShipInfo>();
       if (shipArray.Length != 0) {
          // Translate Abilities
@@ -714,7 +714,7 @@ public class RPCManager : NetworkBehaviour
 
       PanelManager.self.linkIfNotShowing(Panel.Type.Shipyard);
 
-      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText);
+      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText, sailorLevel);
    }
 
    [TargetRpc]
@@ -748,7 +748,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveShips (NetworkConnection connection, ShipInfo[] ships, int flagshipId) {
+   public void Target_ReceiveShips (NetworkConnection connection, ShipInfo[] ships, int flagshipId, int sailorLevel) {
       List<ShipInfo> shipList = new List<ShipInfo>(ships);
 
       // Make sure the panel is showing
@@ -759,7 +759,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass them along to the Flagship panel
-      panel.updatePanelWithShips(shipList, flagshipId, LevelUtil.levelForXp(_player.XP));
+      panel.updatePanelWithShips(shipList, flagshipId, LevelUtil.levelForXp(_player.XP), sailorLevel);
    }
 
    [TargetRpc]
@@ -1707,9 +1707,18 @@ public class RPCManager : NetworkBehaviour
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          List<ShipInfo> ships = DB_Main.getShips(_player.userId, 1, 100);
 
+         Jobs jobsData = DB_Main.getJobXP(_player.userId);
+         string inventoryData = DB_Main.userInventory(_player.userId, new Item.Category[2] { Item.Category.Weapon, Item.Category.Armor }, new int[0], true,
+            1, 10, Item.DurabilityFilter.None);
+
+         int sailorLevel = 0;
+         if (jobsData != null) {
+            sailorLevel = LevelUtil.levelForXp(jobsData.sailorXP);
+         }
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveShips(_player.connectionToClient, ships.ToArray(), userObjects.shipInfo.shipId);
+            _player.rpc.Target_ReceiveShips(_player.connectionToClient, ships.ToArray(), userObjects.shipInfo.shipId, sailorLevel);
          });
       });
    }
@@ -9055,6 +9064,7 @@ public class RPCManager : NetworkBehaviour
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
+         Jobs currJobXPData = DB_Main.getJobXP(_player.userId);
 
          ShopData shopData = new ShopData();
          if (findByShopName) {
@@ -9062,18 +9072,16 @@ public class RPCManager : NetworkBehaviour
          } else {
             shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
          }
-
-         if (shopData == null) {
-            D.debug("Shop data is missing for: " + shopId + " - " + _player.areaKey);
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "");
-            });
-         } else {
-            string greetingText = shopData.shopGreetingText;
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText);
-            });
-         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            int sailorLevel = LevelUtil.levelForXp(currJobXPData.sailorXP);
+            if (shopData == null) {
+               D.debug("Shop data is missing for: " + shopId + " - " + _player.areaKey);
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "", sailorLevel);
+            } else {
+               string greetingText = shopData.shopGreetingText;
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText, sailorLevel);
+            }
+         });
       });
    }
 
