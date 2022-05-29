@@ -125,7 +125,9 @@ public class SeaProjectile : NetworkBehaviour
       // If an ability id was provided, get projectile data from that, otherwise use the provided projectile id
       if (abilityId > 0) {
          _abilityData = ShipAbilityManager.self.getAbility(abilityId);
-         projectileTypeId = _abilityData.projectileId;
+         if (_abilityData != null) {
+            projectileTypeId = _abilityData.projectileId;
+         }
       } else if (projectileId != -1) {
          projectileTypeId = projectileId;
       } else {
@@ -388,6 +390,21 @@ public class SeaProjectile : NetworkBehaviour
          }
 
          _lastHitEntityNetId = hitEntity.netId;
+         if (_abilityData != null) {
+            switch (_abilityData.selectedAttackType) {
+               case Attack.Type.Boulder:
+                  ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Mini_Boulder);
+                  if (shipAbilityData != null) {
+                     // Spawn Mini Boulders upon Collision
+                     SeaManager.self.getEntity(_creatorNetId).fireAtSpot(hitEntity.transform.position, shipAbilityData.abilityId, 0, 0, hitEntity.transform.position);
+                  }
+                  break;
+               case Attack.Type.Venom:
+                  // Spawn Damage Per Second Residue
+                  hitEntity.attachResidue(Attack.Type.Venom, _creatorNetId, totalFinalDamage);
+                  break;
+            }
+         }
 
          onHitEnemy(hitEntity, sourceEntity, totalFinalDamage);
 
@@ -510,7 +527,22 @@ public class SeaProjectile : NetworkBehaviour
       _playFiringSound = value;
    }
 
-   protected virtual void OnDestroy () { }
+   protected virtual void OnDestroy () {
+      // If we didn't hit an enemy and the cannon ball is hitting the water, either show a splash or some smoke
+      if (_attackType == Attack.Type.Boulder || _attackType == Attack.Type.Mini_Boulder || _attackType == Attack.Type.Shock_Ball) {
+         // Was there a Land collider where the cannonball hit?
+         if (Util.hasLandTile(this.transform.position)) {
+            Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+         } else {
+            Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+
+            // FMOD sfx for water
+            //SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
+         }
+      }
+   }
 
    protected bool hitSeaStructureIsland () {
       int layerMask = LayerMask.GetMask(LayerUtil.SEA_STRUCTURES);

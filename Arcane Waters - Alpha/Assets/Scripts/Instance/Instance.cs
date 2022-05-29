@@ -267,6 +267,21 @@ public class Instance : NetworkBehaviour
       return newEntityList;
    }
 
+   public List<SeaEntity> getSeaEnemyEntities () {
+      List<SeaEntity> newEntityList = new List<SeaEntity>();
+
+      // Gathers all the player ships in the area
+      foreach (NetworkBehaviour existingEntity in entities) {
+         if (existingEntity is BotShipEntity) {
+            newEntityList.Add((BotShipEntity) existingEntity);
+         }
+         if (existingEntity is SeaMonsterEntity) {
+            newEntityList.Add((SeaMonsterEntity) existingEntity);
+         }
+      }
+      return newEntityList;
+   }
+
    public List<PlayerShipEntity> getPlayerShipEntities () {
       List<PlayerShipEntity> newEntityList = new List<PlayerShipEntity>();
 

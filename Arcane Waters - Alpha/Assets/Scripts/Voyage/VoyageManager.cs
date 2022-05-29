@@ -269,7 +269,7 @@ public class VoyageManager : GenericGameManager {
    }
 
    public List<string> getLeagueSeaBossAreaKeys (Biome.Type biomeType = Biome.Type.None) {
-      var allBossLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss).ToList();
+      List<string> allBossLeagueArea = AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss).ToList();
       if (biomeType == Biome.Type.None) {
          return allBossLeagueArea;
       } else {
@@ -653,7 +653,8 @@ public class VoyageManager : GenericGameManager {
       if (string.IsNullOrEmpty(areaKey)) {
          if (Voyage.isLastLeagueMap(leagueIndex)) {
             // The last league map is always a boss
-            areaKey = getLeagueSeaBossAreaKeys()[UnityEngine.Random.Range(0, getLeagueSeaBossAreaKeys().Count)];
+            int totalBossAreas = getLeagueSeaBossAreaKeys(biome).Count;
+            areaKey = getLeagueSeaBossAreaKeys(biome)[UnityEngine.Random.Range(0, totalBossAreas)];
          } else {
             // Get the list of league maps
             List<string> mapList = getLeagueAreaKeys(biome);

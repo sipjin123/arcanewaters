@@ -243,7 +243,7 @@ public class TreasureSite : NetworkBehaviour
       if (_randomTreasureSites.Count == 0) {
          foreach (string key in AreaManager.self.getAreaKeys()) {
             if (AreaManager.self.getAreaSpecialType(key) == Area.SpecialType.TreasureSite) {
-               if (AreaManager.self.getAreaSpecialState(key) == 0) {
+               if (AreaManager.self.getAreaSpecialState(key) == 0 && AreaManager.self.getDefaultBiome(key) == instanceBiome) {
                   _randomTreasureSites.Add(key);
                }
             }

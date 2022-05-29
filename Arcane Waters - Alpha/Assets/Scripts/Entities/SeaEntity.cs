@@ -383,6 +383,7 @@ public class SeaEntity : NetEntity
                AchievementManager.registerUserAchievement(achievementEarner, ActionType.Poisoned);
                break;
             case Attack.Type.Electric:
+            case Attack.Type.Shock_Ball:
                AchievementManager.registerUserAchievement(achievementEarner, ActionType.Electrocuted);
                break;
          }
@@ -794,8 +795,8 @@ public class SeaEntity : NetEntity
                   float distanceToTarget = Vector2.Distance(sourcePos, newPosition);
                   if (distanceToTarget <= 1.1f) {
                      lightningTargets.Add(seaEntity.netId);
-                     int finalDamage = seaEntity.applyDamage(damage, attackerNetId, Attack.Type.Electric);
-                     seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.Electric, false);
+                     int finalDamage = seaEntity.applyDamage(damage, attackerNetId, Attack.Type.Shock_Ball);
+                     seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.Shock_Ball, false);
 
                      collidedEntities.Add(seaEntity, collidedEntity.transform);
                      targetIDList.Add(seaEntity.netId);
@@ -818,7 +819,7 @@ public class SeaEntity : NetEntity
       List<uint> lightningTargets = new List<uint>();
       foreach (SeaEntity enemy in enemiesInRange) {
          if (this.isEnemyOf(enemy) && !collidedEntities.ContainsKey(enemy) && !enemy.isDead() && enemy.instanceId == this.instanceId && enemy.netId != primaryTargetNetID) {
-            int finalDamage = enemy.applyDamage(damageInt, attackerNetId, Attack.Type.Electric);
+            int finalDamage = enemy.applyDamage(damageInt, attackerNetId, Attack.Type.Shock_Ball);
             enemy.Rpc_ShowDamage(Attack.Type.None, enemy.transform.position, finalDamage);
             if (enemy.spritesContainer == null) {
                D.debug("Sprite container for chain lighting is missing!");
@@ -1343,6 +1344,18 @@ public class SeaEntity : NetEntity
          yield break;
       }
 
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      if (abilityData != null) {
+         if (abilityData.splitsAfterAttackCap && attackCounter > abilityData.splitAttackCap) {
+            attackCounter = 0;
+            for (int i = 0; i < abilityData.splitAttackCap; i++) {
+               float offsetValue = .75f;
+               Vector3 randomPos = findPositionAroundPosition(spot, offsetValue);
+               fireProjectileAtTarget(spawnPosition, randomPos, abilityId);
+            }
+            yield return null;
+         }
+      }
       fireProjectileAtTarget(spawnPosition, spot, abilityId);
    }
 
