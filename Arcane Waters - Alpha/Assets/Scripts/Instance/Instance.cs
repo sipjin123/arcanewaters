@@ -474,6 +474,7 @@ public class Instance : NetworkBehaviour
             Enemy.Type newEnemyType = Enemy.Type.None;
             bool newIsStationary = false;
             bool isRandomized = false;
+            float respawnTimer = -1;
             foreach (DataField field in dataField.d) {
                if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
                   // Get ID from npc data field
@@ -489,6 +490,10 @@ public class Instance : NetworkBehaviour
                   string isRandomizedData = field.v.Split(':')[0];
                   isRandomized = isRandomizedData.ToLower() == "true" ? true : false;
                }
+               if (field.k.CompareTo(DataField.RESPAWN_TIME) == 0) {
+                  float newRespawnTime = float.Parse(field.v.Split(':')[0]);
+                  respawnTimer = newRespawnTime;
+               }
             }
 
             if (newEnemyType != Enemy.Type.PlayerBattler) {
@@ -498,11 +503,12 @@ public class Instance : NetworkBehaviour
 
                // Add it to the Instance
                Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-               enemy.enemyType = newEnemyType;
+               enemy.modifyEnemyType(newEnemyType);
                enemy.isStationary = newIsStationary;
                enemy.areaKey = area.areaKey;
                enemy.transform.localPosition = targetLocalPos;
                enemy.setAreaParent(area, false);
+               enemy.respawnTimer = respawnTimer;
                BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
                if (battlerData != null) {
                   enemy.isBossType = battlerData.isBossType;
@@ -539,7 +545,7 @@ public class Instance : NetworkBehaviour
                if (bossToSpawn != Enemy.Type.PlayerBattler) {
                   // Add it to the Instance
                   Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-                  enemy.enemyType = bossToSpawn;
+                  enemy.modifyEnemyType(bossToSpawn);
                   enemy.isStationary = true;
                   enemy.areaKey = area.areaKey;
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;

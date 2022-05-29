@@ -296,34 +296,34 @@ public class EnemyManager : MonoBehaviour {
          "D:{" + difficulty + "} TCount:{" + availableTiles.Count + "} SCount:{"+successfulSpawns+"} Cycles:{"+indexCount+"}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
    }
 
-   public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
-        // If we don't have any spawners defined for this Area, then we're done
-        if (instance == null) {
-            D.warning("Invalid instance received when trying to spawn enemy " + enemyType);
-            return;
-        }
+   public void spawnEnemyAtLocation (Enemy.Type enemyType, Instance instance, Vector2 location, float respawnTimer = -1) {
+      // If we don't have any spawners defined for this Area, then we're done
+      if (instance == null) {
+         D.warning("Invalid instance received when trying to spawn enemy " + enemyType);
+         return;
+      }
 
-        // Create an Enemy in this instance
-        Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-        enemy.transform.localPosition = location;
-        enemy.enemyType = enemyType;
-        enemy.areaKey = instance.areaKey;
-        enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+      // Create an Enemy in this instance
+      Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+      enemy.transform.localPosition = location;
+      enemy.modifyEnemyType(enemyType);
+      enemy.areaKey = instance.areaKey;
+      enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+      enemy.respawnTimer = respawnTimer;
 
-        BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
-        if (battlerData != null)
-        {
-            enemy.isBossType = battlerData.isBossType;
-            enemy.isSupportType = battlerData.isSupportType;
-            enemy.animGroupType = battlerData.animGroup;
-            enemy.facing = Direction.South;
-            enemy.displayNameText.text = battlerData.enemyName;
-        }
+      BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+      if (battlerData != null) {
+         enemy.isBossType = battlerData.isBossType;
+         enemy.isSupportType = battlerData.isSupportType;
+         enemy.animGroupType = battlerData.animGroup;
+         enemy.facing = Direction.South;
+         enemy.displayNameText.text = battlerData.enemyName;
+      }
 
-        // Add it to the Instance
-        InstanceManager.self.addEnemyToInstance(enemy, instance);
-        NetworkServer.Spawn(enemy.gameObject);
-    }
+      // Add it to the Instance
+      InstanceManager.self.addEnemyToInstance(enemy, instance);
+      NetworkServer.Spawn(enemy.gameObject);
+   }
 
     public void spawnEnemiesOnServerForInstance (Instance instance) {
        // If we don't have any spawners defined for this Area, then we're done
@@ -332,13 +332,15 @@ public class EnemyManager : MonoBehaviour {
        }
 
       int maxRandomizeCounter = 5;
+      float respawnTimer = -1;
       Enemy.Type previousEnemyType = Enemy.Type.None;
        foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          Enemy.Type enemyType = spawner.getEnemyType(instance.biome);
+         respawnTimer = spawner.getRespawnTimer();
          while (enemyType == previousEnemyType && maxRandomizeCounter > 0) {
             maxRandomizeCounter--;
+            D.debug("Reset Randomize Enemy:{" + enemyType + "} for Biome:{" + instance.biome + "} Area:{" + instance.areaKey + "} Counter:{" + maxRandomizeCounter + "} Roster:{" + spawner.getEnemyCount(instance.biome) + "}");
             enemyType = spawner.getEnemyType(instance.biome);
-            D.debug("Reset Randomize Enemy for Biome:{" + instance.biome + "} Area:{" + instance.areaKey + "} Counter:{" + maxRandomizeCounter + "}");
          }
          
          if (enemyType != Enemy.Type.PlayerBattler) {
@@ -348,8 +350,9 @@ public class EnemyManager : MonoBehaviour {
             // Create an Enemy in this instance
             Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
             enemy.transform.localPosition = spawner.transform.localPosition;
-            enemy.enemyType = enemyType;
+            enemy.modifyEnemyType(enemyType);
             enemy.areaKey = instance.areaKey;
+            enemy.respawnTimer = respawnTimer;
             enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
 
             BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);

@@ -22,7 +22,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Shroom_Luminous = 224, Shroom_Old = 225, Shroom_Toxic = 226, Shroom_Warrior = 227,
       Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232, 
       Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237, Pirate_Berzerker = 238,
-      Skelly_Captain = 239, Skelly_Captain_Tutorial = 240, Skelly_Healer = 241, Skelly_Shooter = 242, Skelly_Tank = 243, Skelly_Assassin = 244,
+      Skelly_Captain = 239, Skelly_Captain_Tutorial = 240, Skelly_Healer = 241, Skelly_Shooter = 242, Skelly_Tank = 243, Skelly_Assassin = 244, Skelly_Tutorial_Leader = 245,
       PlayerBattler = 305, 
    }
 
@@ -97,6 +97,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // The combat collider of boss type monsters
    public const float BOSS_COMBAT_COLLIDER = 0.45f;
+
+   // If this unit is respawning
+   public bool isRespawning = false;
+
+   // The respawn timer
+   public float respawnTimer = -1;
 
    #endregion
 
@@ -221,7 +227,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          _outline.setVisibility(false);
          displayNameText.enabled = false;
          highlightCanvas.enabled = false;
-
+         if (respawnTimer > 0 && !isRespawning) {
+            isRespawning = true;
+            Invoke(nameof(destroyCorpse), respawnTimer);
+         }
          enemyBattleCollider.gameObject.SetActive(false);
 
          if (shouldDisableColliderOnDeath()) {
@@ -266,6 +275,15 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
             this.facing = newFacingDirection;
          }
       }
+   }
+
+   private void destroyCorpse () {
+      Instance currInstance = InstanceManager.self.getInstance(instanceId);
+      if (currInstance != null) {
+         currInstance.removeEntityFromInstance(this);
+      }
+      EnemyManager.self.spawnEnemyAtLocation(enemyType, InstanceManager.self.getInstance(instanceId), transform.localPosition, respawnTimer);
+      NetworkServer.Destroy(gameObject);
    }
 
    protected override void FixedUpdate () {
@@ -498,6 +516,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    public override bool isDead () {
       return isDefeated;
+   }
+
+   public void modifyEnemyType (Enemy.Type newEnemyType) {
+      this.enemyType = newEnemyType;
    }
 
    public override bool isLandEnemy () { return true; }

@@ -18,6 +18,9 @@ public class RandomEnemySpawner : MonoBehaviour, IMapEditorDataReceiver
    public Enemy.Type[] pineBiomeEnemies;
    public Enemy.Type[] mushroomBiomeEnemies;
 
+   // The respawn timer if any
+   public float respawnTimer = -1;
+
    #endregion
 
    private void Awake () {
@@ -49,8 +52,31 @@ public class RandomEnemySpawner : MonoBehaviour, IMapEditorDataReceiver
       return Enemy.Type.None;
    }
 
+   public int getEnemyBiomeCount (Biome.Type biome) {
+      switch (biome) {
+         case Biome.Type.Forest:
+            return forestBiomeEnemies.Length;
+         case Biome.Type.Desert:
+            return desertBiomeEnemies.Length;
+         case Biome.Type.Pine:
+            return pineBiomeEnemies.Length;
+         case Biome.Type.Snow:
+            return snowBiomeEnemies.Length;
+         case Biome.Type.Lava:
+            return lavaBiomeEnemies.Length;
+         case Biome.Type.Mushroom:
+            return mushroomBiomeEnemies.Length;
+      }
+      return 0;
+   }
+
    public void receiveData (DataField[] dataFields) {
-      // Do not need any data
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.RESPAWN_TIME) == 0) {
+            float newRespawnTime = float.Parse(field.v.Split(':')[0]);
+            respawnTimer = newRespawnTime;
+         }
+      }
    }
 
    #region Private Variables

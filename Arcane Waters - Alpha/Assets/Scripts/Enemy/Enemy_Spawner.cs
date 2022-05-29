@@ -30,6 +30,19 @@ public class Enemy_Spawner : MonoBehaviour {
       return enemyType;
    }
 
+   public int getEnemyCount (Biome.Type biome) {
+      if (_randomSpawner != null) {
+         return _randomSpawner.getEnemyBiomeCount(biome);
+      }
+      return 0;
+   }
+
+   public float getRespawnTimer () {
+      if (_randomSpawner != null) {
+         return _randomSpawner.respawnTimer;
+      }
+      return -1;
+   }
 
    #region Private Variables
 
