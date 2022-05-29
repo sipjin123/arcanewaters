@@ -221,29 +221,29 @@ public class StoreScreen : Panel
 
    private void updateCharacterPreview (bool showPreview) {
       this.characterStack.gameObject.SetActive(showPreview);
-      StoreItemBox itemBox = this.selectedItem;
+      StoreItemBox itemBox = selectedItem;
 
       // Refresh
       this.characterStack.updateLayers(Global.userObjects);
 
       // Did they unselect the current item?
       if (itemBox == null) {
-         this.selectedItem = null;
-         this.itemTitleText.text = "";
-         this.descriptionText.text = "";
+         selectedItem = null;
+         itemTitleText.text = "";
+         descriptionText.text = "";
          descPriceText.text = "---";
-         this.characterStack.updateLayers(Global.userObjects);
+         characterStack.updateLayers(Global.userObjects);
 
          characterStack.synchronizeAnimationIndexes();
          return;
       }
 
-      this.selectedItem = itemBox;
+      selectedItem = itemBox;
       itemTitleText.text = itemBox.itemName;
       descriptionText.text = itemBox.itemDescription;
       descPriceText.text = itemBox.itemCost.ToString();
 
-      if (string.IsNullOrWhiteSpace(descriptionText.text) && itemBox is StoreDyeBox dyeItemBox) {
+      if (itemBox is StoreDyeBox dyeItemBox) {
          // Try to compute a description text
          descriptionText.text = computeDyeDescription(dyeItemBox.palette);
       }
@@ -891,36 +891,15 @@ public class StoreScreen : Panel
          return "Common Dye.";
       }
 
-      string desc = "";
+      string desc = palette.paletteDescription;
 
-      if (palette.paletteType == (int) PaletteImageType.Armor) {
-         desc = "Armor Dye.";
+      desc += $" {(PaletteImageType)palette.paletteType} Dye.";
+
+      // Hide the subcategory information for primary dyes
+      if (!Util.isEmpty(palette.subcategory) && !palette.isPrimary()) {
+         desc += $" ({Util.UppercaseFirst(palette.subcategory)})";
       }
 
-      if (palette.paletteType == (int) PaletteImageType.Hat) {
-         desc = "Hat Dye.";
-      }
-
-      if (palette.paletteType == (int) PaletteImageType.Hair) {
-         desc = "Hair Dye.";
-      }
-
-      if (palette.paletteType == (int) PaletteImageType.Weapon) {
-         desc = "Weapon Dye.";
-      }
-
-      if (palette.isPrimary()) {
-      }
-
-      if (palette.isSecondary()) {
-         desc += " (secondary)";
-      }
-
-      if (palette.isAccent()) {
-         desc += " (accent)";
-      }
-
-      desc = desc.Replace("_", " ").Trim();
       desc = trimInside(desc);
       return Util.UppercaseFirst(desc);
    }

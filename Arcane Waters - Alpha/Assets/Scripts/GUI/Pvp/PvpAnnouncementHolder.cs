@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class PvpAnnouncementHolder : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class PvpAnnouncementHolder : MonoBehaviour
 
       newAnnouncement.transform.SetParent(parent.transform);
       newAnnouncement.isBlinking = blink;
+      newAnnouncement.holder = this;
+
+      _announcementList.Add(newAnnouncement);
 
       return newAnnouncement;
    }
@@ -75,7 +79,6 @@ public class PvpAnnouncementHolder : MonoBehaviour
    }
 
    public void addAnnouncement (string announcementText, PvpAnnouncement.Priority priority, bool blink = false) {
-
       // If this announcement's priority is lower than the current one, don't show it
       if (priority < getCurrentAnnouncementPriority()) {
          return;
@@ -90,35 +93,41 @@ public class PvpAnnouncementHolder : MonoBehaviour
    }
 
    public void clearAnnouncements () {
-      int childrenCount = this.transform.childCount;
+      foreach (PvpAnnouncement announcement in _announcementList) {
+         Destroy(announcement.gameObject);
+      }
 
-      for (int i = childrenCount-1; i >= 0; i--) {
-         Transform childTransform = this.transform.GetChild(i);
-         Destroy(childTransform.gameObject);
+      _announcementList.Clear();
+   }
+
+   public void removeAnnouncement (PvpAnnouncement announcement) {
+      if (_announcementList != null && _announcementList.Contains(announcement)) {
+         _announcementList.Remove(announcement);
       }
    }
 
    private PvpAnnouncement getCurrentAnnouncement () {
-      int childCount = this.transform.childCount;
-
-      if (childCount > 0) {
-         return this.transform.GetChild(0).GetComponent<PvpAnnouncement>();
+      if (_announcementList == null) {
+         return null;
       }
 
-      return null;
+      return _announcementList.FirstOrDefault();
    }
 
    private PvpAnnouncement.Priority getCurrentAnnouncementPriority () {
       PvpAnnouncement currentAnnouncement = getCurrentAnnouncement();
 
-      if (currentAnnouncement != null) {
-         return currentAnnouncement.announcementPriority;
-      } else {
+      if (currentAnnouncement == null) {
          return PvpAnnouncement.Priority.None;
       }
+
+      return currentAnnouncement.announcementPriority;
    }
 
    #region Private Variables
+
+   // The set of announcements
+   List<PvpAnnouncement> _announcementList = new List<PvpAnnouncement>();
 
    #endregion
 }

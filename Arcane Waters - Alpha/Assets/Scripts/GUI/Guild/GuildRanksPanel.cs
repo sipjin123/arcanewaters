@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Crosstales.BWF.Manager;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -213,9 +214,16 @@ public class GuildRanksPanel : SubPanel
    
    public void onCancelButtonPressed () {
       hide();
-   }   
-   
+   }
+
    public void saveRanks () {
+      bool hasProhibitedWord = _guildRankTabs.Values.Any(item => BadWordManager.GetAll(item.rankInfo.rankName).Any());
+      // Cancel guild rank creation if name contains prohibited word and show warning
+      if (hasProhibitedWord) {
+         PanelManager.self.noticeScreen.show(PROHIBITED_WORD_WARNING);
+         return;
+      }
+
       // Pack permissions for currently selected rank
       packCurrentRankPermissions();
 
@@ -243,6 +251,9 @@ public class GuildRanksPanel : SubPanel
 
    // Maximum number of ranks which can be definied within each guild
    private const int MAXIMUM_NUMBER_OF_RANKS = 4;
+
+   // Message shown when prohibited word are detected in rank name
+   private const string PROHIBITED_WORD_WARNING = "This name contains prohibited characters, please try a different name for the rank";
 
    // Data of guild ranks from databased - used to reset to initial state after cancelling changes
    private GuildRankInfo[] _initialRanksData;

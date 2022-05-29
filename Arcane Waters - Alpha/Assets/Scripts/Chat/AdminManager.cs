@@ -2964,6 +2964,9 @@ public class AdminManager : NetworkBehaviour
             location.localPositionX = _player.transform.localPosition.x;
             location.localPositionY = _player.transform.localPosition.y;
             location.voyageGroupId = _player.voyageGroupId;
+            if (ulong.TryParse(_player.steamId, out ulong steamId)) {
+               location.steamId = steamId;
+            }
 
             // Find the target user in the server network and try to warp him here
             ServerNetworkingManager.self.summonUser(targetUserInfo.userId, location);
@@ -3208,7 +3211,7 @@ public class AdminManager : NetworkBehaviour
 
       // Create an Enemy in this instance
       Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-      enemy.enemyType = Enemy.Type.Lizard;
+      enemy.modifyEnemyType(Enemy.Type.Lizard);
 
       // Add it to the Instance
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);

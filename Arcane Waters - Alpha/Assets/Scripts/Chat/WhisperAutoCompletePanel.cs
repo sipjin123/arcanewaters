@@ -20,7 +20,7 @@ public class WhisperAutoCompletePanel : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   public void initialize () {
       _optionPrefab = Resources.Load<GameObject>("Prefabs/Auto-completes/WhisperAutoCompleteOption");
 
       for (int i = 0; i < NUM_INITIAL_OPTIONS; i++) {

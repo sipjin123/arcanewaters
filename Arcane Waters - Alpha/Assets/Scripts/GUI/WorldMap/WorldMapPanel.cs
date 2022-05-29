@@ -156,6 +156,10 @@ public class WorldMapPanel : Panel
       IEnumerable<WorldMapPanelWaypoint> waypoints = waypointsContainer.getWaypointsWithinArea(areaCoords);
       menu.addMenuItems(waypoints.Select(_ => _.spot));
 
+      // Register the player pins with the menu
+      IEnumerable<WorldMapPanelPin> playerPins = playerPinsContainer.getPinsWithinArea(areaCoords);
+      menu.addMenuItems(playerPins.Select(_ => _.spot));
+
       // Show the menu and optionally specify the tab to display
       menu.show(menuTabIndex);
 

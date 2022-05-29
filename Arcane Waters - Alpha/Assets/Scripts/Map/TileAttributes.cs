@@ -34,7 +34,8 @@ public class TileAttributes
       OutpostBridgeSnap_NW = 20,
       OutpostBridgeSnap_NE = 21,
       OutpostBaseSpot = 22,
-      OutpostBasePrevent = 23
+      OutpostBasePrevent = 23,
+      LandInSea = 24
    }
 
    // The attributes that are assigned to a tile

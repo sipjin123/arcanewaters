@@ -87,6 +87,9 @@ public class Global
    // Determine if the player should automatically farm crop spots they walk over
    public static bool autoFarm = false;
 
+   // Determine if the chat input field should remain focused after sending a message
+   public static bool chatInputRemainsFocused = false;
+
    // Determine if the player should automatically attack during land combat
    public static bool autoAttack = false;
 

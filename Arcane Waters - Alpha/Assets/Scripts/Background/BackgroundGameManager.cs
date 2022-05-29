@@ -67,7 +67,7 @@ public class BackgroundGameManager : MonoBehaviour {
       }
    }
 
-   public void activateBgContent (int bgXmlId, bool isShipBattle) {
+   public void activateClientBgContent (int bgXmlId, bool isShipBattle) {
       BattleManager.self.initializeBattleBoards();
       BattleBoard board = BattleManager.self.battleBoard;
       setSpritesToClientBoard(bgXmlId, board);
@@ -96,7 +96,7 @@ public class BackgroundGameManager : MonoBehaviour {
       processBoardContent(bgContent, board);
    }
 
-   public void setSpritesToRandomBoard (BattleBoard board) {
+   public void serverSetSpritesToRandomBoard (BattleBoard board) {
       BackgroundContentData bgContentData = new BackgroundContentData();
 
       // Biome should never be none, if for some reason it becomes none, log and use default biome
@@ -116,18 +116,16 @@ public class BackgroundGameManager : MonoBehaviour {
             bgContentData = backgroundContentList[0];
          }
       }
-
       processBoardContent(bgContentData, board);
    }
 
-   public void setSpritesToBattleBoard (BattleBoard board) {
-      BackgroundContentData bgContentData = backgroundContentList.Find(_ => _.biomeType == board.biomeType);
+   public void serverSetSpritesToBattleBoard (BattleBoard board) {
+      BackgroundContentData bgContentData = backgroundContentList.Find(_ => _.xmlId == board.xmlID);
 
       // Fetch the default background data if biome does not exist
       if (bgContentData == null) {
          bgContentData = backgroundContentList[0];
       }
-
       processBoardContent(bgContentData, board);
    }
 

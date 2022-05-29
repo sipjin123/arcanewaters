@@ -77,6 +77,9 @@ public class OptionsPanel : Panel
    // Determines whether mouse cursor should be confined within the game screen
    public Toggle mouseLockToggle;
 
+   // Determines whether the chat input remains focused after sending a message
+   public Toggle chatPromptToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -266,6 +269,14 @@ public class OptionsPanel : Panel
       showHealTextToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.SHOW_HEAL_TEXT, value ? 1 : 0);
          Global.showHealText = value;
+      });
+
+      bool chatInputRemainsFocused = PlayerPrefs.GetInt(OptionsManager.PREF_CHAT_INPUT_REMAINS_FOCUSED, 0) == 1 ? true : false;
+      chatPromptToggle.isOn = chatInputRemainsFocused;
+      Global.chatInputRemainsFocused = chatInputRemainsFocused;
+      chatPromptToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_CHAT_INPUT_REMAINS_FOCUSED, value ? 1 : 0);
+         Global.chatInputRemainsFocused = value;
       });
 
       // Build string and show version number

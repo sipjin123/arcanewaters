@@ -401,6 +401,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                merchantPanel.headIconSprite = getHeadIconSprite();
                merchantPanel.refreshPanel();
                break;
+            case Panel.Type.Store:
+               BottomBar.self.toggleStorePanel();
+               break;
          }
       } else {
          // Make sure the panel is showing

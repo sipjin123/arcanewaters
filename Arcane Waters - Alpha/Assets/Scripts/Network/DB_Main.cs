@@ -7863,6 +7863,33 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void insertTrackedUserActions (List<TrackedUserAction> actions) {
+      StringBuilder sCommand = new StringBuilder("INSERT INTO tracked_user_actions (userId, accId, type, timestamp) VALUES ");
+      foreach(TrackedUserAction action in actions) {
+         sCommand.Append(string.Format("('{0}','{1}','{2}','{3}'),", action.userId, action.accId, (uint) action.type, action.time.ToString("yyyy-MM-dd HH:mm:ss")));
+      }
+      
+      // If we had any actions, we will have a wrong comma at the end
+      if (actions.Count > 0) {
+         sCommand.Remove(sCommand.Length - 1, 1);
+      }
+      sCommand.Append(";");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(sCommand.ToString(), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
 #endregion
 
 #region RemoteSettings

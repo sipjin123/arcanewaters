@@ -30,6 +30,9 @@ public class WorldMapPanelMenu : MonoBehaviour
    // Waypoints Title
    public string waypointsTitle;
 
+   // Player Pins Title
+   public string playerPinsTitle;
+
    #endregion
 
    private void Start () {
@@ -65,6 +68,8 @@ public class WorldMapPanelMenu : MonoBehaviour
          } else if (menuItem.isWaypoint()) {
             menuItem.setTitle(WorldMapManager.self.getDisplayStringFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(spot)));
             menuItem.waypointDeleteButton.gameObject.SetActive(true);
+         } else if (menuItem.isPlayerPin()) {
+            menuItem.setTitle(spot.displayName);
          }
 
          // Ensure the title is valid
@@ -100,8 +105,10 @@ public class WorldMapPanelMenu : MonoBehaviour
       // Set the title
       if (_currentTabIndex == 0) {
          txtTitle.text = warpsTitle;
-      } else {
+      } else if (_currentTabIndex == 1) {
          txtTitle.text = waypointsTitle;
+      } else {
+         txtTitle.text = playerPinsTitle;
       }
 
       // Filter the menu items
@@ -112,8 +119,10 @@ public class WorldMapPanelMenu : MonoBehaviour
       foreach (WorldMapPanelMenuItem menuItem in _menuItems) {
          if (_currentTabIndex == 0) {
             menuItem.gameObject.SetActive(menuItem.isDestination());
-         } else {
+         } else if (_currentTabIndex == 1) {
             menuItem.gameObject.SetActive(menuItem.isWaypoint());
+         } else {
+            menuItem.gameObject.SetActive(menuItem.isPlayerPin());
          }
       }
    }

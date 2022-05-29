@@ -5,10 +5,9 @@ using UnityEngine.UI;
 using DigitalRuby.LightningBolt;
 using Mirror;
 using System;
-using TMPro;
 using Pathfinding;
-using DG.Tweening;
 using System.Linq;
+using SeaBuff;
 
 public class SeaEntity : NetEntity
 {
@@ -1698,7 +1697,6 @@ public class SeaEntity : NetEntity
          if (_statusIcons.ContainsKey(statusType) && _statusIcons[statusType] != null) {
             StatusIcon existingIcon = _statusIcons[statusType];
             existingIcon.setLongestLifetime(length);
-
             // If the status effect is new, create a new icon
          } else {
             StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
@@ -1708,6 +1706,8 @@ public class SeaEntity : NetEntity
             statusIcon.transform.localPosition = Vector3.zero;
             _statusIcons[statusType] = statusIcon;
          }
+      } else {
+         D.debug("No status effect holder for this object: " + gameObject.name);
       }
    }
 

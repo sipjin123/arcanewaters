@@ -25,7 +25,6 @@ public class SteamFriendRow : MonoBehaviour
 
       nameText.text = data.name;
       statusText.text = data.getStatusDisplay();
-      inviteToGameButton.gameObject.SetActive(!data.playingArcaneWaters);
       inviteToGameButton.GetComponent<ToolTipComponent>().message = "Invite Friend To Play";
       viewCharactersButton.GetComponent<ToolTipComponent>().message = "View Friend's Characters";
    }

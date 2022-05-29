@@ -130,9 +130,17 @@ public class ShipEntity : SeaEntity
    }
 
    protected virtual void initialize (ShipInfo info) {
+      initialize(info, true);
+   }
+
+   protected virtual void initialize (ShipInfo info, bool resetCurrentHealth) {
       shipType = info.shipType;
       skinType = info.skinType;
-      currentHealth = info.health;
+
+      if (resetCurrentHealth) {
+         currentHealth = info.health;
+      }
+      
       currentFood = info.food;
       maxHealth = info.maxHealth;
       maxFood = info.maxFood;

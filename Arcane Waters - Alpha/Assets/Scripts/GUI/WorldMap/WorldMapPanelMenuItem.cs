@@ -65,7 +65,11 @@ public class WorldMapPanelMenuItem : MonoBehaviour
    }
 
    public bool isDestination () {
-      return spot.type != WorldMapSpot.SpotType.None && spot.type != WorldMapSpot.SpotType.Waypoint;
+      return spot.type != WorldMapSpot.SpotType.None && spot.type != WorldMapSpot.SpotType.Waypoint && spot.type != WorldMapSpot.SpotType.Player;
+   }
+
+   public bool isPlayerPin () {
+      return spot.type == WorldMapSpot.SpotType.Player;
    }
 
    private void OnDestroy () {

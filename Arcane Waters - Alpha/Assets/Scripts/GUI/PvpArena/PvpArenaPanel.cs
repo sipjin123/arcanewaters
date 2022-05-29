@@ -75,24 +75,10 @@ public class PvpArenaPanel : Panel
    }
 
    public void onPvpArenaRowPressed (Voyage voyage) {
-      if (Global.player.isDemoUser) {
-         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(voyage.biome)) {
-            PanelManager.self.noticeScreen.show("Target biome is closed for demo");
-            return;
-         }
-      }
-
       Global.player.rpc.Cmd_RequestPvpArenaInfoFromServer(voyage.voyageId);
    }
 
    public void joinPvpArena (Voyage voyage, PvpTeamType team) {
-      if (Global.player.isDemoUser) {
-         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(voyage.biome)) {
-            PanelManager.self.noticeScreen.show("Target biome is closed for demo");
-            return;
-         }
-      }
-
       Global.player.rpc.Cmd_JoinPvpArena(voyage.voyageId, team);
       PanelManager.self.unlinkPanel();
    }

@@ -27,15 +27,14 @@ public class FriendSearchRow : MonoBehaviour
    // The offline icon
    public GameObject offlineIcon;
 
-   // The gameobject that is displayed if the user is a friend of the current player
-   public GameObject isFriendIcon;
-
-   // The gameobject that is displayed if the user is not a friend of the current player
-   public GameObject isNotFriendIcon;
+   // The button to invite player to friends
+   public GameObject inviteToFriendsButton;
 
    #endregion
 
    public void populate (UserSearchResult result) {
+      _userId = result.userId;
+
       userName.text = result.name;
       userZone.text = Area.getName(result.area);
       userBiome.text = Biome.getName(result.biome);
@@ -44,11 +43,23 @@ public class FriendSearchRow : MonoBehaviour
       onlineIcon.SetActive(result.isOnline);
       offlineIcon.SetActive(!result.isOnline);
 
-      isFriendIcon.SetActive(result.isFriend);
-      isNotFriendIcon.SetActive(!result.isFriend);
+      inviteToFriendsButton.SetActive(!result.isFriend);
+      if (inviteToFriendsButton.TryGetComponent(out ToolTipComponent tooltip)) {
+         tooltip.message = "Invite To Friends";
+      }
+   }
+
+   public void onInviteToFriendsClick () {
+      inviteToFriendsButton.SetActive(false);
+      if (Global.player != null && _userId > 0) {
+         Global.player.rpc.Cmd_SendFriendshipInvite(_userId);
+      }
    }
 
    #region Private Variables
+
+   // User id we represent
+   private int _userId;
 
    #endregion
 }

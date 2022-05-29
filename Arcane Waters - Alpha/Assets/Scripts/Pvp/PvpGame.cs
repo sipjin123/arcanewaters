@@ -164,7 +164,7 @@ public class PvpGame : MonoBehaviour
       int shipId = ShipDataManager.STARTING_SHIP_ID;
       ShipInfo startingShip = Ship.generateNewShip(shipId, Rarity.Type.Common);
       startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipId);
-      playerShip.changeShipInfo(startingShip);
+      playerShip.changeShipInfo(startingShip, true);
    }
 
    private void addPlayerToPreGame (int userId, string userName) {

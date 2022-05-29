@@ -212,7 +212,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       CameraFader.self.setLoadingIndicatorVisibility(false);
 
       // Show character and creation panel, and zoom in
-      CharacterCreationPanel.self.show();
+      CharacterCreationPanel.self.show("Spot: " + number);
       offlineChar.gameObject.SetActive(true);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {

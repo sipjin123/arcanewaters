@@ -16,6 +16,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    public string spawnTarget;
 
    // Information about targeted map, can be null if unset
+   [Obsolete("Andrius: I think it's best to not use this. This field has to be rebaked from map editor after some changes are made." +
+      "'AreaManager.self.tryGetAreaInfo(areaKey, out Map mapInfo)' Should accomplish the same thing while being more dynamic about changes.")]
    public Map targetInfo;
 
    // The facing direction we should have after spawning
@@ -30,6 +32,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The blocked icon
    public SpriteRenderer blockedIcon;
 
+   // Does this warp lead to a town
+   public bool leadsToTown = false;
+
+   // The canvas and text we use for town visual
+   public Canvas townVisual = null;
+   public TMPro.TextMeshProUGUI townVisualText = null;
+
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -43,7 +52,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    void Start () {
       blockedIcon.enabled = false;
-
       try {
          InvokeRepeating(nameof(showOrHideArrow), UnityEngine.Random.Range(0f, 1f), 0.5f);
       } catch {
@@ -308,6 +316,31 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          }
       } else {
          areaTarget = targetField.v;
+      }
+
+      leadsToTown = false;
+      if (AreaManager.self.tryGetAreaInfo(areaTarget, out Map map)) {
+         if (map.specialType == Area.SpecialType.Town) {
+            leadsToTown = true;
+         }
+      }
+   }
+
+   public void updateTargetTownVisual (bool isInSeaArea) {
+      Map map = null;
+      bool shouldShow = isInSeaArea && AreaManager.self.tryGetAreaInfo(areaTarget, out map);
+
+      if (townVisual != null) {
+         townVisual.gameObject.SetActive(shouldShow);
+         if (shouldShow) {
+            if (townVisualText.text != null) {
+               townVisualText.text = map.displayName;
+            }
+
+            Vector3 pos = Util.getDirectionFromFacing(newFacingDirection) * 5f;
+            pos.z = townVisual.transform.localPosition.z;
+            townVisual.transform.localPosition = pos;
+         }
       }
    }
 

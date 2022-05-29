@@ -48,6 +48,9 @@ public class PvpAnnouncement : ClientMonoBehaviour
       GameEnd = 4
    }
 
+   // Reference to the container that holds announcement
+   public PvpAnnouncementHolder holder;
+
    #endregion
 
    public void Start () {
@@ -121,6 +124,12 @@ public class PvpAnnouncement : ClientMonoBehaviour
 
    private void setOutlineColor (Color newColor) {
       outlineText.fontMaterial.SetColor("_FaceColor", newColor);
+   }
+
+   private void OnDestroy () {
+      if (holder != null) {
+         holder.removeAnnouncement(this);
+      }
    }
 
    #region Private Variables

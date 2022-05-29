@@ -20,6 +20,12 @@ public class WorldMapPanelPin : MonoBehaviour
    // The label of the pin
    public TMPro.TextMeshProUGUI label;
 
+   // The iconlabel of the pin
+   public TMPro.TextMeshProUGUI iconLabel;
+
+   // Should the label be repositioned
+   public bool shouldNudgeLabel = false;
+
    #endregion
 
    public void setLabel (string text) {
@@ -30,6 +36,16 @@ public class WorldMapPanelPin : MonoBehaviour
       }
 
       label.SetText(text);
+
+      if (iconLabel == null) {
+         return;
+      }
+
+      iconLabel.SetText(text);
+
+      if (text.Length > 0) {
+         iconLabel.SetText(text.Substring(0,1).ToString());
+      }
    }
 
    public string getLabel () {
@@ -57,12 +73,28 @@ public class WorldMapPanelPin : MonoBehaviour
       label.gameObject.SetActive(show);
    }
 
+   public void toggleIcon (bool show) {
+      if (image == null) {
+         return;
+      }
+
+      image.enabled = show;
+   }
+
    public void setLabelColor (Color color) {
       if (label == null) {
          return;
       }
 
       label.color = color;
+   }
+
+   public void setIconLabelColor (Color color) {
+      if (iconLabel == null) {
+         return;
+      }
+
+      iconLabel.color = color;
    }
 
    public void setTooltip (string displayName) {

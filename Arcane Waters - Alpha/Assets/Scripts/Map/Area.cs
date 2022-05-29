@@ -314,6 +314,7 @@ public class Area : MonoBehaviour
       List<Warp> warpEntities = new List<Warp>(GetComponentsInChildren<Warp>());
       foreach (Warp warp in warpEntities) {
          _warps.Add(warp);
+         warp.updateTargetTownVisual(isSea);
       }
 
       // Store a reference to all the action triggers "warping to league"
@@ -469,7 +470,11 @@ public class Area : MonoBehaviour
             // Check if it is someone else's farm, prepend the name if so
             int userId = CustomMapManager.getUserId(areaKey);
             if (Global.player != null && userId != Global.player.userId) {
-               ownerName = EntityManager.self.getEntity(userId)?.entityName ?? "Unknown";
+               if (EntityManager.self.tryGetEntityName(userId, out string entityName)) {
+                  ownerName = entityName;
+               }
+            } else {
+               return customMapManager.typeDisplayName;
             }
          } else {
             return customMapManager.typeDisplayName;

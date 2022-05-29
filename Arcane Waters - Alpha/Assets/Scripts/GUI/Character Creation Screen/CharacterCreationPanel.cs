@@ -126,13 +126,16 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   public void show () {
+   public void show (string source) {
+      canvasGroup.interactable = true;
+      D.debug("Show Character Creation Panel: " + source);
       initializeValues();
       Util.fadeCanvasGroup(this.canvasGroup, true, FADE_TIME);
       CharacterSpot.lastInteractedSpot.setButtonVisiblity(true);
    }
 
    private void hide () {
+      canvasGroup.interactable = false;
       Util.fadeCanvasGroup(this.canvasGroup, false, FADE_TIME);
    }
 
@@ -262,7 +265,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
 
       CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
-      show();
+      show("Creation Failed");
    }
 
    public void onCancelButtonClicked () {

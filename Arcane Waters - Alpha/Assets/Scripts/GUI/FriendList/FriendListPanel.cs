@@ -65,6 +65,9 @@ public class FriendListPanel : Panel
    // The previous page button
    public Button previousPageButton;
 
+   // The button that activates the steam overlay
+   public Button steamOverlayButton;
+
    // The tab canvas groups
    public CanvasGroup friendListTabCanvasGroup;
    public CanvasGroup requestReceivedTabCanvasGroup;
@@ -142,6 +145,8 @@ public class FriendListPanel : Panel
    public void refreshPanel (bool clearInputFields = false, FriendshipPanelTabs? desiredTab = null) {
       toggleBlocker();
 
+      steamOverlayButton.gameObject.SetActive(SteamManager.Initialized);
+
       if (clearInputFields) {
          inviteInputField.text = "";
       }
@@ -162,7 +167,9 @@ public class FriendListPanel : Panel
          }
       }
 
-      Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter, _currentTab == FriendshipPanelTabs.SteamFriends);
+      if (Global.player != null) {
+         Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter, _currentTab == FriendshipPanelTabs.SteamFriends);
+      }
    }
 
    public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, Friendship.Status friendshipStatus,
@@ -527,6 +534,10 @@ public class FriendListPanel : Panel
       searchPreviousPageButton.gameObject.SetActive(page > 1);
       searchNextPageButton.gameObject.SetActive(page < _searchResultsTotalPages);
       searchCurrentPageIndicatorText.text = $"Page {page} of {(_searchResultsTotalPages < 1 ? 1 : _searchResultsTotalPages)}";
+   }
+
+   public void onSteamOverlayClick () {
+      SteamFriendsManager.activateSteamOverlay();
    }
 
    public void nextSearchPage () {

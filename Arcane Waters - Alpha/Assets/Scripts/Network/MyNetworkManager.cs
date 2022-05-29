@@ -451,6 +451,8 @@ public class MyNetworkManager : NetworkManager
             }
             D.adminLog($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.", D.ADMIN_LOG_TYPE.InstanceProcess);
 
+            checkEarlyExplorerAchievement(userInfo);
+
             // Check if this is a custom map
             if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
@@ -507,18 +509,28 @@ public class MyNetworkManager : NetworkManager
 
             // If user is a demo account, restrict biomes
             if (userInfo.isDemoUser()) {
-               Biome.Type targetType = InstanceManager.getBiomeForInstance(baseMapAreaKey, voyageId);
-               if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(targetType)) {
-                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
+               // Don't restrict biomes for PVP maps
+               bool isPvp = false;
+               if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+                  if (voyage.isPvP) {
+                     isPvp = true;
+                  }
+               }
 
-                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                        StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
-                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, conn.connectionId, "Area is restricted for demo accounts!");
+               if (!isPvp) {
+                  Biome.Type targetType = InstanceManager.getBiomeForInstance(baseMapAreaKey, voyageId);
+                  if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(targetType)) {
+                     UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                        DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
+
+                        UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                           ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, conn.connectionId, "Area is restricted for demo accounts!");
+                        });
                      });
-                  });
 
-                  return;
+                     return;
+                  }
                }
             }
 
@@ -687,6 +699,9 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForPendingFriendshipRequests();
             player.rpc.sendVoyageGroupMembersInfo();
             player.rpc.setAdminBattleParameters();
+            if (userOwnerInfo != null) {
+               player.rpc.sendPlayerName(userOwnerInfo.userId, userOwnerInfo.username);
+            }
 
             bool isInTown = AreaManager.self.isTownArea(player.areaKey);
             bool isPvpEnabled = userInfo.pvpState == 1 ? true : false;
@@ -1052,6 +1067,16 @@ public class MyNetworkManager : NetworkManager
       DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
    }
 
+   private void checkEarlyExplorerAchievement (UserInfo userInfo) {
+      Biome.Type userBiomeType = AreaManager.self.getDefaultBiome(userInfo.areaKey);
+      int biomeTypeIndex = (int) userBiomeType;
+      DateTime biomeReleaseEndDate = Util.BIOME_RELEASE_PERIOD_ENDS[biomeTypeIndex];
+
+      // Try grant achievement for logging in during early access
+      if (DateTime.Compare(DateTime.UtcNow, biomeReleaseEndDate) < 0) {
+         AchievementManager.registerUserAchievement(userInfo.userId, ActionType.EarlyExplorer);
+      }
+   }
 
    #region Private Variables
 

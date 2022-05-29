@@ -32,6 +32,9 @@ public class OptionsManager : GenericGameManager {
    // Player Prefs key for lock cursor
    public const string PREF_LOCK_CURSOR = "LOCK_CURSOR";
 
+   // Player Prefs key for chat input behavior
+   public const string PREF_CHAT_INPUT_REMAINS_FOCUSED = "CHAT_INPUT_REMAINS_FOCUSED";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 

@@ -2169,6 +2169,16 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Server]
+   public void sendPlayerName (int userId, string name) {
+      Target_ReceivePlayerName(userId, name);
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePlayerName (int userId, string name) {
+      EntityManager.self.cacheEntityName(userId, name);
+   }
+
    [Command]
    public void Cmd_SellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, int shopId) {
       _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopId);
@@ -4062,6 +4072,11 @@ public class RPCManager : NetworkBehaviour
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
          return;
+      }
+
+      // Report that user opened their friends panel
+      if (pageNumber == 1 && friendshipStatus == Friendship.Status.Friends && !isSteamFriendsTab) {
+         UserTrackingManager.self.reportAction(_player, TrackedUserAction.Type.OpenedFriendList);
       }
 
       // Background thread
@@ -6654,6 +6669,9 @@ public class RPCManager : NetworkBehaviour
          sendError("You must defeat all the enemies before exiting the voyage");
          return;
       }
+
+      // Clear player powerups when exiting voyage
+      PowerupManager.self.clearPowerupsForUser(_player.userId);
 
       if (string.IsNullOrEmpty(instance.leagueExitAreaKey)) {
          _player.spawnInBiomeHomeTown();
@@ -11026,6 +11044,7 @@ public class RPCManager : NetworkBehaviour
 
                   foreach (int id in associatedIds) {
                      if (userInfoRegistry.TryGetValue(id, out UserInfo info)) {
+                        FriendshipInfo friendship = DB_Main.getFriendshipInfo(_player.userId, info.userId);
                         UserSearchResult result = new UserSearchResult {
                            name = info.username,
                            level = LevelUtil.levelForXp(info.XP),
@@ -11033,8 +11052,9 @@ public class RPCManager : NetworkBehaviour
                            area = _player.isAdmin() ? info.areaKey : "",
                            biome = AreaManager.self.getDefaultBiome(info.areaKey),
                            lastTimeOnline = info.lastLoginTime,
-                           isOnline = true,
+                           isOnline = ServerNetworkingManager.self.isUserOnline(info.userId),
                            isSameServer = EntityManager.self.getEntity(info.userId) != null,
+                           isFriend = friendship != null && friendship.friendshipStatus == Friendship.Status.Friends
                         };
                         results.Add(result);
                      }

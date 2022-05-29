@@ -322,14 +322,18 @@ public class PlayerShipEntity : ShipEntity
       return userPowerups;
    }
 
-   public void changeShipInfo (ShipInfo info) {
+   public void changeShipInfo (ShipInfo info, bool resetCurrentHealth) {
       // Server side data initialization
-      initialize(info);
+      initialize(info, resetCurrentHealth);
    }
 
    protected override void initialize (ShipInfo shipInfo) {
+      initialize(shipInfo, true);
+   }
+
+   protected override void initialize (ShipInfo shipInfo, bool resetCurrentHealth) {
       // Server side data initialization
-      base.initialize(shipInfo);
+      base.initialize(shipInfo, resetCurrentHealth);
 
       for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
          CannonPanel.self.setAbilityIcon(i, -1);
@@ -369,7 +373,7 @@ public class PlayerShipEntity : ShipEntity
 
                // If the player is in a pvp arena or a voyage lobby, restore their full health.
             } else {
-               initHealthAndFood(alterCurrentState: true);
+               initHealthAndFood(alterCurrentState: resetCurrentHealth);
             }
          } else {
             initHealthAndFood(alterCurrentState: true);
@@ -499,7 +503,7 @@ public class PlayerShipEntity : ShipEntity
                // Check if scroll value is positive or negative to switch between previous or next ability
                int switchValue = scrollVal < 0 ? 1 : -1;
                switchAbility(switchValue);
-            } 
+            }
          }
       }
 
@@ -549,11 +553,17 @@ public class PlayerShipEntity : ShipEntity
       checkAudioListener();
 
       if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
-         NetEntity ship = getClickedBody();
-         if (ship != null && ship is PlayerShipEntity) {
-            D.adminLog("ContextMenu: Interact was performed via action key sea:" +
-            "{" + userId + ":" + entityName + "}{" + ship.userId + ":" + ship.entityName + "}", D.ADMIN_LOG_TYPE.Player_Menu);
-            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(ship.userId, ship.entityName);
+         if (!PriorityOverProcessActionLogic.isAnyHovered()) {
+            NetEntity ship = getClickedBody();
+            if (ship != null && ship is PlayerShipEntity) {
+               D.adminLog("ContextMenu: Interact was performed via action key sea:" +
+               "{" + userId + ":" + entityName + "}{" + ship.userId + ":" + ship.entityName + "}", D.ADMIN_LOG_TYPE.Player_Menu);
+               PanelManager.self.contextMenuPanel.showDefaultMenuForUser(ship.userId, ship.entityName);
+            } else {
+               if (Global.player != null && !Global.player.isDead() && OutpostUtil.canBuildOutposts(Global.player) && !Util.isAnyUiPanelActive() && !PanelManager.self.contextMenuPanel.isShowing()) {
+                  OutpostManagerClient.self.onInteractWithWorldClick();
+               }
+            }
          }
       }
 
@@ -593,11 +603,11 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void switchAbility(int increment) {
+   private void switchAbility (int increment) {
       int targetAbility = _currentAbilitySlotIndex;
-      
+
       // Cancel if entire ability is on cooldown
-      if (isEntireAbilityOnCooldown()) { 
+      if (isEntireAbilityOnCooldown()) {
          return;
       }
 
@@ -610,8 +620,8 @@ public class PlayerShipEntity : ShipEntity
             targetAbility = MAX_ABILITY_INDEX;
          }
       } while (isAbilityOnCooldown(targetAbility) && increment != 0);
-      
-      selectAbility(targetAbility);      
+
+      selectAbility(targetAbility);
    }
 
    private void LateUpdate () {
@@ -644,6 +654,18 @@ public class PlayerShipEntity : ShipEntity
 
             // Control food consumption
             if (WorldMapManager.isWorldMapArea(areaKey)) {
+               // Check if we are near a warp to town
+               if (AreaManager.self.tryGetArea(areaKey, out Area area)) {
+                  foreach (Warp warp in area.getWarps()) {
+                     if (warp.leadsToTown) {
+                        if (Util.distanceLessThan2D(warp.transform.position, transform.position, 0.16f * 8)) {
+                           // Restock food if we are near a town warp
+                           currentFood = Mathf.Clamp(currentFood + Time.deltaTime * Outpost.FOOD_FILL_PER_SECOND, 0, maxFood);
+                        }
+                     }
+                  }
+               }
+
                currentFood = Mathf.Clamp(currentFood - Time.deltaTime * FOOD_PER_SECOND, 0, maxFood);
 
                if (currentFood == 0) {
@@ -2336,7 +2358,7 @@ public class PlayerShipEntity : ShipEntity
       }
       return true;
    }
-   
+
    public bool isAbilityOnCooldown (int abilityIndex) {
       return _currentAbilityCooldowns[abilityIndex] > Mathf.Epsilon;
    }
@@ -2615,7 +2637,7 @@ public class PlayerShipEntity : ShipEntity
 
    // Current ability index
    private int _currentAbilitySlotIndex = 0;
-   
+
    // A list of references to any active sea mines
    private List<SeaMine> _seaMines = new List<SeaMine>();
 
@@ -2633,7 +2655,7 @@ public class PlayerShipEntity : ShipEntity
 
    // The max number of ship's ability index
    private const int MAX_ABILITY_INDEX = 4;
-   
+
    // Trigger parameter for the heal animation
    private const string SHOW_HEAL = "Show";
 

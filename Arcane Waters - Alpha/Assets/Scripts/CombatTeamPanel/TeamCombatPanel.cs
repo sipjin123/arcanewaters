@@ -99,7 +99,7 @@ public class TeamCombatPanel : Panel
                   rightBattlersInfo.Add(newInfo);
                }
             }
-            Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray());
+            //Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray());
 
             PanelManager.self.unlinkPanel();
          }

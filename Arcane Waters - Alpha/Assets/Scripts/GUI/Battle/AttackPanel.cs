@@ -35,7 +35,7 @@ public class AttackPanel : MonoBehaviour {
    }
 
    public void clearCachedAbilityCast (string reason) {
-      D.debug("Clearing Ability Cache due to {" + reason + "}");
+      D.adminLog("Clearing Ability Cache due to {" + reason + "}", D.ADMIN_LOG_TYPE.CancelAttack);
       recentAbilityRequest.abilityType = AbilityType.Undefined;
       recentAbilityRequest.abilityIndex = -1;
    }

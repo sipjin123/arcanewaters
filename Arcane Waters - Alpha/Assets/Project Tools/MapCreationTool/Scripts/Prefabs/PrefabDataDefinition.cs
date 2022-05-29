@@ -66,7 +66,7 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = SelectOption.formOptions(Panel.Type.None.ToString(), Panel.Type.Adventure.ToString(), Panel.Type.Shipyard.ToString(), Panel.Type.Merchant.ToString())
+                  options = SelectOption.formOptions(Panel.Type.None.ToString(), Panel.Type.Adventure.ToString(), Panel.Type.Shipyard.ToString(), Panel.Type.Merchant.ToString(), Panel.Type.Store.ToString())
                };
             } else if (customData.type == CustomFieldType.ShopName && ShopManager.instance.shopEntryCount > 0 && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);

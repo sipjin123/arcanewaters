@@ -80,6 +80,7 @@ public class RespawnScreen : MonoBehaviour {
          }
       } else {
          D.adminLog("Warning! Global player is Null!", D.ADMIN_LOG_TYPE.Respawn);
+         D.debug("Global player is null, respawn failed.");
       }
 
       _deadTime = 0;

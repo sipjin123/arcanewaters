@@ -229,8 +229,8 @@ namespace BackgroundTool
             index++;
          }
          dropDownFiles.AddOptions(optionList);
-
          dropDownFiles.value = cachedIndex;
+
          XmlLoadingPanel.self.finishLoading();
       }
 

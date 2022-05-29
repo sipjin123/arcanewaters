@@ -20,6 +20,9 @@ public class EntityManager : MonoBehaviour
 
    public void storeEntity (NetEntity entity) {
       _entities[entity.userId] = entity;
+      if (NetworkClient.active) {
+         cacheEntityName(entity.userId, entity.entityName);
+      }
    }
 
    public void removeEntity (NetEntity entity) {
@@ -74,6 +77,14 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
+   [Client]
+   public void cacheEntityName (int userId, string name) {
+      _entityNames[userId] = name;
+   }
+
+   [Client]
+   public bool tryGetEntityName (int userId, out string name) => _entityNames.TryGetValue(userId, out name);
+
    public bool canUserBypassWarpRestrictions (int userId) {
       return _warpBypassingUsers.Contains(userId);
    }
@@ -98,6 +109,9 @@ public class EntityManager : MonoBehaviour
 
    // A list of user ids that can bypass warp restrictions
    protected List<int> _warpBypassingUsers = new List<int>();
+
+   // Cached name for entities (client-only)
+   private Dictionary<int, string> _entityNames = new Dictionary<int, string>();
 
    #endregion
 }

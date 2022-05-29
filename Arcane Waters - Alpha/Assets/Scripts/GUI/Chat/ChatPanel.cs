@@ -180,6 +180,9 @@ public class ChatPanel : MonoBehaviour {
       inputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onChatInputValuechanged(inputString));
       nameInputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onWhisperNameInputValueChanged(inputString));
 
+      // Initialize autocomplete panel
+      whisperAutoCompletePanel.initialize();
+
       // Set initial chat types
       onAllChatPressed();
    }
@@ -404,15 +407,21 @@ public class ChatPanel : MonoBehaviour {
             inputField.setText("");
          }
 
-         // Deselect the input field
-         inputField.deactivateInputField();
+         // Depending on the user preferences, either deselect the input field or keep it focused.
+         if (Global.chatInputRemainsFocused) {
+            // By default, Unity deselects the field on submit, so we must reselect it.
+            focusInputField();
+         } else {
+            // Deselect the input field
+            inputField.deactivateInputField();
 
-         // Unselect the input field UI from the event system so ChatManager.isTyping() will be set to false
-         GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
+            // Unselect the input field UI from the event system so ChatManager.isTyping() will be set to false
+            GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
 
-         // Check if we're typing in an input field
-         if (currentSelection != null && Util.hasInputField(currentSelection)) {
-            EventSystem.current.SetSelectedGameObject(null);
+            // Check if we're typing in an input field
+            if (currentSelection != null && Util.hasInputField(currentSelection)) {
+               EventSystem.current.SetSelectedGameObject(null);
+            }
          }
       }
 
@@ -430,8 +439,7 @@ public class ChatPanel : MonoBehaviour {
          ChatManager.self.autoCompletePanel.performOptionClicked(0);
       }
 
-      // Activate the input field when enter is pressed and the field is unfocused, except if the
-      // player is writing a mail      
+      // Activate the input field when enter is pressed and the field is unfocused, except if the player is writing a mail      
       if (KeyUtils.GetEnterKeyDown() && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
 

@@ -79,6 +79,11 @@ public class ServerMessageManager : MonoBehaviour
             _numUsersAuthenticating--;
             yield break;
          }
+
+         // Try grant achievement for logging in during early access         
+         if (DateTime.Compare(DateTime.UtcNow, Util.EARLY_ACCESS_END) < 0) {
+            AchievementManager.registerUserAchievement(logInUserMessage.selectedUserId, ActionType.EarlyExplorer);
+         }
       }
 
       // Grab the user info from the database for the relevant account ID

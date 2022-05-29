@@ -1092,6 +1092,9 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void insertTrackedUserActions (List<TrackedUserAction> actions) {
+   }
+
    public static bool doesUserExists (int userId) {
       return false;
    }

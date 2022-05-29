@@ -97,5 +97,5 @@ public enum ActionType
    MineOre = 36, OpenTreasureChest = 37, HarvestCrop = 38, SellCrop = 39, WaterCrop = 40,
    PlantCrop = 41, EarnGold = 42, GatherItem = 43, OreGain = 45,
    HitSeaMonster = 46, HitEnemyShips = 47, CraftArmor = 53, CraftWeapon = 54, PetAnimal = 55, BurnEnemy = 56, FreezeEnemy = 57,
-   PoisonEnemy = 58
+   PoisonEnemy = 58, EarlyExplorer = 59,
 }

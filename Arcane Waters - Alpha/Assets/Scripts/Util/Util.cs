@@ -38,6 +38,20 @@ public class Util : MonoBehaviour
    // A Random instance we can use for generating random numbers
    public static System.Random r = new System.Random();
 
+   // When the early access period of the game will end, in UTC
+   public static DateTime EARLY_ACCESS_END = new DateTime(2012, 1, 1, 0, 0, 0);
+
+   // When a biome is released, these dates should be set to 1 week after the release time, in UTC
+   public static DateTime[] BIOME_RELEASE_PERIOD_ENDS = new DateTime[] { 
+      new DateTime(2012, 1, 1, 0, 0, 0), // None
+      new DateTime(2012, 1, 1, 0, 0, 0), // Forest
+      new DateTime(2012, 1, 1, 0, 0, 0), // Desert
+      new DateTime(2012, 1, 1, 0, 0, 0), // Pine
+      new DateTime(2012, 1, 1, 0, 0, 0), // Snow
+      new DateTime(2012, 1, 1, 0, 0, 0), // Lava
+      new DateTime(2012, 1, 1, 0, 0, 0)  // Mushroom
+   };
+
    // Buffer used for physics queries (MAIN THREAD ONLY)
    private static Collider2D[] _colliderBuffer = new Collider2D[16];
 

@@ -29,55 +29,71 @@ public class OutpostUtil
 
    #endregion
 
-   public static bool canBuildOutpostAnywhere (NetEntity entity, out Vector3 buildPosition,
-      out CantBuildReason cantBuildReason, out bool foundPosition, out Direction outpostDirection) {
-      buildPosition = Vector3.zero;
-      foundPosition = false;
-      outpostDirection = Direction.North;
-
+   public static bool canBuildOutposts (NetEntity entity) {
       if (entity == null) {
-         cantBuildReason = CantBuildReason.None;
          return false;
       }
 
       if (entity.guildId == 0) {
-         cantBuildReason = CantBuildReason.None;
+         return false;
+      }
+
+      // Make sure player is alive
+      if (entity.isDead()) {
          return false;
       }
 
       // Make sure the area exists
       if (!AreaManager.self.tryGetArea(entity.areaKey, out Area area)) {
-         cantBuildReason = CantBuildReason.None;
+         return false;
+      }
+
+      // Area must be sea
+      if (!area.isSea) {
          return false;
       }
 
       // Entity must be a player ship
       if (!(entity is PlayerShipEntity)) {
-         cantBuildReason = CantBuildReason.None;
          return false;
       }
 
       // Get the instance of the entity
       if (!InstanceManager.self.tryGetInstance(entity.instanceId, out Instance instance)) {
-         cantBuildReason = CantBuildReason.None;
          return false;
       }
 
       // Make sure instance is the primary one
       if (!InstanceManager.self.isPrimaryInstance(instance)) {
-         cantBuildReason = CantBuildReason.NotPrimaryInstance;
          return false;
       }
 
       // Make sure instance is open world
       if (!WorldMapManager.isWorldMapArea(instance.areaKey)) {
+         return false;
+      }
+
+      return true;
+   }
+
+   public static bool canBuildOutpostAnywhere (NetEntity entity, Vector3 desiredPosition, out Vector3 buildPosition,
+      out CantBuildReason cantBuildReason, out bool foundPosition, out Direction outpostDirection) {
+      outpostDirection = Direction.South;
+      foundPosition = false;
+      buildPosition = Vector3.zero;
+
+      if (!canBuildOutposts(entity)) {
+         cantBuildReason = CantBuildReason.None;
+         return false;
+      }
+
+      if (!AreaManager.self.tryGetArea(entity.areaKey, out Area area)) {
          cantBuildReason = CantBuildReason.None;
          return false;
       }
 
       // Find closest point to which we could build
-      if (!area.closestTileWithAnyOfAttribute(_outpostSnapTiles,
-         entity.transform.position, new Vector2Int(12, 12), out buildPosition, out TileAttributes.Type tile)) {
+      if (!area.closestTileWithAnyOfAttribute(_outpostSnapTiles, desiredPosition, new Vector2Int(4, 4), out buildPosition, out TileAttributes.Type tile)) {
          cantBuildReason = CantBuildReason.NotShore;
          return false;
       }
@@ -95,13 +111,7 @@ public class OutpostUtil
 
    public static bool canBuildOutpostAt (NetEntity entity, Vector3 buildPosition, Direction outpostDirection,
       out CantBuildReason cantBuildReason) {
-      // Entity must be a player ship
-      if (!(entity is PlayerShipEntity)) {
-         cantBuildReason = CantBuildReason.None;
-         return false;
-      }
-
-      if (entity.guildId == 0) {
+      if (!canBuildOutposts(entity)) {
          cantBuildReason = CantBuildReason.None;
          return false;
       }
@@ -114,18 +124,6 @@ public class OutpostUtil
 
       // Make sure the area exists
       if (!AreaManager.self.tryGetArea(instance.areaKey, out Area area)) {
-         cantBuildReason = CantBuildReason.None;
-         return false;
-      }
-
-      // Make sure instance is the primary one
-      if (!InstanceManager.self.isPrimaryInstance(instance)) {
-         cantBuildReason = CantBuildReason.NotPrimaryInstance;
-         return false;
-      }
-
-      // Make sure instance is open world
-      if (!WorldMapManager.isWorldMapArea(instance.areaKey)) {
          cantBuildReason = CantBuildReason.None;
          return false;
       }

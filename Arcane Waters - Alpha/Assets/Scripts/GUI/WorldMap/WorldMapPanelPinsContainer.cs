@@ -151,12 +151,17 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
 
          // Change the label color
          bool isPlayerPin = Global.player != null && Util.areStringsEqual(pin.spot.displayName, Global.player.entityName);
-         pin.setLabelColor(isPlayerPin ? currentPlayerLabelColor : defaultLabelColor);
+         Color chosenColor = isPlayerPin ? currentPlayerLabelColor : defaultLabelColor;
+         pin.setLabelColor(chosenColor);
+         pin.setIconLabelColor(chosenColor);
+
+         pin.toggleLabel(show: false);
+         pin.toggleIcon(show: false);
       }
    }
 
    private void positionPinLabel (WorldMapPanelPin pin) {
-      if (pin.spot == null || pin.label == null) {
+      if (pin.spot == null || pin.label == null || !pin.shouldNudgeLabel) {
          return;
       }
 
