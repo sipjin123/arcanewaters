@@ -57,14 +57,17 @@ public class Battle : NetworkBehaviour {
    // The queued rpc action executed by the battle manager
    public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
-   // The damage per tick of the burn status in percentage (2% per tick)
-   public const float BURN_DAMAGE_PER_TICK_PERCENTAGE = .02f;
+   // The damage per tick of the burn status in percentage (1% per tick)
+   public const float BURN_DAMAGE_PER_TICK_PERCENTAGE = .01f;
 
    // The damage per tick of the poison status in percentage (2.5% per tick)
    public const float POISON_DAMAGE_PER_TICK_PERCENTAGE = .025f;
 
    // Completes the opposing team, by filling the empty battle spots
    public static bool FORCE_COMPLETE_DEFENDING_TEAM = false;
+
+   // The reference of the triggered enemy combat
+   public Enemy enemyReference;
 
    // Is the battle happening on a ship deck?
    public bool isShipBattle = false;

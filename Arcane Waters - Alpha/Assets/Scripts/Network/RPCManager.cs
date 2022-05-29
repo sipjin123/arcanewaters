@@ -8228,14 +8228,17 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (randomizedSpawnChance < 5 && enemyRoster.Count > 0) {
-               Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
+               // Force add combatant enemy here, if no combatant is spawned in the roster then just select whichever is available
+               List<Enemy> nonSupportEnemies = enemyRoster.FindAll(_ => !_.isSupportType);
+               Enemy backupEnemy = (forceCombatantEntry && nonSupportEnemies.Count > 0) ? nonSupportEnemies.ChooseRandom() : enemyRoster.ChooseRandom();
                BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
                modifiedDefenderList.Add(new BattlerInfo {
                   battlerName = battlerData.enemyName,
                   battlerType = BattlerType.AIEnemyControlled,
                   enemyType = backupEnemy.enemyType,
                   battlerXp = backupEnemy.XP,
-                  companionId = 0
+                  companionId = 0,
+                  enemyReference = backupEnemy
                });
 
                if (!battlerData.isSupportType) {
@@ -8253,15 +8256,19 @@ public class RPCManager : NetworkBehaviour
          int battlerToBeAddedCount = Battle.MAX_ENEMY_COUNT - modifiedDefenderList.Count;
 
          for (int i = 0; i < battlerToBeAddedCount; i++) {
-            BattlerInfo battlerInfo = modifiedDefenderList.ChooseRandom();
-            BattlerData battlerData = MonsterManager.self.getBattlerData(battlerInfo.enemyType);
-            modifiedDefenderList.Add(new BattlerInfo {
-               battlerName = battlerData.enemyName,
-               battlerType = BattlerType.AIEnemyControlled,
-               enemyType = battlerInfo.enemyType,
-               battlerXp = battlerInfo.battlerXp,
-               companionId = 0
-            });
+            if (modifiedDefenderList.Count > 0) {
+               BattlerInfo battlerInfo = modifiedDefenderList.ChooseRandom();
+               BattlerData battlerData = MonsterManager.self.getBattlerData(battlerInfo.enemyType);
+               modifiedDefenderList.Add(new BattlerInfo {
+                  battlerName = battlerData.enemyName,
+                  battlerType = BattlerType.AIEnemyControlled,
+                  enemyType = battlerInfo.enemyType,
+                  battlerXp = battlerInfo.battlerXp,
+                  companionId = 0
+               });
+            } else {
+               D.debug("Cannot Add Modified Defender List! Empty List!");
+            }
          }
       }
 
@@ -8884,7 +8891,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveBackgroundInfo (NetworkConnection connection, int bgXmlId, bool isShipBattle) {
-      BackgroundGameManager.self.activateBgContent(bgXmlId, isShipBattle);
+      BackgroundGameManager.self.activateClientBgContent(bgXmlId, isShipBattle);
    }
 
    #endregion

@@ -9,6 +9,9 @@ public class BattlerInfo
    // The enemy type
    public Enemy.Type enemyType;
 
+   // The reference of the enemy obj
+   public Enemy enemyReference;
+
    // The name of the battler
    public string battlerName;
 

@@ -185,7 +185,7 @@ public class BattleUIManager : MonoBehaviour {
    public void triggerAbilityByKey (int keySlot) {
       if (_playerLocalBattler.isAttacking) {
          if (debugAbilityCounter >= 1) {
-            D.debug("This unit is still attacking! Cant cast new skill");
+            D.adminLog("This unit is still attacking! Cant cast new skill", D.ADMIN_LOG_TYPE.AbilityCast);
             debugAbilityCounter = 0;
          } else {
             debugAbilityCounter++;
@@ -223,12 +223,12 @@ public class BattleUIManager : MonoBehaviour {
 
                triggerAbility(selectedButton, selectedButton.abilityType);
             } else {
-               D.debug("{" + (!selectedButton.onCooldown ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
-                  "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}");
+               D.adminLog("{" + (!selectedButton.onCooldown ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
+                  "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}", D.ADMIN_LOG_TYPE.AbilityCast);
             }
          } else {
-            D.debug("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
-               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}");
+            D.adminLog("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
+               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}", D.ADMIN_LOG_TYPE.AbilityCast);
             selectedButton.invalidButtonClick();
          }
       }
@@ -415,8 +415,8 @@ public class BattleUIManager : MonoBehaviour {
             D.debug("Unknown Ability request! {" + abilityButton.abilityTypeIndex + "}");
          }
       } else {
-         D.debug("Cooldown is enabled for this ability {" + abilityButton.abilityIndex + "} " +
-            "Wait for {" + abilityButton.cooldownValue.ToString("f1") + "/" + abilityButton.cooldownTarget.ToString("f1") + "}");
+         D.adminLog("Cooldown is enabled for this ability {" + abilityButton.abilityIndex + "} " +
+            "Wait for {" + abilityButton.cooldownValue.ToString("f1") + "/" + abilityButton.cooldownTarget.ToString("f1") + "}", D.ADMIN_LOG_TYPE.CancelAttack);
          abilityButton.invalidButtonClick();
       }
    }
@@ -497,8 +497,10 @@ public class BattleUIManager : MonoBehaviour {
                   setPendingAbility(targetAbility, switchValue);
                } else {
                   // Set first available button as initial pending button
-                  AbilityButton availableButton = abilityTargetButtons.First(item => item.abilityType != AbilityType.Undefined);
-                  setPendingButton(availableButton);
+                  if (abilityTargetButtons.Length > 0) {
+                     AbilityButton availableButton = abilityTargetButtons.First(item => item.abilityType != AbilityType.Undefined);
+                     setPendingButton(availableButton);
+                  }
                }
             } 
          }

@@ -1040,8 +1040,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Enemy enemy = (Enemy) player;
 
             if (!enemy.isDefeated) {
-               enemy.isDefeated = true;
-               enemy.battleId = 0;
+               if (enemy == battle.enemyReference) {
+                  enemy.isDefeated = true;
+                  enemy.battleId = 0;
+               }
             }
          } else {
             // The user might be offline, in which case we need to modify their position in the DB
@@ -1108,7 +1110,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    private void triggerAbilityCooldown (AbilityType abilityType, int abilityIndex, float cooldownDuration) {
       // Implement ability button cooldowns
       if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
-         AttackPanel.self.clearCachedAbilityCast();
+         AttackPanel.self.clearCachedAbilityCast("Ability Execute Display");
          BattleUIManager.self.initializeAbilityCooldown(abilityType, abilityIndex, cooldownDuration);
       }
    }
@@ -2958,11 +2960,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          AttackPanel.AbilityRequest lastAbilityRequest = BattleUIManager.self.attackPanel.recentAbilityRequest;
          if (lastAbilityRequest != null) {
             int lastAbility = lastAbilityRequest.abilityIndex;
-            if (lastAbility < BattleUIManager.self.abilityTargetButtons.Length) {
+            if (lastAbility >= 0 && BattleUIManager.self.abilityTargetButtons.Length > 0 && lastAbility < BattleUIManager.self.abilityTargetButtons.Length - 1) {
                AbilityButton lastAbilityButton = BattleUIManager.self.abilityTargetButtons[lastAbility];
                if (lastAbilityButton.cooldownImage.enabled == true) {
+                  D.adminLog("Reset cooldown for ability! {" + lastAbility + "}{" + lastAbilityRequest.abilityType + "} {" + lastAbilityButton.cooldownImage.fillAmount + "}", D.ADMIN_LOG_TYPE.AbilityCast);
                   lastAbilityButton.startCooldown(.5f);
                }
+            } else {
+               D.adminLog("Cannot reset ability button index {" + lastAbility + ":" + BattleUIManager.self.abilityTargetButtons.Length + "}", D.ADMIN_LOG_TYPE.AbilityCast);
             }
          }
       }

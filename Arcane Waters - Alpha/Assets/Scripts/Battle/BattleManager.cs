@@ -56,8 +56,8 @@ public class BattleManager : MonoBehaviour {
    public void initializeBattleBoards () {
       // Store all of the Battle Boards that exist in the Scene
       foreach (BattleBoard board in battleBoardList) {
-         _boards[board.biomeType] = board;
-         BackgroundGameManager.self.setSpritesToBattleBoard(board);
+         _boards[board.xmlID] = board;
+         BackgroundGameManager.self.serverSetSpritesToBattleBoard(board);
          board.gameObject.SetActive(false);
       }
 
@@ -76,7 +76,7 @@ public class BattleManager : MonoBehaviour {
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = instance.biome;
       battleBoard.biomeType = biomeType;
-      BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
+      BackgroundGameManager.self.serverSetSpritesToRandomBoard(battleBoard);
 
       battleBoard.gameObject.SetActive(true);
 
@@ -87,6 +87,7 @@ public class BattleManager : MonoBehaviour {
       battle.battleBoard = battleBoard;
       battle.transform.SetParent(this.transform);
       battle.difficultyLevel = instance.difficulty;
+      battle.enemyReference = enemy;
 
       int partyMemberCount = 1;
       playerBody.tryGetGroup(out VoyageGroupInfo voyageGroup);
@@ -110,9 +111,8 @@ public class BattleManager : MonoBehaviour {
       if (defendersData != null && enemy != null) {
          foreach (BattlerInfo battlerInfo in defendersData) {
             if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
-               enemy.enemyType = battlerInfo.enemyType;
                enemyTypes.Add(battlerInfo.enemyType);
-               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+               this.addEnemyToBattle(battle, battlerInfo.enemyReference == null ? enemy : battlerInfo.enemyReference, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
             }
          }
       }
@@ -120,9 +120,8 @@ public class BattleManager : MonoBehaviour {
       if (attackersData != null && enemy != null) {
          foreach (BattlerInfo battlerInfo in attackersData) {
             if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
-               enemy.enemyType = battlerInfo.enemyType;
                enemyTypes.Add(battlerInfo.enemyType);
-               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+               this.addEnemyToBattle(battle, battlerInfo.enemyReference == null ? enemy : battlerInfo.enemyReference, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
             }
          }
       }
@@ -217,8 +216,10 @@ public class BattleManager : MonoBehaviour {
          battle.defenders.Add(battler.userId);
       }
 
-      // Assign the Battle ID to the Sync Var, causing movement to stop and facing direction to change
-      enemy.assignBattleId(battle.battleId, aggressor);
+      if (battle.enemyReference == enemy) {
+         // Assign the Battle ID to the Sync Var, causing movement to stop and facing direction to change
+         enemy.assignBattleId(battle.battleId, aggressor);
+      }
 
       // Assign the Net Entity
       battler.player = enemy;
@@ -1462,7 +1463,7 @@ public class BattleManager : MonoBehaviour {
    #region Private Variables
 
    // Stores the Battle Board used for each Biome Type
-   protected Dictionary<Biome.Type, BattleBoard> _boards = new Dictionary<Biome.Type, BattleBoard>();
+   protected Dictionary<int, BattleBoard> _boards = new Dictionary<int, BattleBoard>();
 
    // Stores Battles by their Battle ID
    protected Dictionary<int, Battle> _battles = new Dictionary<int, Battle>();
