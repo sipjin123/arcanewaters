@@ -69,6 +69,9 @@ public class QuestDialogueNode {
    // Item rewards
    public Item[] itemRewards;
 
+   // The gold reward if any
+   public int goldReward = 0;
+
    // Rewarded ability
    public int abilityIdReward = -1;
 

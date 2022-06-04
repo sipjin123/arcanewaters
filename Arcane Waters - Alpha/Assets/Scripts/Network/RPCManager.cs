@@ -7904,6 +7904,9 @@ public class RPCManager : NetworkBehaviour
       if (item.category == Item.Category.Blueprint) {
          Instance instance = InstanceManager.self.getInstance(_player.instanceId);
          Biome.Type biome = instance == null ? Biome.Type.None : instance.biome;
+         if (item.data.Length < 1) {
+            D.debug("ERROR HERE: Blueprint item data is invalid! {" + item.itemTypeId + "}");
+         }
          D.debug("Sending Item Reward to player:{" + _player.userId + "}item:{" + item.category + "}:{" + item.itemTypeId + "}:{" + item.data + "}:{" + biome + "}");
       }
 
@@ -9016,6 +9019,7 @@ public class RPCManager : NetworkBehaviour
       // Let the Battle Manager handle executing the ability
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       if (cancelAction) {
+         D.debug("User: {" + _player.userId + "} Requested a Cancel Action: {" + abilityInventoryIndex + "}");
          BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
          Target_ReceiveRefreshCasting(connectionToClient, false, "Cancel Action");
       } else {
@@ -9032,6 +9036,9 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveRefreshCasting (NetworkConnection connection, bool refreshAbilityCache, string reason) {
       D.adminLog("Battler can now cast again! After Refresh Casting: " + reason, D.ADMIN_LOG_TYPE.AbilityCast);
+      if (!BattleManager.self.getPlayerBattler().canCastAbility()) {
+         D.debug("Server Granted this user to be able to Cast Ability: " + reason);
+      }
       BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(true);
       if (refreshAbilityCache) {
          AttackPanel.self.clearCachedAbilityCast(reason);

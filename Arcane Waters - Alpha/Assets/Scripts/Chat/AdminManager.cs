@@ -361,6 +361,7 @@ public class AdminManager : NetworkBehaviour
       List<Instance> allInstances = InstanceManager.self.getAllInstances();
       int instancesDestroyed = 0;
 
+      /*
       // Destroy all created open world maps
       for (int i = 0; i < numAreasCreated; i++) {
          string areaName = getOpenWorldMapName(i);
@@ -371,7 +372,7 @@ public class AdminManager : NetworkBehaviour
             InstanceManager.self.removeEmptyInstance(areaInstance);
             instancesDestroyed++;
          }
-      }
+      }*/
 
       D.debug("Testing Open World - Upon test completion destroyed " + instancesDestroyed + " instances.");
    }
@@ -930,18 +931,18 @@ public class AdminManager : NetworkBehaviour
                         BotShipEntity botship = (BotShipEntity) enemyRef;
                         SeaMonsterEntityData botShipData = SeaMonsterManager.self.getMonster(botship.dataXmlId);
                         if (botShipData != null) {
-                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {" + botShipData.monsterName + ":" + (Ship.Type) botShipData.subVarietyTypeId + ":" + botShipData.difficultyLevel + "}\n";
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {" + botShipData.monsterName + ":" + (Ship.Type) botShipData.subVarietyTypeId + ":" + botShipData.difficultyLevel + "}{" + enemyRef.currentHealth + ":" + enemyRef.maxHealth + "}\n";
                         } else {
-                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {Null:" + botship.shipType + ":" + botship.seaEntityData.difficultyLevel + "}\n";
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] BotShip: {Null:" + botship.shipType + ":" + botship.seaEntityData.difficultyLevel + "}{" + enemyRef.currentHealth + ":" + enemyRef.maxHealth + "}\n";
                         }
                      }
                      if (enemyRef is SeaMonsterEntity) {
                         SeaMonsterEntity seaMonster = (SeaMonsterEntity) enemyRef;
                         SeaMonsterEntityData monsterData = SeaMonsterManager.self.getMonster(seaMonster.dataXmlId);
                         if (monsterData != null) {
-                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {" + monsterData.monsterName + ":" + seaMonster.monsterType + ":" + monsterData.difficultyLevel + "}\n";
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {" + monsterData.monsterName + ":" + seaMonster.monsterType + ":" + monsterData.difficultyLevel + "}{" + enemyRef.currentHealth + ":" + enemyRef.maxHealth + "}\n";
                         } else {
-                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {Null:" + seaMonster.monsterType + ":" + seaMonster.difficulty + "}\n";
+                           message += "-> [" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "] SeaMonster: {Null:" + seaMonster.monsterType + ":" + seaMonster.difficulty + "}{" + enemyRef.currentHealth + ":" + enemyRef.maxHealth + "}\n";
                         }
                      }
                   }

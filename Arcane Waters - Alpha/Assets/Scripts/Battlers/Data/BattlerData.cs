@@ -75,6 +75,9 @@ public class BattlerData {
    // The reference id of the loot group data
    public int lootGroupId = 0;
 
+   // If this unit is a mini boss
+   public bool isMiniBoss;
+
    // The shadow scale and offset
    public float shadowScale = 1;
    public Vector3 shadowOffset = new Vector3(0, -.2f, 0.1f);
