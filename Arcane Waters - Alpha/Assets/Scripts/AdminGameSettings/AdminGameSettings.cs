@@ -53,6 +53,10 @@ public class AdminGameSettings
    public int maxDemoBiome = 2;
    public int maxDemoLevel = 5;
 
+   // The voyage health restrictions
+   public int minVoyageHealth = 200;
+   public int maxVoyageHealth = 1000;
+
    #endregion
 
    public AdminGameSettings () { }
@@ -74,13 +78,15 @@ public class AdminGameSettings
       this.landDifficultyScaling = DataUtil.getFloat(dataReader, "landDifficultyScaling");
       this.maxDemoLevel = DataUtil.getInt(dataReader, "maxDemoLevel");
       this.maxDemoBiome = DataUtil.getInt(dataReader, "maxDemoBiome");
+      this.minVoyageHealth = DataUtil.getInt(dataReader, "minVoyageHealth");
+      this.maxVoyageHealth = DataUtil.getInt(dataReader, "maxVoyageHealth");
    }
 
 #endif
 
    public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration,
       float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth,
-      float landBossAddedHealth, float landBossAddedDamage, float landDifficultyScaling, int maxDemoLevel, int maxDemoBiome) {
+      float landBossAddedHealth, float landBossAddedDamage, float landDifficultyScaling, int maxDemoLevel, int maxDemoBiome, int minVoyageHealth, int maxVoyageHealth) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
@@ -95,6 +101,8 @@ public class AdminGameSettings
       this.landDifficultyScaling = landDifficultyScaling;
       this.maxDemoLevel = maxDemoLevel;
       this.maxDemoBiome = maxDemoBiome;
+      this.minVoyageHealth = minVoyageHealth;
+      this.maxVoyageHealth = maxVoyageHealth;
    }
 
    public override bool Equals (object rhs) {

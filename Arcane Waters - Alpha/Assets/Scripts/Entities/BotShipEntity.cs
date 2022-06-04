@@ -397,7 +397,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
-   public void setShipData (int shipXmlId, Ship.Type shipType, int instanceDifficulty) {
+   public void setShipData (int shipXmlId, Ship.Type shipType, int instanceDifficulty, bool isVoyage = false) {
       ShipData shipData = ShipDataManager.self.getShipData(shipType);
       
       // If we've provided a sprite override, apply it
@@ -417,7 +417,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          D.debug("Failed to get sea monster data");
       }
 
-      initializeAsSeaEnemy(seaEnemyData, shipData, instanceDifficulty);
+      initializeAsSeaEnemy(seaEnemyData, shipData, instanceDifficulty, isVoyage);
 
       // Assign ripple sprites
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));

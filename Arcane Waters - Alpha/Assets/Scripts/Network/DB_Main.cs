@@ -12036,8 +12036,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage, landDifficultyScaling, maxDemoLevel, maxDemoBiome) " +
-            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage, @landDifficultyScaling, @maxDemoLevel, @maxDemoBiome) "
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage, landDifficultyScaling, maxDemoLevel, maxDemoBiome, minVoyageHealth, maxVoyageHealth) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage, @landDifficultyScaling, @maxDemoLevel, @maxDemoBiome, @minVoyageHealth, @maxVoyageHealth) "
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -12054,6 +12054,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
             cmd.Parameters.AddWithValue("@maxDemoLevel", settings.maxDemoLevel);
             cmd.Parameters.AddWithValue("@maxDemoBiome", settings.maxDemoBiome);
+            cmd.Parameters.AddWithValue("@minVoyageHealth", settings.minVoyageHealth);
+            cmd.Parameters.AddWithValue("@maxVoyageHealth", settings.maxVoyageHealth);
 
             DebugQuery(cmd);
 
@@ -12074,7 +12076,7 @@ public class DB_Main : DB_MainStub
          "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, battleAttackDuration=@battleAttackDuration, " +
          "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown, seaMaxHealth=@seaMaxHealth, " +
          "landBossAddedHealth=@landBossAddedHealth, landBossAddedDamage=@landBossAddedDamage, landDifficultyScaling=@landDifficultyScaling, " +
-         "maxDemoLevel=@maxDemoLevel, maxDemoBiome=@maxDemoBiome " +
+         "maxDemoLevel=@maxDemoLevel, maxDemoBiome=@maxDemoBiome, minVoyageHealth=@minVoyageHealth, maxVoyageHealth=@maxVoyageHealth " +
          "WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -12091,6 +12093,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
             cmd.Parameters.AddWithValue("@maxDemoLevel", settings.maxDemoLevel);
             cmd.Parameters.AddWithValue("@maxDemoBiome", settings.maxDemoBiome);
+            cmd.Parameters.AddWithValue("@minVoyageHealth", settings.minVoyageHealth);
+            cmd.Parameters.AddWithValue("@maxVoyageHealth", settings.maxVoyageHealth);
 
             DebugQuery(cmd);
 

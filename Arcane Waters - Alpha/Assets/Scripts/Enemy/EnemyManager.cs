@@ -15,6 +15,9 @@ public class EnemyManager : MonoBehaviour {
    // Self
    public static EnemyManager self;
 
+   // The base settings for ships spawned in voyages per biome
+   public List<VoyageBiomeShipSettings> voyageBiomeList;
+
    // The respawn data needed for respawning in an open world sea
    public class OpenWorldRespawnData {
       public Instance instance;
@@ -372,6 +375,8 @@ public class EnemyManager : MonoBehaviour {
     }
 
    public void spawnShipsOnServerForInstance (Instance instance) {
+      // This function is triggered from instance manager, this spawns the ships in the voyage leagues
+
       // If we don't have any spawners defined for this Area, then we're done
       if (instance == null || !_spawners.ContainsKey(instance.areaKey)) {
          return;
@@ -470,7 +475,6 @@ public class EnemyManager : MonoBehaviour {
          botShip.transform.localPosition = localPosition;
       }
       botShip.seaEntityData = seaEnemyData;
-      botShip.maxHealth = seaEnemyData.maxHealth;
       botShip.currentHealth = seaEnemyData.maxHealth;
 
       botShip.shipType = shipType;
@@ -480,8 +484,25 @@ public class EnemyManager : MonoBehaviour {
             botShip.abilityList.Add(abilityIdNew);
          }
       }
+
+      if (instance.isVoyage) {
+         VoyageBiomeShipSettings shipBiomeData = voyageBiomeList.Find(_ => _.biomeType == instance.biome);
+         if (shipBiomeData != null) {
+            if (shipBiomeData.voyageDifficultyCurve.keys.Length >= 2) {
+               AnimationCurve newCurve = new AnimationCurve(new Keyframe(1, AdminGameSettingsManager.self.settings.minVoyageHealth), new Keyframe(6, AdminGameSettingsManager.self.settings.maxVoyageHealth));
+               shipBiomeData.voyageDifficultyCurve = newCurve;
+            }
+            botShip.maxHealth = (int) shipBiomeData.voyageDifficultyCurve.Evaluate(instance.difficulty);
+         } else {
+            D.debug("Missing ship biome data! {" + instance.biome + "}");
+            botShip.maxHealth = seaEnemyData.maxHealth;
+         }
+      } else {
+         botShip.maxHealth = seaEnemyData.maxHealth;
+      }
+      
       botShip.guildId = guildId;
-      botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);
+      botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty, true);
       if (isOpenWorldSpawn) {
          botShip.setOpenWorldData(instance, area, localPosition, isPositionRandomized, useWorldPosition, guildId, difficulty, isOpenWorldSpawn, respawnTimer);
       }
@@ -556,6 +577,12 @@ public class EnemyManager : MonoBehaviour {
 
    private IEnumerator CO_WaitforSpawnSeamonster (OpenWorldRespawnData respawnData) {
       yield return new WaitForSeconds(respawnData.respawnTime);
+
+      // While a player is near our spawn, don't respawn
+      while (isPlayerWithinRange(respawnData.instance, (Vector2) respawnData.area.transform.position + respawnData.localPosition, OPEN_WORLD_ENEMY_SPAWN_PROXIMITY)) {
+         yield return new WaitForSeconds(1.0f);
+      }
+
       spawnSeaMonster(respawnData.instance, respawnData.area, respawnData.localPosition,
          respawnData.isPositionRandomized, respawnData.useWorldPosition, respawnData.guildId,
          respawnData.difficulty, respawnData.isOpenWorldSpawn, respawnData.respawnTime);
@@ -783,4 +810,13 @@ public class EnemyManager : MonoBehaviour {
    protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();
 
    #endregion
+}
+
+[Serializable]
+public class VoyageBiomeShipSettings {
+   // The biome type
+   public Biome.Type biomeType;
+
+   // Voyage difficulty animation curve
+   public AnimationCurve voyageDifficultyCurve;
 }
