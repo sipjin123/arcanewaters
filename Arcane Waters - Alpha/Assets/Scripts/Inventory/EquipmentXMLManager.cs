@@ -546,6 +546,10 @@ public class EquipmentXMLManager : MonoBehaviour {
    #region Get basic info of item
 
    public bool isLevelValid (int userLevel, Item item) {
+      return userLevel >= equipmentLevelRequirement(item);
+   }
+
+   public int equipmentLevelRequirement (Item item) {
       int equipmentLevelRequirement = 0;
       switch (item.category) {
          case Item.Category.Weapon:
@@ -586,7 +590,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
       }
 
-      return userLevel >= equipmentLevelRequirement;
+      return equipmentLevelRequirement;
    }
 
    public bool isJobLevelValid (Jobs jobsData, Item item) {

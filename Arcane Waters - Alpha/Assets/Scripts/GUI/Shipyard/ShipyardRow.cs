@@ -33,6 +33,7 @@ public class ShipyardRow : MonoBehaviour {
    public Text speedText;
    public Text attackRangeText;
    public Text levelRequirementText;
+   public Text sailorLevelRequirementText;
 
    // Skill prefabs setup
    public GameObject skillPrefabHolder;
@@ -69,6 +70,7 @@ public class ShipyardRow : MonoBehaviour {
       speedText.text = "" + shipInfo.speed;
       attackRangeText.text = "" + shipInfo.attackRange;
       levelRequirementText.text = "" + shipData.shipLevelRequirement;
+      sailorLevelRequirementText.text = "" + shipData.sailorLevelRequirement;
 
       // Associate a new function with the confirmation button
       if (sailorLevel >= shipData.sailorLevelRequirement) {

@@ -336,7 +336,13 @@ public class InventoryPanel : Panel
          // Check if the item was dropped over a shortcut slot
          ShortcutBox box = PanelManager.self.itemShortcutPanel.getShortcutBoxAtPosition(screenPosition);
          if (box != null) {
-            Global.player.rpc.Cmd_UpdateItemShortcut(box.slotNumber, _grabbedItemCell.getItem().id);
+            // Check level requirement
+            // If level requirements are met
+            if (!EquipmentXMLManager.self.isLevelValid(LevelUtil.levelForXp(Global.player.XP), _grabbedItemCell.getItem())) {
+               triggerWarningPanel("Insufficient level requirement!");
+            } else {
+               Global.player.rpc.Cmd_UpdateItemShortcut(box.slotNumber, _grabbedItemCell.getItem().id);
+            }
             stopGrabbingItem();
             return;
          }
@@ -351,14 +357,20 @@ public class InventoryPanel : Panel
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_DROP, transform);
 
             // Deactivate the grabbed item object
-            if (EquipmentXMLManager.self.isJobLevelValid(jobsData, _grabbedItemCell.getItem())) {
+            if (!EquipmentXMLManager.self.isJobLevelValid(jobsData, _grabbedItemCell.getItem())) {
+               string warningMsg = "Insufficient job level requirement!";
+               triggerWarningPanel(warningMsg);
+               stopGrabbingItem();
+               return;
+            } else if (!EquipmentXMLManager.self.isLevelValid(LevelUtil.levelForXp(Global.player.XP), _grabbedItemCell.getItem())) {
+               string warningMsg = "Insufficient level requirement!";
+               triggerWarningPanel(warningMsg);
+               stopGrabbingItem();
+               return;
+            } else {
                // Equip or unequip the item
                InventoryManager.equipOrUnequipItem(_grabbedItemCell.getItem(), jobsData);
                grabbedItem.deactivate();
-            } else {
-               string warningMsg = "Insufficient job level requirement!";
-               triggerWarningPanel(warningMsg);
-               return;
             }
 
             _grabbedItemCell = null;

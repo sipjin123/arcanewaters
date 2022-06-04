@@ -20,6 +20,8 @@ public class InventoryManager : MonoBehaviour
       // If level requirements are met
       int level = LevelUtil.levelForXp(Global.player.XP);
       if (!EquipmentXMLManager.self.isLevelValid(level, castedItem)) {
+         int levelRequirement = EquipmentXMLManager.self.equipmentLevelRequirement(castedItem);
+         ChatManager.self.addChat("You need to reach Level (" + levelRequirement + ") to equip this item", ChatInfo.Type.System);
          return;
       }
 
@@ -37,7 +39,16 @@ public class InventoryManager : MonoBehaviour
    }
 
    public static void equipOrUnequipItem (Item castedItem, Jobs jobsData = null) {
-      InventoryPanel inventoryPanel = (InventoryPanel)PanelManager.self.get(Panel.Type.Inventory);
+      int level = LevelUtil.levelForXp(Global.player.XP);
+      InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+      // Check if it's currently equipped or not
+      int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
+
+      // If level requirements are met
+      if (itemIdToSend != 0 && !EquipmentXMLManager.self.isLevelValid(level, castedItem)) {
+         return;
+      }
 
       // Check which type of item we requested to equip/unequip
       if (castedItem.category == Item.Category.Weapon) {

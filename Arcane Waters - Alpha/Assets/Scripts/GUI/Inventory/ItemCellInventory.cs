@@ -57,6 +57,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
             iconShadow.sprite = EquipmentXMLManager.self.blankTrinketIcon;
             break;
       }
+      levelRestrictionObj.SetActive(false);
    }
 
    public override void setCellForItem (Item item) {

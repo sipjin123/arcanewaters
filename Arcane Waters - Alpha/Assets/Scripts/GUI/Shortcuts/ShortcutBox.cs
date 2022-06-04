@@ -40,6 +40,9 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler, IPointerDownHand
    // The common object used to display any grabbed item
    public GrabbedItem grabbedItem;
 
+   // The object to enable if item is level restricted
+   public GameObject levelRestrictedObj;
+
    #endregion
 
    private void Start () {

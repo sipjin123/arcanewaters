@@ -34,6 +34,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public Sprite defaultItemIcon;
    public Sprite disabledItemIcon;
 
+   // The object displayed if item does not match level requirement
+   public GameObject levelRestrictionObj;
+
    // The background image
    public Image backgroundImage;
 
@@ -309,6 +312,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             item = item.getCastItem();
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             icon.sprite = ImageManager.getSprite(CraftingIngredients.getBorderlessIconPath(ingredientType));
+            // If we don't get a borderless sprite, try to get at least the bordered one
+            if (icon.sprite == null || icon.sprite == ImageManager.self.blankSprite) {
+               icon.sprite = ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
+            }
             break;
          case Item.Category.Blueprint:
             blueprintIcon.SetActive(true);
@@ -526,6 +533,14 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       // Recolor
       recoloredSprite.recolor(item.paletteNames);
+
+      // Adds notification if level requirement does not match
+      if (item == null || item.category == Item.Category.None || item.itemTypeId == 0) {
+         levelRestrictionObj.SetActive(false);
+      } else if (item != null && levelRestrictionObj != null && Global.player != null) {
+         bool isLevelValid = EquipmentXMLManager.self.isLevelValid(LevelUtil.levelForXp(Global.player.XP), item);
+         levelRestrictionObj.SetActive(!isLevelValid);
+      }
 
       // Show the item count when relevant
       if (count > 1 || Item.shouldAlwaysShowCount(item.category)) {
