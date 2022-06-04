@@ -86,6 +86,14 @@ public class FloatingCanvas : MonoBehaviour
 
       return this;
    }
+   
+   public FloatingCanvas asPowerupIgnored () {
+      if (text != null) {
+         text.text = "Weaker powerup is ignored!";
+      }
+
+      return this;
+   }
 
    public FloatingCanvas asEnemiesAround () {
       if (text != null) {

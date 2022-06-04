@@ -14,7 +14,10 @@ public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
    // The height of 1 chat line
-   public static float chatLineHeight = 22.6f;
+   public static float CHAT_LINE_HEIGHT = 20f;
+
+   // The distance between each chat line
+   public static float DISTANCE_BETWEEN_CHAT_LINES = 2f;
 
    // The height of the bottom bar in word space
    public static float bottomBarWorldSpaceHeight = 0.16f;
@@ -76,6 +79,7 @@ public class ChatPanel : MonoBehaviour {
 
    // The container of the chat messages
    public GameObject messagesContainer;
+   public LayoutGroup messagesContainerLayout;
 
    // The various components we manage
    public ScrollRect scrollRect;
@@ -482,7 +486,7 @@ public class ChatPanel : MonoBehaviour {
    }
 
    private float computeTargetHeight (int visibleLinesCount) {
-      return toolbarRect.sizeDelta.y + 12 + visibleLinesCount * chatLineHeight;
+      return toolbarRect.sizeDelta.y + messagesContainerLayout.padding.bottom + visibleLinesCount * CHAT_LINE_HEIGHT + (visibleLinesCount + 0.5f) * DISTANCE_BETWEEN_CHAT_LINES;
    }
 
    public void onExpandButtonPressed () {

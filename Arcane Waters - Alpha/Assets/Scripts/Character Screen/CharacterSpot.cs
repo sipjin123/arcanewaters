@@ -52,6 +52,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    // Reference to the control that displays the deletion status of the character
    public Transform deletionIndicator;
 
+   // If the spot holds a deleted character, is the name still available? If not, the user will be prompted for a new name when restored
+   public bool isNameAvailable = false;
+
    #endregion
 
    protected override void Awake () {
@@ -143,8 +146,11 @@ public class CharacterSpot : ClientMonoBehaviour {
          CharacterScreen.self.canvasGroup.interactable = true;
       });
 
-      // Ask the player for confirmation. Reenable the canvas group if cancelled deletion.
-      PanelManager.self.showConfirmationPanel("Are you sure you want to restore " + character.nameText.text + "?", () => sendRestoreUserRequest(character.userId), () => CharacterScreen.self.canvasGroup.interactable = true);
+      PanelManager.self.showConfirmationPanel("Are you sure you want to restore " + character.nameText.text + "?",
+         () => sendRestoreUserRequest(character.userId, PanelManager.self.confirmScreen.confirmInputField.text, !isNameAvailable),
+         () => CharacterScreen.self.canvasGroup.interactable = true,
+         showInput: !isNameAvailable,
+         description: $"'{character.nameText.text}' has been taken. Pick a new name.");
    }
 
    public void startNewCharacterButtonWasPressed () {
@@ -212,7 +218,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       CameraFader.self.setLoadingIndicatorVisibility(false);
 
       // Show character and creation panel, and zoom in
-      CharacterCreationPanel.self.show("Spot: " + number);
+      CharacterCreationPanel.self.show(CharacterCreationPanel.ShowReason.SpotCreateSelected, number);
       offlineChar.gameObject.SetActive(true);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
@@ -237,8 +243,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       NetworkClient.Send(new DeleteUserMessage(userId));
    }
 
-   protected void sendRestoreUserRequest (int userId) {
-
+   protected void sendRestoreUserRequest (int userId, string newUsername, bool changeUsername) {
       // Fade and show a loading indicator
       CameraFader.self.fadeIn(0.5f);
       CameraFader.self.setLoadingIndicatorVisibility(true);
@@ -251,7 +256,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       Util.fadeCanvasGroup(PanelManager.self.confirmScreen.canvasGroup, false, FADE_TIME);
 
       // Send off the request
-      NetworkClient.Send(new RestoreUserMessage(userId));
+      NetworkClient.Send(new RestoreUserMessage(userId, newUsername, changeUsername));
    }
 
    public void setButtonVisiblity (bool isVisible) {

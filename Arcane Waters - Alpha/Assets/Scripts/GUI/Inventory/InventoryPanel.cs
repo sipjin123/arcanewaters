@@ -296,7 +296,7 @@ public class InventoryPanel : Panel
 
       PanelManager.self.contextMenuPanel.show("");
    }
-   
+
    public bool forceFalseVal () {
       return false;
    }
@@ -412,7 +412,7 @@ public class InventoryPanel : Panel
 
    public void triggerWarningPanel (string warningMessage) {
       genericWarningPanel.SetActive(true);
-      genericWarningMessage.text = warningMessage; 
+      genericWarningMessage.text = warningMessage;
    }
 
    public void closeWarningPanel () {

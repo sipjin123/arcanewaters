@@ -69,7 +69,8 @@ namespace MapCreationTool.IssueResolving
 
          try {
             maps = (await DB_Main.execAsync(DB_Main.getMaps))
-               .Where(m => true)
+               .Where(m => m.editorType == EditorType.Sea)
+               .Where(m => WorldMapManager.isWorldMapArea(m.name))
                .ToList();
             receivedMaps();
          } catch (Exception ex) {
@@ -130,6 +131,7 @@ namespace MapCreationTool.IssueResolving
                doIOAction(() => File.WriteAllBytes(mapDirectory + @"\" + "after.png", ScreenRecorder.recordPng()));
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "after misused tiles.txt", getMisusedTilesReport(tileDataDictionary, out misusedAfterCount)));
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "removed data fields.txt", getRemovedDataFieldsReport(resolvingResult)));
+               doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "updated data fields.txt", getUpdatedDataFieldReport(resolvingResult)));
 
                Biome.Type biome = Tools.biome;
                EditorType editorType = Tools.editorType;
@@ -192,6 +194,7 @@ namespace MapCreationTool.IssueResolving
                tilesToPrefabChanges = replaceTilesWithPrefabs(),
                removedUnnecessaryTiles = removeUnnecessaryTiles(),
                removedDataFields = removeMissingDataFields(),
+               wrongDataFieldValue = setDesiredDataFieldValues(),
                validationErrors = valError
             };
 
@@ -318,6 +321,29 @@ namespace MapCreationTool.IssueResolving
 
          return result;
       }
+
+      public static List<WrongDataFieldValueResult> setDesiredDataFieldValues () {
+         List<WrongDataFieldValueResult> result = new List<WrongDataFieldValueResult>();
+
+         foreach (PlacedPrefab pref in DrawBoard.instance.prefabsBetween(new Vector3(-1000, -1000, 0), new Vector3(1000, 1000, 0))) {
+            if (issueContainer.wrongDataFieldValues.TryGetValue(pref.original, out var updateData)) {
+
+               if (pref.data.TryGetValue(updateData.field, out string prev)) {
+                  DrawBoard.instance.setPrefabData(pref, updateData.field, updateData.desiredValue, false);
+
+                  result.Add(new WrongDataFieldValueResult {
+                     placedPrefab = pref.original,
+                     dataKey = updateData.field,
+                     prevValue = prev,
+                     newValue = pref.getData(updateData.field)
+                  });
+               }
+            }
+         }
+
+         return result;
+      }
+
       private static string toStringLines<T> (IEnumerable<T> collection, string beforeEachLine = "") {
          return string.Join(Environment.NewLine, collection.Select(e => beforeEachLine + e.ToString())) + Environment.NewLine;
       }
@@ -338,6 +364,18 @@ namespace MapCreationTool.IssueResolving
          }
 
          return string.Join(Environment.NewLine, resolveResult.Value.removedDataFields);
+      }
+
+      private static string getUpdatedDataFieldReport (IssueResolvingResult? resolveResult) {
+         if (resolveResult == null) {
+            return "Resolver didn't run";
+         }
+
+         if (resolveResult.Value.exception != null) {
+            return "Resolver encountered an exception: \n" + resolveResult.Value.exception;
+         }
+
+         return string.Join(Environment.NewLine, resolveResult.Value.wrongDataFieldValue);
       }
 
       private static (List<PlacedTile>, List<PlacedTile>) getMisusedTiles (Dictionary<TileBase, PaletteTilesData.TileData> tileDataDictionary) {
@@ -513,6 +551,8 @@ namespace MapCreationTool.IssueResolving
          public List<TilesToPrefabChangeResult> tilesToPrefabChanges { get; set; }
          public List<PlacedTile> removedUnnecessaryTiles { get; set; }
          public List<string> removedDataFields { get; set; }
+         public List<WrongDataFieldValueResult> wrongDataFieldValue { get; set; }
+
          public string validationErrors { get; set; }
 
          public string formReport () {
@@ -523,6 +563,7 @@ namespace MapCreationTool.IssueResolving
                   toStringLines(layerChanges.Select(l => l.ToString()), "Layer change - ") +
                   toStringLines(tilesToPrefabChanges.Select(t => t.ToString()), "Tiles to prefab - ") +
                   toStringLines(removedUnnecessaryTiles.Select(t => t.ToString()), "Removed =") +
+                  toStringLines(wrongDataFieldValue.Select(t => t.ToString()), "Updated =") +
                   "Validation errors: " + validationErrors + Environment.NewLine;
             }
          }
@@ -538,6 +579,18 @@ namespace MapCreationTool.IssueResolving
             return $"{misplacedTile.tileBase.name} ({misplacedTile.position.x}:{misplacedTile.position.y}): " +
                   $"{misplacedTile.layer}_{misplacedTile.sublayer} -> {fixedWithTile.layer}_{fixedWithTile.sublayer}" +
                   (blockingTile == null ? "" : " | had to remove: " + blockingTile);
+         }
+      }
+
+      public struct WrongDataFieldValueResult
+      {
+         public GameObject placedPrefab { get; set; }
+         public string dataKey { get; set; }
+         public string prevValue { get; set; }
+         public string newValue { get; set; }
+
+         public override string ToString () {
+            return $"Updated { placedPrefab.name } field { dataKey } From { prevValue } To { newValue }";
          }
       }
 
@@ -572,6 +625,7 @@ namespace MapCreationTool.IssueResolving
                "Added " + resolvedPrefabsFromTiles + " prefabs instead of " + removedTilesForPrefabs + " tiles" + Environment.NewLine +
                "Removed " + removedUnnecessaryTiles + " unnecessary tiles" + Environment.NewLine +
                "Removed " + removedDataFields + " missing data fields" + Environment.NewLine +
+               "Updated " + updatedDataFields + " data fields" + Environment.NewLine +
                "Validation errors: " + (string.IsNullOrEmpty(issueResolvingResult?.validationErrors) ? "no" : "yes") + Environment.NewLine +
                new string('=', 100) + Environment.NewLine;
          }
@@ -607,6 +661,15 @@ namespace MapCreationTool.IssueResolving
             {
                return issueResolvingResult == null || issueResolvingResult.Value.exception != null ? 0
                   : issueResolvingResult.Value.tilesToPrefabChanges.Count;
+            }
+         }
+
+         public int updatedDataFields
+         {
+            get
+            {
+               return issueResolvingResult == null || issueResolvingResult.Value.exception != null ? 0
+                  : issueResolvingResult.Value.wrongDataFieldValue.Count;
             }
          }
 

@@ -1229,7 +1229,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_ComplaintTicket (string username, string details) {
+   public void Cmd_SubmitComplaint (string username, string description) {
       if (_player == null) {
          D.warning("Received a complaint, but the sender doesn't have a PlayerController");
          return;
@@ -1241,16 +1241,11 @@ public class RPCManager : NetworkBehaviour
          if (targetInfo != null) {
             if (targetInfo.accountId == _player.accountId) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  _player.Target_ReceiveNormalChat("You can't report yourself", ChatInfo.Type.Error);
+                  _player.Target_ReceiveNormalChat("You can't report yourself.", ChatInfo.Type.Error);
                });
             } else {
-               string ipAddress = Util.formatIpAddress(connectionToClient.address);
-
-               SupportTicketInfo ticket = new SupportTicketInfo($"Complaint about {targetInfo.username}", details, _player.accountId, _player.userId, _player.entityName,
-                  targetInfo.accountId, targetInfo.userId, targetInfo.username, ipAddress, WebToolsUtil.SupportTicketType.Complaint);
-
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  Target_SubmitComplaint(ticket);
+                  Target_SubmitComplaint(targetInfo.accountId, targetInfo.userId, targetInfo.username, description);
                });
             }
          } else {
@@ -1263,8 +1258,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_SubmitComplaint (SupportTicketInfo ticket) {
-      SupportTicketManager.self.submitComplaint(ticket);
+   public void Target_SubmitComplaint (int targetAccId, int targetUsrId, string username, string description) {
+      SupportTicketManager.self.sendComplaint(targetAccId, targetUsrId, username, description);
    }
 
    [Command]
@@ -1440,6 +1435,11 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveUniquePowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
       StartCoroutine(PowerupManager.self.CO_CreatingUniqueFloatingPowerupIcon(powerupType, rarity, (PlayerShipEntity) _player, spawnSource));
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveIgnoredPowerup (Powerup.Type powerupType, Rarity.Type rarity, Vector3 spawnSource) {
+      StartCoroutine(PowerupManager.self.CO_GrabPowerupEffect(powerupType, rarity, (PlayerShipEntity) _player, spawnSource, true));
    }
 
    [TargetRpc]
@@ -1706,11 +1706,7 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          List<ShipInfo> ships = DB_Main.getShips(_player.userId, 1, 100);
-
          Jobs jobsData = DB_Main.getJobXP(_player.userId);
-         string inventoryData = DB_Main.userInventory(_player.userId, new Item.Category[2] { Item.Category.Weapon, Item.Category.Armor }, new int[0], true,
-            1, 10, Item.DurabilityFilter.None);
-
          int sailorLevel = 0;
          if (jobsData != null) {
             sailorLevel = LevelUtil.levelForXp(jobsData.sailorXP);
@@ -2176,6 +2172,24 @@ public class RPCManager : NetworkBehaviour
             Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
          });
       });
+   }
+
+   [Server]
+   public void sendGoldAmount () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int gold = DB_Main.getGold(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveGoldAmount(_player.connectionToClient, gold);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGoldAmount (NetworkConnection connection, int gold) {
+      Global.lastUserGold = gold;
    }
 
    [Server]
@@ -4237,11 +4251,6 @@ public class RPCManager : NetworkBehaviour
 
       // On first spawn check for rewards
       Cmd_CheckRewardCodes();
-
-      // Create a steam matching making lobby so friends can join
-      if (SteamManager.Initialized) {
-         Steamworks.SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypeFriendsOnly, 16);
-      }
    }
 
    [Command]
@@ -4317,21 +4326,24 @@ public class RPCManager : NetworkBehaviour
          // Create the mail
          int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
 
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (mailId >= 0) {
+         if (mailId >= 0) {
+            // Make sure that we charge the player only if the message went through
+            DB_Main.addGold(_player.userId, -price);
+
+            // Back to Unity
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // Let the player know that the mail was sent
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, "The mail has been successfully sent to " + recipientName + "!");
-
-               // Make sure that we charge the player only if the message went through
-               DB_Main.addGold(_player.userId, -price);
 
                if (attachedItemsIds.Length > 0) {
                   // Update the shortcuts panel in case the transferred items were set in slots
                   sendItemShortcutList();
                }
-            }
-         });
+
+               // Update gold in the panel
+               sendGoldAmount();
+            });
+         }
       });
    }
 
@@ -4702,6 +4714,9 @@ public class RPCManager : NetworkBehaviour
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount, systemMailMap);
+
+            // Lets also send the latest amount of gold to the user
+            sendGoldAmount();
          });
       });
    }
@@ -4928,15 +4943,17 @@ public class RPCManager : NetworkBehaviour
                      PlayerShipEntity playerShip = (PlayerShipEntity) seaEntity;
                      ShipInfo purchasedShip = Ship.generateNewShip(shipSqlId, Rarity.Type.Common);
 
-                     // Update health to max value
-                     playerShip.currentHealth = shipData.baseHealthMax;
-                     playerShip.maxHealth = shipData.baseHealthMax;
+                     if (!playerShip.isDead()) {
+                        // Update health to max value
+                        playerShip.currentHealth = shipData.baseHealthMax;
+                        playerShip.maxHealth = shipData.baseHealthMax;
+                     }
 
                      // Update abilities
                      purchasedShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
+                     playerShip.changeShipInfo(purchasedShip, false);
 
                      // Sprite updates
-                     playerShip.changeShipInfo(purchasedShip);
                      playerShip.Rpc_RefreshSprites((int) shipData.shipType, (int) shipData.shipSize, (int) purchasedShip.skinType);
                   }
                } else {
@@ -7049,6 +7066,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
+      PvpScoreIndicator.self.allowReset = true;
       Target_ResetPvpScoreIndicator(_player.connectionToClient, show: false);
 
       // Send World Map information
@@ -9956,6 +9974,10 @@ public class RPCManager : NetworkBehaviour
       npc.Rpc_ContinuePetMoveControl(animalEndPos, maxTime);
    }
 
+   [TargetRpc]
+   public void Target_PlayAchievementSfx () {
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.EARN_ACHIEVEMENT);
+   }
 
    [ClientRpc]
    public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
@@ -10092,11 +10114,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_StoreServerLogForBugReport (int bugReportId) {
+   public void Cmd_StoreServerLogForBugReport (int bugReportId, string token) {
       byte[] serverLog = Encoding.ASCII.GetBytes(D.getLogString());
 
       // Send the server log to web tools
-      BugReportManager.self.sendBugReportServerLog(bugReportId, serverLog);
+      BugReportManager.self.sendBugReportServerLog(bugReportId, serverLog, token);
    }
 
    [Server]
@@ -10972,6 +10994,52 @@ public class RPCManager : NetworkBehaviour
       }
 
       SteamFriendsManager.joinFriend(_player, friendSteamId);
+   }
+
+   [Command]
+   public void Cmd_WarpToGameFriend (int friendUserId) {
+      if (_player == null) {
+         return;
+      }
+
+      // Prevent fast travel on specific conditions
+      if (_player.isInBattle() || _player.tryGetVoyage(out Voyage voyage) || (_player.isPlayerShip() && _player.getPlayerShipEntity().hasAttackers())) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You can't warp to your friend now!");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo targetUserInfo = DB_Main.getUserInfoById(friendUserId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (targetUserInfo == null) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player with Id:" + friendUserId.ToString() + " doesn't exists!");
+               return;
+            }
+
+            if (!ServerNetworkingManager.self.isUserOnline(friendUserId)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetUserInfo.username + " is offline!");
+               return;
+            }
+
+            // Ensure the target user is in Tutorial Town
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out string biomeHomeTownAreaKey);
+            if (string.IsNullOrWhiteSpace(biomeHomeTownAreaKey) || !Util.areStringsEqual(targetUserInfo.areaKey, biomeHomeTownAreaKey)) {
+               string areaName = Area.getName(biomeHomeTownAreaKey);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetUserInfo.username + $" is not in {areaName}!");
+               return;
+            }
+
+            if (targetUserInfo.userId == _player.userId) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You cannot warp to yourself!");
+               return;
+            }
+
+            ServerNetworkingManager.self.server.Server_FindUserLocationForJoinFriend(_player.userId, friendUserId);
+         });
+      });
    }
 
    #region User Search

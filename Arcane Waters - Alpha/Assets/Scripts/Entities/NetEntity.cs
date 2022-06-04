@@ -16,6 +16,14 @@ public class NetEntity : NetworkBehaviour
    // How much food is consumed every second
    public const float FOOD_PER_SECOND = 2f;
 
+   // Colors used for player names
+   public static Color NAME_COLOR_REGULAR = new Color32(255, 255, 255, 255);
+   public static Color NAME_COLOR_REGULAR_OTHERS = new Color32(196, 196, 196, 255);
+   public static Color NAME_COLOR_ADMIN = new Color32(255, 248, 101, 255);
+   public static Color NAME_COLOR_ADMIN_OTHERS = new Color32(231, 186, 89, 255);
+   public static Color NAME_COLOR_DEMO = new Color32(203, 243, 163, 255);
+   public static Color NAME_COLOR_DEMO_OTHERS = new Color32(150, 188, 128, 255);
+
    [Header("UserData")]
 
    // If this entity is participating in pvp
@@ -491,6 +499,12 @@ public class NetEntity : NetworkBehaviour
    }
 
    private void isDemoChanged (bool oldVal, bool newVal) {
+      if (isLocalPlayer) {
+         if (AreaManager.self.tryGetArea(areaKey, out Area area)) {
+            area.updateBlockingVisualTiles(this);
+         }
+      }
+
       if (getPlayerBodyEntity() != null) {
          getPlayerBodyEntity().recolorNameText();
       } else if (getPlayerShipEntity() != null) {
@@ -2505,6 +2519,8 @@ public class NetEntity : NetworkBehaviour
       setAreaParent(area, worldPositionStays);
 
       if (isLocalPlayer) {
+         AreaManager.self.getArea(this.areaKey).updateBlockingVisualTiles(this);
+
          yield return null;
 
          // If player is trying to join a steam friend, handle it here
@@ -2545,6 +2561,7 @@ public class NetEntity : NetworkBehaviour
          LocationBanner.self.setText(displayname);
 
          // Show area name in steam
+         // NOTE: not gonna work like this, needs to implement rich presence keys
          SteamFriendsManager.setSteamDisplayStatus("In " + displayname);
 
          // Update the tutorial
@@ -3131,6 +3148,41 @@ public class NetEntity : NetworkBehaviour
       if (!isLocalPlayer) {
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, position);
       }
+   }
+
+   public bool isAllowedToGoToArea (string areaKey) {
+      if (isDemoUser && !isAdmin()) {
+         if (!AreaManager.self.tryGetAreaInfo(areaKey, out var nextMap)) {
+            return false;
+         }
+
+         if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(nextMap.biome)) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   public static Color getNameColor (bool isLocalPlayer, bool isAdmin, bool isDemo) {
+      if (isAdmin) {
+         if (isLocalPlayer) {
+            return NAME_COLOR_ADMIN;
+         }
+         return NAME_COLOR_ADMIN_OTHERS;
+      }
+
+      if (isDemo) {
+         if (isLocalPlayer) {
+            return NAME_COLOR_DEMO;
+         }
+         return NAME_COLOR_DEMO_OTHERS;
+      }
+
+      if (isLocalPlayer) {
+         return NAME_COLOR_REGULAR;
+      }
+      return NAME_COLOR_REGULAR_OTHERS;
    }
 
    #region Private Variables

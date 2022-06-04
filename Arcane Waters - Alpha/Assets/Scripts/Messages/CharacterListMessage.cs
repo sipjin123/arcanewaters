@@ -12,6 +12,7 @@ public class CharacterListMessage : NetworkMessage
    // The character info
    public UserInfo[] userArray;
    public bool[] deletionStatusArray;
+   public bool[] nameAvailabilityStatusArray;
    public Item[] armorArray;
    public Item[] weaponArray;
    public Item[] hatArray;
@@ -29,9 +30,10 @@ public class CharacterListMessage : NetworkMessage
 
    public CharacterListMessage () { }
 
-   public CharacterListMessage (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
+   public CharacterListMessage (UserInfo[] userArray, bool[] deletionStatusArray, bool[] nameAvailabilityStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       this.userArray = userArray;
       this.deletionStatusArray = deletionStatusArray;
+      this.nameAvailabilityStatusArray = nameAvailabilityStatusArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;
       this.armorPalettes = armorPalettes;

@@ -164,24 +164,27 @@ namespace NubisDataHandling
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
 
-         string cropsXml = await NubisClient.call<string>(nameof(DB_Main.fetchCategorizedItem), userId, (int) Item.Category.Crop);
+         // Fetch xml of categories added for crafting ingredient
+         List<string> itemsXml = new List<string>();
+         foreach(Item.Category craftingCategory in CraftingItemCategories) {
+            string xmlToAdd = await NubisClient.call<string>(nameof(DB_Main.fetchCategorizedItem), userId, (int) craftingCategory);
+            itemsXml.Add(xmlToAdd);
+         }
+
          string rawBlueprintData = await NubisClient.call<string>(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
-         string craftingIngredientData = await NubisClient.call<string>(nameof(DB_Main.fetchCraftingIngredients), userId);
          string equippedItemContent = await NubisClient.call<string>(nameof(DB_Main.fetchEquippedItems), userId);
          
-         craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientData);
+         // TODO: For other items that will be part of ingredients, add logic here
+         // Process fetched xml and add it to crafting ingredient item list 
+         foreach (string xml in itemsXml) {
+            craftingIngredients.AddRange(CraftingIngredients.processCraftingIngredients(xml));
+         }
          craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients, Item.Category.None);
          equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
 
-         // TODO: For other items that will be part of ingredients, add logic here
-         // Add crops as part of ingredients
-         List<Item> newCropIngredientList = CraftingIngredients.processCraftingIngredients(cropsXml);
-         foreach (Item cropItem in newCropIngredientList) {
-            craftingIngredients.Add(cropItem);
-         }
-
+         
          // Handle all crafting items that does not require blueprints here
-         if (craftableItems.Count < 1 && (category == Item.Category.CraftingIngredients || category == Item.Category.Crop)) {
+         if (craftableItems.Count < 1 && CraftingItemCategories.Contains(category)) {
             CraftableItemRequirements craftableData = CraftingManager.self.getCraftableData(category, itemType);
 
             if (craftableData != null && craftableData.isAlwaysAvailable) {
@@ -243,8 +246,13 @@ namespace NubisDataHandling
          List<Item> craftableItems = new List<Item>();
          List<Blueprint.Status> blueprintStatus = new List<Blueprint.Status>();
 
-         string craftingIngredientXml = await NubisClient.call<string>(nameof(DB_Main.fetchCraftingIngredients), userId);
-         string cropsXml = await NubisClient.call<string>(nameof(DB_Main.fetchCategorizedItem), userId, (int) Item.Category.Crop);
+         // Fetch xml of item categories added for crafting ingredient
+         List<string> itemsXml = new List<string>();
+         foreach(Item.Category category in CraftingItemCategories) {
+            string xmlToAdd = await NubisClient.call<string>(nameof(DB_Main.fetchCategorizedItem), userId, (int) category);
+            itemsXml.Add(xmlToAdd);
+         }
+
          string weaponFetch = "";
          string armorFetch = "";
          string hatFetch = "";
@@ -262,39 +270,21 @@ namespace NubisDataHandling
             ingredientFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableIngredients), userId);
          }
 
-         craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
-         List<Item> newCropIngredientList = CraftingIngredients.processCraftingIngredients(cropsXml);
-         foreach (Item cropItem in newCropIngredientList) {
-            craftingIngredients.Add(cropItem);
+         // Process fetched xml and and add item to crafting ingredient list
+         foreach (string itemXml in itemsXml) {
+            craftingIngredients.AddRange(CraftingIngredients.processCraftingIngredients(itemXml));
          }
-
+         
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients, Item.Category.Weapon);
          List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients, Item.Category.Armor);
          List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients, Item.Category.Hats);
          List<CraftableItemData> ingredientCraftables = CraftableItem.processCraftableGroups(ingredientFetch, craftingIngredients, Item.Category.CraftingIngredients);
 
-         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.CraftingIngredients)) {
+         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Any(item => CraftingItemCategories.Contains(item))) {
             // Craftable ingredients are hard coded for now, remove this block if it will be limited to unlocking
-            IEnumerable<CraftableItemRequirements> unlockedIngredientList = CraftingManager.self.getAllCraftableData().Where(_ => _.resultItem.category == Item.Category.CraftingIngredients);
-            foreach (CraftableItemRequirements unlockedRequirements in unlockedIngredientList) {
-               if (unlockedRequirements.isEnabled && unlockedRequirements.isAlwaysAvailable) {
-                  // Determine the status of this craftable Item depending on the available ingredients
-                  Blueprint.Status status = getBlueprintStatus(unlockedRequirements, craftingIngredients);
-                  CraftableItemData newCraftableData = new CraftableItemData {
-                     craftableItem = unlockedRequirements.resultItem,
-                     craftingStatus = status,
-                     craftableRequirements = unlockedRequirements
-                  };
+            List<CraftableItemRequirements> ingredientList = CraftingManager.self.getAllCraftableData();
+            IEnumerable unlockedIngredientList = ingredientList.Where(_ => CraftingItemCategories.Contains(_.resultItem.category));
 
-                  craftableItems.Add(newCraftableData.craftableItem);
-                  blueprintStatus.Add(status);
-               }
-            }
-         }
-
-         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Crop)) {
-            // Crops are hard coded for now, remove this block if it will be limited to unlocking
-            IEnumerable<CraftableItemRequirements> unlockedIngredientList = CraftingManager.self.getAllCraftableData().Where(_ => _.resultItem.category == Item.Category.Crop);
             foreach (CraftableItemRequirements unlockedRequirements in unlockedIngredientList) {
                if (unlockedRequirements.isEnabled && unlockedRequirements.isAlwaysAvailable) {
                   // Determine the status of this craftable Item depending on the available ingredients
@@ -486,7 +476,7 @@ namespace NubisDataHandling
          }
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
-
+         
          // Filter inventory items here
          itemList.RemoveAll(_ => _.category == Item.Category.Usable);
 
@@ -618,6 +608,17 @@ namespace NubisDataHandling
          }
       }
 
+      #endregion
+      
+      #region Private Variables
+      
+      // Reference to item categories included for crafting requirements 
+      private List<Item.Category> CraftingItemCategories = new List<Item.Category>() {
+            Item.Category.CraftingIngredients,
+            Item.Category.Quest_Item,
+            Item.Category.Crop
+      };
+      
       #endregion
    }
 }

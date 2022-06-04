@@ -54,7 +54,7 @@ public class CustomMapsPanel : Panel
    }
 
    public void selectBaseMap (int baseMapId) {
-      if (Global.player.isDemoUser) {
+      if (Global.player.isDemoUser && !Global.player.isAdmin()) {
          if (AreaManager.self.tryGetAreaInfo(AreaManager.self.getAreaName(baseMapId), out Map map)) {
             if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(map.biome)) {
                PanelManager.self.noticeScreen.show("Target map biome is closed for demo");

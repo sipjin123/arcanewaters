@@ -104,7 +104,8 @@ public class CharacterScreen : GenericGameManager {
 
    public void initializeScreen (
       UserInfo[] userArray, 
-      bool[] deletionStatusArray, 
+      bool[] deletionStatusArray,
+      bool[] nameAvailablityStatusArray,
       Item[] armorArray, 
       Item[] weaponArray, 
       Item[] hatArray, 
@@ -115,6 +116,7 @@ public class CharacterScreen : GenericGameManager {
       // Store the data we receive for later reference
       _userArray = userArray;
       _deletionStatusArray = deletionStatusArray;
+      _nameAvailabilityStatusArray = nameAvailablityStatusArray;
       
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
@@ -239,6 +241,7 @@ public class CharacterScreen : GenericGameManager {
 
             spot.assignCharacter(offlineChar);
             spot.isDeletedCharacter = _deletionStatusArray[i];
+            spot.isNameAvailable = _nameAvailabilityStatusArray[i];
 
             if (spot.isDeletedCharacter) {
                Color deletedUserColor = Color.gray;
@@ -326,6 +329,9 @@ public class CharacterScreen : GenericGameManager {
 
    // The array of deletion statuses we received
    protected bool[] _deletionStatusArray;
+
+   // The array of name availability statuses we received
+   protected bool[] _nameAvailabilityStatusArray;
 
    // The array of Armor we received
    protected Armor[] _armorArray;

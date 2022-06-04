@@ -887,6 +887,10 @@ public class PvpGame : MonoBehaviour
    private Vector3 getSpawnPositionForTeam (PvpTeamType teamType) {
       Vector3 spawnPosition;
 
+      // Choose an area around the spawn position
+      float offsetRadius = 0.4f;
+      float spawnRotationSpacing = 45.0f;
+
       // If base positions haven't been setup, or if this is a CTF game
       if ((int) teamType > _basePositions.Count || gameMode == PvpGameMode.CaptureTheFlag) {
          // Use map editor spawn
@@ -897,11 +901,10 @@ public class PvpGame : MonoBehaviour
          // Otherwise, base positions have been setup, use the position of the team's base
       } else {
          spawnPosition = _basePositions[(int) teamType];
+         offsetRadius = 0.5f;
       }
 
-      // Choose an area around the spawn position
-      float offsetRadius = 0.4f;
-      float spawnRotationSpacing = 45.0f;
+      
 
       // Rotate the spawn position around the base by 45 degrees every time a player is spawned
       Vector2 spawnPositionOffset = (teamType == PvpTeamType.A) ? Vector2.one : -Vector2.one;

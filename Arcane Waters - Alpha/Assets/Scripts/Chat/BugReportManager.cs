@@ -19,12 +19,12 @@ public class BugReportManager : GenericGameManager
       self = this;
    }
 
-   public void sendBugReport (string subjectString) {
+   public void sendBugReport (string subject) {
       StopAllCoroutines();
-      StartCoroutine(CO_CollectDataAndSendBugReport(subjectString));
+      StartCoroutine(CO_CollectDataAndSendBugReport(subject));
    }
 
-   private IEnumerator CO_CollectDataAndSendBugReport (string bugSubject) {
+   private IEnumerator CO_CollectDataAndSendBugReport (string subject) {
       NetEntity player = Global.player;
 
       if (player == null) {
@@ -33,13 +33,13 @@ public class BugReportManager : GenericGameManager
       }
 
       // Require a decent subject
-      if (bugSubject.Length < WebToolsUtil.MinSubjectLength) {
+      if (subject.Length < _minSubjectLength) {
          ChatManager.self.addChat("Please include a descriptive subject for the bug report.", ChatInfo.Type.System);
          yield break;
       }
 
       // Make sure the subject isn't too long
-      if (bugSubject.Length > WebToolsUtil.MaxSubjectLength) {
+      if (subject.Length > _maxSubjectLength) {
          ChatManager.self.addChat("The subject of the bug report is too long.", ChatInfo.Type.System);
          yield break;
       }
@@ -50,7 +50,7 @@ public class BugReportManager : GenericGameManager
 
       // Make sure we're not spamming the server
       if (_lastBugReportTime.ContainsKey(userId)) {
-         if (Time.time - _lastBugReportTime[userId] < WebToolsUtil.ReportInterval) {
+         if (Time.time - _lastBugReportTime[userId] < _bugReportInterval) {
             D.warning("Bug report already submitted.");
             yield break;
          }
@@ -60,7 +60,7 @@ public class BugReportManager : GenericGameManager
       float totalTime = 0;
       int frameCount = 0;
 
-      while (totalTime < FPS_CALCULATION_INTERVAL) {
+      while (totalTime < _fpsCalculationInterval) {
          totalTime += Time.unscaledDeltaTime;
          frameCount++;
          yield return null;
@@ -73,15 +73,11 @@ public class BugReportManager : GenericGameManager
       string operatingSystem = SystemInfo.operatingSystem;
       string steamState = SteamLoginManager.getSteamState();
 
-      //int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
-
-      //addMetaDataToBugReport(ref bugReport);
-
       // Getting deploymentId on client side
       int deploymentId = Util.getDeploymentId();
 
       // Getting player area
-      string playerPosition = WebToolsUtil.formatAreaPosition(AreaManager.self.getArea(player.areaKey), player.gameObject.transform.position.x, player.gameObject.transform.position.y);
+      string playerPosition = Util.formatAreaPosition(AreaManager.self.getArea(player.areaKey), player.gameObject.transform.position.x, player.gameObject.transform.position.y);
 
       // Getting the screenshot
       yield return new WaitForEndOfFrame();
@@ -94,7 +90,7 @@ public class BugReportManager : GenericGameManager
       formData.Add(new MultipartFormDataSection("accId", player.accountId.ToString()));
       formData.Add(new MultipartFormDataSection("usrId", player.userId.ToString()));
       formData.Add(new MultipartFormDataSection("usrName", player.entityName));
-      formData.Add(new MultipartFormDataSection("bugSubject", bugSubject));
+      formData.Add(new MultipartFormDataSection("bugSubject", subject));
       formData.Add(new MultipartFormDataSection("ping", ping.ToString()));
       formData.Add(new MultipartFormDataSection("fps", fps.ToString()));
       formData.Add(new MultipartFormDataSection("playerPosition", playerPosition));
@@ -114,32 +110,44 @@ public class BugReportManager : GenericGameManager
       // Adding the screenshot as a form file
       formData.Add(new MultipartFormFileSection("screenshot", standardTex.EncodeToPNG(), "screenshot.png", "image/png"));
 
-      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.BUG_REPORT_SUBMIT, formData);
+      // Getting token for security reasons. This token is unique and expires in 1 minute
+      UnityWebRequest wwwToken = UnityWebRequest.Get(_tokenEndpoint);
 
-      yield return www.SendWebRequest();
+      yield return wwwToken.SendWebRequest();
 
-      if (www.responseCode == (int) WebToolsUtil.ResponseCode.Success) {
-         ChatManager.self.addChat("Bug report submitted successfully, thanks!", ChatInfo.Type.System);
+      if (wwwToken.responseCode == 200) {
+         string token = wwwToken.downloadHandler.text;
 
-         int bugReportId = int.Parse(www.downloadHandler.text);
+         UnityWebRequest wwwSubmit = UnityWebRequest.Post(_submitEndpoint, formData);
+         wwwSubmit.SetRequestHeader("Token", token);
 
-         // After successfully storing the bug report, we store the server log
-         Global.player.rpc.Cmd_StoreServerLogForBugReport(bugReportId);
+         yield return wwwSubmit.SendWebRequest();
 
+         if (wwwSubmit.responseCode == 200) {
+            ChatManager.self.addChat("Bug report submitted successfully, thanks!", ChatInfo.Type.System);
+
+            int bugReportId = int.Parse(wwwSubmit.downloadHandler.text);
+
+            // After successfully storing the bug report, we store the server log
+            Global.player.rpc.Cmd_StoreServerLogForBugReport(bugReportId, token);
+
+         } else {
+            D.error("Could not submit bug report, needs investigation");
+         }
+
+         _lastBugReportTime[Global.player.userId] = Time.time;
       } else {
-         D.error("Could not submit bug report, needs investigation");
+         D.error("Could not get token for bug report submit action.");
       }
-
-      _lastBugReportTime[Global.player.userId] = Time.time;
    }
 
    [ServerOnly]
-   public void sendBugReportServerLog (int bugReportId, byte[] serverLog) {
-      StartCoroutine(CO_SendServerLog(bugReportId, serverLog));
+   public void sendBugReportServerLog (int bugReportId, byte[] serverLog, string token) {
+      StartCoroutine(CO_SendServerLog(bugReportId, serverLog, token));
    }
 
    [ServerOnly]
-   private IEnumerator CO_SendServerLog (int bugReportId, byte[] serverLog) {
+   private IEnumerator CO_SendServerLog (int bugReportId, byte[] serverLog, string token) {
       // Sending the request to Web Tools
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
@@ -147,10 +155,10 @@ public class BugReportManager : GenericGameManager
       // We send the serverLog as a file!
       formData.Add(new MultipartFormFileSection("serverLog", serverLog));
 
-      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.BUG_REPORT_SERVER_LOG_SUBMIT, formData);
+      UnityWebRequest www = UnityWebRequest.Post(_submitLogsEndpoint, formData);
 
       // Send the game token as header
-      www.SetRequestHeader(WebToolsUtil.GAME_TOKEN_HEADER, WebToolsUtil.GAME_TOKEN);
+      www.SetRequestHeader("Token", token);
 
       yield return www.SendWebRequest();
 
@@ -159,68 +167,32 @@ public class BugReportManager : GenericGameManager
       }
    }
 
-   //private bool addMetaDataToBugReport (ref string bugReport) {
-   //   // Make sure the bug report file hasn't grown too large
-   //   if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-   //      int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
-   //      bugReport = bugReport.Remove(0, diff);
-
-   //      if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-   //         ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
-   //         return false;
-   //      }
-   //   }
-
-   //   return true;
-   //}
-
-   //private Texture2D removeEvenRowsAndColumns (Texture2D tex) {
-   //   List<Color[]> listColors = new List<Color[]>();
-   //   List<Color> finalColors = new List<Color>();
-
-   //   for (int y = 0; y < tex.height; y += 2) {
-   //      listColors.Add(tex.GetPixels(0, y, tex.width, 1));
-   //   }
-
-   //   for (int i = 0; i < listColors.Count; i++) {
-   //      for (int x = 0; x < listColors[i].Length; x += 2) {
-   //         finalColors.Add(listColors[i][x]);
-   //      }
-   //   }
-   //   tex = new Texture2D(tex.width / 2, tex.height / 2);
-   //   tex.SetPixels(finalColors.ToArray());
-
-   //   return tex;
-   //}
-
    #region Private Variables
 
+   // The token endpoint
+   //private string _tokenEndpoint = "https://localhost:5001/api/Tokens/Generate";
+   private string _tokenEndpoint = "https://tools.arcanewaters.com/api/Tokens/Generate";
+
+   //private string _submitEndpoint = "https://localhost:5001/api/Tasks/Submit";
+   private string _submitEndpoint = "https://tools.arcanewaters.com/api/Tasks/Submit";
+
+   //private string _submitLogsEndpoint = "https://localhost:5001/api/Tasks/SubmitServerLogs";
+   private string _submitLogsEndpoint = "https://tools.arcanewaters.com/api/Tasks/SubmitServerLogs";
+
    // The amount of time to wait between consecutive bug reports
-   //protected static float BUG_REPORT_INTERVAL = 5f;
+   private float _bugReportInterval = 5f;
 
    // The minimum subject length for bugs
-   //protected static int MIN_SUBJECT_LENGTH = 3;
+   private int _minSubjectLength = 3;
 
-   // The max length of bug report subject lines
-   //protected static int MAX_SUBJECT_LENGTH = 256;
-
-   // The maximum number of bytes we'll allow a submitted bug report to have
-   //protected static int MAX_BYTES = 5 * 1024 * 1024;
-
-   // The maximum number of string length we'll allow a submitted bug report to have
-   protected static int MAX_LOG_LENGTH = 1024 * 6;
+   // The maximum subject length for bugs
+   private int _maxSubjectLength = 256;
 
    // The time interval used to calculate the average fps
-   protected static float FPS_CALCULATION_INTERVAL = 1f;
+   private float _fpsCalculationInterval = 1f;
 
    // Stores the time at which a bug report was last submitted, indexed by user ID for the server's sake
-   protected Dictionary<int, float> _lastBugReportTime = new Dictionary<int, float>();
-
-   // Stored screenshot to send after confirmation of bug report
-   //protected byte[] _screenshotBytes;
-
-   // Secret token used for submitting bug reports
-   //protected const string secretToken = "arcane_game_vjk53fx";
+   private Dictionary<int, float> _lastBugReportTime = new Dictionary<int, float>();
 
    #endregion
 }

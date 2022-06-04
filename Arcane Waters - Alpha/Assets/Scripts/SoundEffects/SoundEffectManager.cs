@@ -53,6 +53,8 @@ public class SoundEffectManager : GenericGameManager
    public const string FRIEND_REQUEST = "event:/SFX/Game/UI/Send_Recieve_Friend_Request";
    public const string PLACING_WAYPOINT = "event:/SFX/Game/UI/Placing_Waypoint";
 
+   public const string EARN_ACHIEVEMENT = "event:/SFX/Game/UI/Earn_Steam_Achievement";
+
    #endregion
 
    #region LAND BATTLE
@@ -174,6 +176,8 @@ public class SoundEffectManager : GenericGameManager
 
    public const string WATERFALL_SECRET = "event:/SFX/Player/Interactions/Diegetic/WF_Secret";
    public const string CURTAIN = "event:/SFX/Player/Interactions/Diegetic/Curtain";
+
+   public const string FOOD_CRUNCH = "event:/SFX/Player/Interactions/Non_Diegetic/Food_Crunch";
 
    #endregion
 
@@ -413,6 +417,10 @@ public class SoundEffectManager : GenericGameManager
    public AmbType getAreaBasedAmbience (string areaKey, Biome.Type biomeType) {
       if (string.Equals(areaKey, _cementeryAreaKey, StringComparison.InvariantCultureIgnoreCase)) {
          return AmbType.Forest_Cementery;
+      }
+
+      if(string.Equals(areaKey, _waterfallAreaKey, StringComparison.InvariantCultureIgnoreCase)) {
+         return AmbType.Waterfall_Cave;
       }
 
       if (VoyageManager.isTreasureSiteArea(areaKey)) {
@@ -1045,6 +1053,9 @@ public class SoundEffectManager : GenericGameManager
    // Cementery area key
    private const string _cementeryAreaKey = "Tutorial Town Cemetery v2";
 
+   // Waterfall secret area
+   private const string _waterfallAreaKey = "Waterfall Secret Cave Test";
+
    public enum BgType
    {
       None = -2,
@@ -1084,7 +1095,8 @@ public class SoundEffectManager : GenericGameManager
       Farm = 7,
       Interior = 8,
       Sea = 9,
-      Forest_Cementery = 10
+      Forest_Cementery = 10,
+      Waterfall_Cave = 11
    }
 
    public enum DoorAction

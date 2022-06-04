@@ -10,8 +10,8 @@ public class SteamFriendsManager : MonoBehaviour
 {
    #region Public Variables
 
-   // Key we use to set lobby owner metadata
-   public const string LOBBY_OWNER_KEY = "lobby-owner";
+   // Key we use to set join friend connect parameter
+   public const string JOIN_FRIEND_PARAM_PREFIX = "join-friend-";
 
    #endregion
 
@@ -25,16 +25,14 @@ public class SteamFriendsManager : MonoBehaviour
       }
 
       // Hook up callbacks
-      _gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(onGameLobbyJoinRequested);
+      _gameRichPresenceJoinRequested = Callback<GameRichPresenceJoinRequested_t>.Create(onGameRichPresenceJoinRequested);
       _newUrlLaunchParameters = Callback<NewUrlLaunchParameters_t>.Create(onNewUrlLaunchParameters);
-      _lobbyCreated = Callback<LobbyCreated_t>.Create(onLobbyCreated);
-      _lobbyDataUpdate = Callback<LobbyDataUpdate_t>.Create(onLobbyDataUpdate);
 
-      // Check if this game was launched from steam command line
-      if (!tryJoinUserFromLaunchParameters()) {
-         // If we didn't find a lobby in launch parameters, we may already be automatically added to one
-         tryConnectToCurrentLobbyOwnerOnStartup();
-      }
+      // Check if this game has connect parameters in command line
+      tryJoinUserFromLaunchParameters();
+
+      // Set rich presence key for how friends can connect
+      SteamFriends.SetRichPresence("connect", JOIN_FRIEND_PARAM_PREFIX + SteamUser.GetSteamID().m_SteamID.ToString());
    }
 
    public static List<SteamFriendData> getSteamFriends () {
@@ -135,23 +133,22 @@ public class SteamFriendsManager : MonoBehaviour
       }
    }
 
-   private void onGameLobbyJoinRequested (GameLobbyJoinRequested_t callback) {
-      // If user is in game, try warping him to friend
-      if (Global.player != null) {
-         Global.player.rpc.Cmd_WarpToFriend(callback.m_steamIDFriend.m_SteamID);
-      }
-   }
 
    public static void inviteFriendToGame (SteamFriendData friend) {
-      SteamFriends.InviteUserToGame(new CSteamID(friend.steamId), "");
+      // Inviting user to friend
+      SteamFriends.InviteUserToGame(new CSteamID(friend.steamId), JOIN_FRIEND_PARAM_PREFIX + SteamUser.GetSteamID().m_SteamID.ToString());
    }
 
-   private void onLobbyCreated (LobbyCreated_t callback) {
-      D.log("Lobby was created " + callback.m_ulSteamIDLobby + " " + callback.m_eResult.ToString());
-      CSteamID lobbyId = new CSteamID(callback.m_ulSteamIDLobby);
-      if (lobbyId.IsLobby() && lobbyId.IsValid()) {
-         D.log("Setting lobby metadata");
-         SteamMatchmaking.SetLobbyData(lobbyId, LOBBY_OWNER_KEY, SteamUser.GetSteamID().ToString());
+   public static void onGameRichPresenceJoinRequested (GameRichPresenceJoinRequested_t callback) {
+      // Callback should have friends id embeded in connect string
+      if (callback.m_rgchConnect.StartsWith(JOIN_FRIEND_PARAM_PREFIX)) {
+         if (ulong.TryParse(callback.m_rgchConnect.Replace(JOIN_FRIEND_PARAM_PREFIX, ""), out ulong id)) {
+            if (id > 0) {
+               if (Global.player != null) {
+                  Global.player.rpc.Cmd_WarpToFriend(id);
+               }
+            }
+         }
       }
    }
 
@@ -159,100 +156,61 @@ public class SteamFriendsManager : MonoBehaviour
       tryJoinUserFromLaunchParameters();
    }
 
-   private void tryConnectToCurrentLobbyOwnerOnStartup () {
-      D.log("Checking current game info for lobby");
-      if (SteamFriends.GetFriendGamePlayed(SteamUser.GetSteamID(), out FriendGameInfo_t gameInfo)) {
-         if (gameInfo.m_steamIDLobby.IsValid()) {
-            D.log("Found lobby for user from current game info");
-            _waitingForLobbyId = gameInfo.m_steamIDLobby.m_SteamID;
-            SteamMatchmaking.RequestLobbyData(gameInfo.m_steamIDLobby);
-         }
-      } else {
-         D.log("Could not get game played data for user " + SteamUser.GetSteamID().m_SteamID);
-      }
-   }
-
    private bool tryJoinUserFromLaunchParameters () {
-      CSteamID lobbyId = new CSteamID(0);
-      string lobbyIdString = SteamApps.GetLaunchQueryParam("+connect_lobby");
+      CSteamID friendId = new CSteamID(0);
+      string connectParam = SteamApps.GetLaunchQueryParam("connect");
 
-      D.log("Steam join LobbyIdString: " + lobbyIdString);
-      if (!string.IsNullOrWhiteSpace(lobbyIdString)) {
-         if (ulong.TryParse(lobbyIdString, out ulong lobbyIdUlong)) {
-            lobbyId = new CSteamID(lobbyIdUlong);
-            D.log("Found lobby id from steam launch " + lobbyIdUlong);
-         } else {
-            D.error("Unable to parse lobby id");
-         }
-      }
-
-      if (lobbyId.m_SteamID == 0) {
+      if (string.IsNullOrWhiteSpace(connectParam)) {
          // Try command line if we couldn't extract from steam connect
-         string cmd = System.Environment.CommandLine;
-         int parIndex = cmd.IndexOf("+connect_lobby ");
-
-         // If we found the parameter, extract it's value
-         if (parIndex >= 0) {
-            D.log("Found +connect_lobby in command");
-            string valString = "";
-            for (int i = parIndex + "+connect_lobby ".Length; i < cmd.Length; i++) {
-               if (char.IsDigit(cmd[i])) {
-                  valString += cmd[i];
-               } else {
-                  break;
-               }
-            }
-            D.log("Resulting connect_lobby target id: " + valString);
-            if (!string.IsNullOrWhiteSpace(valString)) {
-               if (ulong.TryParse(valString, out ulong lid)) {
-                  lobbyId = new CSteamID(lid);
-                  D.log("Found lobby id from command line " + lid);
-               }
-            }
+         SteamApps.GetLaunchCommandLine(out string launchCmd, 1000);
+         if (tryGetJoinFriendIdFromCmd(launchCmd, out ulong id)) {
+            friendId = new CSteamID(id);
+         } else if (tryGetJoinFriendIdFromCmd(System.Environment.CommandLine, out id)) {
+            friendId = new CSteamID(id);
          }
-
       }
 
-      if (lobbyId.m_SteamID == 0 || !lobbyId.IsLobby() || !lobbyId.IsValid()) {
+      if (friendId.m_SteamID == 0 || !friendId.IsValid()) {
          return false;
       }
 
-      _waitingForLobbyId = lobbyId.m_SteamID;
-      SteamMatchmaking.RequestLobbyData(lobbyId);
-      return true;
-   }
-
-   private void onLobbyDataUpdate (LobbyDataUpdate_t callback) {
-      D.log("On lobby data update");
-      if (callback.m_ulSteamIDLobby == 0 || callback.m_ulSteamIDLobby != _waitingForLobbyId) {
-         return;
-      }
-      D.log("On lobby data update - valid lobby id");
-      // The lobby owner is the target user we want to join
-      string lobbyOwnerString = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), LOBBY_OWNER_KEY);
-      D.log("Lobby owner string: " + lobbyOwnerString);
-      CSteamID lobbyOwnerId = CSteamID.Nil;
-      if (ulong.TryParse(lobbyOwnerString, out ulong ownerIdLong)) {
-         lobbyOwnerId = new CSteamID(ownerIdLong);
-      }
-
-      if (!lobbyOwnerId.IsValid()) {
-         D.error("Steam target ID is not valid " + lobbyOwnerId.m_SteamID);
-         return;
-      }
-
-      // If this lobby's owner is not use, leave it - we only joined lobby to access friend's location
-      if (lobbyOwnerId.m_SteamID != SteamUser.GetSteamID().m_SteamID) {
-         D.log("Leaving lobby");
-         SteamMatchmaking.LeaveLobby(new CSteamID(callback.m_ulSteamIDLobby));
+      if (SteamFriends.GetFriendRelationship(friendId) != EFriendRelationship.k_EFriendRelationshipFriend) {
+         D.log("Trying to connect to a user that is not our friend");
+         return false;
       }
 
       // If user is in game, try warping him to friend, otherwise schedule this for later
       if (Global.player != null) {
-         Global.player.rpc.Cmd_WarpToFriend(lobbyOwnerId.m_SteamID);
+         Global.player.rpc.Cmd_WarpToFriend(friendId.m_SteamID);
       } else {
-         Global.joinSteamFriendID = lobbyOwnerId.m_SteamID;
+         Global.joinSteamFriendID = friendId.m_SteamID;
       }
+
+      return true;
+   }
+
+   private bool tryGetJoinFriendIdFromCmd (string cmd, out ulong id) {
+      int parIndex = cmd.IndexOf(JOIN_FRIEND_PARAM_PREFIX);
+      if (parIndex >= 0) {
+         string valString = "";
+         for (int i = parIndex + JOIN_FRIEND_PARAM_PREFIX.Length; i < cmd.Length; i++) {
+            if (char.IsDigit(cmd[i])) {
+               valString += cmd[i];
+            } else {
+               break;
+            }
+         }
+
+         if (!string.IsNullOrWhiteSpace(valString)) {
+            if (ulong.TryParse(valString, out ulong lid)) {
+               id = lid;
+               return true;
+            }
+         }
+      }
+
+      id = 0;
+      return false;
    }
 
    [Server]
@@ -264,7 +222,6 @@ public class SteamFriendsManager : MonoBehaviour
    public static void pickedFriendJoinLocation (int joinerUserId, UserLocationBundle location) {
       NetEntity joiner = EntityManager.self.getEntity(joinerUserId);
       if (joiner == null) {
-         D.log("User that wants to join a friend is null");
          return;
       }
 
@@ -293,18 +250,11 @@ public class SteamFriendsManager : MonoBehaviour
    }
 
    #region Private Variables
-
-   // Callback used when user presses 'Join' on his steam friends
-   protected Callback<GameLobbyJoinRequested_t> _gameLobbyJoinRequested;
-
    // Called when launch params are changed when game is still running
    protected Callback<NewUrlLaunchParameters_t> _newUrlLaunchParameters;
 
-   // Called when a lobby is created
-   protected Callback<LobbyCreated_t> _lobbyCreated;
-
-   // Called when lobby data is updated
-   protected Callback<LobbyDataUpdate_t> _lobbyDataUpdate;
+   // Called when a join game to friend is requested
+   protected Callback<GameRichPresenceJoinRequested_t> _gameRichPresenceJoinRequested;
 
    // Lobby id which we are waiting for to get data
    protected ulong _waitingForLobbyId = 0;

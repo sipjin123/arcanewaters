@@ -122,12 +122,13 @@ public class ShipBars : MonoBehaviour {
       }
 
       int tier = getHealthBlockTier();
-      int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+      float hpPerBlock = getHealthPerBlockForDisplay(_entity.maxHealth, tier);
 
       // Update each hp block
-      int hpStep = 0;
+      float hpStep = 0;
       for (int i = 0; i < _healthBlocks.Count; i++) {
-         float blockHealth = (float) ((_entity.currentHealth - hpStep)) / hpPerBlock;
+         float blockHealth = (_entity.currentHealth - hpStep) / hpPerBlock;
+
          _healthBlocks[i].updateBlock(tier, blockHealth, isAnEnemy);
          hpStep += hpPerBlock;
       }
@@ -144,13 +145,14 @@ public class ShipBars : MonoBehaviour {
       _healthBlocks.Clear();
 
       int tier = getHealthBlockTier();
-      int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+      float hpPerBlock = getHealthPerBlockForDisplay(_entity.maxHealth, tier);
+      int blockCount = Mathf.RoundToInt(_entity.maxHealth / hpPerBlock);
       float cumulativeBlockTotal = 0f;
       float blockOpacity = 0f;
       float partialBlockHealth = 0;
 
       // Instantiate enough hp blocks to display the entity max hp
-      for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / hpPerBlock); i++) {
+      for (int i = 0; i < blockCount; i++) {
          cumulativeBlockTotal += hpPerBlock;
 
          // Analyze health to determine the opactiy of this block
@@ -181,6 +183,18 @@ public class ShipBars : MonoBehaviour {
          }
       }
       return tier;
+   }
+
+   /// <summary>
+   /// Modifies the health per block to distribute the hp evenly and ensure that, at max hp, the last block is full
+   /// </summary>
+   public float getHealthPerBlockForDisplay (float maxHealth, int tier) {
+      int baseHpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+      int blockCount = Mathf.RoundToInt(maxHealth / baseHpPerBlock);
+      float leftoverHealth = maxHealth - blockCount * baseHpPerBlock;
+
+      // Add or remove some health in each block
+      return baseHpPerBlock + (leftoverHealth / blockCount);
    }
 
    public static float getHealthBlockPerRarity (Rarity.Type rarity, int health) {

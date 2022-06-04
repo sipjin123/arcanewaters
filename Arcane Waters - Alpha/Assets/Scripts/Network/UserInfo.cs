@@ -194,6 +194,10 @@ public class UserInfo
       return accountName.Contains("@demo");
    }
 
+   public bool isAdmin () {
+      return adminFlag == (int) PrivilegeType.Admin;
+   }
+
    public override bool Equals (object rhs) {
       if (rhs is UserInfo) {
          var other = rhs as UserInfo;

@@ -24,15 +24,7 @@ public class AdminGameSettingsManager : GenericGameManager
 
    [Server]
    public void onServerStart () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Load the latest game settings
-         settings = DB_Main.getAdminGameSettings();
-
-         // Set default values if the table is empty
-         if (settings == null) {
-            settings = new AdminGameSettings();
-         }
-      });
+      updateServerSettings(false);
    }
 
    public bool isBiomeLegalForDemoUser (Biome.Type biome) {
@@ -60,12 +52,33 @@ public class AdminGameSettingsManager : GenericGameManager
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Update the server settings
+            // Make all servers in the server network update their settings
+            ServerNetworkingManager.self.updateAdminGameSettings();
+         });
+      });
+   }
+
+   [Server]
+   public void updateServerSettings (bool updateConnectedClients) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Load the latest game settings
+         AdminGameSettings newSettings = DB_Main.getAdminGameSettings();
+
+         // Set default values if the table is empty
+         if (newSettings == null) {
+            newSettings = new AdminGameSettings();
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Update this server settings
             updateLocalSettings(newSettings);
 
-            // Set the parameters in all connected clients
-            foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
-               netEntity.rpc.setAdminBattleParameters();
+            if (updateConnectedClients) {
+               // Set the parameters in all connected clients
+               foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
+                  netEntity.rpc.setAdminBattleParameters();
+               }
             }
          });
       });

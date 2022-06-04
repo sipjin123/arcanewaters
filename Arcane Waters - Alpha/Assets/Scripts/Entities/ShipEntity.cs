@@ -96,10 +96,12 @@ public class ShipEntity : SeaEntity
       }
    }
 
-   protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData, int instanceDifficulty) {
+   protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData, int instanceDifficulty, bool isVoyage) {
       shipType = shipData.shipType;
       skinType = shipData.skinType;
-      maxHealth = Mathf.RoundToInt(enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1) * AdminGameSettingsManager.self.settings.seaMaxHealth);
+      if (!isVoyage) {
+         maxHealth = Mathf.RoundToInt(enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1) * AdminGameSettingsManager.self.settings.seaMaxHealth);
+      }
       currentHealth = maxHealth;
       attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
 

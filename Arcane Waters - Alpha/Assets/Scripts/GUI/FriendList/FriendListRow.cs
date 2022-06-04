@@ -32,6 +32,9 @@ public class FriendListRow : MonoBehaviour
    // If this user is online
    public bool isOnline;
 
+   // The warp button
+   public Button warpButton;
+
    #endregion
 
    public void setRowForFriendshipInfo (FriendshipInfo entry) {
@@ -68,6 +71,26 @@ public class FriendListRow : MonoBehaviour
 
    public void onDeleteFriendButtonPress () {
       FriendListPanel.self.onDeleteFriendButtonPress(_friendUserId, friendName.text);
+   }
+
+   public void onWarpFriendButtonPress () {
+      if (Global.player == null) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_WarpToGameFriend(_friendUserId);
+
+      if (FriendListPanel.self != null && FriendListPanel.self.isShowing()) {
+         FriendListPanel.self.hide();
+      }
+   }
+
+   public void toggleWarpButton(bool show) {
+      if (!warpButton) {
+         return;
+      }
+
+      warpButton.gameObject.SetActive(show);
    }
 
    #region Private Variables

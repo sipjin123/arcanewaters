@@ -1936,4 +1936,8 @@ public class Util : MonoBehaviour
 
       return layerMask;
    }
+
+   public static string formatAreaPosition (Area area, float posX, float posY) {
+      return $"{area}: ({posX}; {posY})";
+   }
 }

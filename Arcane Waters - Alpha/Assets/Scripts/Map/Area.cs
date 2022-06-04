@@ -191,6 +191,12 @@ public class Area : MonoBehaviour
    // List of windows
    public List<WindowInteractable> interactableWindows = new List<WindowInteractable>();
 
+   // Tilemap we use to set 'blocking' visual tiles
+   public Tilemap blockingTilemap;
+
+   // Tile we use as a 'blocking' visual tile
+   public TileBase blockingVisualTile;
+
    #endregion
 
    private void Awake () {
@@ -359,7 +365,7 @@ public class Area : MonoBehaviour
 
       // Destroy any existing crops on the client, if the farm area is destroyed
       if (!NetworkServer.active && AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
-         if (customMapManager is CustomFarmManager) {
+         if (customMapManager is CustomFarmManager || customMapManager is CustomGuildMapManager) {
             foreach (Crop crop in FindObjectsOfType<Crop>()) {
                Destroy(crop.gameObject);
             }
@@ -787,6 +793,55 @@ public class Area : MonoBehaviour
 
    public List<TilemapLayer> getWaterLayer () {
       return _waterTilemapLayers;
+   }
+
+   public void updateBlockingVisualTiles (NetEntity localPlayer) {
+      // Only add visual tiles for world maps
+      if (!WorldMapManager.isWorldMapArea(areaKey)) {
+         return;
+      }
+
+      blockingTilemap.ClearAllTiles();
+      Minimap.self.borderTop.gameObject.SetActive(false);
+      Minimap.self.borderRight.gameObject.SetActive(false);
+      Minimap.self.borderLeft.gameObject.SetActive(false);
+      Minimap.self.borderBot.gameObject.SetActive(false);
+
+      if (WorldMapManager.self.getNextArea(areaKey, Direction.North, out string targetAreaKey)) {
+         if (!localPlayer.isAllowedToGoToArea(targetAreaKey)) {
+            for (int i = -mapTileSize.x / 4; i < mapTileSize.x / 4; i++) {
+               blockingTilemap.SetTile(new Vector3Int(i, mapTileSize.y / 4 - 1, 0), blockingVisualTile);
+               Minimap.self.borderTop.gameObject.SetActive(true);
+            }
+         }
+      }
+
+      if (WorldMapManager.self.getNextArea(areaKey, Direction.South, out targetAreaKey)) {
+         if (!localPlayer.isAllowedToGoToArea(targetAreaKey)) {
+            for (int i = -mapTileSize.x / 4; i < mapTileSize.x / 4; i++) {
+               blockingTilemap.SetTile(new Vector3Int(i, -mapTileSize.y / 4, 0), blockingVisualTile);
+               Minimap.self.borderBot.gameObject.SetActive(true);
+            }
+         }
+      }
+
+      if (WorldMapManager.self.getNextArea(areaKey, Direction.East, out targetAreaKey)) {
+         if (!localPlayer.isAllowedToGoToArea(targetAreaKey)) {
+            for (int i = -mapTileSize.y / 4; i < mapTileSize.y / 4; i++) {
+               blockingTilemap.SetTile(new Vector3Int(mapTileSize.x / 4 - 1, i, 0), blockingVisualTile);
+               Minimap.self.borderRight.gameObject.SetActive(true);
+            }
+         }
+      }
+
+      if (WorldMapManager.self.getNextArea(areaKey, Direction.West, out targetAreaKey)) {
+         if (!localPlayer.isAllowedToGoToArea(targetAreaKey)) {
+            for (int i = -mapTileSize.y / 4; i < mapTileSize.y / 4; i++) {
+               blockingTilemap.SetTile(new Vector3Int(-mapTileSize.x / 4, i, 0), blockingVisualTile);
+               Minimap.self.borderLeft.gameObject.SetActive(true);
+            }
+         }
+      }
    }
 
    #region Private Variables

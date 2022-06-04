@@ -319,6 +319,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_FindUserLocationForSteamFriendJoin, userId, steamFriendId);
    }
 
+   public void findUserLocationForFriendJoin (int userId, int friendUserId) {
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationForFriendJoin, userId, friendUserId);
+   }
+
    public void getUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
       server.InvokeServerRpc(server.MasterServer_GetUsersInInstanceForAdminVoyagePanel, voyageId, instanceId, callerUserId);
    }
@@ -452,6 +456,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_ApplyPenaltyToPlayer, accId, penaltyType, seconds);
    }
 
+   public void playAchievementSfxForPlayer (int userId) {
+      server.InvokeServerRpc(server.MasterServer_PlayAchievementSfxForPlayer, userId);
+   }
+
    public void changeUserName (int userId, string oldName, string newName) {
       server.InvokeServerRpc(server.MasterServer_ChangeUserName, userId, oldName, newName);
    }
@@ -486,6 +494,10 @@ public class ServerNetworkingManager : MonoBehaviour
       }
 
       return userIds;
+   }
+
+   public void updateAdminGameSettings () {
+      server.InvokeServerRpc(server.MasterServer_UpdateAdminGameSettings);
    }
 
    #region Private Variables

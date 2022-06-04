@@ -127,10 +127,13 @@ public class ShipHealthPanel : ClientMonoBehaviour
    }
 
    private float getHpPerSailor () {
-      
-      // If max health is small enough to be shown on screen with default HP_PER_SAILOR, don't change it
+      // Check if the max health is small enough to be shown on screen with default HP_PER_SAILOR
       if (Global.player.maxHealth <= MAX_SAILORS * HP_PER_SAILOR) {
-         return HP_PER_SAILOR;
+         int sailorCount = Mathf.RoundToInt((float)Global.player.maxHealth / HP_PER_SAILOR);
+         float leftoverHealth = (float)Global.player.maxHealth - sailorCount * HP_PER_SAILOR;
+
+         // Add or remove some health in each block to distribute the hp evenly and avoid having the last sailor partially damaged at max hp
+         return HP_PER_SAILOR + (leftoverHealth / sailorCount);
       
       // If max health is too large to be shown on screen with default HP_PER_SAILOR, we will scale HP_PER_SAILOR to fit
       } else {

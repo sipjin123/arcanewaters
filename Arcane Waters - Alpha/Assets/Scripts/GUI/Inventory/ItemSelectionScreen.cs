@@ -159,9 +159,9 @@ public class ItemSelectionScreen : SubPanel
       // Activate the selection box in the selected cell
       selectedCell.showSelectedBox();
 
-      // Set the item count slider to the max possible value
+      // Set the item count slider to 1 or 0
       itemCountSlider.maxValue = selectedItem.count;
-      itemCountSlider.value = selectedItem.count;
+      itemCountSlider.value = Mathf.Min(1, selectedItem.count);
 
       // This is a small hack to make sure the slider's handle is on the right side when there's only 1 item available
       itemCountSlider.direction = itemCountSlider.minValue == itemCountSlider.maxValue

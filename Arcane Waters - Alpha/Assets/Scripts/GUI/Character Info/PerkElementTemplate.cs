@@ -36,6 +36,11 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       tooltipComponent.message = _tooltipText + _tooltipAssignedPointsText;
    }
 
+   private void OnEnable () {
+      // Grayscale effect tends to reset when disabled, not sure why, but this fixes it
+      _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, assignedPoints > 0 ? 0 : 1f);
+   }
+
    public void initializeData (PerkData data) {
       _icon.sprite = ImageManager.getSprite(data.iconPath);
       _perkData = data;

@@ -381,8 +381,11 @@ public class CraftingIngredients : RecipeItem
          case Type.Grave_Dirt:
             return "Grave Dirt";
 
+         // Try to default to something meaningful
+         case Type.None:
+            return "Undefined";
          default:
-            return "";
+            return recipeType.ToString().Replace("_", " ");
       }
    }
 

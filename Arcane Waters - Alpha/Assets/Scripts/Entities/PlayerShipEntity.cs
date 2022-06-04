@@ -363,21 +363,7 @@ public class PlayerShipEntity : ShipEntity
          // Notify client to update abilities in cannon panel
          Target_UpdateCannonPanel(connectionToClient, shipAbilities.ToArray());
 
-         if (WorldMapManager.isWorldMapArea(areaKey)) {
-            // If player is in open-world map, keep previous hp and food
-            initHealthAndFood(alterCurrentState: false);
-         } else if (isInGroup()) {
-            // If the player is in a voyage, not in the lobby, and not in a pvp game, don't restore max health, it should be persistent between leagues
-            if (!VoyageManager.isLobbyArea(areaKey) && !VoyageManager.isPvpArenaArea(areaKey)) {
-               initHealthAndFood(alterCurrentState: false);
-
-               // If the player is in a pvp arena or a voyage lobby, restore their full health.
-            } else {
-               initHealthAndFood(alterCurrentState: resetCurrentHealth);
-            }
-         } else {
-            initHealthAndFood(alterCurrentState: true);
-         }
+         applyHealthBonuses();
       }
 
       if (shipAbilities.Count > 0) {
@@ -399,15 +385,11 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void initHealthAndFood (bool alterCurrentState = true) {
+   private void applyHealthBonuses () {
       float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
 
-      if (alterCurrentState) {
-         currentHealth = (int) (healthMultiplierAdditive * _baseHealth);
-         currentFood = _baseFood;
-      }
-      maxHealth = (int) (healthMultiplierAdditive * _baseHealth);
-      maxFood = _baseFood;
+      currentHealth = (int) (healthMultiplierAdditive * currentHealth);
+      maxHealth = (int) (healthMultiplierAdditive * maxHealth);
    }
 
    protected override void updateSprites () {
@@ -572,8 +554,10 @@ public class PlayerShipEntity : ShipEntity
          if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.IsPressed() && !_isChargingCannon)) {
             _chargingWithMouse = true;
             cannonAttackPressed();
-            // Can only start charging with spacebar if we have a valid target
-         } else if (_targetSelector.getTarget() != null && (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.IsPressed() && !_isChargingCannon))) {
+         }
+
+         // Can only start charging with spacebar if we have a valid target
+         else if (_targetSelector.getTarget() != null && (InputManager.self.inputMaster.Sea.FireCannonSpace.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannonSpace.IsPressed() && !_isChargingCannon))) {
             _chargingWithMouse = false;
             cannonAttackPressed();
          } else {
@@ -582,7 +566,7 @@ public class PlayerShipEntity : ShipEntity
             }
          }
 
-         if ((InputManager.self.inputMaster.Sea.FireCannon.WasReleasedThisFrame() && _chargingWithMouse) || (InputManager.self.inputMaster.Sea.FireCannon.WasReleasedThisFrame() && !_chargingWithMouse)) {
+         if (InputManager.self.inputMaster.Sea.FireCannon.WasReleasedThisFrame() || InputManager.self.inputMaster.Sea.FireCannonSpace.WasReleasedThisFrame()) {
             cannonAttackReleased();
          }
       } else {
@@ -657,7 +641,7 @@ public class PlayerShipEntity : ShipEntity
                // Check if we are near a warp to town
                if (AreaManager.self.tryGetArea(areaKey, out Area area)) {
                   foreach (Warp warp in area.getWarps()) {
-                     if (warp.leadsToTown) {
+                     if (warp.leadsToTown || warp.leadsToLand) {
                         if (Util.distanceLessThan2D(warp.transform.position, transform.position, 0.16f * 8)) {
                            // Restock food if we are near a town warp
                            currentFood = Mathf.Clamp(currentFood + Time.deltaTime * Outpost.FOOD_FILL_PER_SECOND, 0, maxFood);
@@ -887,7 +871,17 @@ public class PlayerShipEntity : ShipEntity
                   if (_chargingWithMouse) {
                      targetPosition = Util.getMousePos(transform.position);
                   } else {
-                     targetPosition = _targetSelector.getTarget().transform.position;
+                     SeaEntity targetEntity = _targetSelector.getTarget();
+
+                     // If entity is null or dead cancel attack
+                     if (targetEntity == null || targetEntity.isDead()) {
+                        _isChargingCannon = false;
+                        _cannonTargeter.gameObject.SetActive(false);
+                        return;
+                     }
+
+                     // If charging with keyboard use target as target position
+                     targetPosition = targetEntity.transform.position;
                   }
 
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
@@ -900,7 +894,27 @@ public class PlayerShipEntity : ShipEntity
                if (abilityData.splitsAfterAttackCap) {
                   splitAttackCap(abilityData);
                } else {
-                  Vector2 toMouse = Util.getMousePos(transform.position) - transform.position;
+                  Vector3 targetPos;
+                  Vector2 targetDir;
+                  if (_chargingWithMouse) {
+                     // If charging with mouse use mouse position as target position
+                     targetPos = Util.getMousePos(transform.position);
+                     targetDir = targetPos - transform.position;
+                  } else {
+                     SeaEntity targetEntity = _targetSelector.getTarget();
+
+                     // If entity is null or dead cancel attack
+                     if (targetEntity == null || targetEntity.isDead()) {
+                        _isChargingCannon = false;
+                        _targetCone.gameObject.SetActive(false);
+                        return;
+                     }
+
+                     // If charging with keyboard use target as target position
+                     targetPos = targetEntity.transform.position;
+                     targetDir = targetPos - transform.position;
+                  }
+
                   Vector2 pos = transform.position;
 
                   float cannonballLifetime = getCannonballLifetime();
@@ -909,9 +923,9 @@ public class PlayerShipEntity : ShipEntity
                   Cmd_PlaySeaAbilitySfx(abilityData.abilityId, transform.position);
 
                   // Fire cone of cannonballs
-                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
-                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(transform.position), false, false);
-                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(targetDir, rotAngle), false, true);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, targetPos, false, false);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(targetDir, -rotAngle), false, false);
                   _shouldUpdateTargeting = false;
                   _targetCone.targetingConfirmed(() => enableTargeting());
                }
@@ -929,7 +943,23 @@ public class PlayerShipEntity : ShipEntity
 
                _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
                _targetCircle.setFillColor(Color.white);
-               _targetCircle.updateCircle(true);
+               if (_chargingWithMouse) {
+                  // If charging cannon with mouse update targeter using the targeter default update method
+                  _targetCircle.updateCircle(true);
+               } else {
+                  SeaEntity targetEntity = _targetSelector.getTarget();
+
+                  // If entity is null or dead cancel attack
+                  if (targetEntity == null || targetEntity.isDead()) {
+                     _isChargingCannon = false;
+                     _targetCircle.gameObject.SetActive(false);
+                     return;
+                  }
+
+                  // If charging with keyboard use selected target as target position for updating the targeter
+                  _targetCircle.updateCircle(targetEntity.transform.position);
+               }
+
 
                break;
             default:
@@ -950,22 +980,42 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void splitAttackCap (ShipAbilityData abilityData) {
-      Vector2 toMouse = Util.getMousePos(transform.position) - transform.position;
-      Vector2 pos = transform.position;
+      Vector3 targetDir;
+      Vector3 targetPos;
+      if (_chargingWithMouse) {
+         // Use mouse position as target when charging with mouse
+         targetPos = Util.getMousePos(transform.position);
+         targetDir = targetPos - transform.position;
+      } else {
+         // Get target sea entity when charging with keyboard
+         SeaEntity targetEntity = _targetSelector.getTarget();
+
+         // Cancel if entity is either null or dead
+         if (targetEntity == null || targetEntity.isDead()) {
+            _isChargingCannon = false;
+            disableTargeter();
+            return;
+         }
+
+         // Set target entity as target position
+         targetPos = targetEntity.transform.position;
+         targetDir = targetPos - transform.position;
+      }
 
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
 
       Cmd_PlaySeaAbilitySfx(abilityData.abilityId, transform.position);
+      Vector2 shipPosition = transform.position;
 
       // Fire barrage of cannonballs
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
-         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngleDivider * i), false, false);
+         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, shipPosition + ExtensionsUtil.Rotate(targetDir, rotAngleDivider * i), false, false);
       }
-      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(transform.position), false, true);
+      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, targetPos, false, true);
 
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
-         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
+         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, shipPosition + ExtensionsUtil.Rotate(targetDir, -rotAngleDivider * i), false, false);
       }
 
       switch (cannonAttackType) {
@@ -987,6 +1037,16 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private void disableTargeter () {
+      if (cannonAttackType == CannonTargetingType.Normal || cannonAttackType == CannonTargetingType.AbilityProjectile) {
+         _cannonTargeter.gameObject.SetActive(false);
+      } else if (cannonAttackType == CannonTargetingType.Cone) {
+         _targetCone.gameObject.SetActive(false);
+      } else if (cannonAttackType == CannonTargetingType.Circle) {
+         _targetCircle.gameObject.SetActive(false);
+      }
+   }
+
    private void updateTargeting () {
       if (!_shouldUpdateTargeting || isDead()) {
          return;
@@ -1005,10 +1065,10 @@ public class PlayerShipEntity : ShipEntity
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {
                   _cannonTargeter.gameObject.SetActive(false);
-                  _shouldUpdateTargeting = false;
                   _isChargingCannon = false;
                   return;
                }
+
                // If firing with the keyboard, aim at our target automatically
                fireDir = _targetSelector.getTarget().transform.position - transform.position;
             }
@@ -1031,12 +1091,34 @@ public class PlayerShipEntity : ShipEntity
             }
             _targetCone.coneOuterRadius = getAttackDistance();
             _targetCone.transform.position = transform.position;
-            _targetCone.updateCone(true);
+
+            float middleAngle;
+            if (_chargingWithMouse) {
+               // When charging with mouse get mouse position for middle angle
+               middleAngle = Util.angle(Util.getMousePos(transform.position) - transform.position);
+
+               // When charging with mouse update cone targeter using mouse position
+               _targetCone.updateCone(true);
+            } else {
+               SeaEntity targetEntity = _targetSelector.getTarget();
+
+               // Cancel ability when target is null or dead
+               if (targetEntity == null || targetEntity.isDead()) {
+                  _targetCone.gameObject.SetActive(false);
+                  _isChargingCannon = false;
+                  return;
+               }
+
+               // When charging with keyboard update cone targeter using current target as target position
+               _targetCone.updateCone(targetEntity.transform.position);
+
+               // When charging with keyboard get selected target for middle angle
+               middleAngle = Util.angle(_targetSelector.getTarget().transform.position - transform.position);
+            }
 
             // Check for enemies inside cone
             Collider2D[] coneHits = Physics2D.OverlapCircleAll(transform.position, _targetCone.coneOuterRadius, LayerMask.GetMask(LayerUtil.SHIPS));
             bool enemyInCone = false;
-            float middleAngle = Util.angle(Util.getMousePos(transform.position) - transform.position);
 
             foreach (Collider2D hit in coneHits) {
                if (hit.GetComponent<SeaEntity>() && !hit.GetComponent<PlayerShipEntity>()) {
@@ -1054,10 +1136,32 @@ public class PlayerShipEntity : ShipEntity
             // Update target circle parameters
             float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
             _targetCircle.scaleCircle(circleRadius * 2.0f);
-            _targetCircle.updateCircle(true);
 
             // Check for enemies inside circle
-            Collider2D[] circleHits = Physics2D.OverlapCircleAll(Util.getMousePos(transform.position), circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
+            Collider2D[] circleHits;
+            if (_chargingWithMouse) {
+               // When charging with mouse update circle target using mouse position
+               _targetCircle.updateCircle(true);
+
+               // When charging with mouse use mouse position as point of reference for getting enemies within the area of effect
+               circleHits = Physics2D.OverlapCircleAll(Util.getMousePos(transform.position), circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
+            } else {
+               SeaEntity targetEntity = _targetSelector.getTarget();
+
+               // Cancel ability when target is null or dead
+               if (targetEntity == null || targetEntity.isDead()) {
+                  _targetCircle.gameObject.SetActive(false);
+                  _isChargingCannon = false;
+                  return;
+               }
+
+               // When charging with keyboard update circle targeter using the current position of selected target
+               _targetCircle.updateCircle(targetEntity.transform.position);
+
+               // When charging with keyboard use the selected target current position as point of reference for getting enemies with the area of effect
+               circleHits = Physics2D.OverlapCircleAll(targetEntity.transform.position, circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
+            }
+
             bool enemyInCircle = false;
             foreach (Collider2D hit in circleHits) {
                if (hit.GetComponent<BotShipEntity>()) {
@@ -1574,6 +1678,9 @@ public class PlayerShipEntity : ShipEntity
       _body.AddForce(direction.normalized * finalBoostForce, ForceMode2D.Impulse);
       _lastBoostTime = NetworkTime.time;
 
+      // Apply food cost for dashing
+      currentFood = Mathf.Clamp(currentFood - 3f * FOOD_PER_SECOND, 0, maxFood);
+
       heldPvpCaptureTarget?.onPlayerBoosted(this);
 
       Rpc_NoteBoost();
@@ -1875,9 +1982,10 @@ public class PlayerShipEntity : ShipEntity
 
    [Server]
    public void storeCurrentShipHealthAndFood () {
+      // Send the health as percentage to ignore health bonuses and store the base health
       Util.tryToRunInServerBackground(() => DB_Main.storeShipHealthAndFood(
          this.shipId,
-         Mathf.Min(this.currentHealth, this.maxHealth),
+         (float)Mathf.Min(this.currentHealth, this.maxHealth) / this.maxHealth,
          (int) Mathf.Min(this.currentFood, this.maxFood)));
    }
 
@@ -2038,21 +2146,7 @@ public class PlayerShipEntity : ShipEntity
       sbp.nameTextOutside.text = this.entityName;
       sbp.nameTextInside.fontMaterial = new Material(sbp.nameTextInside.fontSharedMaterial);
 
-      Color fillColor = sbp.nameColor;
-      if (isDemoUser) {
-         fillColor = sbp.demoUserColor;
-      }
-      if (isAdmin()) {
-         fillColor = sbp.adminUserColor;
-      }
-
-      if (isLocalPlayer) {
-         if (fillColor.getSaturation() > 0) {
-            fillColor = fillColor.setSaturation(sbp.nameColorSaturationLocalPlayer);
-         } else {
-            fillColor = fillColor.setLightness(sbp.nameColorSaturationLocalPlayer);
-         }
-      }
+      Color fillColor = getNameColor(isLocalPlayer, isAdmin(), isDemoUser);
 
       sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", fillColor);
       sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
@@ -2100,8 +2194,14 @@ public class PlayerShipEntity : ShipEntity
       // Wait a small delay, so the player's camera can move, and see them respawn
       yield return new WaitForSeconds(0.5f);
 
-      initHealthAndFood();
       restoreMaxShipHealthAndFood();
+
+      currentFood = _baseFood;
+      maxFood = _baseFood;
+      currentHealth = _baseHealth;
+      maxHealth = _baseHealth;
+
+      applyHealthBonuses();
 
       Rpc_OnRespawnedInInstance(currentHealth);
 
@@ -2464,15 +2564,8 @@ public class PlayerShipEntity : ShipEntity
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
 
       if (WorldMapManager.self.getNextArea(areaKey, direction, out string nextAreaKey)) {
-         // Prevent demo account from warping outside Forest and Desert biomes
-         if (isDemoUser) {
-            if (!AreaManager.self.tryGetAreaInfo(nextAreaKey, out Map nextMap)) {
-               return;
-            }
-
-            if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(nextMap.biome)) {
-               return;
-            }
+         if (!isAllowedToGoToArea(nextAreaKey)) {
+            return;
          }
 
          setupForWarpClient();

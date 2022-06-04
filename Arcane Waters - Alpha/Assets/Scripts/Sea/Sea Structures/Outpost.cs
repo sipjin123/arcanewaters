@@ -222,7 +222,6 @@ public class Outpost : SeaStructureTower, IObserver
 
    public IEnumerator CO_ActivateAfter (float delay) {
       yield return new WaitForSeconds(delay);
-
       setIsActivated(true);
       Rpc_SetIsActivated(true);
    }

@@ -17,11 +17,14 @@ namespace MapCreationTool.IssueResolving
       private UnnecessaryTileIssue[] unnecessaryTileIssues = new UnnecessaryTileIssue[0];
       [SerializeField]
       private RemovedDataFieldIssue[] removedDataFieldIssues = new RemovedDataFieldIssue[0];
+      [SerializeField]
+      private WrongDataFieldValueIssue[] wrongDataFieldValueIssues = new WrongDataFieldValueIssue[0];
 
       public Dictionary<TileBase, WrongLayerIssue> wrongLayer { get; private set; }
       public Dictionary<TileBase, TileNotPrefabIssue> tileToPrefab { get; private set; }
       public Dictionary<TileBase, UnnecessaryTileIssue> unnecessaryTiles { get; private set; }
       public Dictionary<GameObject, HashSet<string>> removedDataFields { get; private set; }
+      public Dictionary<GameObject, (string field, string desiredValue)> wrongDataFieldValues { get; private set; }
 
       public void fillDataStructures () {
          if (AssetSerializationMaps.biomeSpecific == null) {
@@ -131,6 +134,7 @@ namespace MapCreationTool.IssueResolving
          }
 
          removedDataFields = removedDataFieldIssues.GroupBy(df => df.prefab).ToDictionary(g => g.Key, g => new HashSet<string>(g.Select(df => df.dataField)));
+         wrongDataFieldValues = wrongDataFieldValueIssues.ToDictionary(wd => wd.prefab, wd => (wd.dataField, wd.desiredValue));
       }
 
       private TileBase[,] getTiles (List<(int x, int y)> indexes) {
@@ -245,6 +249,14 @@ namespace MapCreationTool.IssueResolving
       {
          public GameObject prefab;
          public string dataField;
+      }
+
+      [Serializable]
+      public struct WrongDataFieldValueIssue
+      {
+         public GameObject prefab;
+         public string dataField;
+         public string desiredValue;
       }
    }
 }

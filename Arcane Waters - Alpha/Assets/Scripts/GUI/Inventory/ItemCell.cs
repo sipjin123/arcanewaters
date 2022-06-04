@@ -538,6 +538,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       // Set the tooltip
       tooltip.message = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
       tooltip.message += Item.isUsingEquipmentXML(item.category) ? "\nDurability = " + item.durability : "";
+
+      // Level requirement
+      appendLevelRequirementTextToTooltip(item, ref tooltip.message);
+
       updateCellColor(item.durability);
 
       // Saves the item
@@ -548,6 +552,16 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       // Hides the selection box
       hideSelectedBox();
+   }
+
+   public static void appendLevelRequirementTextToTooltip (Item item, ref string tooltipMessage) {
+      int playerLevel = LevelUtil.levelForXp(Global.player.XP);
+      int reqLevel = EquipmentXMLManager.self.equipmentLevelRequirement(item);
+      bool meetsRequirement = playerLevel >= reqLevel;
+
+      if (reqLevel > 0) {
+         tooltipMessage += string.Format("\n<color=#{0}>Requires Level {1}</color>", ColorUtility.ToHtmlStringRGBA(meetsRequirement ? Color.white : Color.red), reqLevel);
+      }
    }
 
    public void updateCellColor (int durability) {

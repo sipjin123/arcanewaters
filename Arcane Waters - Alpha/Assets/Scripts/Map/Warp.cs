@@ -35,6 +35,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // Does this warp lead to a town
    public bool leadsToTown = false;
 
+   // Does this warp lead to a land map
+   public bool leadsToLand = false;
+
    // The canvas and text we use for town visual
    public Canvas townVisual = null;
    public TMPro.TextMeshProUGUI townVisualText = null;
@@ -319,9 +322,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       leadsToTown = false;
+      leadsToLand = false;
       if (AreaManager.self.tryGetAreaInfo(areaTarget, out Map map)) {
          if (map.specialType == Area.SpecialType.Town) {
             leadsToTown = true;
+         }
+         if (map.editorType == MapCreationTool.EditorType.Area) {
+            leadsToLand = true;
          }
       }
    }
@@ -488,7 +495,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       // Don't let Demo users warp outside Forest or Desert
-      if (player.isDemoUser) {
+      if (player.isDemoUser && !player.isAdmin()) {
          if (!AreaManager.self.tryGetAreaInfo(areaTarget, out Map map)) {
             return false;
          }

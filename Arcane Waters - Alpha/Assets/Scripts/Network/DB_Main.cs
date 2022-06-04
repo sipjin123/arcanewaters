@@ -114,13 +114,14 @@ public class DB_Main : DB_MainStub
       string whereClause = getUserInventoryWhereClause(usrId, categoryFilter, itemIdsToExclude,
          mustExcludeEquippedItems, itemDurabilityFilter);
 
+      string newQuery =
+            "SELECT * FROM items " + whereClause + " order by itmCategory, itmId limit " + itemsPerPage +
+            " offset " + offset;
+
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
-            using (MySqlCommand command = new MySqlCommand(
-            "SELECT * FROM items " + whereClause + " order by itmCategory, itmId limit " + itemsPerPage +
-            " offset " + offset, connection)) {
-               D.editorLog(command.CommandText);
+            using (MySqlCommand command = new MySqlCommand(newQuery, connection)) {
                DebugQuery(command);
 
                StringBuilder stringBuilder = new StringBuilder();
@@ -137,12 +138,10 @@ public class DB_Main : DB_MainStub
                      try {
                         itmData = reader.GetString("itmData");
                      } catch {
-                        //D.editorLog("Blank item data");
                      }
                      try {
                         itmPalettes = reader.GetString("itmPalettes");
                      } catch {
-                        D.editorLog("Blank Palette 1");
                      }
 
                      string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalettes}[space]{itmDurability}";
@@ -4485,6 +4484,7 @@ public class DB_Main : DB_MainStub
                   XMLPair newXMLPair = new XMLPair {
                      isEnabled = true,
                      xmlId = dataReader.GetInt32("xml_id"),
+                     xmlName = dataReader.GetString("xml_name"),
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlOwnerId = dataReader.GetInt32("creator_userID")
                   };
@@ -6238,17 +6238,17 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void storeShipHealthAndFood (int shipId, int shipHealth, int shipFood) {
-      shipHealth = Mathf.Max(shipHealth, 0);
+   public static new void storeShipHealthAndFood (int shipId, float shipHealthPercentage, int shipFood) {
+      shipHealthPercentage = Mathf.Max(shipHealthPercentage, 0);
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.health=@shipHealth, ships.food=@shipFood " +
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.health=ROUND(@shipHealthPercentage * ships.maxHealth), ships.food=@shipFood " +
             "WHERE ships.shpId = @shipId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
-            cmd.Parameters.AddWithValue("@shipHealth", shipHealth);
+            cmd.Parameters.AddWithValue("@shipHealthPercentage", shipHealthPercentage);
             cmd.Parameters.AddWithValue("@shipFood", shipFood);
             DebugQuery(cmd);
 
@@ -6432,88 +6432,6 @@ public class DB_Main : DB_MainStub
 #endregion
 
 #region Chat System Features / Bug Reporting Features
-
-   public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
-      try {
-         string myAddress = Util.formatIpAddress(ipAddress);
-
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugIpAddress, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugIpAddress, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", player.userId);
-            cmd.Parameters.AddWithValue("@usrName", player.entityName);
-            cmd.Parameters.AddWithValue("@accId", player.accountId);
-            cmd.Parameters.AddWithValue("@bugSubject", subject);
-            cmd.Parameters.AddWithValue("@bugIpAddress", myAddress);
-            cmd.Parameters.AddWithValue("@bugLog", bugReport);
-            cmd.Parameters.AddWithValue("@ping", ping);
-            cmd.Parameters.AddWithValue("@fps", fps);
-            cmd.Parameters.AddWithValue("@playerPosition", playerPosition);
-            cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
-            cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
-            cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
-            cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
-            cmd.Parameters.AddWithValue("@steamState", steamState);
-
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-
-            // Bug Report's Id
-            long bugId = cmd.LastInsertedId;
-
-            // Saving the initial "Create" action for history purposes
-            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_actions (taskId, actionType, performerAccId) VALUES(@taskId, @actionType, @performerAccId)", conn);
-            actionCmd.Prepare();
-            actionCmd.Parameters.AddWithValue("@taskId", bugId);
-            actionCmd.Parameters.AddWithValue("@actionType", WebToolsUtil.CREATE);
-            actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
-            DebugQuery(cmd);
-            actionCmd.ExecuteNonQuery();
-
-            return bugId;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return -1;
-   }
-
-   //public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
-   //   try {
-   //      using (MySqlConnection conn = getConnection())
-   //      using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.bug_reports WHERE bugId=@bugId", conn)) {
-   //         conn.Open();
-   //         cmd.Prepare();
-   //         cmd.Parameters.AddWithValue("@bugId", bugId);
-   //         DebugQuery(cmd);
-   //         cmd.ExecuteNonQuery();
-
-   //         int accId = -1;
-   //         // Create a data reader and Execute the command
-   //         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-   //            while (dataReader.Read()) {
-   //               accId = dataReader.GetInt32("accId");
-   //            }
-   //         }
-
-   //         if (accId != -1 && player.accountId == accId) {
-   //            // Saving screenshot in bug_reports_screenshots
-   //            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
-   //            actionCmd.Prepare();
-   //            actionCmd.Parameters.AddWithValue("@taskId", bugId);
-   //            actionCmd.Parameters.AddWithValue("@image", screenshotBytes);
-   //            DebugQuery(actionCmd);
-   //            actionCmd.ExecuteNonQuery();
-   //         }
-   //      }
-   //   } catch (Exception e) {
-   //      D.error("MySQL Error: " + e.ToString());
-   //   }
-   //}
 
    public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress, string extra) {
       int chatId = 0;
@@ -7678,6 +7596,45 @@ public class DB_Main : DB_MainStub
             conn.Open();
             using (MySqlCommand updateCmd = new MySqlCommand(
                "UPDATE users SET usrName = @newName WHERE usrName = @oldName", conn)) {
+               updateCmd.Prepare();
+               updateCmd.Parameters.AddWithValue("@oldName", info.prevUsrName);
+               updateCmd.Parameters.AddWithValue("@newName", info.newUsrName);
+               DebugQuery(updateCmd);
+
+               // Execute the command
+               updateCmd.ExecuteNonQuery();
+            }
+            using (MySqlCommand insertCmd = new MySqlCommand(
+               "INSERT INTO users_names_changes(sourceAccId,sourceUsrId,sourceUsrName,targetAccId,targetUsrId,prevUsrName,newUsrName,reason,changeSource) " +
+               "VALUES(@sourceAccId,@sourceUsrId,@sourceUsrName,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason,@changeSource)", conn)) {
+               insertCmd.Prepare();
+               insertCmd.Parameters.AddWithValue("@sourceAccId", info.sourceAccId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrId", info.sourceUsrId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrName", info.sourceUsrName);
+               insertCmd.Parameters.AddWithValue("@targetAccId", info.targetAccId);
+               insertCmd.Parameters.AddWithValue("@targetUsrId", info.targetUsrId);
+               insertCmd.Parameters.AddWithValue("@prevUsrName", info.prevUsrName);
+               insertCmd.Parameters.AddWithValue("@newUsrName", info.newUsrName);
+               insertCmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(info.reason) ? null : info.reason);
+               insertCmd.Parameters.AddWithValue("@changeSource", (int) info.changeSource);
+
+               DebugQuery(insertCmd);
+
+               insertCmd.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         throw e;
+      }
+   }
+
+   public static new void changeDeletedUserName (NameChangeInfo info) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            conn.Open();
+            using (MySqlCommand updateCmd = new MySqlCommand(
+               "UPDATE users_deleted SET usrName = @newName WHERE usrName = @oldName", conn)) {
                updateCmd.Prepare();
                updateCmd.Parameters.AddWithValue("@oldName", info.prevUsrName);
                updateCmd.Parameters.AddWithValue("@newName", info.newUsrName);

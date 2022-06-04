@@ -22,7 +22,7 @@ public class PlayerTargetSelector : MonoBehaviour {
       }
 
       // Select the next nearby target using Tab
-      if (InputManager.self.inputMaster.LandBattle.NextTarget.WasPressedThisFrame()) {
+      if (InputManager.self.inputMaster.Sea.SelectTarget.WasPressedThisFrame()) {
          selectNextTarget();
       }
 

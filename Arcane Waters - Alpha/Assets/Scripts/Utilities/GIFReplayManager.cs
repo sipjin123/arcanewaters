@@ -71,6 +71,18 @@ public class GIFReplayManager : ClientMonoBehaviour
       setDuration(PlayerPrefs.GetInt(GIF_RECORDING_DURATION_KEY, 10), false);
 
       StartCoroutine(CO_RecordRoutine());
+
+      // TEMP: debug supported formats
+      List<GraphicsFormat> formats = new List<GraphicsFormat>();
+
+      foreach (GraphicsFormat f in Enum.GetValues(typeof(GraphicsFormat))) {
+         if (SystemInfo.IsFormatSupported(f, FormatUsage.ReadPixels)) {
+            formats.Add(f);
+         }
+      }
+
+      D.log("ReadPixels are supported with these formats on this system: " +
+         string.Join(", ", formats.Select(f => f.ToString())));
    }
 
    private IEnumerator CO_RecordRoutine () {
@@ -96,7 +108,7 @@ public class GIFReplayManager : ClientMonoBehaviour
 
             if (_tempRenderTexture.width != Screen.width || _tempRenderTexture.height != _tempRenderTexture.height) {
                Destroy(_tempRenderTexture);
-               _tempRenderTexture = new RenderTexture(Screen.width, Screen.height, 0);
+               _tempRenderTexture = new RenderTexture(Screen.width, Screen.height, 0, _recordFormat);
             }
 
             // Capture

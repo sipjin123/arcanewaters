@@ -415,7 +415,7 @@ public class GuildPanel : Panel {
 
    public void goToGuildMapButtonClicked () {
       Global.player.Cmd_GoToGuildMap();
-      hide();
+      PanelManager.self.unlinkPanel();
    }
 
    #region Sorting

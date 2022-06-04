@@ -363,7 +363,7 @@ public class Instance : NetworkBehaviour
          && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
          return;
       }
-
+       
       // If there's no one in the instance right now, increase the  count
       if (getPlayerCount() <= 0) {
          _consecutiveEmptyChecks++;

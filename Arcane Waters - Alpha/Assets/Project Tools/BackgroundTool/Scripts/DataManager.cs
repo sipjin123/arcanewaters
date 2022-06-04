@@ -199,6 +199,7 @@ namespace BackgroundTool
                      TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                      BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);
                      bgContentData.xmlId = xmlPair.xmlId;
+                     bgContentData.backgroundName = xmlPair.xmlName;
                      bgContentData.ownerId = xmlPair.xmlOwnerId;
                      backgroundContentList.Add(bgContentData);
                   }

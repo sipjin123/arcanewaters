@@ -153,7 +153,7 @@ public class PowerupManager : MonoBehaviour {
       return boostFactor;
    }
 
-   private IEnumerator CO_GrabPowerupEffect (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource) {
+   public IEnumerator CO_GrabPowerupEffect (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource, bool isIgnored = false) {
       // Create the popup icon, make it scale up in size
       PowerupPopupIcon popupIcon = Instantiate(TreasureManager.self.powerupPopupIcon, Vector3.zero, Quaternion.identity).GetComponent<PowerupPopupIcon>();
       popupIcon.transform.SetParent(AreaManager.self.getArea(player.areaKey).transform);
@@ -171,12 +171,14 @@ public class PowerupManager : MonoBehaviour {
       yield return new WaitForSeconds(1.4f);
 
       // After another delay, have the popup icon move towards the player
-      popupIcon.gravitateToPlayer(player, 1.0f);
+      popupIcon.gravitateToPlayer(player, 1.0f, isIgnored);
 
-      // Show a confirmation in chat
-      string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
-      string msg = string.Format("You received the <color=red>{0}</color> powerup!", powerupName);
-      ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      if (!isIgnored) {
+         // If powerup is not ignored we show a confirmation in chat
+         string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
+         string msg = string.Format("You received the <color=red>{0}</color> powerup!", powerupName);
+         ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      }
    }
 
    public IEnumerator CO_CreatingUniqueFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type rarity, PlayerShipEntity entity, Vector3 spawnSource) {

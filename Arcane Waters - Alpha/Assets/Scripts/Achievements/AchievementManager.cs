@@ -184,7 +184,7 @@ public class AchievementManager : MonoBehaviour {
                   DB_Main.updateAchievementData(achievementDataEntry, userId, isComplete, count);
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      if (steamId != -1) {
-                        StartCoroutine(CO_PublishSteamAchievements(achievementDataEntry.achievementUniqueID, resultCount, accountName.Replace("@steam","").ToString(), isComplete));
+                        StartCoroutine(CO_PublishSteamAchievements(userId, achievementDataEntry.achievementUniqueID, resultCount, accountName.Replace("@steam","").ToString(), isComplete));
                      }
                   });
                }
@@ -229,7 +229,7 @@ public class AchievementManager : MonoBehaviour {
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      if (steamId != -1) {
-                        StartCoroutine(CO_PublishSteamAchievements(achievementDataEntry.achievementUniqueID, 1, accountName.Replace("@steam", "").ToString(), isComplete));
+                        StartCoroutine(CO_PublishSteamAchievements(userId, achievementDataEntry.achievementUniqueID, 1, accountName.Replace("@steam", "").ToString(), isComplete));
                      }
                   });
                }
@@ -239,7 +239,7 @@ public class AchievementManager : MonoBehaviour {
       #endif
    }
 
-   private IEnumerator CO_PublishSteamAchievements (string uniqueAchievementId, int progressCount, string steamUserId, bool isComplete) {
+   private IEnumerator CO_PublishSteamAchievements (int userId, string uniqueAchievementId, int progressCount, string steamUserId, bool isComplete) {
       string achievementName = uniqueAchievementId;
       if (string.IsNullOrEmpty(steamUserId)) {
          D.debug("Steam Achievement Error! Invalid Steam Id: " + steamUserId);
@@ -260,6 +260,9 @@ public class AchievementManager : MonoBehaviour {
             yield return www.SendWebRequest();
             if (www.isNetworkError || www.isHttpError) {
                D.error(www.error);
+            } else {
+               // Play the earn achievement sound effect
+               ServerNetworkingManager.self.playAchievementSfxForPlayer(userId);
             }
          }
       }

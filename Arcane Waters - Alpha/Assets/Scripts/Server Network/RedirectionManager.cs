@@ -110,25 +110,11 @@ public class RedirectionManager : GenericGameManager
       }
 
       if (!isSinglePlayer) {
-         // Check if there is an open area on the server the user is currently connected to
-         NetworkedServer currentServer = ServerNetworkingManager.self.getServer(currentServerPort);
-         if (currentServer.hasOpenArea(destinationAreaKey) || currentServer.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
-            string message = "[Current] Server has the {Open Area}";
-            if (currentServer.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
-               message = "[Current] Server has an {Area being Generated}";
-            }
+         // Make sure the servers are ordered by port
+         List<NetworkedServer> serverList = ServerNetworkingManager.self.servers.OrderBy(s => s.networkedPort.Value).ToList();
 
-            D.adminLog(message + " {" + currentServer.networkedPort.Value + "} Player {" + userId + ":" + userName + ":" + voyageId + "} " +
-               "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
-            return currentServer;
-         }
-
-         // Check if there's an open area on another server
-         foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-            if (server == currentServer) {
-               continue;
-            }
-
+         // Check in all servers if there's an open area
+         foreach (NetworkedServer server in serverList) {
             if (server.hasOpenArea(destinationAreaKey) || server.areaBeingGenerated.ContainsKey(destinationAreaKey)) {
                string message = "[Other] Server has {Open Area}, Switching from";
                if (server.areaBeingGenerated.ContainsKey(destinationAreaKey)) {

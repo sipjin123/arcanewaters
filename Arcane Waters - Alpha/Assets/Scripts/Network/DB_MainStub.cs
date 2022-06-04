@@ -909,7 +909,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void storeShipHealthAndFood (int shipId, int shipHealth, int shipFood) {
+   public static void storeShipHealthAndFood (int shipId, float shipHealthPercentage, int shipFood) {
 
    }
 
@@ -929,14 +929,6 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void addGoldAndXP (int userId, int gold, int XP) {
-
-   }
-
-   public static long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
-      return -1;
-   }
-
-   public static void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
 
    }
 
@@ -1045,6 +1037,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void changeUserName (NameChangeInfo info) {
+
+   }
+
+   public static void changeDeletedUserName (NameChangeInfo info) {
 
    }
 

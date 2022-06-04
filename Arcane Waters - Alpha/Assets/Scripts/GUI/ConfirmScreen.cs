@@ -82,12 +82,14 @@ public class ConfirmScreen : FullScreenSeparatePanel
 
       // Activate inputfield
       PanelManager.self.confirmScreen.goInputField.SetActive(true);
-      PanelManager.self.confirmScreen.confirmInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Type " + keyWord;
+
+      // Update the keyword text
+      PanelManager.self.confirmScreen.confirmInputField.placeholder.GetComponent<TextMeshProUGUI>().text = !Util.isEmpty(keyWord) ?  "Type " + keyWord : string.Empty;
 
       // Wait for input
       PanelManager.self.confirmScreen.confirmInputField.onValueChanged.AddListener((inputWord) => {
-         bool isInputMatched = inputWord.ToUpper() == keyWord.ToUpper(); 
-         PanelManager.self.confirmScreen.confirmButton.interactable = isInputMatched;
+         bool enableConfirmButton = Util.isEmpty(keyWord) ? !Util.isEmpty(inputWord) : inputWord.ToUpper() == keyWord.ToUpper();
+         PanelManager.self.confirmScreen.confirmButton.interactable = enableConfirmButton;
       });
    }
 

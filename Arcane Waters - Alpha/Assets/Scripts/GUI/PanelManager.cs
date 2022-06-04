@@ -381,7 +381,11 @@ public class PanelManager : GenericGameManager {
       }
    }
 
-   public void showConfirmationPanel (string message, UnityAction onConfirm, UnityAction onCancel = null, bool hideOnConfirmation = true, int cost = 0, string description = "") {
+   public void showConfirmationPanel (string message, UnityAction onConfirm, UnityAction onCancel = null, bool hideOnConfirmation = true, int cost = 0, string description = "", bool showInput = false, string keyword = "") {
+      if (showInput) {
+         confirmScreen.enableConfirmInputField(keyword);
+      }
+
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
       confirmScreen.confirmButton.onClick.AddListener(onConfirm);
 
@@ -408,11 +412,13 @@ public class PanelManager : GenericGameManager {
    }
 
    public bool isFullScreenSeparatePanelShowing () {
-      foreach (FullScreenSeparatePanel panel in _fullScreenSeparatePanels) {
-         if (panel.gameObject.activeSelf) {
-            foreach (CanvasGroup canvas in panel.allCanvasGroups) {
-               if (canvas && canvas.enabled && canvas.alpha > 0) {
-                  return true;
+      if (_fullScreenSeparatePanels != null) {
+         foreach (FullScreenSeparatePanel panel in _fullScreenSeparatePanels) {
+            if (panel.gameObject.activeSelf) {
+               foreach (CanvasGroup canvas in panel.allCanvasGroups) {
+                  if (canvas && canvas.enabled && canvas.alpha > 0) {
+                     return true;
+                  }
                }
             }
          }

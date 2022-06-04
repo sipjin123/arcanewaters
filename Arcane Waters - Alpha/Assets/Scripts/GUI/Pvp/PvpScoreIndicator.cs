@@ -15,6 +15,8 @@ public class PvpScoreIndicator : MonoBehaviour
    // Self
    public static PvpScoreIndicator self;
 
+   public bool allowReset = true;
+
    #endregion
 
    public void Awake () {
@@ -28,6 +30,9 @@ public class PvpScoreIndicator : MonoBehaviour
    }
 
    public void updateScore(PvpTeamType team, int newScore) {
+      // Don't allow resetting of score UI during game
+      allowReset = false;
+      
       _score[team] = newScore;
 
       if (team == PvpTeamType.A) {
@@ -50,8 +55,16 @@ public class PvpScoreIndicator : MonoBehaviour
    }
 
    public void reset () {
+      if (!allowReset) {
+         return;
+      }
+
       scoreTeamA.text = "0";
       scoreTeamB.text = scoreTeamA.text;
+   }
+
+   public static bool isShowing () {
+      return self.gameObject.activeInHierarchy;
    }
 
    #region Private Variables

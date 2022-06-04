@@ -30,7 +30,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    // The private house instances that already exists
    public NetworkedList<int> privateHouseInstances = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
-   
+
    // The users that have been assigned to this server - there can be userIds duplicates in multiple servers
    public NetworkedDictionary<int, AssignedUserInfo> assignedUserIds = new NetworkedDictionary<int, AssignedUserInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
 
@@ -211,6 +211,12 @@ public class NetworkedServer : NetworkedBehaviour
          // Get the number of instances in that area
          areaToInstanceCount.TryGetValue(areaKey, out int instanceCount);
 
+         // If there is at least one player in that area, there must be at least one instance (it could be under creation)
+         if (playerCountPerArea[areaKey] > 0 && instanceCount == 0) {
+            instanceCount = 1;
+            D.warning($"Instance count is 0 for area {areaKey} while having {playerCountPerArea[areaKey]} assigned players!");
+         }
+
          if (playerCountPerArea[areaKey] < Instance.getMaxPlayerCount(areaKey, false) * instanceCount) {
             return true;
          }
@@ -271,7 +277,7 @@ public class NetworkedServer : NetworkedBehaviour
       } else {
          targetServer = null;
       }
-      
+
       if (targetServer != null) {
          // Find the server that has the private instance of an existing user
          targetServer.InvokeClientRpcOnOwner(Server_FindUserPrivateLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
@@ -430,7 +436,7 @@ public class NetworkedServer : NetworkedBehaviour
          D.adminLog("Could not find the target Entity to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
       }
    }
-   
+
    [ServerRPC]
    public void MasterServer_DenyUserVisit (int visitorUserId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);
@@ -663,7 +669,7 @@ public class NetworkedServer : NetworkedBehaviour
          D.debug("Could not find player: " + inviterUserId);
       }
    }
-   
+
    [ServerRPC]
    public void MasterServer_SendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(inviteeUserId);
@@ -696,7 +702,7 @@ public class NetworkedServer : NetworkedBehaviour
          D.debug("Could not find player: " + inviterUserId);
       }
    }
-   
+
    [ClientRPC]
    public void Server_ReceiveGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
       NetEntity player = EntityManager.self.getEntity(inviteeUserId);
@@ -705,7 +711,7 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
-  [ServerRPC]
+   [ServerRPC]
    public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, Voyage parameters) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
       if (targetServer != null) {
@@ -798,6 +804,16 @@ public class NetworkedServer : NetworkedBehaviour
                targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationForJoinFriend, userId, targetUserId);
             }
          });
+      });
+   }
+
+   [ServerRPC]
+   public void MasterServer_FindUserLocationForFriendJoin (int userId, int friendUserId) {
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(friendUserId);
+         if (targetServer != null) {
+            targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationForJoinFriend, userId, friendUserId);
+         }
       });
    }
 
@@ -1047,7 +1063,7 @@ public class NetworkedServer : NetworkedBehaviour
    [ServerRPC]
    public void MasterServer_ApplyPenaltyToPlayer (int accId, PenaltyInfo.ActionType penaltyType, int seconds) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAccount(accId);
-      if(targetServer != null) {
+      if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ApplyPenaltyToPlayer, accId, penaltyType, seconds);
       }
    }
@@ -1055,8 +1071,24 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_ApplyPenaltyToPlayer (int accId, PenaltyInfo.ActionType penaltyType, int seconds) {
       NetEntity targetEntity = EntityManager.self.getEntityWithAccId(accId);
-      if(targetEntity != null) {
+      if (targetEntity != null) {
          targetEntity.admin.applyPenalty(penaltyType, seconds);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_PlayAchievementSfxForPlayer (int userId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_PlayAchievementSfxForPlayer, userId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_PlayAchievementSfxForPlayer (int userId) {
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if(targetEntity != null) {
+         targetEntity.rpc.Target_PlayAchievementSfx();
       }
    }
 
@@ -1241,6 +1273,16 @@ public class NetworkedServer : NetworkedBehaviour
             man.Target_ReceiveServerOverview(serverOverview);
          }
       }
+   }
+
+   [ServerRPC]
+   public void MasterServer_UpdateAdminGameSettings () {
+      InvokeClientRpcOnEveryone(Server_UpdateAdminGameSettings);
+   }
+
+   [ClientRPC]
+   public void Server_UpdateAdminGameSettings () {
+      AdminGameSettingsManager.self.updateServerSettings(true);
    }
 
    #endregion

@@ -52,6 +52,7 @@ public class TutorialManager3 : MonoBehaviour
       _highestReachedStep = 0;
       foreach (Tutorial3 tutorial in tutorialDataList) {
          tutorial.isCompleted = false;
+         tutorial.latestCompletedStep = 0;
       }
 
       // Read the config from the PlayerPrefs

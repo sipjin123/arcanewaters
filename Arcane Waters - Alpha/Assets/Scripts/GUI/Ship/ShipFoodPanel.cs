@@ -75,6 +75,9 @@ public class ShipFoodPanel : ClientMonoBehaviour
       int prevUnits = Mathf.CeilToInt(_lastFood / foodPerUnit);
 
       if (prevUnits - curUnits == 1 && curUnits < unitsNeeded && prevUnits <= unitsNeeded) {
+         // Play sound effect
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.FOOD_CRUNCH);
+
          for (int i = 0; i < _foods.Count; i++) {
             if (_foods[i].gameObject.activeSelf) {
                _foods[i].blink();

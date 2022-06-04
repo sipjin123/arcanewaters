@@ -508,7 +508,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // If user is a demo account, restrict biomes
-            if (userInfo.isDemoUser()) {
+            if (userInfo.isDemoUser() && !userInfo.isAdmin()) {
                // Don't restrict biomes for PVP maps
                bool isPvp = false;
                if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {

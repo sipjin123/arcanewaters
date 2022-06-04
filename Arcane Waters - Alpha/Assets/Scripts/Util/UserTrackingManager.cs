@@ -18,10 +18,8 @@ public class UserTrackingManager : MonoBehaviour
    private void Awake () {
       self = this;
 
-      if (NetworkServer.active) {
-         // Push tracked user actions to database periodically
-         InvokeRepeating(nameof(pushPendingActions), 0, 2f);
-      }
+      // Push tracked user actions to database periodically
+      InvokeRepeating(nameof(checkPushActions), 0, 2f);
    }
 
    [Server]
@@ -42,6 +40,13 @@ public class UserTrackingManager : MonoBehaviour
          type = type,
          time = DateTime.UtcNow
       });
+   }
+
+   private void checkPushActions () {
+      // Only do this on server (in most cases, code stripping will handle this anyway, but not in Unity Editor)
+      if (NetworkServer.active) {
+         pushPendingActions();
+      }
    }
 
    [Server]

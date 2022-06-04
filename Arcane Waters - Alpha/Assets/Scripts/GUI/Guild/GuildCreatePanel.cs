@@ -116,7 +116,7 @@ public class GuildCreatePanel : SubPanel
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(createGuildConfirmed);
 
       // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to create the guild " + _inputField.text + "?");
+      PanelManager.self.confirmScreen.show("Are you sure you want to create the guild " + getGuildNameInUpperCase() + "?");
    }
 
    public void onCancelButtonPressed () {
@@ -125,7 +125,7 @@ public class GuildCreatePanel : SubPanel
 
    public void createGuildConfirmed () {
       PanelManager.self.confirmScreen.hide();
-      Global.player.rpc.Cmd_CreateGuild(_inputField.text, _borders[_borderIndex], _backgrounds[_backgroundIndex],
+      Global.player.rpc.Cmd_CreateGuild(getGuildNameInUpperCase(), _borders[_borderIndex], _backgrounds[_backgroundIndex],
          _sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _backgroundPalette1, _backgroundPalette2 }), Item.parseItmPalette(new string[2]{_sigilPalette1, _sigilPalette2}));
    }
 
@@ -138,7 +138,7 @@ public class GuildCreatePanel : SubPanel
             nameValidIcon.enabled = true;
          }
 
-         if (!GuildManager.self.isGuildNameValid(_inputField.text, out string errorMessage)) {
+         if (!GuildManager.self.isGuildNameValid(getGuildNameInUpperCase(), out string errorMessage)) {
             nameErrorText.text = errorMessage;
             nameValidIcon.sprite = nameInvalidSprite;
          } else {
@@ -236,6 +236,10 @@ public class GuildCreatePanel : SubPanel
    private void refreshSigil () {
       guildIcon.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
       sigilSelection.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
+   }
+
+   private string getGuildNameInUpperCase () {
+      return _inputField.text.ToUpper();
    }
 
    #region Private Variables

@@ -26,17 +26,24 @@ public class TargetCircle : MonoBehaviour {
 
    public void updateCircle (bool updateInputs) {
       if (updateInputs) {
-         
-         if (maxRange > 0.0f) {
-            Vector2 toMousePos = Util.getMousePos(transform.position, 0.1f) - getGlobalPlayerShip().transform.position;
-            if (toMousePos.sqrMagnitude > maxRange * maxRange) {
-               toMousePos = toMousePos.normalized * maxRange;
-            }
-
-            transform.position = (Vector2)getGlobalPlayerShip().transform.position + toMousePos;
-         } else {
-            transform.position = Util.getMousePos(transform.position, 0.1f);
+         updateCircle(Util.getMousePos(transform.position, 0.1f));
+      } else {
+         if (circleOutline.updateCircle) {
+            circleOutline.updateSegments();
          }
+      }
+   }
+
+   public void updateCircle (Vector3 position) {
+      if (maxRange > 0.0f) {
+         Vector2 targetPosition = position - getGlobalPlayerShip().transform.position;
+         if (targetPosition.sqrMagnitude > maxRange * maxRange) {
+            targetPosition = targetPosition.normalized * maxRange;
+         }
+
+         transform.position = (Vector2)getGlobalPlayerShip().transform.position + targetPosition;
+      } else {
+         transform.position = position;
       }
       
       if (circleOutline.updateCircle) {

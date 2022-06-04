@@ -110,23 +110,33 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
             };
             
             if (nonStackableType.Contains(powerup.powerupType)) {
-               // Check if user contains powerup with powerup type 
+               // Local flag if powerup is replaceable true by default
+               bool powerupReplaceable = true;
+               
+               // Check if user contains powerup with powerup type
                if (PowerupManager.self.doesUserHasPowerupType(playerEntity.userId, powerup.powerupType)) {
                   // Get user's powerup and check if incoming powerup has longer duration, Receive powerup is longer and ignore if not
                   List<Powerup> powerupOfType = PowerupManager.self.getPowerupOfUserWithType(playerEntity.userId, powerup.powerupType);
-                  if (powerupOfType.Any(item => item.powerupDuration > powerupDuration)) {
-                     // Add system chat if powerup is ignored
-                     string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
-                     string msg = string.Format("Ignoring <color=red>{0}</color> powerup, You have stronger <color=red>{0}</color> powerup!", powerupName);
-                     ChatManager.self.addChat(msg, ChatInfo.Type.System);
-                     
-                     return;
-                  }
+
+                  // Check if any of the existing powerups has a higher rarity than the incoming powerup
+                  bool hasHigherRarity = powerupOfType.Any(item => item.powerupRarity > powerup.powerupRarity);
+                  
+                  // Check if any of the existing powerups has the same rarity but higher duration
+                  bool sameRarityHigherDuration = powerupOfType.Where(item => item.powerupRarity == powerup.powerupRarity)
+                                                               .Any(item => item.powerupDuration > powerup.powerupDuration);
+                  
+                  // If any of the condition is true, powerup is not replaceable
+                  powerupReplaceable = !(hasHigherRarity || sameRarityHigherDuration);                  
                }
-               
-               // Replace existing entry with type and create new entry if no entry with type
-               playerEntity.rpc.Target_ReceiveUniquePowerup(powerupType, rarity, collision.transform.position);
-               PowerupManager.self.addReplacePowerupServer(playerEntity.userId, powerup);
+
+               if (powerupReplaceable) {
+                  // Replace existing entry with type and create new entry if no entry with type
+                  playerEntity.rpc.Target_ReceiveUniquePowerup(powerupType, rarity, collision.transform.position);
+                  PowerupManager.self.addReplacePowerupServer(playerEntity.userId, powerup);
+               } else {
+                  playerEntity.rpc.Target_ReceiveIgnoredPowerup(powerupType, rarity, collision.transform.position);
+               }
+
             } else {
                // Create new entry for this powerup
                playerEntity.rpc.Target_ReceivePowerup(powerupType, rarity, collision.transform.position);

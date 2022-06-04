@@ -90,6 +90,7 @@ public class ServerMessageManager : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<UserInfo> users = new List<UserInfo>();
          List<bool> userDeletionStatuses = new List<bool>();
+         List<bool> nameAvailabilityStatuses = new List<bool>();
          List<Armor> armorList = new List<Armor>();
          List<Weapon> weaponList = new List<Weapon>();
          List<Hat> hatList = new List<Hat>();
@@ -240,6 +241,7 @@ public class ServerMessageManager : MonoBehaviour
          if (accountId > 0) {
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
             userDeletionStatuses.AddRange(users.Select(_ => false));
+            nameAvailabilityStatuses.AddRange(users.Select(_ => false));
 
             foreach (UserInfo u in users) {
                UserObjects uObjects = DB_Main.getUserObjects(u.userId);
@@ -250,6 +252,7 @@ public class ServerMessageManager : MonoBehaviour
 
             List<UserInfo> deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, selectedUserId);
             userDeletionStatuses.AddRange(deletedUsers.Select(_ => true));
+            nameAvailabilityStatuses.AddRange(deletedUsers.Select(_ => DB_Main.getUserId(_.username) <= 0));
 
             foreach (UserInfo u in deletedUsers) {
                UserObjects uObjects = DB_Main.getUserObjectsForDeletedUser(u.userId);
@@ -398,7 +401,7 @@ public class ServerMessageManager : MonoBehaviour
                D.adminLog("Account Log: Login Complete with No Characters! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(users.ToArray(), userDeletionStatuses.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(users.ToArray(), userDeletionStatuses.ToArray(), nameAvailabilityStatuses.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray()); ;
                conn.Send(msg);
 
                // Note how long it took us to finish the authentication process
@@ -531,13 +534,11 @@ public class ServerMessageManager : MonoBehaviour
 
       // Make sure the name is available
       int existingUserId = -1;
-      int existingDeletedUserId = -1;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          existingUserId = DB_Main.getUserId(userInfo.username);
-         existingDeletedUserId = DB_Main.getDeletedUserId(userInfo.username);
 
          // Show a "Name Taken" panel on the client
-         if (existingUserId > 0 || existingDeletedUserId > 0) {
+         if (existingUserId > 0) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                sendError(ErrorMessage.Type.NameTaken, conn.connectionId);
             });
@@ -591,16 +592,53 @@ public class ServerMessageManager : MonoBehaviour
          D.warning(string.Format("Invalid account id {0} or user id {1} to restore.", accountId, msg.userId));
          return;
       }
+      
+      // Check username validity
+      if (msg.changeUsername) {
+         // Clean up the casing of the username
+         string uppercaseNewUsername = Util.UppercaseFirst(msg.newUsername.ToLower());
+
+         // Make sure we have a valid account ID for the connections ending this message
+         if (accountId <= 0 || !NameUtil.isValid(uppercaseNewUsername)) {
+            sendError(ErrorMessage.Type.RestoreInvalidUsername, conn.connectionId, $"You can't restore the character. The name '{uppercaseNewUsername}' is not valid.");
+            return;
+         }
+      }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         if (!DB_Main.doesUserExists(msg.userId)) {
-            DB_Main.activateUser(accountId, msg.userId);
+         List<UserInfo> deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, msg.userId);
+         UserInfo deletedUser = deletedUsers.FirstOrDefault();
 
-            UserInfo userInfo = DB_Main.getUserInfoById(msg.userId);
+         if (deletedUser == null) {
+            D.warning($"Couldn't restore a user. accountId: {accountId}, userId: {msg.userId}");
+            return;
+         }
 
-            if (userInfo != null) {
-               DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userInfo.userId, userInfo.username, UserHistoryEventInfo.EventType.Restore, DateTime.UtcNow));
-            }
+         string characterName = msg.changeUsername ? msg.newUsername : deletedUser.username;
+
+         // Make sure the name is available
+         if (DB_Main.getUserId(characterName) > 0 || DB_Main.doesUserExists(msg.userId)) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               sendError(ErrorMessage.Type.RestoreNameTaken, conn.connectionId, $"You can't restore the character. The name '{characterName}' is already taken.");
+            });
+
+            return;
+         }
+
+         if (msg.changeUsername) {
+            string trueNewUsername = Util.UppercaseFirst(msg.newUsername.ToLower());
+            NameChangeInfo info = new NameChangeInfo(accountId, msg.userId, deletedUser.username, accountId, msg.userId, deletedUser.username,
+               trueNewUsername, "Changed name during restore operation", WebToolsUtil.ActionSource.Game);
+
+            DB_Main.changeDeletedUserName(info);
+         }
+
+         DB_Main.activateUser(accountId, msg.userId);
+
+         // Check whether the restore operation was successful
+         UserInfo userInfo = DB_Main.getUserInfoById(msg.userId);
+         if (userInfo != null) {
+            DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userInfo.userId, userInfo.username, UserHistoryEventInfo.EventType.Restore, DateTime.UtcNow));
          }
 
          // Send confirmation to the client, so that they can request their user list again

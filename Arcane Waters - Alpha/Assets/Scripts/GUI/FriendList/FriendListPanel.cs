@@ -282,6 +282,9 @@ public class FriendListPanel : Panel
                   // Instantiate and initialize the row
                   FriendListRow rowFriend = Instantiate(friendRowPrefab, friendRowsContainer.transform, false);
                   rowFriend.setRowForFriendshipInfo(friend);
+                  bool tutorialTownExists = Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out string biomeHomeTownAreaKey);
+                  bool showWarpButton = tutorialTownExists && friend.isOnline && !string.IsNullOrWhiteSpace(biomeHomeTownAreaKey) && Util.areStringsEqual(friend.friendAreaKey, biomeHomeTownAreaKey);
+                  rowFriend.toggleWarpButton(showWarpButton);
                   break;
                default:
                   break;

@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
    #region Public Variables
 
    // The weapons new characters start with
-   public static Dictionary<int, int> STARTING_WEAPON_TYPE_IDS_AND_COUNT = new Dictionary<int, int>() { {25, 50} , {17, 1}, {16, 1}, {35, 1}, {30, 1} };
+   public static Dictionary<int, int> STARTING_WEAPON_TYPE_IDS_AND_COUNT = new Dictionary<int, int>() { { 25, 50 }, { 17, 1 }, { 16, 1 }, { 35, 1 }, { 30, 1 } };
 
    // ID of the hammer item
    public const int HAMMER_ID = 30;
@@ -45,9 +45,6 @@ public class InventoryManager : MonoBehaviour
             inventoryPanel.showBlocker(large: true);
          }
 
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
-
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
 
@@ -60,18 +57,12 @@ public class InventoryManager : MonoBehaviour
             inventoryPanel.showBlocker(large: true);
          }
 
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
-
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
       } else if (castedItem.category == Item.Category.Hats) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
-
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
@@ -80,9 +71,6 @@ public class InventoryManager : MonoBehaviour
             inventoryPanel.showBlocker(large: true);
          }
 
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
-
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetRingId(itemIdToSend);
       } else if (castedItem.category == Item.Category.Necklace) {
@@ -90,18 +78,12 @@ public class InventoryManager : MonoBehaviour
             inventoryPanel.showBlocker(large: true);
          }
 
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
-
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetNecklaceId(itemIdToSend);
       } else if (castedItem.category == Item.Category.Trinket) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
-
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(castedItem.id) ? 0 : castedItem.id;
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetTrinketId(itemIdToSend);
@@ -126,7 +108,7 @@ public class InventoryManager : MonoBehaviour
    protected static void confirmUseItem (Item item) {
       PanelManager.self.confirmScreen.hide();
       Global.player.rpc.Cmd_RequestUseItem(item.id, confirmed: true);
-      
+
       if (InventoryPanel.self.isShowing()) {
          InventoryPanel.self.showBlocker(large: true);
       }
@@ -175,13 +157,13 @@ public class InventoryManager : MonoBehaviour
       if (Global.player is PlayerShipEntity) {
          UserObjects playerUserObj = Global.getUserObjects();
          if (itemId == playerUserObj.weapon.id || itemId == playerUserObj.armor.id || itemId == playerUserObj.hat.id
-            || (playerUserObj.ring != null && itemId == playerUserObj.ring.id) 
-            || (playerUserObj.necklace != null && itemId == playerUserObj.necklace.id) 
+            || (playerUserObj.ring != null && itemId == playerUserObj.ring.id)
+            || (playerUserObj.necklace != null && itemId == playerUserObj.necklace.id)
             || (playerUserObj.trinket != null && itemId == playerUserObj.trinket.id)) {
             return true;
          }
       }
-        
+
       return false;
    }
 
@@ -213,10 +195,10 @@ public class InventoryManager : MonoBehaviour
          objects.hat.itemTypeId = bodyEntity.hatsManager.equipmentDataId;
          objects.hat.id = bodyEntity.hatsManager.equippedHatId;
          objects.hat.paletteNames = bodyEntity.hatsManager.palettes;
-      } else if(player is PlayerShipEntity) {
+      } else if (player is PlayerShipEntity) {
          PlayerShipEntity shipEntity = player.getPlayerShipEntity();
 
-         WeaponStatData weaponData = EquipmentXMLManager.self.weaponStatList.Find(_=>_.weaponType == shipEntity.weaponType);
+         WeaponStatData weaponData = EquipmentXMLManager.self.weaponStatList.Find(_ => _.weaponType == shipEntity.weaponType);
          objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
          objects.weapon.itemTypeId = shipEntity.weaponType;
          objects.weapon.id = shipEntity.weaponType;

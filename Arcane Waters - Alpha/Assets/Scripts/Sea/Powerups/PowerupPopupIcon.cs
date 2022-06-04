@@ -37,11 +37,11 @@ public class PowerupPopupIcon : MonoBehaviour {
       nameText.faceColor = PowerupPanel.self.rarityColors[(int) rarity];
    }
 
-   public void gravitateToPlayer (PlayerShipEntity player, float duration) {
-      StartCoroutine(CO_GravitateToPlayer(player, duration));
+   public void gravitateToPlayer (PlayerShipEntity player, float duration, bool isIgnored = false) {
+      StartCoroutine(CO_GravitateToPlayer(player, duration, isIgnored));
    }
 
-   private IEnumerator CO_GravitateToPlayer (PlayerShipEntity player, float duration) {
+   private IEnumerator CO_GravitateToPlayer (PlayerShipEntity player, float duration, bool isIgnored) {
       iconParent.DOScale(0.5f, duration);
       float moveTime = 0.0f;
 
@@ -59,7 +59,10 @@ public class PowerupPopupIcon : MonoBehaviour {
             player.spritesContainer.transform.DORewind();
             player.spritesContainer.transform.DOPunchScale(Vector3.one * 0.25f, 0.25f);
             iconParent.gameObject.SetActive(false);
-            Instantiate(PrefabsManager.self.powerupPickupEffect, transform.position, Quaternion.identity, transform);
+            if (!isIgnored) {
+               Instantiate(PrefabsManager.self.powerupPickupEffect, transform.position, Quaternion.identity, transform);
+            }
+
             break;
          }
 
@@ -75,15 +78,24 @@ public class PowerupPopupIcon : MonoBehaviour {
          yield return null;
       }
 
-      textFade.fadeInText(_powerupName);
-      _lastIconPickupTime = NetworkTime.time;
-
-      yield return new WaitForSeconds(TEXT_DISPLAY_TIME);
+      if (!isIgnored) {
+         // Show powerup received using the default label if not ignored
+         textFade.fadeInText(_powerupName);
+         _lastIconPickupTime = NetworkTime.time;
+         yield return new WaitForSeconds(TEXT_DISPLAY_TIME);
+      } else {
+         // Instantiate a floating indicator that powerup is ignored
+         FloatingCanvas.instantiateAt(transform.position + _floatTextOffset).asPowerupIgnored();
+      }
+      
       Destroy(this.gameObject);
    }
 
    #region Private Variables
 
+   // The offset distance of floating text when powerup is picked up
+   private Vector3 _floatTextOffset = Vector3.up * 0.4f;
+   
    // The distance at which the icon will be 'picked up' by the player
    private const float PICKUP_DISTANCE = 0.2f;
 

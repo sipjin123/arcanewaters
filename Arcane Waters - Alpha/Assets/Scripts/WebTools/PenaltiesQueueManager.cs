@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 public class PenaltiesQueueManager : GenericGameManager
 {
@@ -14,9 +12,9 @@ public class PenaltiesQueueManager : GenericGameManager
       base.Awake();
 
       // The game will check for new items in the penalties queue, every 10 seconds, only if this is a Cloud Build
-      //if (Util.isCloudBuild()) {
-      InvokeRepeating(nameof(checkForPenaltiesQueue), 0, 10);
-      //}
+      if (Util.isCloudBuild()) {
+         InvokeRepeating(nameof(checkForPenaltiesQueue), 0, 10);
+      }
    }
 
    [ServerOnly]

@@ -113,21 +113,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Range(0.0f, 1.0f)]
    public float playerNameOutlineWidth = 0.35f;
 
-   // The default color of a player's name
-   public Color playerNameColor = Color.white;
-
-   // The default color of the outline around a player's name
-   public Color playerNameOutlineColor = Color.black;
-
-   // The color of the label for demo user
-   public Color32 playerDemoUserColor;
-
-   // The color of the label for admin user
-   public Color32 playerAdminUserColor;
-
-   // The saturation of color for local player
-   public float playerNameColorSaturationLocalPlayer;
-
    // A transform that will follow the player as they jump, as will child objects of it
    public Transform followJumpHeight;
 
@@ -355,15 +340,18 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isLocalPlayer) {
          // If the player is sitting down and tries to move or jump, get up
+         Vector2 movementInput = InputManager.getMovementInput();
+         bool anyMotion = Mathf.Abs(movementInput.x) >= 0.5f || Mathf.Abs(movementInput.y) >= 0.5f;
+
          if (sittingInfo.isSitting) {
-            if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+            if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
                exitChair();
             }
          }
 
          // If the player is emoting and tries to move or jump, stop
          if (isEmoting()) {
-            if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+            if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
                stopEmote();
             }
          }
@@ -1228,28 +1216,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       nameTextOutline.enabled = true;
       nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
 
-      Color fillColor = playerNameColor;
-      if (isDemoUser) {
-         fillColor = playerDemoUserColor;
-      }
-      if (isAdmin()) {
-         fillColor = playerAdminUserColor;
-      }
-
-      if (isLocalPlayer) {
-         if (fillColor.getSaturation() > 0) {
-            fillColor = fillColor.setSaturation(playerNameColorSaturationLocalPlayer);
-         } else {
-            fillColor = fillColor.setLightness(playerNameColorSaturationLocalPlayer);
-         }
-      }
+      Color fillColor = getNameColor(isLocalPlayer, isAdmin(), isDemoUser);
 
       nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", playerNameOutlineWidth);
       nameTextOutline.text = this.entityName;
 
       nameText.fontMaterial.SetColor("_FaceColor", fillColor);
       nameTextOutline.fontMaterial.SetColor("_FaceColor", fillColor);
-      nameTextOutline.fontMaterial.SetColor("_OutlineColor", playerNameOutlineColor);
+      nameTextOutline.fontMaterial.SetColor("_OutlineColor", Color.black);
    }
 
    protected override void autoMove () {

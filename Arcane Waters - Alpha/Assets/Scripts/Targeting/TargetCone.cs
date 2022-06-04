@@ -34,15 +34,30 @@ public class TargetCone : MonoBehaviour {
    }
 
    public void updateCone (bool updateInputs) {
+      // Updating cone angle by using current mouse position
       if (updateInputs) {
-         _toMouse = Util.getMousePos(transform.position) - transform.position;
-         _toMouse = _toMouse.normalized;
+         Vector2 targetDir = Util.getMousePos(transform.position) - transform.position;
+         targetDir = targetDir.normalized;
+         updateConeAngle(targetDir);
+      } else {
+         updateConeAngle(_targetPosition); 
       }
+   }
 
-      float mouseAngle = Util.angle(_toMouse);
+   public void updateCone (Vector3 target) {
+      // Updating cone angle by using a custom target
+      Vector2 targetDir = target - transform.position;
+      targetDir = targetDir.normalized;
+      updateConeAngle(targetDir);
+   }
 
-      Vector2 rotatePos = ExtensionsUtil.Rotate(_toMouse, coneHalfAngle);
-      Vector2 rotateNeg = ExtensionsUtil.Rotate(_toMouse, -coneHalfAngle);
+   private void updateConeAngle (Vector3 target) {
+      _targetPosition = target;
+
+      float mouseAngle = Util.angle(_targetPosition);
+
+      Vector2 rotatePos = ExtensionsUtil.Rotate(_targetPosition, coneHalfAngle);
+      Vector2 rotateNeg = ExtensionsUtil.Rotate(_targetPosition, -coneHalfAngle);
 
       dottedLineLower.lineStart.position = transform.position + (rotateNeg * coneInnerRadius).ToVector3();
       dottedLineLower.lineEnd.position = transform.position + (rotateNeg * coneOuterRadius).ToVector3();
@@ -114,8 +129,8 @@ public class TargetCone : MonoBehaviour {
    // Reference to the material on the cone center's sprite renderer
    private Material _coneMat;
 
-   // Stores the vector from the player to their mouse position
-   private Vector2 _toMouse;
+   // Stores the vector from the player to their target entity
+   private Vector2 _targetPosition;
 
    #endregion
 }

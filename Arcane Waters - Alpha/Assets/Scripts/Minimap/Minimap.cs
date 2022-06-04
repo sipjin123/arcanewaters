@@ -137,6 +137,12 @@ public class Minimap : ClientMonoBehaviour
    // Reference to the player icon
    public MM_PlayerIcon playerIcon;
 
+   // Borders for showing blocked sides
+   public Image borderTop = null;
+   public Image borderBot = null;
+   public Image borderRight = null;
+   public Image borderLeft = null;
+
    #endregion
 
    protected override void Awake () {

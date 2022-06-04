@@ -12,6 +12,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
+   // The type of trigger we can have for showing creation panel
+   public enum ShowReason
+   {
+      None = 0,
+      SpotCreateSelected = 1,
+      CreationFailed = 2
+   }
+
    [Header("Settings")]
    // The color for the background of the spot
    public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
@@ -107,7 +115,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       hide();
    }
 
-   private void initializeValues () {
+   private void initializeValues (ShowReason showReason) {
       nextButton.interactable = false;
 
       // Clear the name input field
@@ -118,7 +126,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       tabbedPanel.initialize();
-      perksGrid.initialize();
+
+      if (showReason != ShowReason.CreationFailed) {
+         perksGrid.initialize();
+      }
 
       // Move panel if resolution is 4K
       if (Screen.width > 3000) {
@@ -126,10 +137,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   public void show (string source) {
+   public void show (ShowReason reason, int spotNumber = 0) {
       canvasGroup.interactable = true;
-      D.debug("Show Character Creation Panel: " + source);
-      initializeValues();
+      D.debug("Show Character Creation Panel: " + reason.ToString() + ", spot: " + spotNumber);
+      initializeValues(reason);
       Util.fadeCanvasGroup(this.canvasGroup, true, FADE_TIME);
       CharacterSpot.lastInteractedSpot.setButtonVisiblity(true);
    }
@@ -265,7 +276,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
 
       CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
-      show("Creation Failed");
+      show(ShowReason.CreationFailed);
    }
 
    public void onCancelButtonClicked () {
