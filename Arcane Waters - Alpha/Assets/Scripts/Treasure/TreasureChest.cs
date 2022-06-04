@@ -295,7 +295,8 @@ public class TreasureChest : NetworkBehaviour {
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
       Biome.Type biome = instance.biome;
-      List<TreasureDropsData> treasureDropsList = (lootGroupId != TreasureDropsData.EMPTY_DROPS || lootGroupId > 0) 
+      bool getTreasureDropsByGroupId = (lootGroupId != TreasureDropsData.EMPTY_DROPS || lootGroupId > 0);
+      List<TreasureDropsData> treasureDropsList = getTreasureDropsByGroupId
          ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) 
          : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
       string itemList = "Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
@@ -304,6 +305,7 @@ public class TreasureChest : NetworkBehaviour {
       for (int i = 0; i < randomChestItemCounter; i ++) {
          // Try to fetch biome based drops if no treasure content is found
          if (treasureDropsList.Count < 1) {
+            D.debug("Could not get contents from loot group: {" + lootGroupId + "}{" + biome + "}{" + rarity + "}");
             treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
             itemList = "Processing Chest Contents from Biome {" + biome + "}:{" + rarity + "}:{" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items";
          }
@@ -608,7 +610,13 @@ public class TreasureChest : NetworkBehaviour {
          Biome.Type biome = instance == null ? Biome.Type.None : instance.biome;
          D.debug("TreasureChest:Invalid Item Name: The item found is: {" + item.category + "}:{" + item.itemTypeId + "}:{" + item.data + "}:{" + biome + "}");
       } else {
-         string msg = string.Format("You found <color=yellow>{0}</color> <color=red>{1}</color>", item.count, itemName);
+         string format = "You found <color=yellow>{0}</color> <color=red>{1}</color>";
+         
+         if (item.category == Item.Category.Blueprint) {
+            format += " (Blueprint)";
+         }
+
+         string msg = string.Format(format, item.count, itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
       }
    }

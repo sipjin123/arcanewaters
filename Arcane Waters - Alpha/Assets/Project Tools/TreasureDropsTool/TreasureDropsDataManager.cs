@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using UnityEngine.Events;
 
 public class TreasureDropsDataManager : MonoBehaviour {
    #region Public Variables
@@ -11,8 +12,14 @@ public class TreasureDropsDataManager : MonoBehaviour {
    // Self
    public static TreasureDropsDataManager self;
 
+   // Determines if the list is generated already
+   public bool hasInitialized;
+
    // Cached drops list
    public Dictionary<int, LootGroupData> lootDropsCollection = new Dictionary<int, LootGroupData>();
+
+   // Unity event after finishing data setup
+   public UnityEvent finishedDataSetup = new UnityEvent();
 
    #endregion
 
@@ -30,6 +37,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
                foreach (TreasureDropsData treasureDrop in lootDropCollection.Value.treasureDropsCollection) {
                   newTreasureDropsData.Add(treasureDrop);
                }
+               newTreasureDropsData = validateLootContents(newTreasureDropsData, lootDropCollection.Key);
                lootDropsCollection.Add(lootDropCollection.Key, lootDropCollection.Value);
 
                // TODO: Remove after successful implementation
@@ -46,6 +54,48 @@ public class TreasureDropsDataManager : MonoBehaviour {
             }
          }
       }
+      hasInitialized = true;
+      finishedDataSetup.Invoke();
+   }
+
+   private List<TreasureDropsData> validateLootContents (List<TreasureDropsData> existingList, int xmlId) {
+      if (existingList == null) {
+         D.debug("Missing list for treasure data {" + xmlId + "}!");
+         return new List<TreasureDropsData>();
+      }
+      List<TreasureDropsData> fetchedList = existingList.FindAll(_ => _.item != null && _.item.category == Item.Category.Blueprint && _.item.data.Length < 1);
+      int invalidContentCount = fetchedList.Count;
+      if (fetchedList == null) {
+         D.debug("Null list for treasure data {" + xmlId + "}!");
+         return new List<TreasureDropsData>();
+      }
+
+      foreach (TreasureDropsData bluePrintItem in fetchedList) {
+         CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(bluePrintItem.item.itemTypeId);
+         if (craftingData != null) {
+            switch (craftingData.resultItem.category) {
+               case Item.Category.Weapon:
+                  bluePrintItem.item.data = Blueprint.WEAPON_DATA_PREFIX;
+                  break;
+               case Item.Category.Armor:
+                  bluePrintItem.item.data = Blueprint.ARMOR_DATA_PREFIX;
+                  break;
+               case Item.Category.Hats:
+                  bluePrintItem.item.data = Blueprint.HAT_DATA_PREFIX;
+                  break;
+               case Item.Category.Ring:
+                  bluePrintItem.item.data = Blueprint.RING_DATA_PREFIX;
+                  break;
+               case Item.Category.Necklace:
+                  bluePrintItem.item.data = Blueprint.NECKLACE_DATA_PREFIX;
+                  break;
+               case Item.Category.Trinket:
+                  bluePrintItem.item.data = Blueprint.TRINKET_DATA_PREFIX;
+                  break;
+            }
+         }
+      }
+      return existingList;
    }
 
    public List<TreasureDropsData> getTreasureDropsFromBiome (Biome.Type biomeType, Rarity.Type rarity) {
@@ -60,7 +110,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
       if (biomeLoots.Count > 0) {
          foreach (LootGroupData lootGroups in biomeLoots) {
             foreach (TreasureDropsData lootData in lootGroups.treasureDropsCollection) {
-               if (lootData.rarity == rarity) { 
+               if (lootData.rarity == rarity) {
                   newTreasureDropList.Add(lootData);
                }
             }
@@ -82,6 +132,14 @@ public class TreasureDropsDataManager : MonoBehaviour {
       return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
    }
 
+   public string getLootGroupName (int groupId) {
+      if (lootDropsCollection.ContainsKey(groupId)) {
+         LootGroupData groupDataLoots = lootDropsCollection[groupId];
+         return groupDataLoots.lootGroupName;
+      }
+      return "";
+   }
+
    public List<TreasureDropsData> getTreasureDropsById (int groupId, Rarity.Type rarity) {
       if (lootDropsCollection.ContainsKey(groupId)) {
          LootGroupData groupDataLoots = lootDropsCollection[groupId];
@@ -96,6 +154,23 @@ public class TreasureDropsDataManager : MonoBehaviour {
                return groupDataLoots.treasureDropsCollection.FindAll(_ => _.rarity == rarity);
             }
          } else {
+            // This block of code makes sure to fetch items that matchest the next rarity group of this current rarity, loop through all rarity until reaches common
+            if (rarity != Rarity.Type.Common && rarity != Rarity.Type.None) {
+               int treasureDropCount = groupDataLoots.treasureDropsCollection.Count;
+               if (treasureDropCount > 0) {
+                  int nextRarityValue = (int) rarity;
+                  int nextItemCountValue = 0;
+                  while (nextItemCountValue == 0 && ((int) rarity) > 1) {
+                     nextRarityValue -= 1;
+                     List<TreasureDropsData> nextTreasureGroup = groupDataLoots.treasureDropsCollection.FindAll(_ => _.rarity == (Rarity.Type) nextRarityValue);
+                     nextItemCountValue = nextTreasureGroup.Count;
+                     if (nextItemCountValue > 0) {
+                        return nextTreasureGroup;
+                     }
+                  }
+               }
+            }
+            
             D.adminLog("This treasure drops data " +
                "{" + groupId + " : " + groupDataLoots.lootGroupName + "} " +
                "does not contain the rarity {" + rarity + "}", D.ADMIN_LOG_TYPE.Treasure);
@@ -126,6 +201,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
                         newTreasureDropsData.Add(treasureDrop);
                      }
 
+                     newTreasureDropsData = validateLootContents(newTreasureDropsData, uniqueKey);
                      lootDropsCollection.Add(uniqueKey, lootGroupData);
 
                      // TODO: Remove after successful implementation
@@ -135,6 +211,9 @@ public class TreasureDropsDataManager : MonoBehaviour {
                   }
                }
             }
+
+            hasInitialized = true;
+            finishedDataSetup.Invoke();
          });
       });
    }
