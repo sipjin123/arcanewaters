@@ -64,15 +64,16 @@ public class MonsterManager : MonoBehaviour {
       mainData.preContactLength = rawData.preContactLength;
       mainData.preMagicLength = rawData.preMagicLength;
       mainData.lootGroupId = rawData.lootGroupId;
+      mainData.isMiniBoss = rawData.isMiniBoss;
    }
 
    public BattlerData getBattlerData (Enemy.Type enemyType) {
-      if (!_monsterDataList.Exists(_=>_.battler.enemyType == enemyType)) {
+      if (!_monsterDataList.Exists(_=>_.battler.enemyType == enemyType && _.isEnabled)) {
          D.debug("Enemy type is not registered: " + enemyType);
          return null;
       }
 
-      return _monsterDataList.Find(_=>_.battler.enemyType == enemyType).battler;
+      return _monsterDataList.FindAll(_=>_.battler.enemyType == enemyType)[0].battler;
    }
 
    public BattlerData getBattlerData (int battlerId) {
@@ -122,6 +123,11 @@ public class MonsterManager : MonoBehaviour {
                   isEnabled = true
                };
                validateMonsterAbilities(newContent);
+
+               // TODO: Remove after adding to web tool
+               if (newContent.battler.enemyType == Enemy.Type.Skelly_Captain || newContent.battler.enemyType == Enemy.Type.Skelly_Captain_Tutorial) {
+                  newContent.battler.isMiniBoss = true;
+               }
                _monsterDataList.Add(newContent);
             } else {
                _monsterDataList.Find(_=>_.battler.enemyType == battlerData.enemyType).battler = battlerData;
@@ -180,6 +186,11 @@ public class MonsterManager : MonoBehaviour {
                         isEnabled = true
                      };
                      validateMonsterAbilities(newXmlContent);
+
+                     // TODO: Remove after adding to web tool
+                     if (newXmlContent.battler.enemyType == Enemy.Type.Skelly_Captain || newXmlContent.battler.enemyType == Enemy.Type.Skelly_Captain_Tutorial) {
+                        newXmlContent.battler.isMiniBoss = true;
+                     }
                      _monsterDataList.Add(newXmlContent);
                   }
 

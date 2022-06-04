@@ -8236,7 +8236,7 @@ public class RPCManager : NetworkBehaviour
       foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
          if (enemyInstance is Enemy) {
             Enemy enemyInRoster = (Enemy) enemyInstance;
-            if (!enemyRoster.Exists(_ => _.enemyType == enemyInRoster.enemyType) && !enemyInRoster.isBossType) {
+            if (!enemyRoster.Exists(_ => _.enemyType == enemyInRoster.enemyType) && !enemyInRoster.isBossType && !enemyInRoster.isMiniBoss) {
                enemyRoster.Add(enemyInRoster);
             }
          }
@@ -8282,7 +8282,7 @@ public class RPCManager : NetworkBehaviour
 
             if (randomizedSpawnChance < 5 && enemyRoster.Count > 0) {
                // Force add combatant enemy here, if no combatant is spawned in the roster then just select whichever is available
-               List<Enemy> nonSupportEnemies = enemyRoster.FindAll(_ => !_.isSupportType);
+               List<Enemy> nonSupportEnemies = enemyRoster.FindAll(_ => !_.isSupportType && !_.isMiniBoss);
                Enemy backupEnemy = (forceCombatantEntry && nonSupportEnemies.Count > 0) ? nonSupportEnemies.ChooseRandom() : enemyRoster.ChooseRandom();
                BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
                modifiedDefenderList.Add(new BattlerInfo {

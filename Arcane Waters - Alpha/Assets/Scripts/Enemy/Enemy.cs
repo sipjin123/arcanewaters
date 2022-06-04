@@ -42,6 +42,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    [SyncVar]
    public bool isBossType;
 
+   // If this is a mini boss
+   public bool isMiniBoss;
+
    // Determines if this battler is a support
    [SyncVar]
    public bool isSupportType;
@@ -126,6 +129,13 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          Debug.LogError("The sort point is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
       }
 
+      // Set our name to something meaningful
+      this.name = "Enemy - " + this.enemyType;
+
+      // Make note of where we start at
+      _startPos = this.sortPoint.transform.position;
+
+      // Update our sprite
       if (this.enemyType != Type.None && !Util.isBatch()) {
          if (!System.Enum.IsDefined(typeof(Enemy.Type), (int) this.enemyType)) {
             Debug.LogError("The enemy type " + this.enemyType + " is not defined in the Enemy.Type enum (area " + areaKey + "). This should not happen and must be investigated.");
@@ -138,36 +148,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          if (bodyAnim.GetComponent<SpriteSwap>() == null) {
             Debug.LogError("Could not find the SpriteSwap component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
-      }
 
-      if (isBossType) {
-         if (bossCollider == null) {
-            Debug.LogError("The bossCollider is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
-         }
-
-         if (GetComponent<Rigidbody2D>() == null) {
-            Debug.LogError("Could not find the Rigidbody2D component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
-         }
-      }
-
-      if (isServer) {
-         if (GetComponent<Seeker>() == null) {
-            Debug.LogError("Could not find the Seeker component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
-         }
-
-         if (AreaManager.self.getArea(areaKey) == null) {
-            Debug.LogError("The area was null when initializing the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
-         }
-      }
-
-      // Set our name to something meaningful
-      this.name = "Enemy - " + this.enemyType;
-
-      // Make note of where we start at
-      _startPos = this.sortPoint.transform.position;
-
-      // Update our sprite
-      if (this.enemyType != Type.None && !Util.isBatch()) {
          string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
          bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
 
@@ -183,6 +164,14 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       bodyAnim.group = animGroupType;
       
       if (isBossType) {
+         if (bossCollider == null) {
+            Debug.LogError("The bossCollider is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+         }
+
+         if (GetComponent<Rigidbody2D>() == null) {
+            Debug.LogError("Could not find the Rigidbody2D component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+         }
+
          bossCollider.SetActive(true);
          enemyBattleCollider.battleCollider.radius = BOSS_COMBAT_COLLIDER;
          GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
@@ -192,14 +181,20 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
       if (isServer) {
          _seeker = GetComponent<Seeker>();
+
          if (_seeker == null) {
-            D.debug("There has to be a Seeker Script attached to the Enemy Prefab");
+            Debug.LogError("Could not find the Seeker component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
+
+         if (AreaManager.self.getArea(areaKey) == null) {
+            Debug.LogError("The area was null when initializing the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+         }
+
+         isMiniBoss = MonsterManager.self.getBattlerData(enemyType).isMiniBoss;
 
          // Only use the graph in this area to calculate paths
          GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
          _seeker.graphMask = GraphMask.FromGraph(graph);
-
          _seeker.pathCallback = setPath_Asynchronous;
 
          InvokeRepeating(nameof(landMonsterBehavior), Random.Range(0f, 1f), 1f);
@@ -278,12 +273,28 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    }
 
    private void destroyCorpse () {
-      Instance currInstance = InstanceManager.self.getInstance(instanceId);
-      if (currInstance != null) {
-         currInstance.removeEntityFromInstance(this);
+      bool isSpawnPointVacant = false;
+      float vacancyDistance = .85f;
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, vacancyDistance);
+      foreach (Collider2D collidedEntity in hits) {
+         if (collidedEntity != null) {
+            if (collidedEntity.GetComponent<PlayerBodyEntity>() != null) {
+               isSpawnPointVacant = true;
+               break;
+            }
+         }
       }
-      EnemyManager.self.spawnEnemyAtLocation(enemyType, InstanceManager.self.getInstance(instanceId), transform.localPosition, respawnTimer);
-      NetworkServer.Destroy(gameObject);
+
+      if (isSpawnPointVacant) {
+         Invoke(nameof(destroyCorpse), respawnTimer);
+      } else {
+         Instance currInstance = InstanceManager.self.getInstance(instanceId);
+         if (currInstance != null) {
+            currInstance.removeEntityFromInstance(this);
+         }
+         EnemyManager.self.spawnEnemyAtLocation(enemyType, InstanceManager.self.getInstance(instanceId), transform.localPosition, respawnTimer);
+         NetworkServer.Destroy(gameObject);
+      }
    }
 
    protected override void FixedUpdate () {
