@@ -1108,12 +1108,15 @@ public class BattleManager : MonoBehaviour {
          foreach (Battler currBattler in battle.getDefenders()) {
             if (currBattler.health > 0) {
                battleEnds = false;
+               break;
             }
          }
       }
-      if (battleEnds) {
+      if (battleEnds && battle.isTeamDead(Battle.TeamType.Defenders)) {
          foreach (Battler currBattler in battle.getAttackers()) {
-            currBattler.player.Target_WinBattle();
+            if (currBattler.player is PlayerBodyEntity) {
+               currBattler.player.Target_WinBattle();
+            }
          }
       }
    }

@@ -152,7 +152,7 @@ public class BattleUIManager : MonoBehaviour {
             if (!abilityButton.cooldownImage.enabled) {
                abilityButton.enableButton();
             } else {
-               D.debug("Cannot enable a button {" + abilityButton.abilityIndex + "},already enabled!");
+               D.debug("Cannot enable a button {" + abilityButton.abilityIndex + "},already enabled! {" + abilityButton.isEnabled + ":" + abilityButton.cooldownImage.enabled + "}");
             }
          } else {
             if (abilityType != AbilityType.Undefined) {
@@ -223,12 +223,20 @@ public class BattleUIManager : MonoBehaviour {
 
                triggerAbility(selectedButton, selectedButton.abilityType);
             } else {
-               D.adminLog("{" + (!selectedButton.onCooldown ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue + "}") + "}" +
-                  "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}", D.ADMIN_LOG_TYPE.AbilityCast);
+               string lastCastBlockTime = "";
+               string castBlockMessage = "";
+               if (_playerLocalBattler) {
+                  if ((NetworkTime.time - _playerLocalBattler.lastCastBlockTime) > 3) {
+                     castBlockMessage = _playerLocalBattler.lastCastBlockReason;
+                     lastCastBlockTime = _playerLocalBattler.lastCastBlockTime.ToString("f1");
+                  }
+               }
+               D.debug("{" + (!selectedButton.onCooldown ? "" : "The ability is in cooldown! {" + selectedButton.cooldownValue.ToString("f1") + "}") + "}" +
+                  "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}{" + castBlockMessage + "}");
             }
          } else {
-            D.adminLog("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
-               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}", D.ADMIN_LOG_TYPE.AbilityCast);
+            D.debug("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
+               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}");
             selectedButton.invalidButtonClick();
          }
       }
@@ -322,8 +330,14 @@ public class BattleUIManager : MonoBehaviour {
                            if (BattleManager.self.getPlayerBattler().canCastAbility() && hasNoCooldownBlocker) {
                               triggerAbility(abilityButton, abilityType);
                            } else {
-                              D.debug("{" + (hasNoCooldownBlocker ? "" : "The ability is in cooldown! {" + abilityButton.cooldownValue + "}") + "}" +
-                                 "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}");
+                              string castBlockMessage = "";
+                              if (_playerLocalBattler) {
+                                 if ((NetworkTime.time - _playerLocalBattler.lastCastBlockTime) > 3) {
+                                    castBlockMessage = _playerLocalBattler.lastCastBlockReason;
+                                 }
+                              }
+                              D.debug("{" + (hasNoCooldownBlocker ? "" : "The ability is in cooldown! {" + abilityButton.cooldownValue.ToString("f1") + "}") + "}" +
+                                 "{" + (BattleManager.self.getPlayerBattler().canCastAbility() ? "" : "User Cant Cast ability") + "}{" + castBlockMessage + "}");
                            }
                         } else {
                            D.debug("Block ability click because of " +

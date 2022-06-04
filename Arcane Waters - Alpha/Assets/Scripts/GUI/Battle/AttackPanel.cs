@@ -49,7 +49,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Send the request to the server
-      D.adminLog("Cancel Ability: " + abilityType + " : " + abilityIndex, D.ADMIN_LOG_TYPE.AbilityCast);
+      D.debug("Cancel Ability: " + abilityType + " : " + abilityIndex);
       Global.player.rpc.Cmd_RequestAbility((int)abilityType, target.netId, abilityIndex, true);
    }
 
@@ -64,11 +64,14 @@ public class AttackPanel : MonoBehaviour {
          return;
       }
 
+      // TODO: Revisit cancel attack feature, previously stashed feature
+      /*
       // Cancels recent ability triggered
       if (isValidRecentAbility() && recentAbilityRequest.abilityIndex == abilityIndex) {
          D.debug("Cancel ability request! {" + abilityIndex + "}");
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
       } 
+      }*/
 
       // Send the request to the server
       recentAbilityRequest.abilityType = AbilityType.Standard;
@@ -76,7 +79,7 @@ public class AttackPanel : MonoBehaviour {
       recentAbilityRequest.abilityIndex = abilityIndex;
 
       if (BattleManager.self.getPlayerBattler().canCastAbility()) {
-         BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false);
+         BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false, "New Cast on Queue");
 
          // Send an rpc request to the server
          List<AttackAbilityData> battlerAbilities = BattleManager.self.getPlayerBattler().getAttackAbilities();
@@ -87,8 +90,10 @@ public class AttackPanel : MonoBehaviour {
          // Show targeting effects locally
          if (target != null) {
             BattleManager.self.getPlayerBattler().startTargeting(target);
+            BattleManager.self.getPlayerBattler().lastCastData = "T:{" + target.netId + ":" + target.health + ":" + target.enemyType + "}{" + abilityIndex + ":" + abilityName + "}";
          } else {
             D.debug("Warning! The target [Null] went missing!");
+            BattleManager.self.getPlayerBattler().lastCastData = "T:{No Target}{" + abilityIndex + ":" + abilityName + "}";
          }
 
          // Trigger the tutorial

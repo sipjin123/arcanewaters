@@ -283,6 +283,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public GameObject debugLogCanvas;
    public Text debugTextLog;
 
+   // Used for logging the cause of user cant cast ability
+   public string lastCastBlockReason;
+   public double lastCastBlockTime;
+   public string lastCastData;
+
    // Caches the sizes of the monsters in pixel for offset purposes
    public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
@@ -2006,6 +2011,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // If the battle has ended, no problem
             if (battle == null) {
                isAttacking = false;
+               D.debug("The battle has Ended! Skip cast ability Toggle");
                yield break;
             }
 
@@ -2022,6 +2028,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             break;
          default:
             isAttacking = false;
+            D.debug("The Attack display cannot be processed! Skip cast ability Toggle");
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
@@ -2952,8 +2959,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return _canCastAbility;
    }
 
-   public void setBattlerCanCastAbility (bool canCast) {
+   public void setBattlerCanCastAbility (bool canCast, string message = "") {
       _canCastAbility = canCast;
+      if (canCast == false) {
+         lastCastBlockTime = NetworkTime.time;
+         lastCastBlockReason = message;
+      }
       isAttacking = false;
 
       if (isLocalBattler()) {
