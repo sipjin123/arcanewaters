@@ -33,7 +33,8 @@ public class ShopToolPanel : MonoBehaviour
       Crop = 3,
       Ship = 4,
       CraftingIngredient = 5,
-      Blueprint = 6
+      Blueprint = 6,
+      LootGroup = 7
    }
 
    // Event for crop selection update

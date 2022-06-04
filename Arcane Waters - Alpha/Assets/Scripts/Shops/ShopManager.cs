@@ -31,6 +31,7 @@ public class ShopManager : MonoBehaviour {
       ShipDataManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       ShipAbilityManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       ShopXMLManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
+      TreasureDropsDataManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => checkIfDataSetupIsFinished());
    }
@@ -42,7 +43,7 @@ public class ShopManager : MonoBehaviour {
       }
 
       // TODO: Confirm if palette swap manager is still needed for shop initialization
-      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && !hasInitialized) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
+      if (TreasureDropsDataManager.self.hasInitialized && ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && !hasInitialized) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
          hasInitialized = true;
 
          // Routinely change out the items
@@ -222,6 +223,37 @@ public class ShopManager : MonoBehaviour {
 
                _items[item.id] = item;
                _itemsByShopId[shopData.shopId].Add(item.id);
+            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.LootGroup) {
+               List<TreasureDropsData> lootGroupData = TreasureDropsDataManager.self.getTreasureDropsById(rawItemData.shopItemTypeIndex);
+               if (lootGroupData != null && lootGroupData.Count > 0) {
+                  Rarity.Type rarity = Rarity.getRandom();
+                  int randomizedPrice = rawItemData.shopItemCostMax;
+                  TreasureDropsData randomizedSelection = lootGroupData.ChooseRandom();
+
+                  string groupName = TreasureDropsDataManager.self.getLootGroupName(rawItemData.shopItemTypeIndex);
+                  D.adminLog("0>Found loot group: {" + shopData.shopName + "}:{" + lootGroupData.Count + "}" +
+                     "1>{" + groupName + ":" + rawItemData.shopItemTypeIndex + "}" +
+                     "2>{" + randomizedSelection.item.category + ":" + randomizedSelection.item.itemTypeId + "}" +
+                     "3>{" + rawItemData.shopItemCategory + ":" + rawItemData.shopItemCategoryIndex + "} " +
+                     "4>{" + randomizedSelection.item.id + "-" + randomizedSelection.item.data + "}", D.ADMIN_LOG_TYPE.ShopContents);
+
+                  Item item = new Item {
+                     category = randomizedSelection.item.category,
+                     itemTypeId = randomizedSelection.item.itemTypeId,
+                     count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
+                     id = _itemId++,
+                     paletteNames = "",
+                     data = randomizedSelection.item.data
+                  };
+
+                  string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                  item.data = data;
+
+                  _items[item.id] = item;
+                  _itemsByShopId[shopData.shopId].Add(item.id);
+               } else {
+                  D.debug("Failed to retrieve loot group {"+rawItemData.shopItemTypeIndex+"} to be used in shop!");
+               }
             }
          }
       }
