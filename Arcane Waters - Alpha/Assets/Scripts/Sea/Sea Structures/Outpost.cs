@@ -39,6 +39,19 @@ public class Outpost : SeaStructureTower, IObserver
    // The food bar we use to display food
    public FoodBar foodBar;
 
+   // The initial material count
+   [SyncVar]
+   public int initialMaterials;
+
+   // The total material required
+   public const int MATERIAL_REQUIREMENT = 500;
+
+   // UI display for supplying required materials
+   public GameObject supplyMaterialPanel, supplyMaterialBlocker;
+   public Text materialRequirementText;
+   public Image materialImage;
+   public Button addMaterialButton;
+
    #endregion
 
    protected override void Awake () {
@@ -59,6 +72,11 @@ public class Outpost : SeaStructureTower, IObserver
       base.Start();
       if (NetworkClient.active) {
          Minimap.self.addOutpostIcon(this);
+         if (initialMaterials < 1) {
+            materialRequirementText.text = 0 + "/" + MATERIAL_REQUIREMENT;
+            supplyMaterialPanel.SetActive(true);
+            supplyMaterialBlocker.SetActive(false);
+         }
       }
    }
 
@@ -82,6 +100,10 @@ public class Outpost : SeaStructureTower, IObserver
    protected override void Update () {
       base.Update();
 
+      if (initialMaterials < MATERIAL_REQUIREMENT) {
+         return;
+      }
+
       if (NetworkClient.active && _isActivated) {
          _outline.setVisibility(canPlayerInteract(Global.player) && _hovered);
       }
@@ -100,6 +122,11 @@ public class Outpost : SeaStructureTower, IObserver
 
    public void onClick () {
       if (!canPlayerInteract(Global.player)) {
+         return;
+      }
+
+      if (initialMaterials < MATERIAL_REQUIREMENT) {
+         D.debug("Cant interact unfinished outpost!");
          return;
       }
 
@@ -137,6 +164,10 @@ public class Outpost : SeaStructureTower, IObserver
    }
 
    private void onFoodFillTriggerStay (Collider2D collider) {
+      if (initialMaterials < MATERIAL_REQUIREMENT) {
+         return;
+      }
+
       // If we have no guild, don't do anything
       if (guildId <= 0) {
          return;
@@ -175,6 +206,40 @@ public class Outpost : SeaStructureTower, IObserver
       }
 
       return null;
+   }
+
+   public void clickedSupplyButton () {
+      int temporaryFixedSupplyValue = 100;
+      if (Global.player != null) {
+         supplyMaterialBlocker.SetActive(true);
+         addMaterialButton.interactable = false;
+         Global.player.rpc.Cmd_AddMaterialToOutpost(Global.player.guildId, Global.player.guildName, areaKey, temporaryFixedSupplyValue);
+      }
+   }
+
+   [TargetRpc]
+   public void Rpc_ReceiveFailMessage (NetworkConnection connection, string message) {
+      ChatManager.self.addChat(message, ChatInfo.Type.System);
+      supplyMaterialBlocker.SetActive(false);
+      addMaterialButton.interactable = true;
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveInitialMaterials (int updatedMaterials, int materialsAdded) {
+      supplyMaterialBlocker.SetActive(false);
+      addMaterialButton.interactable = true;
+      materialRequirementText.text = updatedMaterials + "/" + MATERIAL_REQUIREMENT;
+      if (updatedMaterials >= MATERIAL_REQUIREMENT) {
+         supplyMaterialPanel.SetActive(false);
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_FloatingMessage (string message) {
+      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+      GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+      messageCanvas.transform.position = pos;
+      messageCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = message;
    }
 
    protected override bool isValidTarget (NetEntity entity) {

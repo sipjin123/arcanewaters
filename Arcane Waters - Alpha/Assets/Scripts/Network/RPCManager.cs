@@ -8138,6 +8138,7 @@ public class RPCManager : NetworkBehaviour
       processTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray(), 0, false);
    }
 
+   /* TODO: Comletely remove this code block after confirming that team combat panel is deprecated
    [Command]
    public void Cmd_StartNewTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers) {
       // Checks if the user is an admin  
@@ -8146,7 +8147,7 @@ public class RPCManager : NetworkBehaviour
          return;
       }
       processTeamBattle(defenders, attackers, 0, true);
-   }
+   }*/
 
    private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool isGroupBattle, bool createNewEnemy = false, bool isShipBattle = false) {
       bool isPvpBattle = true;
@@ -10505,10 +10506,12 @@ public class RPCManager : NetworkBehaviour
          int woodCount = DB_Main.getItemCountByType(_player.userId, (int) Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Can now build immediately but needs materials to initiate function
+            /*
             if (woodCount < 500) {
                Target_DisplayServerMessage("You need 500 wood to build an outpost");
                return;
-            }
+            }*/
 
             if (!AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
                return;
@@ -10543,13 +10546,51 @@ public class RPCManager : NetworkBehaviour
             InstanceManager.self.addOutpostToInstance(outpost, instance);
             NetworkServer.Spawn(outpost.gameObject);
 
-            outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
+            //outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
 
             // Remove resources
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, 500);
             });
          });
+      });
+   }
+
+   [Command]
+   public void Cmd_AddMaterialToOutpost (int guildId, string guildName, string areaKey, int supplyValue) {
+      Instance instanceRef = InstanceManager.self.getInstance(_player.instanceId);
+      if (instanceRef == null) {
+         D.debug("Missing Instance! " + _player.instanceId);
+         return;
+      }
+
+      Outpost outpost = InstanceManager.self.getOutpost(instanceRef, guildId, areaKey);
+      if (outpost == null) {
+         D.debug("Missing Outpost!");
+         return;
+      }
+
+      if (outpost.initialMaterials + supplyValue > Outpost.MATERIAL_REQUIREMENT) {
+         int excessValue = Outpost.MATERIAL_REQUIREMENT - (outpost.initialMaterials + supplyValue);
+         supplyValue += excessValue;
+      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> itemList = DB_Main.getCraftingIngredients(_player.userId, new List<CraftingIngredients.Type> { CraftingIngredients.Type.Wood });
+         if (itemList.Count > 0) {
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, supplyValue);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               outpost.initialMaterials += supplyValue;
+               outpost.Rpc_ReceiveInitialMaterials(outpost.initialMaterials, supplyValue);
+               string message = "Received " + supplyValue + " Wood";
+               outpost.Rpc_FloatingMessage(message);
+               if (outpost.initialMaterials >= Outpost.MATERIAL_REQUIREMENT) {
+                  outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
+               }
+            });
+         } else {
+            outpost.Rpc_ReceiveFailMessage(_player.connectionToClient, "Not enough Wood!");
+         }
       });
    }
 
