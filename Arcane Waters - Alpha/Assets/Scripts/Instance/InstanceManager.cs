@@ -257,6 +257,18 @@ public class InstanceManager : MonoBehaviour
       instance.seaStructureCount++;
    }
 
+   public Outpost getOutpost (Instance instance, int guildId, string areaKey) {
+      foreach (SeaStructure entityRef in instance.seaStructures) {
+         if (entityRef is Outpost) {
+            Outpost newOutpost = (Outpost) entityRef;
+            if (newOutpost.guildId == guildId && areaKey == newOutpost.areaKey) {
+               return newOutpost;
+            }
+         }
+      }
+      return null;
+   }
+
    public void addSeaEntityToInstance (SeaEntity seaEntity, Instance instance) {
       instance.entities.Add(seaEntity);
       seaEntity.instanceId = instance.id;
