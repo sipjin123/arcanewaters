@@ -142,6 +142,11 @@ public class Battle : NetworkBehaviour {
 
       // Cycle over all of the participants in the battle
       foreach (Battler battler in getParticipants()) {
+         if (battler == null) {
+            D.debug("Warning! A battler in battle:{" + battleId + "} is corrupted!");
+            continue;
+         }
+
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
          }

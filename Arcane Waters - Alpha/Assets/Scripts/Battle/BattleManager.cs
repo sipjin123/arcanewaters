@@ -47,6 +47,9 @@ public class BattleManager : MonoBehaviour {
    // The action id that iterates per combat action
    public int actionIdIndex = 0;
 
+   // The last battle count log time
+   public double lastBattleCountTime = 0;
+
    #endregion
 
    public void Awake () {
@@ -277,19 +280,41 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected void tickBattles () {
+      List<int> battlesToClear = new List<int>();
       // Call tick() on all of our battles
-      foreach (Battle battle in _battles.Values) {
+      foreach (KeyValuePair<int, Battle> battleData in _battles) {
+         if (battleData.Value == null) {
+            battlesToClear.Add(battleData.Key);
+            //D.debug("Warning! A battle: {" + battleData.Key + "} object is corrupted, clearing now! ActiveBattles:{" + _battles.Count + "}");
+            continue;
+         }
+
          // Don't tick unless the Battle is still in progress
-         if (!battle.isOver()) {
-            Battle.TickResult tickResult = battle.tick();
+         if (!battleData.Value.isOver()) {
+            Battle.TickResult tickResult = battleData.Value.tick();
 
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
-               StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
+               StartCoroutine(endBattleAfterDelay(battleData.Value, END_BATTLE_DELAY));
+               battlesToClear.Add(battleData.Key);
             }
             if (tickResult == Battle.TickResult.Missing) {
-               D.debug("Battle manager has detected a missing battle data: " + battle.battleId);
-               StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
+               D.debug("Battle manager has detected a missing battle data: " + battleData.Value.battleId);
+               StartCoroutine(endBattleAfterDelay(battleData.Value, END_BATTLE_DELAY));
+            }
+         }
+      }
+
+      if (NetworkTime.time - lastBattleCountTime > 600) {
+         D.debug("Total missing battle references are: {" + battlesToClear.Count + "}");
+         lastBattleCountTime = NetworkTime.time;
+         // TODO: Enable this if we wish to clear the ended battles
+         /*foreach (int battleIdToClear in battlesToClear) {
+            _battles.Remove(battleIdToClear);
+         }*/
+      }
+   }
+
    public void initializeClientBattler (int battleId, int userId, uint playerNetId, uint battlerNetId) {
       StartCoroutine(CO_ClientInitializeBattler(battleId, userId, playerNetId, battlerNetId));
    }
@@ -1050,8 +1075,8 @@ public class BattleManager : MonoBehaviour {
 
          // Setup server to declare a battler is dead when the network time reaches the time action ends
          if (target.health <= 0) {
-            StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
-            StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
+            StartCoroutine(CO_KillBattlerAtEndTime(battle, attackAction));
+            StartCoroutine(CO_SendWinNoticeAfterEnd(battle, attackAction));
          }
       } else if (actionToApply is BuffAction) {
          BuffAction buffAction = (BuffAction) actionToApply;
@@ -1115,13 +1140,12 @@ public class BattleManager : MonoBehaviour {
       battlerReference.applyStatusEffect(statusType, statusDuration, abilityId, casterId);
    }
 
-   protected IEnumerator CO_SendWinNoticeAfterEnd (AttackAction attackAction) {
+   protected IEnumerator CO_SendWinNoticeAfterEnd (Battle battle, AttackAction attackAction) {
       // Wait for action end time
       while (NetworkTime.time < attackAction.actionEndTime) {
          yield return 0;
       }
 
-      Battle battle = getBattle(attackAction.battleId);
       if (battle == null) {
          yield return null;
       }
@@ -1152,14 +1176,13 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {
+   protected IEnumerator CO_KillBattlerAtEndTime (Battle battle, AttackAction attackAction) {
       // Wait for action end time
       double startTime = NetworkTime.time;
       while (NetworkTime.time < attackAction.actionEndTime - .1f) {
          yield return 0;
       }
 
-      Battle battle = getBattle(attackAction.battleId);
       if (battle == null) {
          yield return null;
       }
@@ -1195,6 +1218,15 @@ public class BattleManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the gold and XP in the database for the winners
          foreach (Battler participant in battle.getParticipants()) {
+            if (participant == null) {
+               continue;
+            }
+
+            if (participant.player == null) {
+               D.debug("Warning! Missing player for battler for battle-1:{" + battle.battleId + "} when processing end battle");
+               return;
+            }
+
             if (participant.teamType == battle.teamThatWon) {
                int xpWon = baseXpWon;
 
@@ -1224,7 +1256,17 @@ public class BattleManager : MonoBehaviour {
 
       // Update the XP amount on the PlayerController objects for the connected players
       foreach (Battler battler in winningBattlers) {
+         if (battler == null) {
+            D.debug("Warning! Missing battler for battle-1b:{" + battle.battleId + "} when processing end battle");
+            continue;
+         }
+
          if (!battler.isMonster()) {
+            if (battler.player == null) {
+               D.debug("Warning! Missing participan for battle-2:{" + battle.battleId + "} when processing end battle");
+               continue;
+            }
+            
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
 
@@ -1250,7 +1292,9 @@ public class BattleManager : MonoBehaviour {
             }
          } else {
             // Set the enemy entity voyage group id to -1 so they can engage in battle again
-            battler.player.voyageGroupId = -1;
+            if (battler != null && battler.player != null) {
+               battler.player.voyageGroupId = -1;
+            }
          }
       }
 
@@ -1283,6 +1327,16 @@ public class BattleManager : MonoBehaviour {
 
       string playersEndedBattle = "Players: {";
       foreach (Battler winner in winningBattlers) {
+         if (winner == null) {
+            D.debug("Warning! Missing winning battler for battle-3:{" + battle.battleId + "} when processing end battle");
+            continue;
+         }
+
+         if (winner.player == null) {
+            D.debug("Warning! Missing winning player for battler for battle-4:{" + battle.battleId + "} when processing end battle");
+            continue;
+         }
+
          if (winner.enemyType == Enemy.Type.PlayerBattler && !battle.isPvp) {
             winner.player.rpc.endBattle(battle.battleId.ToString());
             playersEndedBattle += ": " + winner.player.userId;
@@ -1310,6 +1364,11 @@ public class BattleManager : MonoBehaviour {
 
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
+         if (battler == null) {
+            D.debug("Warning! Missing for battler for battle-5:{" + battle.battleId + "} when processing end battle");
+            continue;
+         }
+
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
 
@@ -1323,6 +1382,11 @@ public class BattleManager : MonoBehaviour {
                }
             }
          } else {
+            if (battler.player == null) {
+               D.debug("Warning! Missing player for battler for battle-6:{" + battle.battleId + "} when processing end battle");
+               continue;
+            }
+
             if (battler.player is PlayerBodyEntity) {
                if (!battle.isPvp) {
                   // Registers the death of the player in combat
