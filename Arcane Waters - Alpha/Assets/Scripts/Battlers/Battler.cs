@@ -528,32 +528,37 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       if (isAlreadyDead && !hasPlayedDeathAnim) {
-         // Process the client side death animation, will trigger only once for this objects lifetime
-         hasPlayedDeathAnim = true;
+         if (!isJumping) {
+            // Process the client side death animation, will trigger only once for this objects lifetime
+            hasPlayedDeathAnim = true;
 
-         // If the client died, deselect it's target
-         if (_isClientBattler && isAlreadyDead) {
-            BattleUIManager.self.highlightLocalBattler(false);
+            // If the client died, deselect it's target
+            if (_isClientBattler && isAlreadyDead) {
+               BattleUIManager.self.highlightLocalBattler(false);
 
-            if (BattleSelectionManager.self.selectedBattler != null) {
-               D.debug("Battler is already dead in update! Deselecting battler {" + BattleSelectionManager.self.selectedBattler.battlerType + "} now");
-               BattleSelectionManager.self.selectedBattler.deselectThis();
+               if (BattleSelectionManager.self.selectedBattler != null) {
+                  D.debug("Battler is already dead in update! Deselecting battler {" + BattleSelectionManager.self.selectedBattler.battlerType + "} now");
+                  BattleSelectionManager.self.selectedBattler.deselectThis();
+               }
+               BattleSelectionManager.self.selectedBattler = null;
             }
-            BattleSelectionManager.self.selectedBattler = null;
-         }
 
-         // Disable all coroutines, attack display / collision effects / hit animations / battle spot repositioning
-         if (currentActionCoroutine != null) {
-            StopCoroutine(currentActionCoroutine);
-         }
-         StopAllCoroutines();
+            // Disable all coroutines, attack display / collision effects / hit animations / battle spot repositioning
+            if (currentActionCoroutine != null) {
+               StopCoroutine(currentActionCoroutine);
+            }
+            StopAllCoroutines();
 
-         // Trigger the death animation coroutine
-         if (enemyType != Enemy.Type.PlayerBattler) {
-            D.adminLog("Battle Log: This unit {" + enemyType + "} is now playing Death Animation! Animation Frames Should not be stuck!", D.ADMIN_LOG_TYPE.DeathAnimDelay);
+            // Trigger the death animation coroutine
+            if (enemyType != Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Log: This unit {" + enemyType + "} is now playing Death Animation! Animation Frames Should not be stuck!", D.ADMIN_LOG_TYPE.DeathAnimDelay);
+            }
+            StartCoroutine(animateDeath());
+            deathAnimPlayed = true;
+         } else {
+            // TODO: Do logic here when dies while jumping
+            D.debug("Battler: {" + enemyType + "} died while jumping");
          }
-         StartCoroutine(animateDeath());
-         deathAnimPlayed = true;
       }
 
       if (isAlreadyDead && hasPlayedDeathAnim && !captureDeathLog && isLocalBattler()) {

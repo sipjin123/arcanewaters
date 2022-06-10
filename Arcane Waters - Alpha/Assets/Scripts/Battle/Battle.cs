@@ -359,10 +359,10 @@ public class Battle : NetworkBehaviour {
       return null;
    }
 
-   public List<Battler> getParticipants () {
+   public List<Battler> getParticipants (bool logData = false) {
       List<Battler> participants = new List<Battler>();
 
-      participants.AddRange(getAttackers());
+      participants.AddRange(getAttackers(logData));
       participants.AddRange(getDefenders());
 
       return participants;
@@ -380,11 +380,17 @@ public class Battle : NetworkBehaviour {
       return _previousDeadBattlers;
    }
 
-   public List<Battler> getAttackers () {
+   public List<Battler> getAttackers (bool logData = false) {
       List<Battler> list = new List<Battler>();
-
       foreach (int userId in attackers) {
-         list.Add(BattleManager.self.getBattler(userId));
+         Battler battlerRef = BattleManager.self.getBattler(userId);
+         if (battlerRef != null) {
+            list.Add(battlerRef);
+         } else {
+            if (logData) {
+               D.debug("Missing battler reference: {" + userId + "}");
+            }
+         }
       }
 
       return list;
@@ -394,7 +400,10 @@ public class Battle : NetworkBehaviour {
       List<Battler> list = new List<Battler>();
 
       foreach (int userId in defenders) {
-         list.Add(BattleManager.self.getBattler(userId));
+         Battler battlerRef = BattleManager.self.getBattler(userId);
+         if (battlerRef != null) {
+            list.Add(battlerRef);
+         }
       }
 
       return list;

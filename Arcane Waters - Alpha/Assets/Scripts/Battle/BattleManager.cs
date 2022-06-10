@@ -290,6 +290,37 @@ public class BattleManager : MonoBehaviour {
             if (tickResult == Battle.TickResult.Missing) {
                D.debug("Battle manager has detected a missing battle data: " + battle.battleId);
                StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
+   public void initializeClientBattler (int battleId, int userId, uint playerNetId, uint battlerNetId) {
+      StartCoroutine(CO_ClientInitializeBattler(battleId, userId, playerNetId, battlerNetId));
+   }
+
+   private IEnumerator CO_ClientInitializeBattler (int battleId, int userId, uint playerNetId, uint battlerNetId) {
+      yield return new WaitForSeconds(.5f);
+      uint netIdRef = 0;
+      if (Global.player != null && Global.player.userId == userId) {
+         netIdRef = Global.player.netId;
+         double startTime = NetworkTime.time;
+         while (getBattle(battleId) == null) {
+            if ((NetworkTime.time - startTime) > 30) {
+               D.debug("Time has expired! " + (NetworkTime.time - startTime).ToString("f1"));
+               yield return null;
+            }
+            yield return 0;
+         }
+
+         // Make sure that the battler reference exists
+         while (!NetworkIdentity.spawned.ContainsKey(battlerNetId)) {
+            yield return 0;
+         }
+         NetworkIdentity newBattlerConnection = NetworkIdentity.spawned[battlerNetId];
+         Battler battlerRef = newBattlerConnection.GetComponent<Battler>();
+         if (battlerRef != null) {
+            // Initialize the battler for reconnection
+            if (battlerRef.userId > 0 && battlerRef.userId == userId) {
+               battlerRef.player = Global.player;
+               battlerRef.initializeBattler();
+            } else {
+               D.debug("Battler: {" + battlerRef + "} NetID:{" + playerNetId + "} UserId:{" + userId + "} BattlerNetId:{" + battlerNetId + "}");
             }
          }
       }

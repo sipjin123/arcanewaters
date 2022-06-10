@@ -659,6 +659,7 @@ public class MyNetworkManager : NetworkManager
                      // Send player the data of the background and their abilities
                      player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID, activeBattle.isShipBattle);
                      player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
+                     player.rpc.Target_ReceiveBattlerInitialization(player.connectionToClient, activeBattle.battleId, player.netId,activeBattlerObj.netId);
                   } else {
                      D.debug("This user {" + player.userId + "} found a battle that has ended!");
                   }
