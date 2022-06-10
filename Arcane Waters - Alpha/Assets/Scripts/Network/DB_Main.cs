@@ -520,6 +520,50 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new List<int> getUserWithNoAbilities (List<int> abilityIds) {
+      List<int> newUserList = new List<int>();
+      if (abilityIds.Count < 1) {
+         return new List<int>();
+      }
+
+      string abilityString = "B.abilityId = " + abilityIds[0].ToString();
+      if (abilityIds.Count > 1) {
+         int index = 0;
+         foreach (int idEntry in abilityIds) {
+            if (index > 0) {
+               abilityString += " or B.abilityId = " + idEntry;
+               //abilityString += ", " + idEntry;
+            }
+            index++;
+         }
+      }
+      //string newQuery = "SELECT DISTINCT userID FROM ability_table_v2 WHERE abilityId NOT IN (" + abilityString + ")";
+      string newQuery = "SELECT DISTINCT userID from ruby.ability_table_v2 as A " +
+         "WHERE not EXISTS (SELECT userID, abilityId FROM ability_table_v2 as B WHERE A.userID = B.userID and (" + abilityString + "))";
+      //D.debug("New ability is {" + newQuery + "} :: " + getConnection().ConnectionString);
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  newUserList.Add(dataReader.GetInt32("userID"));
+               }
+            }
+
+            return newUserList;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return new List<int>();
+      }
+   }
+   
    public static new List<AbilitySQLData> userAbilities (int usrId, AbilityEquipStatus abilityEquipStatus) {
       string addedCondition = "";
 

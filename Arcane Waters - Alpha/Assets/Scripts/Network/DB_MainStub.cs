@@ -73,6 +73,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static List<int> getUserWithNoAbilities (List<int> abilityIds) {
+      return new List<int>();
+   }
+
    public static List<AbilitySQLData> userAbilities (int usrId, AbilityEquipStatus abilityEquipStatus) {
       return new List<AbilitySQLData>();
    }

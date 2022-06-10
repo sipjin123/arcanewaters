@@ -122,6 +122,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("query_abilities", "Queries abilities to the users", queryAbilities, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "id", "limit" }));
       cm.addCommand(new CommandData("log_battle", "Logs the current battle manager info", logBattle, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
       cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "amount" }));
@@ -3645,6 +3646,63 @@ public class AdminManager : NetworkBehaviour
       }
       D.debug("BatteLog: " + messageResult);
       _player.rpc.Target_ReceiveMsgFromServer(_player.connectionToClient, messageResult);
+   }
+
+   protected void queryAbilities (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      int abilityId;
+      int limit;
+      try {
+         abilityId = int.Parse(list[0]);
+         limit = int.Parse(list[1]);
+         D.debug("Request Query: {" + abilityId + "}{" + limit + "}");
+         Cmd_QueryAbilities(abilityId, limit);
+      } catch {
+         D.debug("Failed to process: " + parameters);
+      }
+   }
+
+   [Command]
+   public void Cmd_QueryAbilities (int abilityId, int limit) {
+      List<int> newList = new List<int>();
+      newList.Add(abilityId);
+      AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(abilityId);
+
+      if (abilityData == null) {
+         D.debug("Missing ability! {" + abilityId + "}");
+      } else {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<int> result = DB_Main.getUserWithNoAbilities(newList);
+            D.debug("Fetched Query Result:{" + result.Count + "}");
+            int counter = 0;
+            if (result.Count < 1) {
+               D.debug("No valid users fetched! {" + abilityId + "}{" + limit + "}");
+               return;
+            }
+            foreach (int newUserId in result) {
+               if (counter >= limit) {
+                  D.debug("Ended query at number: {" + counter + "}, last entry was: {" + newUserId + "}");
+                  break;
+               }
+               counter++;
+               DB_Main.updateAbilitiesData(newUserId, new AbilitySQLData {
+                  abilityID = abilityId,
+                  abilityLevel = 1,
+                  abilityType = AbilityType.Standard,
+                  description = abilityData.itemDescription,
+                  equipSlotIndex = -1,
+                  name = abilityData.itemName
+               });
+            }
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               D.debug("Ended Query Command: Total updated users: {" + counter + "}, used Ability:{" + abilityId + "}");
+            });
+         });
+      }
    }
 
    protected void resetShops () {
