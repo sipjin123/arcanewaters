@@ -174,6 +174,10 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
+      if (getWeaponData() == null) {
+         return 1;
+      }
+
       return getWeaponData().weaponBaseDamage;
    }
 

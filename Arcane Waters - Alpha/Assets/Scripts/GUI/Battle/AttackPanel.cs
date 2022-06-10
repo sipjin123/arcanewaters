@@ -64,19 +64,17 @@ public class AttackPanel : MonoBehaviour {
          return;
       }
 
-      // TODO: Revisit cancel attack feature, previously stashed feature
-      /*
       // Cancels recent ability triggered
+      // NOTE: This is the code block that allows users to cast other abilities while the other abilities are cooling down, re-assess after nextfest
       if (isValidRecentAbility() && recentAbilityRequest.abilityIndex == abilityIndex) {
-         D.debug("Cancel ability request! {" + abilityIndex + "}");
+         D.adminLog("Cancel ability request! {" + abilityIndex + "}", D.ADMIN_LOG_TYPE.CancelAttack);
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
-      } 
-      }*/
-
-      // Send the request to the server
-      recentAbilityRequest.abilityType = AbilityType.Standard;
-      recentAbilityRequest.targetNetId = target.netId;
-      recentAbilityRequest.abilityIndex = abilityIndex;
+      } else {
+         // Send the request to the server
+         recentAbilityRequest.abilityType = AbilityType.Standard;
+         recentAbilityRequest.targetNetId = target.netId;
+         recentAbilityRequest.abilityIndex = abilityIndex;
+      }
 
       if (BattleManager.self.getPlayerBattler().canCastAbility()) {
          BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false, "New Cast on Queue");
