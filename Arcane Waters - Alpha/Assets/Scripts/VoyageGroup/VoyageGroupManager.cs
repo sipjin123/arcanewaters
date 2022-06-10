@@ -420,6 +420,23 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
+   public bool tryGetPOIGroupById (int groupId, out VoyageGroupInfo voyageGroup) {
+      voyageGroup = default;
+
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (KeyValuePair<int, VoyageGroupInfo> voyageInfo in server.voyageGroups) {
+            D.adminLog("--> {" + voyageInfo.Key + ":" + voyageInfo.Value.groupId + ":" + voyageInfo.Value.voyageId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
+         }
+         if (server.voyageGroups.ContainsKey(groupId)) {
+            voyageGroup = server.voyageGroups[groupId];
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   [Server]
    public bool tryGetGroupById (int groupId, out VoyageGroupInfo voyageGroup) {
       voyageGroup = default;
 
