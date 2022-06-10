@@ -183,34 +183,44 @@ public class Battle : NetworkBehaviour {
                   int damagePerTick = 1;
                   switch (currentStatusType) {
                      case Status.Type.Burning:
-                        damagePerTick = (int) (battler.getStartingHealth() * BURN_DAMAGE_PER_TICK_PERCENTAGE);
-                        battler.health -= damagePerTick;
-                        battler.displayedHealth -= damagePerTick;
-                        battler.damageTicks += damagePerTick;
-                        Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Fire);
+                        if (battler.health > 1) {
+                           damagePerTick = (int) (battler.getStartingHealth() * BURN_DAMAGE_PER_TICK_PERCENTAGE);
+                           battler.health -= damagePerTick;
+                           battler.displayedHealth -= damagePerTick;
+                           battler.damageTicks += damagePerTick;
+                           Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Fire);
+                        }
+
+                        // TODO: Enable this if we now allow burn tick to kill enemy
+                        /*
                         if (battler.health < 1) {
                            // Register burn achievement
                            if (debuffData.Value.casterId > 0) {
                               AchievementManager.registerUserAchievement(debuffData.Value.casterId, ActionType.BurnEnemy);
                            }
                            battler.isAlreadyDead = true;
-                        }
+                        }*/
                         break;
                      case Status.Type.Poisoned:
-                        // Boss battlers are more resistant against poison damage ticks
-                        float bossDamageMultiplier = battler.isBossType ? .5f : 1f;
-                        damagePerTick = (int) (battler.health * (POISON_DAMAGE_PER_TICK_PERCENTAGE * bossDamageMultiplier));
-                        battler.health -= damagePerTick;
-                        battler.displayedHealth -= damagePerTick;
-                        battler.damageTicks += damagePerTick;
-                        Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
+                        if (battler.health > 1) {
+                           // Boss battlers are more resistant against poison damage ticks
+                           float bossDamageMultiplier = battler.isBossType ? .5f : 1f;
+                           damagePerTick = (int) (battler.health * (POISON_DAMAGE_PER_TICK_PERCENTAGE * bossDamageMultiplier));
+                           battler.health -= damagePerTick;
+                           battler.displayedHealth -= damagePerTick;
+                           battler.damageTicks += damagePerTick;
+                           Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
+                        }
+
+                        // TODO: Enable this if we now allow poison tick to kill enemy
+                        /*
                         if (battler.health < 1) {
                            // Register poison achievement
                            if (debuffData.Value.casterId > 0) {
                               AchievementManager.registerUserAchievement(debuffData.Value.casterId, ActionType.Poisoned);
                            }
                            battler.isAlreadyDead = true;
-                        }
+                        }*/
                         break;
                      case Status.Type.Stunned:
                         battler.isDisabledByDebuff = true;
