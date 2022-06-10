@@ -264,7 +264,7 @@ public class PlantableTreeManager : MonoBehaviour
          // If this was the last seed of an equipped bag, unequip it
          Item seedBag = DB_Main.getItem(planter.userId, seedBagInstanceId);
          if (seedBag == null || seedBag.count == 0) {
-            planter.rpc.Bkg_RequestSetWeaponId(0);
+            planter.rpc.Bkg_RequestSetWeaponId(0, false);
          }
 
          // Send the updated shortcuts to the client

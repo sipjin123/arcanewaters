@@ -67,10 +67,10 @@ public class AssetSerializationMapsEditor : Editor
             if (index.x >= 0 && index.y >= 0) {
 
                if (Event.current.button == 0) {
-                  modified = _target.tileAttributeMatrixEditor.addAttribute(index, _selectedAttribute);
+                  modified = _target.tileAttributeMatrixEditor.addAttribute(index.x, index.y, _selectedAttribute);
                   Event.current.Use();
                } else if (Event.current.button == 1) {
-                  modified = _target.tileAttributeMatrixEditor.removeAttribute(index, _selectedAttribute);
+                  modified = _target.tileAttributeMatrixEditor.removeAttribute(index.x, index.y, _selectedAttribute);
                   Event.current.Use();
                }
             }
@@ -101,9 +101,9 @@ public class AssetSerializationMapsEditor : Editor
    private int drawAttributeBoxes (SceneView scene, Event e, AssetSerializationMaps targetMaps, TileAttributes.Type attribute) {
       int count = 0;
 
-      for (int i = 0; i < targetMaps.tileAttributeMatrixEditor.attributesMatrixSize.x; i++) {
-         for (int j = 0; j < targetMaps.tileAttributeMatrixEditor.attributesMatrixSize.y; j++) {
-            if (targetMaps.tileAttributeMatrixEditor.hasAttribute(new Vector2Int(i, j), attribute)) {
+      for (int i = 0; i < targetMaps.tileAttributeMatrixEditor.attributeMatrixWidth; i++) {
+         for (int j = 0; j < targetMaps.tileAttributeMatrixEditor.attributeMatrixHeight; j++) {
+            if (targetMaps.tileAttributeMatrixEditor.hasAttribute(i, j, attribute)) {
                count++;
 
                Handles.DrawSolidRectangleWithOutline(
@@ -135,7 +135,7 @@ public class AssetSerializationMapsEditor : Editor
 
       string text = "";
       foreach (TileAttributes.Type t in (TileAttributes.Type[]) Enum.GetValues(typeof(TileAttributes.Type))) {
-         if (targetMaps.tileAttributeMatrixEditor.hasAttribute(hoveredTile, t)) {
+         if (targetMaps.tileAttributeMatrixEditor.hasAttribute(hoveredTile.x, hoveredTile.y, t)) {
             text += t.ToString() + Environment.NewLine;
          }
       }

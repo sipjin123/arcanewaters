@@ -42,6 +42,7 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<AssignedUserInfo>();
       RegisterSerializableClass<PenaltyInfo>();
       RegisterSerializableClass<ServerOverview>();
+      RegisterSerializableClass<InstanceOverview>();
 
       // Log the number of connected players
       if (Util.isAutoTest()) {

@@ -57,12 +57,12 @@ public class PvpArenaInfoPanel : SubPanel
 
    public void onJoinTeamAButtonPressed () {
       hide();
-      PvpArenaPanel.self.joinPvpArena(_pvpArena, PvpTeamType.A);
+      PvpArenaPanelSection.self.joinPvpArena(_pvpArena, PvpTeamType.A);
    }
 
    public void onJoinTeamBButtonPressed () {
       hide();
-      PvpArenaPanel.self.joinPvpArena(_pvpArena, PvpTeamType.B);
+      PvpArenaPanelSection.self.joinPvpArena(_pvpArena, PvpTeamType.B);
    }
 
    #region Private Variables

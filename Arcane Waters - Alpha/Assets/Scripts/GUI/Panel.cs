@@ -21,9 +21,9 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31,
       Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35,
       CustomMaps = 38, StepCompletedNotification = 39, Auction = 41, Keybindings = 42,
-      ReturnToCurrentVoyagePanel = 43, CharacterInfo = 44, AdminVoyage = 45, PvpScoreBoard = 46,
-      PvpArena = 47, Admin = 48, PvpShop = 49, VisitPanel = 50, GIFReplaySettings = 51, PvpNpc = 52,
-      Outpost = 53
+      ReturnToCurrentVoyagePanel = 43, CharacterInfo = 44, AdminInstanceList = 45, PvpScoreBoard = 46,
+      Admin = 48, PvpShop = 49, VisitPanel = 50, GIFReplaySettings = 51, PvpNpc = 52,
+      Outpost = 53, NoticeBoard = 54
    }
 
    // The type of Panel this is

@@ -118,10 +118,14 @@ public class NetworkedServer : NetworkedBehaviour
 
          // If the user has been offline for too long, remove him from the assigned users
          if ((DateTime.UtcNow - DateTime.FromBinary(userInfo.lastOnlineTime)).TotalSeconds > DisconnectionManager.SECONDS_UNTIL_PLAYERS_DESTROYED * 1.5f) {
-            assignedUserIds.Remove(userInfo.userId);
-            MyNetworkManager.self.onUserUnassignedFromServer(userInfo.userId);
+            removeAssignedUser(userInfo.userId);
          }
       }
+   }
+
+   public void removeAssignedUser (int userId) {
+      assignedUserIds.Remove(userId);
+      MyNetworkManager.self.onUserUnassignedFromServer(userId);
    }
 
    public void updateVoyageInstance (Instance instance) {
@@ -1087,7 +1091,7 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_PlayAchievementSfxForPlayer (int userId) {
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
-      if(targetEntity != null) {
+      if (targetEntity != null) {
          targetEntity.rpc.Target_PlayAchievementSfx();
       }
    }
@@ -1209,6 +1213,61 @@ public class NetworkedServer : NetworkedBehaviour
 
    #region Network Overview Reports
 
+   public void requestNetworkInstanceList (RPCManager man) {
+      // Note down the manager that requested this, so we can find it later
+      _networkInstanceListRequesters[man.netId] = man;
+
+      // Ask the master server to send over all server overviews
+      InvokeServerRpc(MasterServer_RequestNetworkInstanceList, man.netId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_RequestNetworkInstanceList (uint forNetId) {
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         // Ask for an instance list for every server that is not the master, we are on the master right now
+         if (!server.isMasterServer()) {
+            InvokeClientRpcOnClient(Server_RequestInstanceList, server.OwnerClientId, forNetId);
+         }
+      }
+
+      // We want to create the overview for master server itself as well
+      foreach (InstanceOverview instance in createInstanceOverviewList()) {
+         receiveInstanceOverview(instance, forNetId);
+      }
+   }
+
+   public static List<InstanceOverview> createInstanceOverviewList () {
+      return InstanceManager.self.createOverviewForAllInstances();
+   }
+
+   private void receiveInstanceOverview (InstanceOverview instance, uint forNetId) {
+      InvokeClientRpcOnOwner(Server_ReceiveServerInstanceList, instance, forNetId);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveServerInstanceList (InstanceOverview ow, uint forNetId) {
+      // If the requester is still there, pass on the overview
+      if (_networkInstanceListRequesters.TryGetValue(forNetId, out RPCManager man)) {
+         if (man != null) {
+            man.Target_ReceiveServerInstanceOverview(ow);
+         }
+      }
+   }
+
+   [ClientRPC]
+   public void Server_RequestInstanceList (uint forNetId) {
+      // This specific instance should be the remote-server that originally requested the overview
+      // ServerNetworkingManager.self.server should be the owner of this server that we want information about
+      foreach (InstanceOverview instance in createInstanceOverviewList()) {
+         InvokeServerRpc(MasterServer_ReceiveInstanceOverview, instance, forNetId);
+      }
+   }
+
+   [ServerRPC(RequireOwnership = false)]
+   public void MasterServer_ReceiveInstanceOverview (InstanceOverview ow, uint forNetId) {
+      receiveInstanceOverview(ow, forNetId);
+   }
+
    public static ServerOverview createServerOverview () {
       // Create server overview about the CURRENT OWNER server, not his particular entity
       ServerOverview ow = new ServerOverview {
@@ -1217,10 +1276,10 @@ public class NetworkedServer : NetworkedBehaviour
          machineName = Environment.MachineName,
          processName = System.Diagnostics.Process.GetCurrentProcess()?.ProcessName,
          fps = ServerNetworkingManager.self.server.getAverageFPS(),
-         instances = InstanceManager.self.createOverviewForAllInstances(),
+         playerCount = InstanceManager.self.getPlayerCountAllInstances(),
+         instanceCount = InstanceManager.self.getAllInstances().Count,
          uptime = NetworkTime.time
       };
-
       return ow;
    }
 
@@ -1288,6 +1347,9 @@ public class NetworkedServer : NetworkedBehaviour
    #endregion
 
    #region Private Variables
+
+   // Which users are requesting network instance list
+   private Dictionary<uint, RPCManager> _networkInstanceListRequesters = new Dictionary<uint, RPCManager>();
 
    // Which users are requesting network overview
    private Dictionary<uint, RPCManager> _networkOverviewRequesters = new Dictionary<uint, RPCManager>();

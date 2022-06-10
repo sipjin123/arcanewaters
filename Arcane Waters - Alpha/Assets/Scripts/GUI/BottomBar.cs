@@ -104,6 +104,8 @@ public class BottomBar : MonoBehaviour {
 
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      panel.toggleShowWindowValid(true);
+      
       if (!panel.isShowing()) {
          Global.player.rpc.Cmd_RequestPvpStatPanel();
       }
@@ -112,6 +114,10 @@ public class BottomBar : MonoBehaviour {
    public void disablePvpStatPanel () {
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      
+      // Toggle show validity to false to ensure response from server wont show panel after button is released
+      panel.toggleShowWindowValid(false);
+      
       if (panel.isShowing() && !panel.isGameEnded) {
          PanelManager.self.togglePanel(Panel.Type.PvpScoreBoard);
       }

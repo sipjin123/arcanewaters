@@ -402,13 +402,49 @@ public class Item
 
       List<string> finalPalettes = new List<string>();
 
-      List<string> sourcePrimaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
-      List<string> sourceSecondaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
-      List<string> sourceAccentList = sourcePaletteArray.Where(_ => _.ToLower().Contains("accent")).ToList();
+      List<string> sourcePrimaryList = new List<string>();
+      List<string> sourceSecondaryList = new List<string>();
+      List<string> sourceAccentList = new List<string>();
 
-      List<string> destinationPrimaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
-      List<string> destinationSecondaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
-      List<string> destinationAccentList = destinationPaletteArray.Where(_ => _.ToLower().Contains("accent")).ToList();
+      foreach (var sourcePaletteStr in sourcePaletteArray) {
+         var sourcePalette = PaletteSwapManager.self.getPaletteByName(sourcePaletteStr);
+
+         if (sourcePalette != null) {
+            if (sourcePalette.isPrimary()) {
+               sourcePrimaryList.Add(sourcePalette.paletteName);
+            }
+
+            if (sourcePalette.isSecondary()) {
+               sourceSecondaryList.Add(sourcePalette.paletteName);
+            }
+
+            if (sourcePalette.isAccent()) {
+               sourceAccentList.Add(sourcePalette.paletteName);
+            }
+         }
+      }
+
+      List<string> destinationPrimaryList = new List<string>();
+      List<string> destinationSecondaryList = new List<string>();
+      List<string> destinationAccentList = new List<string>();
+
+      foreach (var destinationPaletteStr in destinationPaletteArray) {
+         var destinationPalette = PaletteSwapManager.self.getPaletteByName(destinationPaletteStr);
+
+         if (destinationPalette != null) {
+            if (destinationPalette.isPrimary()) {
+               destinationPrimaryList.Add(destinationPalette.paletteName);
+            }
+
+            if (destinationPalette.isSecondary()) {
+               destinationSecondaryList.Add(destinationPalette.paletteName);
+            }
+
+            if (destinationPalette.isAccent()) {
+               destinationAccentList.Add(destinationPalette.paletteName);
+            }
+         }
+      }
 
       finalPalettes.AddRange(sourcePrimaryList.Any() ? sourcePrimaryList : destinationPrimaryList);
       finalPalettes.AddRange(sourceSecondaryList.Any() ? sourceSecondaryList : destinationSecondaryList);

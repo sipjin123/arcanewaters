@@ -2,6 +2,7 @@
 using MapCreationTool.Serialization;
 using System.Linq;
 using UnityEngine.Tilemaps;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using MapCustomization;
@@ -22,55 +23,9 @@ namespace MapCreationTool
          }
       }
 
-      public static void instantiateTilemapLayer (List<TilemapLayer> tilemaps, MapInfo mapInfo, ExportedLayer001 layer,
-            Transform tilemapParent, Transform collisionTilemapParent, Biome.Type biome, ref int unrecognizedTiles) {
-
-         // Create the tilemap gameobject
-         var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, tilemapParent);
-         tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
-         tilemap.gameObject.name = layer.name + " " + layer.sublayer;
-
-         // Update z axis sorting 
-         Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
-         if (layer.name.Contains(Area.BUILDING_LAYER)) {
-            for (int i = 0; i < positions.Length; i++) {
-               Vector3Int pos = positions[i];
-               positions[i] = new Vector3Int(pos.x, pos.y, ZSnap.getZ(pos));
-            }
-         }
-
-         TileBase[] tiles = layer.tiles
-            .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), biome))
-            .Where(t => t != null)
-            .ToArray();
-
-         // Check if the layer is recognized
-         unrecognizedTiles += layer.tiles.Length - tiles.Length;
-
-         // Ensure the 'sprite' of animated tiles is set
-         foreach (TileBase tileBase in tiles) {
-            AnimatedTile aTile = tileBase as AnimatedTile;
-            if (aTile != null) {
-               if (aTile.sprite == null && aTile.m_AnimatedSprites.Length > 0) {
-                  aTile.sprite = aTile.m_AnimatedSprites[0];
-               }
-            }
-         }
-
-         // Set the tiles in the tilemap
-         tilemap.SetTiles(positions, tiles);
-
-         // Add the layer to the list
-         tilemaps.Add(new TilemapLayer {
-            tilemap = tilemap,
-            fullName = layer.name + " " + layer.sublayer ?? "",
-            name = layer.name ?? "",
-            type = layer.type
-         });
-      }
-
       public static MapChunk instantiateTilemapColliderChunk (string areaKey, ExportedProject001 exportedProject,
          Transform collisionTilemapChunkParent, Biome.Type biome, RectInt bounds) {
+
          // Instantiate the grid chunk
          var chunk = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapChunkTemplate, collisionTilemapChunkParent);
          chunk.transform.localPosition = Vector3.zero;
@@ -95,7 +50,7 @@ namespace MapCreationTool
             .ToArray();
             TileBase[] tiles = layer.tiles
                .Where(t => t.c == 1 && t.x >= bounds.xMin && t.x < bounds.xMax && t.y >= bounds.yMin && t.y < bounds.yMax)
-               .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), biome))
+               .Select(t => AssetSerializationMaps.getTile(t.i, t.j, biome))
                .Where(t => t != null)
                .ToArray();
 
@@ -227,21 +182,39 @@ namespace MapCreationTool
       }
 
       public static Bounds calculateBounds (ExportedProject001 project) {
-         Bounds bounds = new Bounds();
+         int minX = int.MaxValue;
+         int minY = int.MaxValue;
+         int maxX = int.MinValue;
+         int maxY = int.MinValue;
 
          foreach (var layer in project.layers) {
             foreach (var tile in layer.tiles) {
-               bounds.min = new Vector3(Mathf.Min(tile.x, bounds.min.x), Mathf.Min(tile.y, bounds.min.y), 0);
-               bounds.max = new Vector3(Mathf.Max(tile.x, bounds.max.x), Mathf.Max(tile.y, bounds.max.y), 0);
+               minX = Mathf.Min(tile.x, minX);
+               minY = Mathf.Min(tile.y, minY);
+               maxX = Mathf.Max(tile.x, maxX);
+               maxY = Mathf.Max(tile.y, maxY);
             }
          }
+
+         if (minX == int.MaxValue) {
+            // Project has no tiles
+            minX = 0;
+            minY = 0;
+            maxX = 0;
+            maxY = 0;
+         }
+
+         Bounds bounds = new Bounds();
+
+         bounds.min = new Vector3(minX, minY, 0);
+         bounds.max = new Vector3(maxX, maxY, 0);
 
          bounds.max += new Vector3(1, 1, 0);
 
          return bounds;
       }
 
-      public static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
+      public static IEnumerator CO_InstantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> seaMonstersData = new List<ExportedPrefab001>();
@@ -268,92 +241,100 @@ namespace MapCreationTool
          int cropSpotCounter = 0;
          int spawnIdCounter = 0;
 
+         int waitFrameCounter = 0;
          foreach (var prefab in project.prefabs) {
+            // Wait a frame periodically to avoid freezing for a long time
+            waitFrameCounter++;
+            if (waitFrameCounter > 100) {
+               waitFrameCounter = 0;
+               yield return null;
+            }
+
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
             if (original == null) {
                unrecognizedPrefabs++;
                continue;
             }
 
-            if (original.GetComponent<CropSpot>() != null) {
+            if (original.TryGetComponent(out CropSpot csp)) {
                cropSpotCounter++;
-               original.GetComponent<CropSpot>().cropNumber = cropSpotCounter;
-               original.GetComponent<CropSpot>().areaKey = area.areaKey;
+               csp.cropNumber = cropSpotCounter;
+               csp.areaKey = area.areaKey;
             }
 
-            if (original.GetComponent<Enemy>() != null) {
+            if (original.TryGetComponent(out Enemy _)) {
                if (prefab.d != null) {
                   enemyData.Add(prefab);
                }
-            } else if (original.GetComponent<SeaMonsterEntity>() != null) {
+            } else if (original.TryGetComponent(out SeaMonsterEntity _)) {
                if (prefab.d != null) {
                   seaMonstersData.Add(prefab);
                }
-            } else if (original.GetComponent<TreasureSite>() != null) {
+            } else if (original.TryGetComponent(out TreasureSite _)) {
                if (prefab.d != null) {
                   treasureSiteData.Add(prefab);
                }
-            } else if (original.GetComponent<OreSpot>() != null) {
+            } else if (original.TryGetComponent(out OreSpot _)) {
                if (prefab.d != null) {
                   oreData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpTower>() != null) {
+            } else if (original.TryGetComponent(out PvpTower _)) {
                if (prefab.d != null) {
                   pvpTowerData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpBase>() != null) {
+            } else if (original.TryGetComponent(out PvpBase _)) {
                if (prefab.d != null) {
                   pvpBaseData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpShipyard>() != null) {
+            } else if (original.TryGetComponent(out PvpShipyard _)) {
                if (prefab.d != null) {
                   pvpShipyardTowerData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpWaypoint>() != null) {
+            } else if (original.TryGetComponent(out PvpWaypoint _)) {
                if (prefab.d != null) {
                   pvpWaypointsData.Add(prefab);
                }
-            } else if (original.GetComponent<BossSpawner>() != null) {
+            } else if (original.TryGetComponent(out BossSpawner _)) {
                if (prefab.d != null) {
                   bossSpawnerData.Add(prefab);
                }
-            } else if (original.GetComponent<WindowInteractable>() != null) {
+            } else if (original.TryGetComponent(out WindowInteractable wi)) {
                if (prefab.d != null) {
-                  if (original.GetComponent<WindowInteractable>().isLargeWindow) {
+                  if (wi.isLargeWindow) {
                      largeWindowInteractData.Add(prefab);
                   } else {
                      windowInteractData.Add(prefab);
                   }
                }
-            } else if (original.GetComponent<VaryingStateObject>()) {
+            } else if (original.TryGetComponent(out VaryingStateObject _)) {
                if (prefab.d != null) {
                   varyingStateObjectData.Add(prefab);
                }
-            } else if (original.GetComponent<NPC>() != null) {
+            } else if (original.TryGetComponent(out NPC _)) {
                if (prefab.d != null) {
                   npcData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpMonsterSpawner>() != null) {
+            } else if (original.TryGetComponent(out PvpMonsterSpawner _)) {
                if (prefab.d != null) {
                   pvpMonsterSpawnerData.Add(prefab);
                }
-            } else if (original.GetComponent<ShipEntity>() != null) {
+            } else if (original.TryGetComponent(out ShipEntity _)) {
                if (prefab.d != null) {
                   shipData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpLootSpawn>() != null) {
+            } else if (original.TryGetComponent(out PvpLootSpawn _)) {
                if (prefab.d != null) {
                   pvpLootSpawnData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpCaptureTargetHolder>() != null) {
+            } else if (original.TryGetComponent(out PvpCaptureTargetHolder _)) {
                if (prefab.d != null) {
                   pvpCaptureTargetHolderData.Add(prefab);
                }
-            } else if (original.GetComponent<WhirlpoolEffector>() != null) {
+            } else if (original.TryGetComponent(out WhirlpoolEffector _)) {
                if (prefab.d != null) {
                   whirlpoolData.Add(prefab);
                }
-            } else if (original.GetComponent<PvpNpc>() != null) { 
+            } else if (original.TryGetComponent(out PvpNpc _)) {
                if (prefab.d != null) {
                   pvpNpcData.Add(prefab);
                }
@@ -367,7 +348,7 @@ namespace MapCreationTool
                   prefabParent);
 
                // Register treasure spot prefab id 
-               if (original.GetComponent<TreasureSpot>() != null) {
+               if (original.TryGetComponent(out TreasureSpot _)) {
                   int prefabId = 0;
                   foreach (DataField field in prefab.d) {
                      if (field.k.CompareTo(DataField.PLACED_PREFAB_ID) == 0) {
@@ -379,7 +360,7 @@ namespace MapCreationTool
                      }
                   }
                   pref.GetComponent<TreasureSpot>().mapDataId = prefabId;
-               } else if (original.GetComponent<DisplayAnvil>() != null) {
+               } else if (original.TryGetComponent(out DisplayAnvil _)) {
                   if (prefab.d != null) {
                      foreach (DataField field in prefab.d) {
                         if (field.k.CompareTo(DataField.IS_FUNCTIONAL_ANVIL) == 0) {
@@ -389,7 +370,7 @@ namespace MapCreationTool
                         }
                      }
                   }
-               } else if (original.GetComponent<SecretEntranceHolder>() != null) {
+               } else if (original.TryGetComponent(out SecretEntranceHolder _)) {
                   SecretEntranceHolder secretEntranceObj = pref.GetComponent<SecretEntranceHolder>();
                   if (prefab.d != null) {
                      // Make sure obj has correct data
@@ -413,32 +394,32 @@ namespace MapCreationTool
                         D.debug("No warp assigned to secret entrance!");
                      }
                   }
-               } else if (original.GetComponent<Spawn>() != null) {
+               } else if (original.TryGetComponent(out Spawn _)) {
                   pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
-               } else if (original.GetComponent<SpiderWeb>() != null) {
+               } else if (original.TryGetComponent(out SpiderWeb _)) {
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
-               } else if (original.GetComponent<GenericActionTrigger>() != null) {
+               } else if (original.TryGetComponent(out GenericActionTrigger _)) {
                   pref.GetComponent<GenericActionTrigger>().biomeType = project.biome;
-               } else if (original.GetComponent<OreNodeMapController>() != null) {
+               } else if (original.TryGetComponent(out OreNodeMapController _)) {
                   oreController = pref.GetComponent<OreNodeMapController>();
-               } else if (original.GetComponent<OpenWorldController>() != null) {
+               } else if (original.TryGetComponent(out OpenWorldController _)) {
                   openWorldController = pref.GetComponent<OpenWorldController>();
-               } else if (original.GetComponent<OpenWorldSpawnBlocker>() != null) {
+               } else if (original.TryGetComponent(out OpenWorldSpawnBlocker _)) {
                   OpenWorldSpawnBlocker openWorldBlocker = pref.GetComponent<OpenWorldSpawnBlocker>();
                   area.openWorldSpawnBlockers.Add(openWorldBlocker);
-               } else if (original.GetComponent<PvpShopEntity>()) {
+               } else if (original.TryGetComponent(out PvpShopEntity _)) {
                   PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
                   if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey) && !VoyageManager.isPvpArenaArea(area.areaKey)) {
                      shopEntity.enableShop(false);
                   }
                   shopEntity.isSeaShop = area.isSea;
-               } else if (original.GetComponent<Butterfly>() != null) {
+               } else if (original.TryGetComponent(out Butterfly _)) {
                   Butterfly butterfly = pref.GetComponent<Butterfly>();
                   butterfly.setAreaKey(area.areaKey);
                }
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
-                  biomable.setBiome(project.biome);
+                  biomable.setBiome(project.biome, !Mirror.NetworkClient.active);
                }
 
                foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
@@ -465,8 +446,7 @@ namespace MapCreationTool
                   }
                }
 
-               CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
-               if (customizablePrefab != null) {
+               if (pref.TryGetComponent(out CustomizablePrefab customizablePrefab)) {
                   customizablePrefab.isPermanent = true;
 
                   customizablePrefab.mapEditorState.localPosition = pref.transform.localPosition;

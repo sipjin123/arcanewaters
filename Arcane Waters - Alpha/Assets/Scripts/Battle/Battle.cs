@@ -82,7 +82,7 @@ public class Battle : NetworkBehaviour {
       this.battleBoard = BattleManager.self.battleBoard;
 
       // Set battle end UI events
-      onBattleEnded.AddListener(()=> {
+      onBattleEnded.AddListener(() => {
          BattleUIManager.self.disableBattleUI();
       });
 

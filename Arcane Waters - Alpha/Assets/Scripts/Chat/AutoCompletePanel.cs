@@ -169,6 +169,13 @@ public class AutoCompletePanel : MonoBehaviour {
 
       if (_autoCompleteCommands != null) {
          foreach (CommandData data in _autoCompleteCommands) {
+            if (!Global.player.isAdmin()) {
+               // Skip admin auto complete option if player is not an admin
+               if (_adminPrefix.Contains(data.getPrefix())) {
+                  continue;
+               }
+            }
+            
             AutoCompleteOption option = _autoCompleteOptions[optionCount];
             option.autocompleteParameter = "";
             option.gameObject.SetActive(true);
@@ -320,6 +327,9 @@ public class AutoCompletePanel : MonoBehaviour {
 
    // Whether we have a button selected currently
    private bool _anyButtonSelected = false;
+
+   // Reference to admin prefixes
+   private readonly List<string> _adminPrefix = ChatUtil.commandTypePrefixes[CommandType.Admin];
 
    #endregion
 }

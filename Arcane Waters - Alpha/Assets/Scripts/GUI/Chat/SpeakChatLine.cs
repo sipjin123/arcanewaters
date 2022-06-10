@@ -73,7 +73,9 @@ public class SpeakChatLine : ChatLine, IScrollHandler
    public override void OnPointerClick (PointerEventData eventData) {
       if (isValidInteraction()) {
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
-            ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+            NoticeBoardPanel noticeBoardPanel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
+            PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+            noticeBoardPanel.refreshPanel(NoticeBoardPanel.Mode.PvpArena);
          } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
             if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {
                BottomBar.self.toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.InvitesReceived);

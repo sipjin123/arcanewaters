@@ -11,12 +11,6 @@ public class AdminPanelServerOverview : MonoBehaviour
 {
    #region Public Variables
 
-   // Instance row prefab
-   public AdminPanelInstanceOverview instancePrefab = null;
-
-   // Instance row parent
-   public RectTransform instanceParent = null;
-
    // Button used to expand additional info
    public Button expandButton = null;
 
@@ -31,6 +25,12 @@ public class AdminPanelServerOverview : MonoBehaviour
 
    // Text for displaying round trip time from server to master server
    public Text rttText = null;
+
+   // Text for displaying server port
+   public Text portText = null;
+
+   // Text for displaying instance count
+   public Text instanceCountText = null;
 
    // Gameobject holding additional info that can be expanded
    public GameObject descriptionRow = null;
@@ -62,20 +62,13 @@ public class AdminPanelServerOverview : MonoBehaviour
    public void setServerOverview (ServerOverview overview) {
       data = overview;
 
+      portText.text = overview.port.ToString();
       titleText.text = "[" + overview.port + "] " + overview.machineName + " " + overview.processName;
       fpsText.text = "FPS: " + overview.fps;
       rttText.text = "RTT to Master: " + overview.toMasterRTT;
-      playerCountText.text = "Players: " + overview.instances.Sum(i => i.count);
+      playerCountText.text = "Players: " + overview.playerCount;
       uptimeText.text = "Uptime: " + TimeSpan.FromSeconds(overview.uptime).ToString(@"dd\.hh\:mm\:ss");
-
-      foreach (AdminPanelInstanceOverview i in instanceParent.GetComponentsInChildren<AdminPanelInstanceOverview>()) {
-         Destroy(i.gameObject);
-      }
-
-      foreach (InstanceOverview iOverview in overview.instances) {
-         AdminPanelInstanceOverview i = Instantiate(instancePrefab, instanceParent);
-         i.apply(iOverview);
-      }
+      instanceCountText.text = "Instances: " + overview.instanceCount;
    }
 
    public void getLog () {

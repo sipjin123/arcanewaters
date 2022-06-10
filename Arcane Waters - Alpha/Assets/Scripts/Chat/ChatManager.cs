@@ -349,6 +349,24 @@ public class ChatManager : GenericGameManager
    }
 
    private void sendWhisperMessageToServer (string message) {
+      // If message contains admin prefix cancel whisper and execute chat command
+      if (_adminPrefixes.Any(item => message.Contains(item))) {
+         // Extract recipient name from message
+         string recipientName = extractWhisperNameFromChat(message);
+         string command = message;
+         
+         if (recipientName != string.Empty) {
+            // Remove recipient name from message then execute chat command
+            command = message.Replace(recipientName, "").TrimStart();
+         }
+
+         // Ensure that extracted message is a valid chat command before cancelling whisper and executing chat command
+         if (_adminPrefixes.Any(item => command.StartsWith(item))) {
+            executeChatCommand(command);
+            return;
+         }
+      }
+      
       sendMessageToServer(message, ChatInfo.Type.Whisper);
 
       // Add the whisper name to the history
@@ -396,6 +414,11 @@ public class ChatManager : GenericGameManager
          message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
       } else if (message.StartsWith(ChatPanel.WHISPER_PREFIX_FULL)) {
          message = message.Replace(ChatPanel.WHISPER_PREFIX_FULL, "");
+      } 
+      
+      // Return empty name if whisper prefix is followed by admin command
+      if (ChatUtil.commandTypePrefixes[CommandType.Admin].Any(prefix => message.StartsWith(prefix))) {
+         return string.Empty;
       }
 
       string extractedUserName = "";
@@ -1094,6 +1117,9 @@ public class ChatManager : GenericGameManager
 
    #region Private Variables
 
+   // Reference to admin command prefixes
+   private readonly List<string> _adminPrefixes = ChatUtil.commandTypePrefixes[CommandType.Admin];
+   
    // A list of the data for all available chat commands
    protected List<CommandData> _commandData = new List<CommandData>();
 
@@ -1132,6 +1158,6 @@ public class ChatManager : GenericGameManager
 
    // Chat messages sent to disconnected/redirected users
    protected List<ChatInfo> _missedChatMessages = new List<ChatInfo>();
-
+   
    #endregion
 }

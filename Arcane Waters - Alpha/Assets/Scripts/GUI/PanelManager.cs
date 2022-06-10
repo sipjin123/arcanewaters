@@ -86,6 +86,7 @@ public class PanelManager : GenericGameManager {
       // Let us easily close panels with the Escape key
       if (
          !TitleScreen.self.isShowing() &&
+         !CharacterScreen.self.isShowing() &&
          InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true
       ) {
          onEscapeKeyPressed();
@@ -135,12 +136,22 @@ public class PanelManager : GenericGameManager {
       } else if (InputManager.self.inputMaster?.UIShotcuts.Mail.WasPressedThisFrame() == true) {
          BottomBar.self.toggleMailPanel();
       } else if (KeyUtils.GetKeyDown(Key.F7)) {
-         ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
+         get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList).togglePanel();
       } else if (KeyUtils.GetKeyDown(Key.F6)) {
          adminGameSettingsPanel.togglePanel();
       } else if (KeyUtils.GetKeyDown(Key.V)) {
          if (Global.isLoggedInAsAdmin()) {
             AdminPanel.self.show();
+         }
+      } 
+      
+      // Handle escape button only when character screen is active
+      else if (CharacterScreen.self.isShowing() && KeyUtils.GetKeyUp(Key.Escape)) {
+         // Show option on character screen to give user logout option
+         if (!get(Panel.Type.Options).isShowing()) {
+            linkPanel(Panel.Type.Options);
+         } else {
+            unlinkPanel();
          }
       }
 
@@ -168,7 +179,7 @@ public class PanelManager : GenericGameManager {
          itemSelectionScreen.hide();
       } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
          AuctionPanel.self.auctionInfoPanel.hide();
-      } else if (hasPanelInLinkedList() && !get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
+      } else if (hasPanelInLinkedList() && get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
          unlinkPanel();
       } else if (PvpShopPanel.self.isActive()) {
          PvpShopPanel.self.hideEntirePanel();

@@ -413,17 +413,12 @@ public class Area : MonoBehaviour
       _tilemapLayers = layers;
    }
 
-   public MapChunk getColliderChunkAtCell (Vector3Int cellPos) {
-      foreach (MapChunk chunk in _colliderChunks) {
-         if (chunk.contains(cellPos)) {
-            return chunk;
-         }
-      }
-      return null;
-   }
-
    public void setColliderChunks (List<MapChunk> chunks) {
       _colliderChunks = chunks;
+   }
+
+   public void setStaticColliders (List<PolygonCollider2D> colliders) {
+      _staticColliders = colliders;
    }
 
    public Vector3Int worldToCell (Vector3 worldPos) {
@@ -597,6 +592,11 @@ public class Area : MonoBehaviour
             collider.enabled = newState;
          }
       }
+
+      foreach (PolygonCollider2D col in _staticColliders) {
+         // This is buggy at the moment, needs to be fixed or removed
+         //col.enabled = newState;
+      }
    }
 
    public Vector2 getAreaSizeWorld () {
@@ -623,11 +623,15 @@ public class Area : MonoBehaviour
       return getAreaSizeWorld() * 0.5f;
    }
 
-   public void fillTileAttributesMatrix (ExportedLayer001 exportedLayer001) {
+   public void initializeTileAttributeMatrix (Bounds areaBounds) {
+      _tileAttributesMatrix = new TileAttributesMatrix(Mathf.RoundToInt(areaBounds.size.x), Mathf.RoundToInt(areaBounds.size.y));
+   }
+
+   public void bkg_fillTileAttributesMatrix (ExportedLayer001 exportedLayer001) {
       foreach (ExportedTile001 tile in exportedLayer001.tiles) {
-         TileAttributes attributes = AssetSerializationMaps.tileAttributeMatrix.getTileAttributesMatrixElement(new Vector2Int(tile.i, tile.j));
+         TileAttributes attributes = AssetSerializationMaps.tileAttributeMatrix.getTileAttributesMatrixElement(tile.i, tile.j);
          if (attributes != null) {
-            _tileAttributesMatrix.addAttributes(new Vector2Int(tile.x + mapTileSize.x / 2, tile.y + mapTileSize.y / 2), attributes);
+            _tileAttributesMatrix.addAttributes(tile.x + mapTileSize.x / 2, tile.y + mapTileSize.y / 2, attributes);
          }
       }
    }
@@ -644,7 +648,7 @@ public class Area : MonoBehaviour
          return;
       }
 
-      _tileAttributesMatrix.addAttribute(cellPos, type);
+      _tileAttributesMatrix.addAttribute(cellPos.x, cellPos.y, type);
    }
 
    public bool closestTileWithAnyOfAttribute (TileAttributes.Type[] attributes, Vector3 worldPosition, Vector2Int searchBounds,
@@ -670,7 +674,7 @@ public class Area : MonoBehaviour
             }
 
             for (int k = 0; k < attributes.Length; k++) {
-               if (_tileAttributesMatrix.hasAttribute(p, attributes[k])) {
+               if (_tileAttributesMatrix.hasAttribute(p.x, p.y, attributes[k])) {
                   double sqrDist = Math.Pow(cellPos.x - p.x, 2) + Math.Pow(cellPos.y - p.y, 2);
                   if (sqrDist < minDist) {
                      minDist = sqrDist;
@@ -702,7 +706,7 @@ public class Area : MonoBehaviour
                continue;
             }
 
-            if (_tileAttributesMatrix.hasAttribute(p, attribute)) {
+            if (_tileAttributesMatrix.hasAttribute(p.x, p.y, attribute)) {
                return true;
             }
          }
@@ -723,7 +727,7 @@ public class Area : MonoBehaviour
          return false;
       }
 
-      return _tileAttributesMatrix.hasAttribute(cellPos, attribute);
+      return _tileAttributesMatrix.hasAttribute(cellPos.x, cellPos.y, attribute);
    }
 
    /// <summary>
@@ -742,7 +746,7 @@ public class Area : MonoBehaviour
          return 0;
       }
 
-      return _tileAttributesMatrix.getAttributes(cellPos, attributeBuffer);
+      return _tileAttributesMatrix.getAttributes(cellPos.x, cellPos.y, attributeBuffer);
    }
 
    private void configurePathfindingGraph () {
@@ -858,6 +862,9 @@ public class Area : MonoBehaviour
    // The list of map collider chunks
    protected List<MapChunk> _colliderChunks = new List<MapChunk>();
 
+   // Static colliders that don't change in map
+   protected List<PolygonCollider2D> _staticColliders = new List<PolygonCollider2D>();
+
    // The initial enable/disable state of the tilemap colliders
    protected Dictionary<TilemapCollider2D, bool> _initialStates = new Dictionary<TilemapCollider2D, bool>();
 
@@ -881,7 +888,7 @@ public class Area : MonoBehaviour
    protected List<TemporaryController> _tempControllers = new List<TemporaryController>();
 
    // Tile attributes mask for this area
-   protected TileAttributesMatrix _tileAttributesMatrix = new TileAttributesMatrix();
+   protected TileAttributesMatrix _tileAttributesMatrix = new TileAttributesMatrix(0, 0);
 
    #endregion
 }

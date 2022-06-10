@@ -89,7 +89,7 @@ public class SlidingDoor : VaryingStateObject, IBiomable
       }
    }
 
-   public void setBiome (Biome.Type biomeType) {
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
       leftPostRenderer.sprite = postSprites.get(biomeType);
       rightPostRenderer.sprite = postSprites.get(biomeType);
    }

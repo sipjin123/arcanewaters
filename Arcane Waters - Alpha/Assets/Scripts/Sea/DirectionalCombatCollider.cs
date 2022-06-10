@@ -39,6 +39,10 @@ public class DirectionalCombatCollider : MonoBehaviour {
       }
    }
 
+   public BoxCollider2D getCollider() {
+      return _collider;
+   }
+
    #region Private Variables
 
    // The collider we are adjusting the size of

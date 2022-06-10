@@ -248,11 +248,7 @@ MonoBehaviour:
   tilesSharedBetweenPrefabs: []
   unnecessaryTileIssues: []
   removedDataFieldIssues: []
-  wrongDataFieldValueIssues:
-  - prefab: {fileID: 6928936740555346515, guid: 755fbd51acd1c9e458e2e89472a600bc,
-      type: 3}
-    dataField: respawn time
-    desiredValue: 180
+  wrongDataFieldValueIssues: []
 --- !u!1 &8951884888714914873
 GameObject:
   m_ObjectHideFlags: 0

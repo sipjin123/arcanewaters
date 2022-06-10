@@ -50,7 +50,7 @@ public abstract class Signboard : ToolTipSign, IBiomable
       onClick();
    }
 
-   public void setBiome (Biome.Type biomeType) {
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
       signboardRen.sprite = signboardSprites.get(biomeType);
    }
 

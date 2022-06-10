@@ -77,8 +77,8 @@ public class SpriteRendererAnimator : ClientMonoBehaviour, IBiomable
       performAnimationFrame();
    }
 
-   public void setBiome (Biome.Type biomeType) {
-      if (reactToBiomeChanges && !Util.isBatch()) {
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
+      if (reactToBiomeChanges && !Util.isBatch() && !skipClientOnlyFunctionality) {
          List<Sprite> newSprites = new List<Sprite>();
 
          // Take current sprites and switch their biomes

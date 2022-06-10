@@ -265,6 +265,8 @@ public class AdventureItemRow : MonoBehaviour
       recoloredSprite.recolor(item.paletteNames);
 
       tooltip.message = getTooltipText(item);
+      // Level requirement
+      ItemCell.appendLevelRequirementTextToTooltip(item, ref tooltip.message);
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();
@@ -312,6 +314,10 @@ public class AdventureItemRow : MonoBehaviour
          itemName = blueprintName;
          itemDescription = blueprintDescription;
          itemStrength = blueprintStrength;
+      }
+      if (item.category == Item.Category.CraftingIngredients) {
+         itemName = item.getCastItem().getName();
+         itemDescription = item.getCastItem().getDescription();
       }
 
       // Set the tooltip Durability text

@@ -70,7 +70,7 @@ public class Dresser : ClientMonoBehaviour, IBiomable
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOSE, this.transform.position);
    }
 
-   public void setBiome (Biome.Type biomeType) {
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
       openSprite = Util.switchSpriteBiome(openSprite, currentBiome, biomeType);
       closedSprite = Util.switchSpriteBiome(closedSprite, currentBiome, biomeType);
 

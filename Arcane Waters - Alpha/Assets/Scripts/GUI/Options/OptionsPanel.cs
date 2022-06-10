@@ -80,6 +80,9 @@ public class OptionsPanel : Panel
    // Determines whether the chat input remains focused after sending a message
    public Toggle chatPromptToggle;
 
+   // Determines if soul binding warnings should be shown
+   public Toggle showSoulbindingWarningsToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -277,6 +280,14 @@ public class OptionsPanel : Panel
       chatPromptToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_CHAT_INPUT_REMAINS_FOCUSED, value ? 1 : 0);
          Global.chatInputRemainsFocused = value;
+      });
+
+      bool showSoulbinding = PlayerPrefs.GetInt(OptionsManager.PREF_SHOW_SOUL_BINDING_WARNINGS, 1) == 1 ? true : false;
+      showSoulbindingWarningsToggle.isOn = showSoulbinding;
+      Global.showSoulbindingWarnings = showSoulbinding;
+      showSoulbindingWarningsToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_SHOW_SOUL_BINDING_WARNINGS, value ? 1 : 0);
+         Global.showSoulbindingWarnings = value;
       });
 
       // Build string and show version number

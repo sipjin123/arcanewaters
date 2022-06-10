@@ -1051,10 +1051,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
          } else {
+
+            // Make sure the user is offline
+            if (ServerNetworkingManager.self.isUserOnline(userId)) {
+               return;
+            }
+
             // The user might be offline, in which case we need to modify their position in the DB
             Vector2 pos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Unassign the user from this server, so that he is correctly redirected to the server hosting his new location at login
+                  ServerNetworkingManager.self.server.removeAssignedUser(userId);
+               });
             });
          }
       }

@@ -104,6 +104,7 @@ namespace MapCreationTool
             UI.messagePanel.displayError(ex.Message);
             saveButton.interactable = true;
             saveButtonText.text = "Save";
+            Debug.Log(ex);
          }
       }
 

@@ -41,7 +41,7 @@ namespace MinimapGeneration
          foreach (Biome.Type biome in Biome.gameBiomes) {
             for (int i = 0; i < index.size.x; i++) {
                for (int j = 0; j < index.size.y; j++) {
-                  TileBase tile = AssetSerializationMaps.tryGetTile(new Vector2Int(i + index.xMin, j + index.yMin), biome);
+                  TileBase tile = AssetSerializationMaps.getTile(i + index.xMin, j + index.yMin, biome);
                   if (tile != null && !target.Contains(tile)) {
                      target.Add(tile);
                   }
@@ -67,7 +67,7 @@ namespace MinimapGeneration
 
          // Mark where buildings should be
          setTilemapObjectPositions(area.getTilemapLayers(), mapSize, _buildingPosition,
-            l => l.name.StartsWith(MapCreationTool.Layer.BUILDING_KEY) && l.fullName.EndsWith("0") || l.fullName.EndsWith("1"));
+            l => l.name.StartsWith(MapCreationTool.Layer.BUILDING_KEY) && (l.fullName.EndsWith("0") || l.fullName.EndsWith("1")));
 
          // Mark where docks should be
          setTilemapObjectPositions(area.getTilemapLayers(), mapSize, _dockPositions,

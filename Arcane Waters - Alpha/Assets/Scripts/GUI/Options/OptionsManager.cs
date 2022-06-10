@@ -35,6 +35,9 @@ public class OptionsManager : GenericGameManager {
    // Player Prefs key for chat input behavior
    public const string PREF_CHAT_INPUT_REMAINS_FOCUSED = "CHAT_INPUT_REMAINS_FOCUSED";
 
+   // Player Prefs key for soul bindings warning
+   public const string PREF_SHOW_SOUL_BINDING_WARNINGS = "CHAT_SHOW_SOUL_BINDING_WARNINGS";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 

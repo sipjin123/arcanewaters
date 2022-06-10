@@ -122,7 +122,7 @@ namespace MapCreationTool.Serialization
          List<DeserializedProject.DeserializedPrefab> prefabs = new List<DeserializedProject.DeserializedPrefab>();
          List<DeserializedProject.DeserializedTile> tiles = new List<DeserializedProject.DeserializedTile>();
 
-         Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, dt.biome); };
+         Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index.x, index.y, dt.biome); };
          Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, dt.biome, forEditor); };
 
          foreach (var pref in dt.prefabs) {

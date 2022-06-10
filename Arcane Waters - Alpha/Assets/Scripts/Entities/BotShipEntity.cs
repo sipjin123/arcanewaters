@@ -142,13 +142,15 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             yield return null;
          }
 
-         NetEntity target = getAttackerInRange();
+         SeaEntity target = getAttackerInRange();
 
          // Show the charging animation on clients
          if (target) {
             Rpc_NotifyChargeUp(target.netId);
             _aimTarget = target;
-            aimTransform.position = target.transform.position;
+
+            Vector2 overAim = (getEntityAimPoint(_aimTarget) - (Vector2)transform.position).normalized * OVERAIM_DISTANCE;
+            aimTransform.position = target.transform.position + (Vector3)overAim;
          }
 
          // Wait for the charge-up animation to play
@@ -191,14 +193,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    [ClientRpc]
    private void Rpc_NotifyChargeUp (uint targetNetId) {
-      NetEntity target = MyNetworkManager.fetchEntityFromNetId<NetEntity>(targetNetId);
+      SeaEntity target = SeaManager.self.getEntity(targetNetId);
       if (target == null || target.isDead() || isDead()) {
          return;
       }
 
       _aimTarget = target;
       _attackChargeStartTime = (float) NetworkTime.time;
-      aimTransform.position = _aimTarget.transform.position;
+      aimTransform.position = getEntityAimPoint(_aimTarget);
 
       // Show the charging animation
       showTargetingEffects();
@@ -248,9 +250,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          // If we haven't locked on yet, update the aim transform
          if ((timeSpentCharging / ATTACK_CHARGE_TIME) < AIM_TARGET_LOCK_TIME_NORMALISED) {
+            Vector2 aimPoint = getEntityAimPoint(_aimTarget);
+            
             // Find a point slightly ahead of the player's movement
             Vector2 projectedPosition = _aimTarget.getProjectedPosition(1.0f * distanceModifier);
-            Vector2 toProjectedPosition = projectedPosition - (Vector2)_aimTarget.transform.position;
+            Vector2 toProjectedPosition = projectedPosition - aimPoint;
             float maxReticleDistanceFromTarget = 1.0f;
 
             // Clamp it so it doesn't extend too far when the player dashes
@@ -259,7 +263,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
 
             // Smoothly move the reticle to this position
-            Vector2 reticleTargetPosition = (Vector2)_aimTarget.transform.position + toProjectedPosition;
+            Vector2 overAim = (aimPoint - (Vector2)transform.position).normalized * OVERAIM_DISTANCE;
+            Vector2 reticleTargetPosition = aimPoint + toProjectedPosition + overAim;
+            
             aimTransform.position = Vector2.Lerp(aimTransform.position, reticleTargetPosition, Time.deltaTime * AIM_TARGET_SPEED);
          }
 
@@ -492,8 +498,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    #region Private Variables
 
-   // A reference to the NetEntity we are aiming at
-   private NetEntity _aimTarget;
+   // A reference to the SeaEntity we are aiming at
+   private SeaEntity _aimTarget;
 
    // Whether we are currently showing targeting effects
    private bool _isShowingTargetingIndicator = false;
@@ -519,6 +525,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // How long the attack takes to charge up
    private const float ATTACK_CHARGE_TIME = 1.0f;
+
+   // How far past the target we will aim
+   private const float OVERAIM_DISTANCE = 0.2f;
 
    #endregion
 }

@@ -80,6 +80,13 @@ public class RedirectionManager : GenericGameManager
          }
       }
 
+      try {
+         string logMsg = string.Format($"Redirecting user {userName} (id {userId}, {currentAddress}) from [{currentAreaKey}, {currentServerPort}] to [{destinationAreaKey}, {bestServer.networkedPort.Value}]. Destination server has {bestServer.connectedUserIds.Count} connected players ({bestServer.assignedUserIds.Count} assigned). Total server count: {ServerNetworkingManager.self.servers.Count}");
+         D.debug(logMsg);
+      } catch {
+         D.debug("Found best server but cannot get details");
+      }
+
       return bestServer.networkedPort.Value;
    }
 
@@ -149,14 +156,6 @@ public class RedirectionManager : GenericGameManager
          } else {
             D.adminLog("Redirecting: Server [" + bestServer.networkedPort.Value.ToString() + "] already has area {" + destinationAreaKey + "} generated", D.ADMIN_LOG_TYPE.AreaClearing);
          }
-      }
-
-      try {
-         string logMsg = string.Format("Found best server [{0}] with player count [{1}] (assigned: {6}) for {2} ({3}) ServerName:{4} ServerCount:{5}",
-            bestServer.networkedPort.Value, bestServer.connectedUserIds.Count, userName, currentAddress, bestServer.name, ServerNetworkingManager.self.servers.Count, bestServer.assignedUserIds.Count);
-         D.debug(logMsg);
-      } catch {
-         D.debug("Found best server but cannot get details");
       }
 
       D.adminLog("From [" + currentServerPort + "] Searched for Server with least player {" + bestServer.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + voyageId + "} " +

@@ -1765,6 +1765,11 @@ public class SeaEntity : NetEntity
       SoundEffectManager.self.playSeaEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, this.gameObject);
    }
 
+   protected virtual Vector2 getEntityAimPoint (SeaEntity entity) {
+      // Returns the point at which we should aim when trying to hit an entity
+      return entity.transform.position;
+   }
+
    #region Enemy AI
 
    private bool useSeaEnemyAI () {
@@ -1926,10 +1931,10 @@ public class SeaEntity : NetEntity
       _editorConeAggroGizmoMesh.SetIndices(triangles, MeshTopology.Triangles, 0);
    }
 
-   protected virtual NetEntity getAttackerInRange (bool logData = false) {
+   protected virtual SeaEntity getAttackerInRange (bool logData = false) {
       // Check if any of our attackers are within range
       foreach (uint attackerId in _attackers.Keys) {
-         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+         SeaEntity attacker = SeaManager.self.getEntity(attackerId);
          if (attacker == null || attacker.isDead()) {
             continue;
          }

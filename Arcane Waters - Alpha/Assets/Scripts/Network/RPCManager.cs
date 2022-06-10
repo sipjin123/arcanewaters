@@ -994,7 +994,7 @@ public class RPCManager : NetworkBehaviour
          exploringEntries, tradingEntries, craftingEntries, miningEntries, badgesEntries);
    }
 
-   private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket, Item soulBoundItem) {
+   private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket) {
       // Update the equipped items cache
       Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket);
 
@@ -1012,21 +1012,11 @@ public class RPCManager : NetworkBehaviour
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStepByWeaponEquipped();
-
-      // This value is not null, when one of the equipped items has been soul bound
-      if (soulBoundItem != null) {
-         PanelManager.self.noticeScreen.show($"The item {soulBoundItem.itemName} is now bound to you! You can't transfer it to anyone else, and only you can equip it.");
-      }
-   }
-
-   [TargetRpc]
-   public void Target_OnEquipSoulBoundItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket, Item soulBoundItem) {
-      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket, soulBoundItem);
    }
 
    [TargetRpc]
    public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item equippedRing, Item equippedNecklace, Item equippedTrinket) {
-      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket, null);
+      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, equippedRing, equippedNecklace, equippedTrinket);
    }
 
    [TargetRpc]
@@ -1170,23 +1160,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveAdminVoyageInstanceList (NetworkConnection connection, Voyage[] voyageArray) {
-      List<Voyage> voyageList = new List<Voyage>(voyageArray);
-
-      // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.AdminVoyage);
-
-      // Pass the data to the panel
-      AdminVoyagePanel panel = (AdminVoyagePanel) PanelManager.self.get(Panel.Type.AdminVoyage);
-      panel.receiveVoyageInstancesFromServer(voyageList);
-   }
-
-   [TargetRpc]
    public void Target_ReceiveUserInfoListForAdminVoyagePanel (NetworkConnection connection, UserInfo[] userInfoArray) {
       List<UserInfo> userInfoList = new List<UserInfo>(userInfoArray);
 
       // Pass the data to the panel
-      AdminVoyagePanel panel = (AdminVoyagePanel) PanelManager.self.get(Panel.Type.AdminVoyage);
+      AdminInstanceListPanel panel = PanelManager.self.get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList);
       panel.adminVoyageInfoPanel.updatePanelWithUserList(userInfoList);
    }
 
@@ -1835,33 +1813,33 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestSetWeaponId (int weaponId) {
-      requestSetWeaponId(weaponId);
+   public void Cmd_RequestSetWeaponId (int weaponId, bool raiseSoulbindingWarning) {
+      requestSetWeaponId(weaponId, raiseSoulbindingWarning);
    }
 
    [Command]
-   public void Cmd_RequestSetArmorId (int armorId) {
-      requestSetArmorId(armorId);
+   public void Cmd_RequestSetArmorId (int armorId, bool raiseSoulbindingWarning) {
+      requestSetArmorId(armorId, raiseSoulbindingWarning);
    }
 
    [Command]
-   public void Cmd_RequestSetHatId (int hatId) {
-      requestSetHatId(hatId);
+   public void Cmd_RequestSetHatId (int hatId, bool raiseSoulbindingWarning) {
+      requestSetHatId(hatId, raiseSoulbindingWarning);
    }
 
    [Command]
-   public void Cmd_RequestSetRingId (int newId) {
-      requestSetRingId(newId);
+   public void Cmd_RequestSetRingId (int newId, bool raiseSoulbindingWarning) {
+      requestSetRingId(newId, raiseSoulbindingWarning);
    }
 
    [Command]
-   public void Cmd_RequestSetNecklaceId (int newId) {
-      requestSetNecklaceId(newId);
+   public void Cmd_RequestSetNecklaceId (int newId, bool raiseSoulbindingWarning) {
+      requestSetNecklaceId(newId, raiseSoulbindingWarning);
    }
 
    [Command]
-   public void Cmd_RequestSetTrinketId (int newId) {
-      requestSetTrinketId(newId);
+   public void Cmd_RequestSetTrinketId (int newId, bool raiseSoulbindingWarning) {
+      requestSetTrinketId(newId, raiseSoulbindingWarning);
    }
 
    [Command]
@@ -1988,12 +1966,12 @@ public class RPCManager : NetworkBehaviour
                if (wasEquippedWeapon) {
                   // If they're in an island scene, we need to update the body object
                   if (body != null) {
-                     requestSetWeaponId(0);
+                     requestSetWeaponId(0, false);
                   }
                } else if (wasEquippedArmor) {
                   // If they're in an island scene, we need to update the body object
                   if (body != null) {
-                     requestSetArmorId(0);
+                     requestSetArmorId(0, false);
                   }
                }
 
@@ -2068,13 +2046,13 @@ public class RPCManager : NetworkBehaviour
             if (equippedItem != null && equippedItem.id == swappedItem.id && equippedItem.category == swappedItem.category) {
                switch (swappedItem.category) {
                   case Item.Category.Armor:
-                     _player.rpc.requestSetArmorId(itemId);
+                     _player.rpc.requestSetArmorId(itemId, false);
                      break;
                   case Item.Category.Weapon:
-                     _player.rpc.requestSetWeaponId(itemId);
+                     _player.rpc.requestSetWeaponId(itemId, false);
                      break;
                   case Item.Category.Hats:
-                     _player.rpc.requestSetHatId(itemId);
+                     _player.rpc.requestSetHatId(itemId, false);
                      break;
                }
             }
@@ -2605,7 +2583,7 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.confirmScreen.hide();
 
          if (canUseImmediately) {
-            _player.rpc.Cmd_RequestUseItem(itemId, confirmed: false);
+            _player.rpc.Cmd_RequestUseItem(itemId, confirmed: false, Global.showSoulbindingWarnings);
          } else if (StoreScreen.self.isShowing()) {
             StoreScreen.self.refreshPanel();
          }
@@ -2641,7 +2619,7 @@ public class RPCManager : NetworkBehaviour
    #region Usables
 
    [Command]
-   public void Cmd_RequestUseItem (int itemId, bool confirmed) {
+   public void Cmd_RequestUseItem (int itemId, bool confirmed, bool raiseSoulbindingWarnings) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          Item item = DB_Main.getItem(_player.userId, itemId);
 
@@ -2670,12 +2648,12 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
-         useItem(itemId);
+         useItem(itemId, raiseSoulbindingWarnings);
       });
    }
 
    [Server]
-   private void useItem (int itemId) {
+   private void useItem (int itemId, bool raiseSoulbindingWarnings) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          Item item = DB_Main.getItem(_player.userId, itemId);
 
@@ -2685,7 +2663,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          if (item.category == Item.Category.Dye) {
-            useDye(item);
+            useDye(item, raiseSoulbindingWarnings);
          } else if (item.category == Item.Category.ShipSkin) {
             useShipSkin(item);
          } else if (item.category == Item.Category.Haircut) {
@@ -2693,7 +2671,7 @@ public class RPCManager : NetworkBehaviour
          } else if (item.category == Item.Category.Consumable) {
             useConsumable(item);
          } else if (item.category == Item.Category.Hats) {
-            requestSetHatId(item.id);
+            requestSetHatId(item.id, raiseSoulbindingWarnings);
          }
       });
    }
@@ -2736,7 +2714,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void useDye (Item item) {
+   private void useDye (Item item, bool raiseSoulbindingWarnings) {
       PaletteToolData palette = PaletteSwapManager.self.getPalette(item.itemTypeId);
 
       // Check if the palette was found
@@ -2796,7 +2774,7 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
-            Bkg_RequestSetArmorId(userObjects.armor.id);
+            Bkg_RequestSetArmorId(userObjects.armor.id, raiseSoulbindingWarnings);
 
             // Fetch the updated user objects
             userObjects = DB_Main.getUserObjects(_player.userId);
@@ -2843,7 +2821,7 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
-            Bkg_RequestSetHatId(userObjects.hat.id);
+            Bkg_RequestSetHatId(userObjects.hat.id, raiseSoulbindingWarnings);
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2880,7 +2858,7 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
-            Bkg_RequestSetWeaponId(weapon.id);
+            Bkg_RequestSetWeaponId(weapon.id, raiseSoulbindingWarnings);
 
             sendItemShortcutList();
 
@@ -3020,7 +2998,7 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.confirmScreen.hide();
 
          // The player confirmed, so now it is safe to use the item
-         _player.rpc.Cmd_RequestUseItem(itemId, confirmed: true);
+         _player.rpc.Cmd_RequestUseItem(itemId, confirmed: true, Global.showSoulbindingWarnings);
       });
 
       PanelManager.self.confirmScreen.showYesNo(customMessage);
@@ -6397,25 +6375,6 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestAdminVoyageListFromServer () {
-      if (_player == null) {
-         D.warning("No player object found.");
-         return;
-      }
-
-      if (!_player.isAdmin()) {
-         return;
-      }
-
-      // Get both the main voyage instances and the linked treasure site instances
-      List<Voyage> voyages = VoyageManager.self.getAllVoyages();
-      voyages.AddRange(VoyageManager.self.getAllTreasureSiteInstancesLinkedToVoyages());
-
-      // Send the list to the client
-      Target_ReceiveAdminVoyageInstanceList(_player.connectionToClient, voyages.ToArray());
-   }
-
-   [Command]
    public void Cmd_RequestUserListForAdminVoyageInfoPanelFromServer (int voyageId, int instanceId) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -9250,7 +9209,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void Bkg_RequestSetArmorId (int armorId) {
+   private void Bkg_RequestSetArmorId (int armorId, bool raiseSoulbindingWarning) {
+      if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(armorId)) {
+         return;
+      }
+
       DB_Main.setArmorId(_player.userId, armorId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
       bool justSoulBound = false;
@@ -9292,22 +9255,28 @@ public class RPCManager : NetworkBehaviour
          if (userObjects == null) {
             D.debug("Null user objects!");
          } else {
-            if (justSoulBound) {
-               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.armor);
-            } else {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
-            }
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
          }
       });
    }
 
    [Server]
-   public void requestSetRingId (int newId) {
+   public void requestSetRingId (int newId, bool raiseSoulbindingWarning) {
       D.adminLog("Requesting new Ring: " + newId, D.ADMIN_LOG_TYPE.Equipment);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(newId)) {
+            return;
+         }
+
          DB_Main.setRingId(_player.userId, newId);
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         if (Bkg_ShouldBeSoulBound(userObjects.ring, isBeingEquipped: true)) {
+            if (!Bkg_IsItemSoulBound(userObjects.ring)) {
+               DB_Main.updateItemSoulBinding(newId, isBound: true);
+            }
+         }
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -9340,12 +9309,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void requestSetNecklaceId (int newId) {
+   public void requestSetNecklaceId (int newId, bool raiseSoulbindingWarning) {
       D.adminLog("Requesting new Necklace: " + newId, D.ADMIN_LOG_TYPE.Equipment);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(newId)) {
+            return;
+         }
+
          DB_Main.setNecklaceId(_player.userId, newId);
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         if (Bkg_ShouldBeSoulBound(userObjects.necklace, isBeingEquipped: true)) {
+            if (!Bkg_IsItemSoulBound(userObjects.necklace)) {
+               DB_Main.updateItemSoulBinding(newId, isBound: true);
+            }
+         }
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -9378,12 +9357,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void requestSetTrinketId (int newId) {
+   public void requestSetTrinketId (int newId, bool raiseSoulbindingWarning) {
       D.adminLog("Requesting new Trinket: " + newId, D.ADMIN_LOG_TYPE.Equipment);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(newId)) {
+            return;
+         }
+
          DB_Main.setTrinketId(_player.userId, newId);
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         if (Bkg_ShouldBeSoulBound(userObjects.trinket, isBeingEquipped: true)) {
+            if (!Bkg_IsItemSoulBound(userObjects.trinket)) {
+               DB_Main.updateItemSoulBinding(newId, isBound: true);
+            }
+         }
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -9410,31 +9399,35 @@ public class RPCManager : NetworkBehaviour
                D.debug("Null user objects!");
             } else {
                Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
+
             }
          });
       });
    }
 
    [Server]
-   public void requestSetArmorId (int armorId) {
+   public void requestSetArmorId (int armorId, bool raiseSoulbindingWarning) {
       D.adminLog("Requesting new armor: " + armorId, D.ADMIN_LOG_TYPE.Equipment);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Bkg_RequestSetArmorId(armorId);
+         Bkg_RequestSetArmorId(armorId, raiseSoulbindingWarning);
       });
    }
 
    [Server]
-   private void Bkg_RequestSetHatId (int hatId) {
+   private void Bkg_RequestSetHatId (int hatId, bool raiseSoulbindingWarning) {
+      if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(hatId)) {
+         return;
+      }
+
       DB_Main.setHatId(_player.userId, hatId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
       Item hat = userObjects.hat;
-      bool justSoulBound = false;
 
       if (Bkg_ShouldBeSoulBound(userObjects.hat, isBeingEquipped: true)) {
          if (!Bkg_IsItemSoulBound(userObjects.hat)) {
-            justSoulBound = DB_Main.updateItemSoulBinding(hatId, isBound: true);
+            DB_Main.updateItemSoulBinding(hatId, isBound: true);
          }
       }
 
@@ -9468,25 +9461,96 @@ public class RPCManager : NetworkBehaviour
          if (userObjects == null) {
             D.debug("Null user objects!");
          } else {
-            if (justSoulBound) {
-               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.hat);
-            } else {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
-            }
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
          }
       });
    }
 
    [Server]
-   public void Bkg_RequestSetWeaponId (int weaponId) {
+   public bool Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip (int itemId) {
+      if (itemId <= 0) {
+         return false;
+      }
+
+      Item item = DB_Main.getItem(itemId);
+      if (item == null) {
+         return false;
+      }
+
+      if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: true)) {
+         if (!Bkg_IsItemSoulBound(item)) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveEquipSoulbindingWarning(_player.connectionToClient, item);
+            });
+            return true;
+         }
+      }
+      return false;
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveEquipSoulbindingWarning (NetworkConnection connection, Item item) {
+      if (PanelManager.self == null) {
+         return;
+      }
+
+      PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
+         PanelManager.self.confirmScreen.hide();
+
+         if (InventoryPanel.self != null && InventoryPanel.self.isShowing()) {
+            InventoryPanel.self.refreshPanel();
+         }
+
+         if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
+            StoreScreen.self.refreshPanel();
+         }
+      });
+
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+         PanelManager.self.confirmScreen.hide();
+
+         // The player confirmed, so now it is safe to equip item
+         switch (item.category) {
+            case Item.Category.Weapon:
+               _player.rpc.Cmd_RequestSetWeaponId(item.id, false);
+               break;
+            case Item.Category.Armor:
+               _player.rpc.Cmd_RequestSetArmorId(item.id, false);
+               break;
+            case Item.Category.Hats:
+               _player.rpc.Cmd_RequestSetHatId(item.id, false);
+               break;
+            case Item.Category.Necklace:
+               _player.rpc.Cmd_RequestSetNecklaceId(item.id, false);
+               break;
+            case Item.Category.Ring:
+               _player.rpc.Cmd_RequestSetRingId(item.id, false);
+               break;
+            case Item.Category.Trinket:
+               _player.rpc.Cmd_RequestSetTrinketId(item.id, false);
+               break;
+         }
+      });
+
+      string message = $"Are you sure you want to equip { item.getCastItem().getName() }? It will bind it to you and you won't be able to transfer it to anyone else.";
+      PanelManager.self.confirmScreen.showYesNo(message);
+   }
+
+   [Server]
+   public void Bkg_RequestSetWeaponId (int weaponId, bool raiseSoulbindingWarning) {
+      if (raiseSoulbindingWarning && Bkg_RaiseWarningIfAboutToSoulbindItemOnEquip(weaponId)) {
+         return;
+      }
+
       // Update the Weapon object here on the server based on what's in the database
       DB_Main.setWeaponId(_player.userId, weaponId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-      bool justSoulBound = false;
 
       if (Bkg_ShouldBeSoulBound(userObjects.weapon, isBeingEquipped: true)) {
          if (!Bkg_IsItemSoulBound(userObjects.weapon)) {
-            justSoulBound = DB_Main.updateItemSoulBinding(weaponId, isBound: true);
+            DB_Main.updateItemSoulBinding(weaponId, isBound: true);
          }
       }
 
@@ -9529,11 +9593,7 @@ public class RPCManager : NetworkBehaviour
             if (userObjects == null) {
                D.debug("Null user objects!");
             } else {
-               if (justSoulBound) {
-                  Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket, userObjects.weapon);
-               } else {
-                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
-               }
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.ring, userObjects.necklace, userObjects.trinket);
             }
          } else {
             D.debug("Cant change equipment while player is destroyed");
@@ -9542,20 +9602,20 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void requestSetHatId (int hatId) {
+   public void requestSetHatId (int hatId, bool raiseSoulbindingWarning) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Bkg_RequestSetHatId(hatId);
+         Bkg_RequestSetHatId(hatId, raiseSoulbindingWarning);
       });
    }
 
    [Server]
-   public void requestSetWeaponId (int weaponId) {
+   public void requestSetWeaponId (int weaponId, bool raiseSoulbindingWarning) {
       D.adminLog("Requesting new weapon: " + weaponId, D.ADMIN_LOG_TYPE.Equipment);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Bkg_RequestSetWeaponId(weaponId);
+         Bkg_RequestSetWeaponId(weaponId, raiseSoulbindingWarning);
       });
    }
 
@@ -10301,6 +10361,28 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Command]
+   public void Cmd_GetUserCountHavingVisitedBiomes () {
+      // Temporary - only getting the user count for the forest biome
+      string areaKey = WorldMapManager.getAreaKey(WorldMapManager.self.getAreaCoordsForBiome(Biome.Type.Forest));
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int forestUserCount = DB_Main.getUserCountHavingVisitedArea(areaKey);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveUserCountHavingVisitedBiomes(_player.connectionToClient, forestUserCount);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUserCountHavingVisitedBiomes (NetworkConnection connection, int forestUserCount) {
+      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      ((NoticeBoardPanel) PanelManager.self.get(Panel.Type.NoticeBoard)).biomeActivityPanelSection.receiveUserCountHavingVisitedBiomes(forestUserCount);
+   }
+
    [TargetRpc]
    public void Target_JoinTeamCombat (NetworkConnection connection, uint enemyId, float delay) {
       StartCoroutine(CO_DelayJoinTeamCombat(enemyId, delay));
@@ -10421,11 +10503,11 @@ public class RPCManager : NetworkBehaviour
       List<Voyage> voyageList = new List<Voyage>(voyageArray);
 
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.PvpArena);
+      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      NoticeBoardPanel panel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
 
       // Pass the data to the panel
-      PvpArenaPanel panel = (PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena);
-      panel.receivePvpArenasFromServer(voyageList);
+      panel.pvpArenaSection.receivePvpArenasFromServer(voyageList);
    }
 
    [Command]
@@ -10445,8 +10527,8 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceivePvpArenaInfo (NetworkConnection connection, Voyage voyage) {
       // Pass the data to the panel
-      PvpArenaPanel panel = (PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena);
-      panel.pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
+      NoticeBoardPanel panel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
+      panel.pvpArenaSection.pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
    }
 
    [Command]
@@ -10808,6 +10890,22 @@ public class RPCManager : NetworkBehaviour
       ServerNetworkingManager.self.server.requestServerOverviews(this);
    }
 
+   [Command]
+   public void Cmd_RequestNetworkInstanceList () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      ServerNetworkingManager.self.server.requestNetworkInstanceList(this);
+   }
+
    [TargetRpc]
    public void Target_ReceiveServerCount (int serverCount) {
       if (AdminPanel.self != null) {
@@ -10820,6 +10918,16 @@ public class RPCManager : NetworkBehaviour
       if (AdminPanel.self != null) {
          AdminPanel.self.receiveServerOverview(overview);
       }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveServerInstanceOverview (InstanceOverview overview) {
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.AdminInstanceList);
+
+      // Pass the data to the panel
+      AdminInstanceListPanel panel = PanelManager.self.get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList);
+      panel.receiveNetworkInstanceOverview(overview);
    }
 
    [Command]

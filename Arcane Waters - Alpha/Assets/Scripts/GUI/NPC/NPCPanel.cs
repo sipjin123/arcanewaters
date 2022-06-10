@@ -53,6 +53,9 @@ public class NPCPanel : Panel
    // The prefab we use for creating quest objective cells
    public NPCPanelQuestObjectiveCell questObjectiveCellPrefab;
 
+   // Reference to gameobject that contains npc close panel button
+   public GameObject closeObjectiveButton;
+   
    // The container for the gifted item cell
    public GameObject itemCellContainer;
 
@@ -499,28 +502,10 @@ public class NPCPanel : Panel
    }
 
    private void configurePanelForMode (Mode mode) {
-      switch (mode) {
-         /*case Mode.QuestList:
-            questListSection.SetActive(true);
-            questNodeSection.SetActive(false);
-            giftOfferSection.SetActive(false);
-            break;*/
-         case Mode.QuestNode:
-            questListSection.SetActive(false);
-            questNodeSection.SetActive(true);
-            giftOfferSection.SetActive(false);
-            break;
-         case Mode.GiftOffer:
-            questListSection.SetActive(false);
-            questNodeSection.SetActive(false);
-            giftOfferSection.SetActive(true);
-            break;
-         default:
-            questListSection.SetActive(false);
-            questNodeSection.SetActive(true);
-            giftOfferSection.SetActive(false);
-            break;
-      }
+      questListSection.SetActive(false);
+      questNodeSection.SetActive(mode == Mode.QuestNode || mode == Mode.None);
+      giftOfferSection.SetActive(mode == Mode.GiftOffer);
+      closeObjectiveButton.SetActive(mode == Mode.QuestNode );
    }
 
    private void clearDialogueOptions () {

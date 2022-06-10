@@ -13,14 +13,17 @@ public class BiomableSpriteRenderer : MonoBehaviour, IBiomable
 
    #endregion
 
-   public void setBiome (Biome.Type biomeType) {
-      if (includeChildren) {
-         foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
-            renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
-         }
-      } else {
-         foreach (SpriteRenderer renderer in GetComponents<SpriteRenderer>()) {
-            renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
+      // Only client cares about sprites
+      if (!skipClientOnlyFunctionality) {
+         if (includeChildren) {
+            foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
+               renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
+            }
+         } else {
+            foreach (SpriteRenderer renderer in GetComponents<SpriteRenderer>()) {
+               renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
+            }
          }
       }
 

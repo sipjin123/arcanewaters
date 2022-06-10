@@ -225,6 +225,9 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_InstantiateMapData (double startTime, MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome, MapDownloadType mapDownloadType = MapDownloadType.None) {
+      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.1f);
+      yield return null;
+
       AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
@@ -240,10 +243,12 @@ public class MapManager : MonoBehaviour
       } else {
          // Create the area
          Area area = result.area;
-         
+
          // Overwrite the default area biome if another is given
          if (biome != Biome.Type.None) {
             exportedProject.biome = biome;
+         } else {
+            biome = exportedProject.biome;
          }
 
          // Set area properties
@@ -264,51 +269,156 @@ public class MapManager : MonoBehaviour
 
          // Calculate the map bounds
          Bounds bounds = MapImporter.calculateBounds(exportedProject);
+
+         area.initializeTileAttributeMatrix(bounds);
+
+         // Launch matrix fill concurrently
+         UnityThreading.Task fillMatrixTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Fill up tile attribute matrix
+            foreach (ExportedLayer001 layer in exportedProject.layers) {
+               area.bkg_fillTileAttributesMatrix(layer);
+            }
+         });
+
          yield return null;
 
+         // Create visual tiles
          List<TilemapLayer> tilemaps = new List<TilemapLayer>();
-         int unrecognizedTiles = 0;
-
-         // Create one layer per frame
+         int tileProcessedInFrame = 0;
          foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
-            MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
-               result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
+            int processedTiles = 0;
 
-            area.fillTileAttributesMatrix(layer);
+            // Punish the proccessed counter a little for starting a new layer
+            tileProcessedInFrame += _setTilesTileBuffer.Length / 4;
 
-            PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, (0.1f / exportedProject.layers.Length) * tilemaps.Count);
+            // Create the tilemap gameobject
+            var tilemap = Instantiate(AssetSerializationMaps.tilemapTemplate, result.tilemapParent);
+            tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
+            tilemap.gameObject.name = layer.name + " " + layer.sublayer;
+
+            while (processedTiles < layer.tiles.Length) {
+               // Balance load among multiple frames
+               if (tileProcessedInFrame >= _setTilesTileBuffer.Length) {
+                  tileProcessedInFrame = 0;
+                  yield return new WaitForEndOfFrame();
+               }
+
+               // If we have a lot of tiles, lets use precreated buffer, otherwise create containers dynamically
+               TileBase[] tiles = _setTilesTileBuffer;
+               Vector3Int[] positions = _setTilesPositionBuffer;
+               if (layer.tiles.Length - processedTiles < _setTilesTileBuffer.Length) {
+                  tiles = new TileBase[layer.tiles.Length - processedTiles];
+                  positions = new Vector3Int[layer.tiles.Length - processedTiles];
+               }
+
+               // Fill the buffers
+               for (int i = 0; i < tiles.Length; i++) {
+                  tiles[i] = AssetSerializationMaps.getTile(
+                     layer.tiles[processedTiles].i, layer.tiles[processedTiles].j, biome);
+                  positions[i] = new Vector3Int(layer.tiles[processedTiles].x, layer.tiles[processedTiles].y, 0);
+
+                  processedTiles++;
+                  tileProcessedInFrame++;
+               }
+
+               // Update z axis sorting for building layer
+               if (layer.name.Contains(Area.BUILDING_LAYER)) {
+                  for (int i = 0; i < positions.Length; i++) {
+                     Vector3Int pos = positions[i];
+                     positions[i] = new Vector3Int(pos.x, pos.y, ZSnap.getZ(pos));
+                  }
+               }
+
+               // Ensure the 'sprite' of animated tiles is set
+               foreach (TileBase tileBase in tiles) {
+                  AnimatedTile aTile = tileBase as AnimatedTile;
+                  if (aTile != null) {
+                     if (aTile.sprite == null && aTile.m_AnimatedSprites.Length > 0) {
+                        aTile.sprite = aTile.m_AnimatedSprites[0];
+                     }
+                  }
+               }
+
+               // Set the tiles in the tilemap
+               tilemap.SetTiles(positions, tiles);
+            }
+
+            // Add the layer to the list
+            tilemaps.Add(new TilemapLayer {
+               tilemap = tilemap,
+               fullName = layer.name + " " + layer.sublayer ?? "",
+               name = layer.name ?? "",
+               type = layer.type
+            });
+         }
+
+         PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.4f);
+
+         yield return null;
+
+         // Lets wait for matrix tile fill to finish up
+         while (!fillMatrixTask.HasEnded && !fillMatrixTask.IsFailed && !fillMatrixTask.IsSucceeded) {
             yield return null;
          }
 
-         if (unrecognizedTiles > 0) {
-            Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
-         }
+         if (exportedProject.tileCollisionShapes == null || exportedProject.tileCollisionShapes.Length == 0) {
+            // Use legacy method if collision shapes weren't baked
 
-         // Prepare the list of tilemap colliders
-         List<MapChunk> mapColliderChunks = new List<MapChunk>();
+            // Prepare the list of tilemap colliders
+            List<MapChunk> mapColliderChunks = new List<MapChunk>();
 
-         // Calculate the number of chunks
-         int chunkCount = (int) ((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
+            // Calculate the number of chunks
+            int chunkCount = (int) ((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
 
-         // Create the tilemap colliders in chunks
-         for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
-            for (int j = (int) bounds.min.y; j < bounds.max.y; j += TILEMAP_COLLIDERS_CHUNK_SIZE) {
-               // Calculate the chunk rect
-               int xMax = Mathf.Clamp(i + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.x);
-               int yMax = Mathf.Clamp(j + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.y);
-               RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
+            // Create the tilemap colliders in chunks
+            for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+               for (int j = (int) bounds.min.y; j < bounds.max.y; j += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+                  // Calculate the chunk rect
+                  int xMax = Mathf.Clamp(i + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.x);
+                  int yMax = Mathf.Clamp(j + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.y);
+                  RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
 
-               // Instantiate the colliders
-               mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(result.area.areaKey, exportedProject, result.collisionTilemapParent,
-                  exportedProject.biome, rect));
+                  // Instantiate the colliders
+                  mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(result.area.areaKey, exportedProject, result.collisionTilemapParent,
+                     exportedProject.biome, rect));
 
-               PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
-               yield return null;
+                  PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
+                  yield return null;
+               }
             }
+
+            result.area.setColliderChunks(mapColliderChunks);
+         } else {
+            result.staticColliderParent.localPosition = new Vector3(
+               -exportedProject.size.x * 0.5f * 0.16f,
+               -exportedProject.size.y * 0.5f * 0.16f,
+               0);
+
+            List<PolygonCollider2D> staticColliders = new List<PolygonCollider2D>();
+
+            // Create static collider shapes
+            foreach (TileCollisionShape shape in exportedProject.tileCollisionShapes) {
+               // Skip shape if it has no paths
+               if (shape.paths.Length == 0) {
+                  continue;
+               }
+
+               PolygonCollider2D col = Instantiate(AssetSerializationMaps.staticWorldColliderTemplate, result.staticColliderParent);
+               col.transform.localPosition = Vector3.zero;
+               staticColliders.Add(col);
+
+               col.pathCount = shape.paths.Length;
+               for (int i = 0; i < shape.paths.Length; i++) {
+                  col.SetPath(i, shape.paths[i].points);
+               }
+            }
+
+            result.area.setStaticColliders(staticColliders);
          }
+
+         PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.5f);
 
          result.area.setTilemapLayers(tilemaps);
-         result.area.setColliderChunks(mapColliderChunks);
 
          // Disable map borders
          result.leftBorder.gameObject.SetActive(false);
@@ -316,8 +426,11 @@ public class MapManager : MonoBehaviour
          result.topBorder.gameObject.SetActive(false);
          result.bottomBorder.gameObject.SetActive(false);
 
-         MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
          yield return null;
+         yield return StartCoroutine(MapImporter.CO_InstantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area));
+         yield return null;
+
+         PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.7f);
 
          if (exportedProject.specialTileChunks != null) {
             MapImporter.addSpecialTileChunks(result, exportedProject.specialTileChunks);
@@ -345,14 +458,18 @@ public class MapManager : MonoBehaviour
          // Set up cell types container
          result.area.cellTypes = new CellTypesContainer(exportedProject.mapCellTypes, exportedProject.size, result.area);
 
-         // Destroy the template component
-         Destroy(result);
-
-         // Initialize the area
-         area.initialize();
-
          MapImporter.setCameraBounds(result, bounds);
          MapImporter.addEdgeColliders(result, bounds);
+
+         // Initialize the area
+         yield return null;
+         area.initialize();
+         yield return null;
+
+         PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.9f);
+
+         // Destroy the template component
+         Destroy(result);
 
          // Add the frame that will wrap the area
          addGenericFrame(area, bounds);
@@ -360,6 +477,8 @@ public class MapManager : MonoBehaviour
          area.vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
          onAreaCreationIsFinished(area, biome);
+
+         PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 1f);
 
          string zabbixData = "";
          if (Mirror.NetworkServer.active) {
@@ -817,6 +936,10 @@ public class MapManager : MonoBehaviour
 
    // List of plantable trees we are managing
    private Dictionary<int, PlantableTree> _plantableTrees = new Dictionary<int, PlantableTree>();
+
+   // Buffers we use for setting tiles, size controls how many tiles we'll process in 1 frame
+   private TileBase[] _setTilesTileBuffer = new TileBase[2048];
+   private Vector3Int[] _setTilesPositionBuffer = new Vector3Int[2048];
 
    #endregion
 }

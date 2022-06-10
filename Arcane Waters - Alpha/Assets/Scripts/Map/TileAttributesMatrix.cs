@@ -11,33 +11,55 @@ public class TileAttributesMatrix
    public const int MAX_HEIGHT = 256;
 
    // Current size of attributes matrix
-   public Vector2Int attributesMatrixSize
+   public int attributeMatrixWidth
    {
       get
       {
          if (_attributesMatrixHeight == 0) {
-            return Vector2Int.zero;
+            return 0;
          }
-         return new Vector2Int(_attributesMatrix.Length / _attributesMatrixHeight, _attributesMatrixHeight);
+         return _attributesMatrix.Length / _attributesMatrixHeight;
       }
+   }
+
+   public int attributeMatrixHeight
+   {
+      get { return _attributesMatrixHeight; }
    }
 
    #endregion
 
-   public TileAttributes getTileAttributesMatrixElement (Vector2Int index) {
-      if (index.x >= MAX_WIDTH || index.y >= MAX_HEIGHT) {
-         return null;
-      }
+   public TileAttributesMatrix () {
 
-      if (index.x < 0 || index.y < 0 || index.x >= attributesMatrixSize.x || index.y >= attributesMatrixSize.y) {
-         return null;
-      }
-
-      return _attributesMatrix[index.x + index.y * attributesMatrixSize.x];
    }
 
-   public bool hasAttribute (Vector2Int index, TileAttributes.Type type) {
-      TileAttributes a = getTileAttributesMatrixElement(index);
+   public TileAttributesMatrix (int width, int height) {
+      if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+         D.warning("Tile Attribute Matrix is being forced to be bigger than max: " + width + ", " + height);
+      }
+
+      _attributesMatrix = new TileAttributes[width * height];
+      _attributesMatrixHeight = height;
+
+      for (int i = 0; i < _attributesMatrix.Length; i++) {
+         _attributesMatrix[i] = new TileAttributes();
+      }
+   }
+
+   public TileAttributes getTileAttributesMatrixElement (int xIndex, int yIndex) {
+      if (xIndex >= MAX_WIDTH || yIndex >= MAX_HEIGHT) {
+         return null;
+      }
+
+      if (xIndex < 0 || yIndex < 0 || xIndex >= attributeMatrixWidth || yIndex >= attributeMatrixHeight) {
+         return null;
+      }
+
+      return _attributesMatrix[xIndex + yIndex * attributeMatrixWidth];
+   }
+
+   public bool hasAttribute (int xIndex, int yIndex, TileAttributes.Type type) {
+      TileAttributes a = getTileAttributesMatrixElement(xIndex, yIndex);
       if (a != null) {
          if (a.hasAttribute(type)) {
             return true;
@@ -47,8 +69,8 @@ public class TileAttributesMatrix
       return false;
    }
 
-   public void logAttributes (Vector2Int index, string prefix) {
-      TileAttributes a = getTileAttributesMatrixElement(index);
+   public void logAttributes (int xIndex, int yIndex, string prefix) {
+      TileAttributes a = getTileAttributesMatrixElement(xIndex, yIndex);
       if (a == null) {
          prefix += "null";
       } else {
@@ -59,8 +81,8 @@ public class TileAttributesMatrix
       Debug.Log(prefix);
    }
 
-   public int getAttributes (Vector2Int index, TileAttributes.Type[] attributeBuffer) {
-      TileAttributes a = getTileAttributesMatrixElement(index);
+   public int getAttributes (int xIndex, int yIndex, TileAttributes.Type[] attributeBuffer) {
+      TileAttributes a = getTileAttributesMatrixElement(xIndex, yIndex);
       if (a == null) {
          return 0;
       }
@@ -70,40 +92,40 @@ public class TileAttributesMatrix
       return Mathf.Min(a.attributes.Count, attributeBuffer.Length);
    }
 
-   public void addAttributes (Vector2Int index, TileAttributes attributes) {
-      foreach (TileAttributes.Type t in attributes.attributes) {
-         addAttribute(index, t);
+   public void addAttributes (int xIndex, int yIndex, TileAttributes attributes) {
+      for (int i = 0; i < attributes.attributes.Count; i++) {
+         addAttribute(xIndex, yIndex, attributes.attributes[i]);
       }
    }
 
-   public bool addAttribute (Vector2Int index, TileAttributes.Type attribute) {
-      if (index.x >= MAX_WIDTH || index.y >= MAX_HEIGHT || index.x < 0 || index.y < 0) {
+   public bool addAttribute (int xIndex, int yIndex, TileAttributes.Type attribute) {
+      if (xIndex >= MAX_WIDTH || yIndex >= MAX_HEIGHT || xIndex < 0 || yIndex < 0) {
          return false;
       }
 
-      bool expanded = encapsulate(index.x, index.y);
-      bool modified = getTileAttributesMatrixElement(index).addAttribute(attribute);
+      bool expanded = encapsulate(xIndex, yIndex);
+      bool modified = getTileAttributesMatrixElement(xIndex, yIndex).addAttribute(attribute);
 
       return expanded || modified;
    }
 
-   public bool removeAttribute (Vector2Int index, TileAttributes.Type attribute) {
-      if (index.x >= MAX_WIDTH || index.y >= MAX_HEIGHT || index.x < 0 || index.y < 0) {
+   public bool removeAttribute (int xIndex, int yIndex, TileAttributes.Type attribute) {
+      if (xIndex >= MAX_WIDTH || yIndex >= MAX_HEIGHT || xIndex < 0 || yIndex < 0) {
          return false;
       }
 
-      bool expanded = encapsulate(index.x, index.y);
-      bool modified = getTileAttributesMatrixElement(index).removeAttribute(attribute);
+      bool expanded = encapsulate(xIndex, yIndex);
+      bool modified = getTileAttributesMatrixElement(xIndex, yIndex).removeAttribute(attribute);
 
       return expanded || modified;
    }
 
    private bool encapsulate (int x, int y) {
-      if (x < 0 || y < 0 || x >= MAX_HEIGHT || y >= MAX_HEIGHT || (x < attributesMatrixSize.x && y < attributesMatrixSize.y)) {
+      if (x < 0 || y < 0 || x >= MAX_HEIGHT || y >= MAX_HEIGHT || (x < attributeMatrixWidth && y < attributeMatrixHeight)) {
          return false;
       }
 
-      resize(Mathf.Max(x + 1, attributesMatrixSize.x), Mathf.Max(y + 1, attributesMatrixSize.y));
+      resize(Mathf.Max(x + 1, attributeMatrixWidth), Mathf.Max(y + 1, attributeMatrixHeight));
       return true;
    }
 
@@ -113,8 +135,8 @@ public class TileAttributesMatrix
       }
 
       TileAttributes[] old = _attributesMatrix.Clone() as TileAttributes[];
-      int oldHeight = attributesMatrixSize.y;
-      int oldWidth = attributesMatrixSize.x;
+      int oldHeight = attributeMatrixHeight;
+      int oldWidth = attributeMatrixWidth;
 
       _attributesMatrixHeight = height;
       int matrixWidth = width;
@@ -122,7 +144,7 @@ public class TileAttributesMatrix
 
       for (int i = 0; i < _attributesMatrix.Length; i++) {
          // Extract matrix x and y coors
-         Vector2Int coors = new Vector2Int(i % matrixWidth, i / matrixWidth);
+         (int x, int y) coors = (i % matrixWidth, i / matrixWidth);
 
          if (coors.x < oldWidth && coors.y < oldHeight) {
             // Apply old element

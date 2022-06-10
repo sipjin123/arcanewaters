@@ -458,6 +458,7 @@ namespace MapCreationTool
             loadingPanel.display("Saving map version", dbTask);
          } catch (Exception ex) {
             messagePanel.displayError(ex.Message);
+            Debug.Log(ex);
          }
       }
 

@@ -57,7 +57,7 @@ public class InventoryManager : MonoBehaviour
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend, Global.showSoulbindingWarnings);
 
          // Trigger the tutorial
          if (Global.getUserObjects().weapon != null) {
@@ -69,35 +69,35 @@ public class InventoryManager : MonoBehaviour
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend, Global.showSoulbindingWarnings);
       } else if (castedItem.category == Item.Category.Hats) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend, Global.showSoulbindingWarnings);
       } else if (castedItem.category == Item.Category.Ring) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetRingId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetRingId(itemIdToSend, Global.showSoulbindingWarnings);
       } else if (castedItem.category == Item.Category.Necklace) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetNecklaceId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetNecklaceId(itemIdToSend, Global.showSoulbindingWarnings);
       } else if (castedItem.category == Item.Category.Trinket) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.showBlocker(large: true);
          }
 
          // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetTrinketId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetTrinketId(itemIdToSend, Global.showSoulbindingWarnings);
       }
    }
 
@@ -118,7 +118,7 @@ public class InventoryManager : MonoBehaviour
 
    protected static void confirmUseItem (Item item) {
       PanelManager.self.confirmScreen.hide();
-      Global.player.rpc.Cmd_RequestUseItem(item.id, confirmed: true);
+      Global.player.rpc.Cmd_RequestUseItem(item.id, confirmed: true, Global.showSoulbindingWarnings);
 
       if (InventoryPanel.self.isShowing()) {
          InventoryPanel.self.showBlocker(large: true);

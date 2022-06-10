@@ -90,6 +90,9 @@ public class Global
    // Determine if the chat input field should remain focused after sending a message
    public static bool chatInputRemainsFocused = false;
 
+   // Determine if the soul binding warnings should be shown
+   public static bool showSoulbindingWarnings = true;
+
    // Determine if the player should automatically attack during land combat
    public static bool autoAttack = false;
 

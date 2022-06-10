@@ -570,6 +570,12 @@ public class EnemyManager : MonoBehaviour {
 
    private IEnumerator CO_WaitforSpawnBotship (OpenWorldRespawnData respawnData) {
       yield return new WaitForSeconds(respawnData.respawnTime);
+
+      // While a player is near our spawn, don't respawn
+      while (isPlayerWithinRange(respawnData.instance, respawnData.localPosition, OPEN_WORLD_ENEMY_SPAWN_PROXIMITY)) {
+         yield return new WaitForSeconds(1.0f);
+      }
+      
       spawnBotShip(respawnData.instance, respawnData.area, respawnData.localPosition, 
          respawnData.guildId, respawnData.isPositionRandomized, respawnData.useWorldPosition, 
          respawnData.difficulty, respawnData.isOpenWorldSpawn, respawnData.respawnTime);
@@ -800,11 +806,26 @@ public class EnemyManager : MonoBehaviour {
       return Mathf.CeilToInt(((float)difficulty / 2f) * adminParameter);
    }
 
+   private bool isPlayerWithinRange (Instance instance, Vector2 position, float range) {
+      List<PlayerShipEntity> playerShips = instance.getPlayerShipEntities();
+
+      foreach (PlayerShipEntity playerShip in playerShips) {
+         if (((Vector2)playerShip.transform.position - position).magnitude <= range) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    #region Private Variables
 
    // The distance from the spawn point where enemies can spawn, when the position is randomized
    private static float SPAWN_POSITION_DISTANCE_MIN = 0.5f;
    private static float SPAWN_POSITION_DISTANCE_MAX = 1f;
+
+   // Enemies respawning in open world maps will wait to spawn if players are within this distance
+   private static float OPEN_WORLD_ENEMY_SPAWN_PROXIMITY = 5.0f;
 
    // Stores a list of Enemy Spawners for each type of Site
    protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();

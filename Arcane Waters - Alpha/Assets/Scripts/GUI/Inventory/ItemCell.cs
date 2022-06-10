@@ -570,7 +570,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    }
 
    public static void appendLevelRequirementTextToTooltip (Item item, ref string tooltipMessage) {
-      int playerLevel = LevelUtil.levelForXp(Global.player.XP);
+      int xp = 0;
+
+      if (Global.player != null) {
+         xp = Global.player.XP;
+      }
+
+      int playerLevel = LevelUtil.levelForXp(xp);
       int reqLevel = EquipmentXMLManager.self.equipmentLevelRequirement(item);
       bool meetsRequirement = playerLevel >= reqLevel;
 

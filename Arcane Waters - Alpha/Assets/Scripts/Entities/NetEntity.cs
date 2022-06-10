@@ -1559,8 +1559,10 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Bot ships can fight if they do not have the same guild (pirates vs privateers)
-      if (guildId > 0 && otherEntity.guildId > 0 && isBotShip() && otherEntity.isBotShip() && otherEntity.guildId == guildId) {
-         return true;
+      if (pvpTeam == PvpTeamType.None) {
+         if (guildId > 0 && otherEntity.guildId > 0 && isBotShip() && otherEntity.isBotShip() && otherEntity.guildId == guildId) {
+            return true;
+         }
       }
 
       if (enablePvp && otherEntity.enablePvp) {

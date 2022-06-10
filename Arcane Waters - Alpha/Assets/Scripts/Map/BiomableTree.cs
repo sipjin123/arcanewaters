@@ -10,7 +10,7 @@ public class BiomableTree : MonoBehaviour, IBiomable
 
    #endregion
 
-   public void setBiome (Biome.Type biomeType) {
+   public void setBiome (Biome.Type biomeType, bool skipClientOnlyFunctionality) {
       foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
          renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
 

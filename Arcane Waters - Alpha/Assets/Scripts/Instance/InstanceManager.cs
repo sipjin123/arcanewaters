@@ -743,9 +743,27 @@ public class InstanceManager : MonoBehaviour
    }
 
    public List<InstanceOverview> createOverviewForAllInstances () {
-      return _instances
-         .Select(kv => new InstanceOverview { area = kv.Value.areaKey, count = getPlayerCountInInstance(kv.Key) })
-         .ToList();
+      List<InstanceOverview> allInstances = new List<InstanceOverview>();
+      foreach (Instance instance in _instances.Values) {
+         if (!VoyageManager.self.tryGetVoyage(instance.voyageId, out Voyage voyage, true)) {
+            voyage = new Voyage();
+         }
+         allInstances.Add(new InstanceOverview {
+            id = instance.id,
+            port = instance.serverPort,
+            area = instance.areaKey,
+            pCount = getPlayerCountInInstance(instance.id),
+            voyage = voyage,
+            difficulty = instance.difficulty,
+            aliveEnemyCount = instance.aliveNPCEnemiesCount,
+            totalEnemyCount = instance.getTotalNPCEnemyCount(),
+            isPvp = instance.isPvP,
+            creationDate = instance.creationDate,
+            biome = instance.biome
+         });
+      }
+
+      return allInstances;
    }
 
    #region Private Variables

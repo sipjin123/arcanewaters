@@ -416,7 +416,7 @@ namespace MapCreationTool
          }
 
          foreach (IBiomable biomable in instance.GetComponentsInChildren<IBiomable>()) {
-            biomable.setBiome(Tools.biome);
+            biomable.setBiome(Tools.biome, false);
          }
 
          if (instance.GetComponent<MapEditorPrefab>()) {

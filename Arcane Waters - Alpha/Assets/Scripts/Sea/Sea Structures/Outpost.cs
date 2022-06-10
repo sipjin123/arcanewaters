@@ -186,7 +186,7 @@ public class Outpost : SeaStructureTower, IObserver
       }
    }
 
-   protected override NetEntity getAttackerInRange (bool logData = false) {
+   protected override SeaEntity getAttackerInRange (bool logData = false) {
       // If we're targeting a player ship that's in our range, don't find a new target
       if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(_aimTarget.transform.position)) {
          return _aimTarget;
@@ -194,7 +194,7 @@ public class Outpost : SeaStructureTower, IObserver
 
       if (InstanceManager.self.tryGetInstance(instanceId, out Instance instance)) {
          foreach (NetworkBehaviour beh in instance.entities) {
-            NetEntity entity = beh as NetEntity;
+            SeaEntity entity = beh as SeaEntity;
             if (entity != null) {
                if (isValidTarget(entity)) {
                   if (isInRange(entity.transform.position)) {

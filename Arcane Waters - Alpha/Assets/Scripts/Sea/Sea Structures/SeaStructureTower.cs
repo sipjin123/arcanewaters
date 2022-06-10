@@ -98,13 +98,15 @@ public class SeaStructureTower : SeaStructure
             yield return null;
          }
 
-         NetEntity target = getAttackerInRange();
+         SeaEntity target = getAttackerInRange();
 
          // Show the charging animation on clients
          if (target) {
             Rpc_NotifyChargeUp(target.netId);
             _aimTarget = target;
-            aimTransform.position = target.transform.position;
+
+            Vector2 overAim = (getEntityAimPoint(_aimTarget) - (Vector2)transform.position).normalized * OVERAIM_DISTANCE;
+            aimTransform.position = target.transform.position + (Vector3)overAim;
          }
 
          // Wait for the charge-up animation to play
@@ -146,14 +148,14 @@ public class SeaStructureTower : SeaStructure
 
    [ClientRpc]
    private void Rpc_NotifyChargeUp (uint targetNetId) {
-      NetEntity target = MyNetworkManager.fetchEntityFromNetId<NetEntity>(targetNetId);
+      SeaEntity target = SeaManager.self.getEntity(targetNetId);
       if (target == null || target.isDead() || isDead()) {
          return;
       }
 
       _aimTarget = target;
       _attackChargeStartTime = (float) NetworkTime.time;
-      aimTransform.position = _aimTarget.transform.position;
+      aimTransform.position = getEntityAimPoint(_aimTarget);
 
       // Show the charging animation
       showTargetingEffects();
@@ -256,9 +258,11 @@ public class SeaStructureTower : SeaStructure
 
          // If we haven't locked on yet, update the aim transform
          if ((timeSpentCharging / ATTACK_CHARGE_TIME) < AIM_TARGET_LOCK_TIME_NORMALISED) {
+            Vector2 aimPoint = getEntityAimPoint(_aimTarget);
+
             // Find a point slightly ahead of the player's movement
             Vector2 projectedPosition = _aimTarget.getProjectedPosition(1.0f * distanceModifier);
-            Vector2 toProjectedPosition = projectedPosition - (Vector2) _aimTarget.transform.position;
+            Vector2 toProjectedPosition = projectedPosition - aimPoint;
             float maxReticleDistanceFromTarget = 1.0f;
 
             // Clamp it so it doesn't extend too far when the player dashes
@@ -267,7 +271,8 @@ public class SeaStructureTower : SeaStructure
             }
 
             // Smoothly move the reticle to this position
-            Vector2 reticleTargetPosition = (Vector2) _aimTarget.transform.position + toProjectedPosition;
+            Vector2 overAim = (aimPoint - (Vector2)transform.position).normalized * OVERAIM_DISTANCE;
+            Vector2 reticleTargetPosition = aimPoint + toProjectedPosition + overAim;
 
             // If the reticle target position has moved out of range, clamp it in-range
             Vector2 toReticleTargetPosition = reticleTargetPosition - (Vector2) transform.position;
@@ -372,16 +377,16 @@ public class SeaStructureTower : SeaStructure
       return PvpTower.WARNING_RANGE;
    }
 
-   protected override NetEntity getAttackerInRange (bool logData = false) {
+   protected override SeaEntity getAttackerInRange (bool logData = false) {
       // If we're targeting a player ship that's in our range, don't find a new target
-      if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(_aimTarget.transform.position)) {
+      if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(getEntityAimPoint(_aimTarget))) {
          return _aimTarget;
       }
 
       // First check for non-players
       // Check if any of our attackers are within range
       foreach (uint attackerId in _attackers.Keys) {
-         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+         SeaEntity attacker = SeaManager.self.getEntity(attackerId);
          if (attacker == null || attacker.isDead() || attacker.isPlayerShip()) {
             continue;
          }
@@ -399,7 +404,7 @@ public class SeaStructureTower : SeaStructure
 
       // If no non-players are in range, target a player
       foreach (uint attackerId in _attackers.Keys) {
-         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+         SeaEntity attacker = SeaManager.self.getEntity(attackerId);
          if (attacker == null || attacker.isDead() || !attacker.isPlayerShip()) {
             continue;
          }
@@ -480,7 +485,7 @@ public class SeaStructureTower : SeaStructure
    #region Private Variables
 
    // The entity we are aiming at, and intending to fire at
-   protected NetEntity _aimTarget = null;
+   protected SeaEntity _aimTarget = null;
 
    // The transparency value for our attack range circle
    protected float _attackRangeCircleAlpha = 0.0f;
@@ -505,6 +510,9 @@ public class SeaStructureTower : SeaStructure
 
    // How long the attack takes to charge up
    protected const float ATTACK_CHARGE_TIME = 0.75f;
+
+   // How far past the target we will aim
+   private const float OVERAIM_DISTANCE = 0.3f;
 
    #endregion
 }

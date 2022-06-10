@@ -11929,6 +11929,33 @@ public class DB_Main : DB_MainStub
       return isAreaUnlocked;
    }
 
+   public static new int getUserCountHavingVisitedArea (string areaKey) {
+      int userCount = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT COUNT(*) AS userCount FROM unlocked_world_map_areas WHERE areaKey=@areaKey"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userCount = dataReader.GetInt32("userCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userCount;
+   }
+
 #endregion
 
 #region Area Visit List

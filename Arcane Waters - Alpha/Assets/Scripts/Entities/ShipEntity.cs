@@ -64,7 +64,7 @@ public class ShipEntity : SeaEntity
    public Transform abilityEffectHolder;
 
    // A list of directional colliders, indexed by ship size
-   public List<GameObject> directionalColliders;
+   public List<DirectionalCombatCollider> directionalColliders;
 
    #endregion
 
@@ -91,8 +91,8 @@ public class ShipEntity : SeaEntity
       }
 
       for (int i = 0; i < directionalColliders.Count; i++) {
-         GameObject directionalCollider = directionalColliders[i];
-         directionalCollider.SetActive(i == shipSizeIndex);
+         DirectionalCombatCollider directionalCollider = directionalColliders[i];
+         directionalCollider.gameObject.SetActive(i == shipSizeIndex);
       }
    }
 
@@ -126,8 +126,8 @@ public class ShipEntity : SeaEntity
       }
 
       for (int i = 0; i < directionalColliders.Count; i++) {
-         GameObject directionalCollider = directionalColliders[i];
-         directionalCollider.SetActive(i == shipSizeIndex);
+         DirectionalCombatCollider directionalCollider = directionalColliders[i];
+         directionalCollider.gameObject.SetActive(i == shipSizeIndex);
       }
    }
 
@@ -170,8 +170,8 @@ public class ShipEntity : SeaEntity
       }
 
       for (int i = 0; i < directionalColliders.Count; i++) {
-         GameObject directionalCollider = directionalColliders[i];
-         directionalCollider.SetActive(i == shipSizeIndex);
+         DirectionalCombatCollider directionalCollider = directionalColliders[i];
+         directionalCollider.gameObject.SetActive(i == shipSizeIndex);
       }
    }
 
@@ -737,6 +737,26 @@ public class ShipEntity : SeaEntity
       if (applyToCurrentHealth) {
          currentHealth += bonusHealth;
       }
+   }
+
+   protected override Vector2 getEntityAimPoint (SeaEntity entity) {
+      DirectionalCombatCollider activeCollider = null;
+
+      foreach (DirectionalCombatCollider directionalCollider in directionalColliders) {
+         if (directionalCollider.gameObject.activeSelf) {
+            activeCollider = directionalCollider;
+            break;
+         }
+      }
+
+      if (activeCollider != null) {
+         BoxCollider2D activeBoxCollider = activeCollider.getCollider();
+         if (activeBoxCollider != null) {
+            return (Vector2)entity.transform.position + activeBoxCollider.offset;
+         }
+      }
+
+      return entity.transform.position;
    }
 
    #region Private Variables

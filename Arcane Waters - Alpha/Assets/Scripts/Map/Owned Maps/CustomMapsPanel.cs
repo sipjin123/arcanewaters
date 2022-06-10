@@ -81,7 +81,9 @@ public class CustomMapsPanel : Panel
          PanelManager.self.unlinkPanel();
 
          if (customMapKey.Equals(_customMapManager?.mapTypeAreaKey)) {
-            GuildPanel.self.hide();
+            if (GuildPanel.self != null) {
+               GuildPanel.self.hide();
+            }
          }
 
       } else {

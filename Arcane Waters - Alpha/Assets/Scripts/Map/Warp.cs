@@ -487,6 +487,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          if (!instance.areAllTreasureSitesClearedOfEnemies) {
             return false;
          }
+
+         // Skip demo restriction and destination checks if we are in a league map
+         return true;
       }
 
       // If the warp has a static destination, it must be defined

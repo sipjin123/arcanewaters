@@ -59,7 +59,7 @@ public class AdminVoyageInfoPanel : SubPanel
 
    public void onWarpToVoyageButtonPressed () {
       hide();
-      AdminVoyagePanel.self.warpToVoyage(_voyage);
+      AdminInstanceListPanel.self.warpToVoyage(_voyage);
    }
 
    public void setLoadBlocker (bool isOn) {

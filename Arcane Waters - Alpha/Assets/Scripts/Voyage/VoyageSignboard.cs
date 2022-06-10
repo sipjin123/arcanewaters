@@ -12,7 +12,8 @@ public class VoyageSignboard : Signboard
    #endregion
 
    protected override void onClick () {
-      ((PvpArenaPanel)PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard).refreshPanel(NoticeBoardPanel.Mode.BiomeActivity);
    }
 
    #region Private Variables

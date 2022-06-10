@@ -262,7 +262,7 @@ public class AchievementManager : MonoBehaviour {
                D.error(www.error);
             } else {
                // Play the earn achievement sound effect
-               ServerNetworkingManager.self.playAchievementSfxForPlayer(userId);
+               //ServerNetworkingManager.self.playAchievementSfxForPlayer(userId);
             }
          }
       }

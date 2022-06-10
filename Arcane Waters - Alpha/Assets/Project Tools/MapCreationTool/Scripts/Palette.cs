@@ -167,7 +167,7 @@ namespace MapCreationTool
                p.GetComponent<ZSnap>().enabled = false;
 
             foreach (IBiomable biomable in p.GetComponentsInChildren<IBiomable>()) {
-               biomable.setBiome(biome);
+               biomable.setBiome(biome, false);
             }
 
             p.layer = LayerMask.NameToLayer("MapEditor_Palette");

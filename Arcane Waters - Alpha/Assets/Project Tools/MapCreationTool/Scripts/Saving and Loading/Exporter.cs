@@ -8,6 +8,9 @@ namespace MapCreationTool.Serialization
 {
    public class Exporter
    {
+      // Up to how many tiles do we take for a single collider, made out of tiles
+      public const int TILE_COLLIDER_CHUNK_SIZE = 32;
+
       // Tiles that should not block a cell from being considered being a 'water' cell
       public static HashSet<string> nonWaterBlockingTiles = new HashSet<string> {
          "desert_tiles_161", "desert_tiles_258", "desert_tiles_261",
@@ -83,6 +86,7 @@ namespace MapCreationTool.Serialization
       private BoardCell[,] cellMatrix;
       private List<(TileBase, Vector2Int)> additionalTileColliders;
       private List<SpecialTileChunk> vineChunks;
+      private List<TileCollisionShape> tileCollisionShapes;
 
 
       public Exporter (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Biome.Type biome, EditorType eType, Vector2Int eOrigin, Vector2Int eSize, EditorConfig editorConfig) {
@@ -166,7 +170,8 @@ namespace MapCreationTool.Serialization
             size = editorSize,
             prefabs = prefabsSerialized,
             additionalTileColliders = exportedAddtionalColliders,
-            mapCellTypes = mapCellTypes.ToArray()
+            mapCellTypes = mapCellTypes.ToArray(),
+            tileCollisionShapes = tileCollisionShapes.ToArray()
          };
       }
 
@@ -197,6 +202,9 @@ namespace MapCreationTool.Serialization
                }
             }
          }
+
+         // Bake tile collision shapes
+         bakeTileCollisions();
       }
 
       private void setCollisions (BoardCell[,] cellMatrix) {
@@ -228,7 +236,7 @@ namespace MapCreationTool.Serialization
                   // Check 1 and 0 above, left and right (horizontal path doorframe)
                   if (tryGetLeftRightDoorframes(i, j + 1, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
                      if (left.collisionType == TileCollisionType.CancelDisabled && right.collisionType == TileCollisionType.CancelDisabled) {
-                        additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex, biome), new Vector2Int(i, j)));
+                        additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex.x, bottomWallIndex.y, biome), new Vector2Int(i, j)));
                         continue;
                      }
                   }
@@ -243,7 +251,7 @@ namespace MapCreationTool.Serialization
                // If this is a wall tile, check if it has a horizontal doorframe on top
                if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
                   if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelDisabled) {
-                     additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex, biome), new Vector2Int(i, j)));
+                     additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex.x, bottomWallIndex.y, biome), new Vector2Int(i, j)));
                      continue;
                   }
                }
@@ -273,6 +281,95 @@ namespace MapCreationTool.Serialization
                      break;
                   }
                }
+            }
+         }
+      }
+
+      private void bakeTileCollisions () {
+         // Prepare chunks
+         (int x, int y) chunkCount = (
+            Mathf.CeilToInt((float) editorSize.x / (float) TILE_COLLIDER_CHUNK_SIZE),
+            Mathf.CeilToInt((float) editorSize.y / (float) TILE_COLLIDER_CHUNK_SIZE));
+
+         CompositeCollider2D[,] compositeColliders = new CompositeCollider2D[chunkCount.x, chunkCount.y];
+         for (int i = 0; i < chunkCount.x; i++) {
+            for (int j = 0; j < chunkCount.y; j++) {
+               MapChunk ob = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapChunkTemplate);
+               compositeColliders[i, j] = ob.GetComponent<CompositeCollider2D>();
+            }
+         }
+
+         // Tilemaps for each chunk
+         Tilemap[,] tilemaps = new Tilemap[chunkCount.x, chunkCount.y];
+
+         // Group tiles according to layer
+         IEnumerable<IEnumerable<(TileBase tileBase, Vector3Int position)>> groupedTiles =
+         getAllTiles()
+            .Where(t => t.shouldHaveCollider)
+            .GroupBy(t => (t.layer, t.sublayer))
+            .Select(g => g.Select(t => (t.tileBase, new Vector3Int(t.position.x - editorOrigin.x, t.position.y - editorOrigin.y, 0))));
+
+         // Add special case tiles if defined
+         groupedTiles = additionalTileColliders.Count == 0
+            ? groupedTiles
+            : groupedTiles.Union(Enumerable.Repeat(
+               additionalTileColliders.Select(t => (t.Item1, (Vector3Int) (t.Item2))), 1));
+
+         foreach (var layer in groupedTiles) {
+            // Instantiate the layers
+            for (int i = 0; i < chunkCount.x; i++) {
+               for (int j = 0; j < chunkCount.y; j++) {
+                  tilemaps[i, j] = UnityEngine.Object.Instantiate(
+                     AssetSerializationMaps.collisionTilemapTemplate,
+                     compositeColliders[i, j].transform);
+                  tilemaps[i, j].transform.localPosition = Vector3.zero;
+                  tilemaps[i, j].gameObject.name = "TEMP COLLIDER SHAPE GENERATION";
+               }
+            }
+
+            foreach (var tilePosition in layer) {
+               // Select the correct chunk to apply tile
+               tilemaps[tilePosition.position.x / TILE_COLLIDER_CHUNK_SIZE, tilePosition.position.y / TILE_COLLIDER_CHUNK_SIZE]
+                  .SetTile(tilePosition.position, tilePosition.tileBase);
+            }
+
+            // Enable the colliders for tilemaps
+            for (int i = 0; i < chunkCount.x; i++) {
+               for (int j = 0; j < chunkCount.y; j++) {
+                  tilemaps[i, j].GetComponent<TilemapCollider2D>().enabled = true;
+               }
+            }
+         }
+
+         // All the tiles were set, generate collider shapes
+         for (int i = 0; i < chunkCount.x; i++) {
+            for (int j = 0; j < chunkCount.y; j++) {
+               compositeColliders[i, j].GenerateGeometry();
+            }
+         }
+
+         // Store collision shapes
+         tileCollisionShapes = new List<TileCollisionShape>();
+         for (int i = 0; i < chunkCount.x; i++) {
+            for (int j = 0; j < chunkCount.y; j++) {
+               TileCollisionShape shape = new TileCollisionShape {
+                  paths = new PointPath[compositeColliders[i, j].pathCount]
+               };
+
+               for (int k = 0; k < compositeColliders[i, j].pathCount; k++) {
+                  shape.paths[k] = new PointPath { points = new Vector2[compositeColliders[i, j].GetPathPointCount(k)] };
+                  compositeColliders[i, j].GetPath(k, shape.paths[k].points);
+               }
+
+               tileCollisionShapes.Add(shape);
+            }
+         }
+
+         // Clean up
+         // All the tiles were set, generate collider shapes
+         for (int i = 0; i < chunkCount.x; i++) {
+            for (int j = 0; j < chunkCount.y; j++) {
+               UnityEngine.Object.Destroy(compositeColliders[i, j].gameObject);
             }
          }
       }
@@ -936,6 +1033,7 @@ namespace MapCreationTool.Serialization
       public SpecialTileChunk[] specialTileChunks;
       public ExportedLayer001 additionalTileColliders;
       public CellTypesContainer.MapCellType[] mapCellTypes;
+      public TileCollisionShape[] tileCollisionShapes;
    }
 
    [Serializable]
@@ -965,7 +1063,14 @@ namespace MapCreationTool.Serialization
       public int j; // Tile index y
       public int x; // Tile position x
       public int y; // Tile position y
+      [Obsolete("This is being replaced by baking tile collision shapes")]
       public int c; // Whether the tile should collide
+   }
+
+   [Serializable]
+   public class TileCollisionShape
+   {
+      public PointPath[] paths;
    }
 
    [Serializable]

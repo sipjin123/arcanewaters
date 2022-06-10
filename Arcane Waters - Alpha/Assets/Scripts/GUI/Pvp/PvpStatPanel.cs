@@ -236,6 +236,9 @@ public class PvpStatPanel : Panel {
             }
          }
 
+         // Disable input when game ended
+         InputManager.self.inputMaster.Sea.Disable();
+
          // Enable the victory / defeat banner
          GameObject bannerToEnable = (isVictory) ? victoryBanner : defeatBanner;
          GameObject bannerToDisable = (isVictory) ? defeatBanner : victoryBanner;
@@ -353,14 +356,24 @@ public class PvpStatPanel : Panel {
    }
 
    public void onGoHomePressed () {
-      if (Global.player) {
+      if (Global.player != null) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
-         if (playerShip) {
+         if (playerShip != null) {
+            isGameEnded = false;
             RespawnScreen.self.respawnPlayerShipInTown(playerShip);
          }
       }
 
       CancelInvoke(nameof(updateTimerText));
+   }
+
+   public override void hide () {
+      // If game ends and scoreboard is shown if panel hide is trigger we also trigger onGoHomePressed
+      if (isGameEnded && isShowing()) {
+         onGoHomePressed();
+      } else {
+         base.hide();
+      }
    }
 
    public void onPlayerJoinedPvpGame () {
@@ -397,6 +410,20 @@ public class PvpStatPanel : Panel {
       }
    }
 
+   public void toggleShowWindowValid (bool isValid) {
+      // Set flag if showing of panel is still valid
+      _showStillValid = isValid;
+   }
+
+   public override void show () {
+      // If showing of panel is invalid cancel show 
+      if (!_showStillValid) {
+         return;
+      }
+
+      base.show();
+   }
+
    #region Private Variables
 
    // Cached sprites for cell backgrounds for each team
@@ -419,6 +446,9 @@ public class PvpStatPanel : Panel {
 
    // The time at which the game the player is in started
    private float _gameStartTime;
+
+   // Flag if pvp panel show window is still valid
+   private bool _showStillValid = false;
 
    #endregion
 }

@@ -23,8 +23,11 @@ public class ServerOverview
    // Ping to master
    public long toMasterRTT = 0;
 
-   // Information about all instances
-   public List<InstanceOverview> instances = new List<InstanceOverview>();
+   // How many players are in this server
+   public int playerCount = 0;
+
+   // How many instances are in this server
+   public int instanceCount;
 
    // Uptime in seconds
    public double uptime;

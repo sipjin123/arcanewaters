@@ -8,6 +8,7 @@ namespace MapCreationTool
       public Area area;
       public Transform tilemapParent;
       public Transform collisionTilemapParent;
+      public Transform staticColliderParent;
       public Transform prefabParent;
       public Transform npcParent;
       public Transform effectorContainer;

@@ -144,7 +144,7 @@ public class CropManager : NetworkBehaviour
          // If this was the last seed of an equipped bag, unequip it
          Item seedBag = DB_Main.getItem(userId, seedBagId);
          if (isSeedBagEquipped && (seedBag == null || seedBag.count == 0)) {
-            _player.rpc.Bkg_RequestSetWeaponId(0);
+            _player.rpc.Bkg_RequestSetWeaponId(0, false);
          }
 
          // Add the farming XP

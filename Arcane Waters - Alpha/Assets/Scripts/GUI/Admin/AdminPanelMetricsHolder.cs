@@ -29,7 +29,7 @@ public class AdminPanelMetricsHolder : MonoBehaviour
    public void addServerOverview (List<ServerOverview> allOverviews, ServerOverview newOverview) {
       addServerOverview(newOverview);
 
-      totalPlayersText.text = "TOTAL PLAYERS: " + allOverviews.Sum(s => s.instances.Sum(i => i.count));
+      totalPlayersText.text = "TOTAL PLAYERS: " + allOverviews.Sum(s => s.playerCount);
    }
 
    private void addServerOverview (ServerOverview overview) {

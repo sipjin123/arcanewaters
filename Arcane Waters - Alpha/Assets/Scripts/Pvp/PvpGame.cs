@@ -50,6 +50,9 @@ public class PvpGame : MonoBehaviour
    // How much gold the winners / losers of the pvp game will receive at the end
    public const int WINNER_GOLD = 100, LOSER_GOLD = 50;
 
+   // Bot ships will not spawn if the current number of bot ships is greater than or equal to this number, per team
+   public const int MAX_BOT_SHIPS_PER_TEAM = 18;
+
    #endregion
 
    public void init (int voyageId, int instanceId, string areaKey) {
@@ -451,9 +454,36 @@ public class PvpGame : MonoBehaviour
    }
 
    private void spawnShips () {
+      List<int> botShipsPerTeam = new List<int>() { 0, 0, 0 };
+
+      // Clean ships list
+      for (int i = _ships.Count - 1; i >= 0; i--) {
+         if (_ships[i] == null || _ships[i].gameObject == null) {
+            _ships.RemoveAt(i);
+
+         // If the list has an entry for this ship's pvp team, count this ship
+         } else if ((int)_ships[i].pvpTeam < botShipsPerTeam.Count) {
+            botShipsPerTeam[(int) _ships[i].pvpTeam] = botShipsPerTeam[(int) _ships[i].pvpTeam] + 1;
+         }
+      }
+
       foreach (PvpShipyard shipyard in _shipyards) {
-         if (shipyard && shipyard.gameObject && !shipyard.isDead())
+
+         // If we don't have a ship count for this shipyard's team, or this shipyard's team has too many ships, don't spawn ships
+         bool haveShipCountForTeam = (int) shipyard.pvpTeam < botShipsPerTeam.Count;
+         if (!haveShipCountForTeam || botShipsPerTeam[(int)shipyard.pvpTeam] >= MAX_BOT_SHIPS_PER_TEAM) {
+            if (!haveShipCountForTeam) {
+               D.adminLog("Didn't spawn ships for pvp team: " + shipyard.pvpTeam + ", List botShipsPerTeam needs this team added.", D.ADMIN_LOG_TYPE.Pvp);
+            } else {
+               D.adminLog("Didn't spawn ships for pvp team: " + shipyard.pvpTeam + ", this team has too many ships. Ship count: " + botShipsPerTeam[(int) shipyard.pvpTeam], D.ADMIN_LOG_TYPE.Pvp);
+            }
+            
+            continue;
+         }
+
+         if (shipyard && shipyard.gameObject && !shipyard.isDead()) {
             _ships.Add(shipyard.spawnShip());
+         }
       }
    }
 

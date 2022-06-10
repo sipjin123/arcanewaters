@@ -69,8 +69,7 @@ namespace MapCreationTool.IssueResolving
 
          try {
             maps = (await DB_Main.execAsync(DB_Main.getMaps))
-               .Where(m => m.editorType == EditorType.Sea)
-               .Where(m => WorldMapManager.isWorldMapArea(m.name))
+               .Where(m => m.editorType == EditorType.Interior)
                .ToList();
             receivedMaps();
          } catch (Exception ex) {

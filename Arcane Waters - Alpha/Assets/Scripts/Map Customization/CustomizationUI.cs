@@ -165,7 +165,7 @@ namespace MapCustomization
       public void hideCustomizationPanel () {
          // Unequip hammer to exit customization
          if (Global.player != null) {
-            Global.player.rpc.Cmd_RequestSetWeaponId(0);
+            Global.player.rpc.Cmd_RequestSetWeaponId(0, false);
          }
       }
 

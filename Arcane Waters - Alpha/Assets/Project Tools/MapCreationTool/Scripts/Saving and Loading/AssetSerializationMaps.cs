@@ -8,6 +8,7 @@ using MapCreationTool;
 public class AssetSerializationMaps : MonoBehaviour
 {
    private const int PrefabGroupSlots = 100;
+   private const int TILE_LOOKUP_TABLE_SIZE = 100;
 
    public BiomeMapsDefinition[] mapsDefinitions;
    public MapsDefinition allBiomesDefinition;
@@ -19,6 +20,7 @@ public class AssetSerializationMaps : MonoBehaviour
    public Tilemap _tilemapTemplate;
    public Tilemap _collisionTilemapTemplate;
    public MapChunk _collisionTilemapChunkTemplate;
+   public PolygonCollider2D _staticWorldColliderTemplate;
    public GameObject _stairsEffector;
    public Vines _vinesTrigger;
    public Ledge _ledgePrefab;
@@ -27,7 +29,7 @@ public class AssetSerializationMaps : MonoBehaviour
 
    // The tile attribute matrix
    [SerializeField, HideInInspector]
-   public TileAttributesMatrix _tileAttributeMatrix = new TileAttributesMatrix();
+   public TileAttributesMatrix _tileAttributeMatrix = new TileAttributesMatrix(256, 256);
 
    public TileAttributesMatrix tileAttributeMatrixEditor
    {
@@ -51,6 +53,7 @@ public class AssetSerializationMaps : MonoBehaviour
          mapTemplate = _mapTemplate;
          collisionTilemapTemplate = _collisionTilemapTemplate;
          collisionTilemapChunkTemplate = _collisionTilemapChunkTemplate;
+         staticWorldColliderTemplate = _staticWorldColliderTemplate;
          stairsEffector = _stairsEffector;
          vinesTrigger = _vinesTrigger;
          currentEffector = _currentEffector;
@@ -60,6 +63,9 @@ public class AssetSerializationMaps : MonoBehaviour
          foreach (BiomeMapsDefinition definition in mapsDefinitions) {
             BiomeMaps bm = new BiomeMaps();
             biomeSpecific.Add(definition.biome, bm);
+
+            // Consider making this sized dynamically
+            bm.indexToTile = new TileBase[TILE_LOOKUP_TABLE_SIZE, TILE_LOOKUP_TABLE_SIZE];
 
             //Map prefabs
             foreach (var group in definition.prefabGroups) {
@@ -81,26 +87,40 @@ public class AssetSerializationMaps : MonoBehaviour
                   if (tile != null) {
                      if (!bm.tileToIndex.ContainsKey(tile))
                         bm.tileToIndex.Add(tile, new Vector2Int(i, j));
-                     if (!bm.indexToTile.ContainsKey(new Vector2Int(i, j)))
-                        bm.indexToTile.Add(new Vector2Int(i, j), tile);
+
+                     if (i < 0 || j < 0 || i >= bm.indexToTile.GetLength(0) || j >= bm.indexToTile.GetLength(1)) {
+                        throw new Exception("Tile index is out of bounds of it's lookup table");
+                     }
+
+                     if (bm.indexToTile[i, j] == null) {
+                        bm.indexToTile[i, j] = tile;
+                     }
                   }
                }
             }
 
             //Map special tiles, that are not included in biome specific definitions
-            bm.tileToIndex.Add(transparentTile, new Vector2Int(1000, 1000));
-            bm.indexToTile.Add(new Vector2Int(1000, 1000), transparentTile);
+            bm.tileToIndex.Add(transparentTile, new Vector2Int(99, 99));
+            bm.indexToTile[99, 99] = transparentTile;
          }
          //Handle shared for all biomes
          allBiomes = new BiomeMaps();
+         // Consider making this sized dynamically
+         allBiomes.indexToTile = new TileBase[TILE_LOOKUP_TABLE_SIZE, TILE_LOOKUP_TABLE_SIZE];
          for (int i = 0; i < allBiomesDefinition.tilemap.size.x; i++) {
             for (int j = 0; j < allBiomesDefinition.tilemap.size.y; j++) {
                var tile = allBiomesDefinition.tilemap.GetTile(new Vector3Int(i, j, 0) + allBiomesDefinition.tilemap.origin);
                if (tile != null) {
                   if (!allBiomes.tileToIndex.ContainsKey(tile))
                      allBiomes.tileToIndex.Add(tile, new Vector2Int(i, j));
-                  if (!allBiomes.indexToTile.ContainsKey(new Vector2Int(i, j)))
-                     allBiomes.indexToTile.Add(new Vector2Int(i, j), tile);
+
+                  if (i < 0 || j < 0 || i >= allBiomes.indexToTile.GetLength(0) || j >= allBiomes.indexToTile.GetLength(1)) {
+                     throw new Exception("Tile index is out of bounds of it's lookup table");
+                  }
+
+                  if (allBiomes.indexToTile[i, j] == null) {
+                     allBiomes.indexToTile[i, j] = tile;
+                  }
                }
             }
          }
@@ -140,21 +160,24 @@ public class AssetSerializationMaps : MonoBehaviour
 
    }
 
-   public static TileBase getTile (Vector2Int index, Biome.Type biome) {
-      if (allBiomes.indexToTile.TryGetValue(index, out TileBase tile))
-         return tile;
-      return biomeSpecific[biome].indexToTile[index];
-   }
+   public static TileBase getTile (Vector2Int index, Biome.Type biome) => getTile(index.x, index.y, biome);
 
-   public static TileBase tryGetTile (Vector2Int index, Biome.Type biome) {
-      if (allBiomes.indexToTile.TryGetValue(index, out TileBase t)) {
-         return t;
-      }
-      if (biomeSpecific[biome].indexToTile.TryGetValue(index, out TileBase bt)) {
-         return bt;
+   public static TileBase getTile (int xIndex, int yIndex, Biome.Type biome) {
+      // Transparent tiles were previously serialized as 1000x1000 index
+      if (xIndex == 1000 && yIndex == 1000) {
+         return transparentTileBase;
       }
 
-      return null;
+      if (xIndex < 0 || yIndex < 0 || xIndex >= TILE_LOOKUP_TABLE_SIZE || yIndex >= TILE_LOOKUP_TABLE_SIZE) {
+         D.error("Tile index out of bounds of look up table " + xIndex + " " + yIndex);
+         return null;
+      }
+
+      if (allBiomes.indexToTile[xIndex, yIndex] != null) {
+         return allBiomes.indexToTile[xIndex, yIndex];
+      }
+
+      return biomeSpecific[biome].indexToTile[xIndex, yIndex];
    }
 
    public static Vector2Int getIndex (TileBase tile, Biome.Type biome) {
@@ -219,6 +242,7 @@ public class AssetSerializationMaps : MonoBehaviour
    public static Tilemap tilemapTemplate { get; private set; }
    public static Tilemap collisionTilemapTemplate { get; private set; }
    public static MapChunk collisionTilemapChunkTemplate { get; private set; }
+   public static PolygonCollider2D staticWorldColliderTemplate { get; private set; }
    public static GameObject stairsEffector { get; private set; }
    public static Vines vinesTrigger { get; private set; }
    public static GameObject currentEffector { get; private set; }
@@ -227,14 +251,14 @@ public class AssetSerializationMaps : MonoBehaviour
 
    public class BiomeMaps
    {
-      public Dictionary<Vector2Int, TileBase> indexToTile { get; set; }
+      public TileBase[,] indexToTile { get; set; }
       public Dictionary<int, GameObject> indexToPrefab { get; set; }
       public Dictionary<int, GameObject> indexToEditorPrefab { get; set; }
       public Dictionary<TileBase, Vector2Int> tileToIndex { get; set; }
       public Dictionary<GameObject, int> prefabToIndex { get; set; }
 
       public BiomeMaps () {
-         indexToTile = new Dictionary<Vector2Int, TileBase>();
+         indexToTile = new TileBase[0, 0];
          indexToPrefab = new Dictionary<int, GameObject>();
          indexToEditorPrefab = new Dictionary<int, GameObject>();
          tileToIndex = new Dictionary<TileBase, Vector2Int>();
