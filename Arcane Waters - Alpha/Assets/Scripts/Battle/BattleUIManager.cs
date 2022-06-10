@@ -152,7 +152,7 @@ public class BattleUIManager : MonoBehaviour {
             if (!abilityButton.cooldownImage.enabled) {
                abilityButton.enableButton();
             } else {
-               D.debug("Cannot enable a button {" + abilityButton.abilityIndex + "},already enabled! {" + abilityButton.isEnabled + ":" + abilityButton.cooldownImage.enabled + "}");
+               D.debug("Cannot enable a button {" + abilityButton.abilityIndex + "}, already enabled! {BTN:" + abilityButton.isEnabled + " CD:" + abilityButton.cooldownImage.enabled + "}");
             }
          } else {
             if (abilityType != AbilityType.Undefined) {

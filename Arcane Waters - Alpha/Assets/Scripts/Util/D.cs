@@ -57,7 +57,8 @@ public class D : MonoBehaviour {
       Performance = 44,
       Disconnection = 45,
       AreaClearing = 46,
-      ShopContents = 47
+      ShopContents = 47,
+      EnemyLandSpawn = 48,
    }
 
    // Any log files older than this will be deleted

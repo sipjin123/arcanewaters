@@ -1003,7 +1003,7 @@ public class AdminManager : NetworkBehaviour
             case "user":
             case "info":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
-               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" :
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + ":" + _player.voyageGroupId + "} is in Instance: {" + (instInfo == null ? "NULL" :
                   (instInfo.id + " A:" + instInfo.areaKey + " B:" + instInfo.biome + " D:" + instInfo.difficulty + " S:" + instInfo.isPvP + " C:" + instInfo.entityCount)) + "} " +
                   "Server {" + ServerNetworkingManager.self.server.networkedPort.Value + "}";
                ServerNetworkingManager.self.logRequest(message);

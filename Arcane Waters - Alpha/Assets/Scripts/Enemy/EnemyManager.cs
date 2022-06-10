@@ -342,7 +342,8 @@ public class EnemyManager : MonoBehaviour {
          respawnTimer = spawner.getRespawnTimer();
          while (enemyType == previousEnemyType && maxRandomizeCounter > 0) {
             maxRandomizeCounter--;
-            D.debug("Reset Randomize Enemy:{" + enemyType + "} for Biome:{" + instance.biome + "} Area:{" + instance.areaKey + "} Counter:{" + maxRandomizeCounter + "} Roster:{" + spawner.getEnemyCount(instance.biome) + "}");
+            D.adminLog("Reset Randomize Enemy:{" + enemyType + "} for Biome:{" + instance.biome + "} Area:{" + instance.areaKey + "} " +
+               "Counter:{" + maxRandomizeCounter + "} Roster:{" + spawner.getEnemyCount(instance.biome) + "}", D.ADMIN_LOG_TYPE.EnemyLandSpawn);
             enemyType = spawner.getEnemyType(instance.biome);
          }
          

@@ -659,7 +659,11 @@ public class MyNetworkManager : NetworkManager
                      // Send player the data of the background and their abilities
                      player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID, activeBattle.isShipBattle);
                      player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
+                  } else {
+                     D.debug("This user {" + player.userId + "} found a battle that has ended!");
                   }
+               } else {
+                  D.debug("This user {" + player.userId + "} found a corrupted active battle!");
                }
             }
 
