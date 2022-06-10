@@ -34,6 +34,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int userId;
 
+   // The xml id of the battler
+   [SyncVar]
+   public int xmlId;
+
    // The difficulty level this battler is set to
    [SyncVar]
    public int difficultyLevel = 1;
@@ -392,7 +396,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   private void initializeBattler () {
+   public void initializeBattler () {
       hasAssignedNetId = true;
       initializeBattlerData();
 
@@ -486,15 +490,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   private IEnumerator CO_AssignPlayerNetId () {
+   private IEnumerator CO_AssignPlayerNetId (uint newPlayerNetId = 0) {
       // Wait until the player is available in the spawned network identities
-      while (NetworkIdentity.spawned.ContainsKey(playerNetId) == false) {
+      while (NetworkIdentity.spawned.ContainsKey(newPlayerNetId == 0 ? playerNetId : newPlayerNetId) == false && this.player == null) {
          yield return 0;
       }
 
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
-      this.player = enemyIdent.GetComponent<NetEntity>();
-      initializeBattler();
+      if (player == null) {
+         NetworkIdentity enemyIdent = NetworkIdentity.spawned[newPlayerNetId == 0 ? playerNetId : newPlayerNetId];
+         this.player = enemyIdent.GetComponent<NetEntity>();
+         initializeBattler();
+      } else {
+         D.debug("Player got assigned externally!");
+      }
    }
 
    public void updateBattleSpots () {
@@ -507,7 +515,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void snapToBattlePosition () {
-      transform.position = battleSpot.transform.position;
+      if (battleSpot == null) {
+         D.debug("Battle spot missing for this battler! " + enemyType + " " + battleId);
+      } else {
+         transform.position = battleSpot.transform.position;
+      }
    }
 
    private void Update () {

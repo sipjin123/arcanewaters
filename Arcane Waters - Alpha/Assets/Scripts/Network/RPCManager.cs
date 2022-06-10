@@ -8909,6 +8909,11 @@ public class RPCManager : NetworkBehaviour
       BackgroundGameManager.self.activateClientBgContent(bgXmlId, isShipBattle);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveBattlerInitialization (NetworkConnection connection, int battleId, uint playerNetId, uint playerBattlerId) {
+      BattleManager.self.initializeClientBattler(battleId, _player.userId, playerNetId, playerBattlerId);
+   }
+
    #endregion
 
    [Command]
@@ -8978,7 +8983,7 @@ public class RPCManager : NetworkBehaviour
       // Let the Battle Manager handle executing the ability
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       if (cancelAction) {
-         D.debug("User: {" + _player.userId + "} Requested a Cancel Action: {" + abilityInventoryIndex + "}");
+         D.adminLog("User: {" + _player.userId + "} Requested a Cancel Action: {" + abilityInventoryIndex + "}", D.ADMIN_LOG_TYPE.CancelAttack);
          BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
          Target_ReceiveRefreshCasting(connectionToClient, false, "Cancel Action");
       } else {

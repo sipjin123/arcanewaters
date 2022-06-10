@@ -94,17 +94,22 @@ public class Battle : NetworkBehaviour {
       if (transform.parent == null) {
          transform.SetParent(BattleManager.self.transform, true);
       }
-
-      try {
-         foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
-            if (battler.transform.parent == null) {
-               battler.transform.SetParent(transform, true);
-               battler.snapToBattlePosition();
-            }
-         }
-      } catch {
+      Battle battleInfo = BattleManager.self.getBattle(battleId);
+      if (battleInfo == null) {
          D.editorLog("Battle has not loaded yet: " + battleId + " : {" + BattleManager.self.getBattle(battleId) + "}", Color.red);
          StartCoroutine(CO_RetryRepositioning());
+      } else {
+         foreach (Battler battler in battleInfo.getParticipants()) {
+            if (battler == null) {
+               StartCoroutine(CO_RetryRepositioning());
+               break;
+            } else {
+               if (battler.transform.parent == null) {
+                  battler.transform.SetParent(transform, true);
+                  battler.snapToBattlePosition();
+               }
+            }
+         }
       }
    }
 
