@@ -1026,6 +1026,12 @@ public class EquipmentXMLManager : MonoBehaviour {
                }
                newArmorList.Add(armorList[i]);
             } else {
+               newArmorList.Add(new Armor());
+               D.debug("Cannot process loaded armor data for armorType: {" + armorList[i].itemTypeId + "}");
+            }
+         } else {
+            newArmorList.Add(new Armor());
+            if (armorList[i].itemTypeId > 0) {
                D.debug("Cannot process loaded armor data for armorType: {" + armorList[i].itemTypeId + "}");
             }
          }

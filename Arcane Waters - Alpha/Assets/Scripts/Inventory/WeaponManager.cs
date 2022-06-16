@@ -174,11 +174,16 @@ public class WeaponManager : EquipmentManager
          return;
       }
 
+      string serializedWeaponData = "";
+      if (weaponData != null) {
+         serializedWeaponData = WeaponStatData.serializeWeaponStatData(weaponData);
+      }
+
       // Send the weapon info to the owner client
-      Target_EquipWeapon(connection, weaponId, weaponData.sqlId, weaponData.weaponType, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes, count, equipOnStart);
+      Target_EquipWeapon(connection, weaponId, weaponData.sqlId, weaponData.weaponType, serializedWeaponData, this.palettes, count, equipOnStart);
 
       // Send the Weapon Info to all clients
-      Rpc_BroadcastEquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
+      Rpc_BroadcastEquipWeapon(serializedWeaponData, this.palettes);
    }
 
    #region Private Variables

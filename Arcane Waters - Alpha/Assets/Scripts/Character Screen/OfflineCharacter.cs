@@ -226,13 +226,15 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    public void setWeapon (UserInfo userInfo, Item weapon) {
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
-      if (weapon.data != "") {
+      if (weapon.data != "" && weapon.data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
          weaponData = Util.xmlLoad<WeaponStatData>(weapon.data);
       }
 
       // Cache string data
-      _weaponData = WeaponStatData.serializeWeaponStatData(weaponData);
-      
+      if (weaponData != null) {
+         _weaponData = WeaponStatData.serializeWeaponStatData(weaponData);
+      }
+
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
@@ -323,7 +325,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       weapon.data = _weaponData;
       if (_weaponData.Length < 1 && weapon.itemTypeId != 0) {
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-         weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+         if (weaponData != null) {
+            weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+         } else {
+            weapon.data = "";
+         }
       }
 
       return weapon;

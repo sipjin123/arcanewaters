@@ -9630,8 +9630,15 @@ public class RPCManager : NetworkBehaviour
          Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
 
          if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-            weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
-            userObjects.weapon.data = weapon.data;
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+            if (weaponData != null) {
+               weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+               userObjects.weapon.data = weapon.data;
+            } else {
+               D.debug("Failed to serialzie weapon: {" + weapon.itemTypeId + "}");
+               weapon.data = "";
+               userObjects.weapon.data = "";
+            }
          }
 
          PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
