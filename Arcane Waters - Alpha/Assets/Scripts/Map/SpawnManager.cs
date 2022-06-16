@@ -152,15 +152,26 @@ public partial class SpawnManager : MonoBehaviour
          return null;
       }
 
+      bool hasNullSpawns = false;
       if (instantiatedMapSpawns.TryGetValue(areaKey, out List<Spawn> mapSpawnList)) {
          foreach (Spawn spawn in mapSpawnList) {
             if (spawn == null) {
-               D.debug("Null reference spawn");
+               if (!hasNullSpawns) {
+                  hasNullSpawns = true;
+                  D.debug("Null reference spawn: {" + areaKey + "}");
+               }
                continue;
             }
             if (Vector2.Distance(localCenterPosition, spawn.transform.localPosition) < radius) {
                return spawn;
             }
+         }
+      }
+
+      if (hasNullSpawns) {
+         if (instantiatedMapSpawns.ContainsKey(areaKey)) {
+            instantiatedMapSpawns[areaKey].RemoveAll(_ => _ == null);
+            D.debug("Cleared {" + instantiatedMapSpawns[areaKey].Count + "} blank spawns for area {" + areaKey + "}");
          }
       }
 

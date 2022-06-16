@@ -55,7 +55,7 @@ public class AttackPanel : MonoBehaviour {
 
    // Currently only used in the UI for the local client
    public void requestAttackTarget (int abilityIndex) {
-      ChatPanel.self.onCollapseButtonPressed();
+      ChatPanel.self.setMode(ChatPanel.Mode.Minimized);
       Battler target = BattleSelectionManager.self.selectedBattler;
 
       // We have to have a target to attack

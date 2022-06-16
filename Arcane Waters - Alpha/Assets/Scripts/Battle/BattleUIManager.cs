@@ -513,7 +513,11 @@ public class BattleUIManager : MonoBehaviour {
                   // Set first available button as initial pending button
                   if (abilityTargetButtons.Length > 0) {
                      AbilityButton availableButton = abilityTargetButtons.First(item => item.abilityType != AbilityType.Undefined);
-                     setPendingButton(availableButton);
+                     if (availableButton != null) {
+                        setPendingButton(availableButton);
+                     } else {
+                        D.debug("Ability button was null!");
+                     }
                   }
                }
             } 
