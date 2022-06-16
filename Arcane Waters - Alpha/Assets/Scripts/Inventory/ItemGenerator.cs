@@ -38,7 +38,15 @@
          }
       }
 
-      string mergedPalette = Item.parseItmPalette(Item.overridePalette(palettes, itemTemplatePalette));
+      string mergedPalette = "";
+      try {
+         if (itemTemplatePalette.Length > 0) {
+            mergedPalette = Item.parseItmPalette(Item.overridePalette(palettes, itemTemplatePalette));
+         }
+      } catch {
+         D.debug("Failed to MergedPalette: " + mergedPalette + ":" + palettes + ":" + itemTemplatePalette);
+      }
+
       return new Item(newItemId, category, itemTypeId, count, mergedPalette, data, durability);
    }
 }

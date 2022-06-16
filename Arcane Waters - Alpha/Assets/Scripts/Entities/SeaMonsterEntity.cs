@@ -781,7 +781,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _isPerformingAttack = true;
 
       yield return new WaitForSeconds(attackDelay);
-      
+
+      if (target == null) {
+         D.debug("Target Went Missing!");
+         yield break;
+      }
+
       this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(target, sortPoint.transform.position);
 
       // Set attack animation trigger values on server side
@@ -959,6 +964,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    [Server]
    private void attackTarget () {
+      if (targetEntity == null) {
+         return;
+      }
+
       // TODO: Setup a more efficient method for attack type setup
       Attack.Type attackType = Attack.Type.None;
       ShipAbilityData seaEntityAbilityData = null;
@@ -983,12 +992,20 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
       bool resetToDefaultAttack = false;
+      double lastAbilityCooldown = 0;
+      if (_abilityCooldownTracker.ContainsKey(selectedAbilityId)) {
+         lastAbilityCooldown = _abilityCooldownTracker[selectedAbilityId];
+      } else {
+         if (seaEntityAbilityData != null) {
+            lastAbilityCooldown = seaEntityAbilityData.coolDown;
+         }
+      }
 
       // TODO: Make this block of code dynamic and web tool dependent for flexibility
       // Handle custom master behavior here
       if (seaMonsterData.roleType == RoleType.Master && seaEntityAbilityData != null) {
          // Determine if ability has already cooled down, if not then select default ability
-         bool isCooledDown = NetworkTime.time - _abilityCooldownTracker[selectedAbilityId] > seaEntityAbilityData.coolDown;
+         bool isCooledDown = NetworkTime.time - lastAbilityCooldown > seaEntityAbilityData.coolDown;
          bool isLastAbilityTimeLapsed = NetworkTime.time > nextMajorSkillUseTime;
          if (isCooledDown && isLastAbilityTimeLapsed) {
             // Hard coded abilities: 51 - Submerge ability / 50 - Summon Minions
@@ -1008,7 +1025,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
                   _isPerformingAttack = true;
                   launchAtTargetPosition(new Vector2(transform.position.x, transform.position.y), selectedAbilityId, false);
-                  _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                  if (_abilityCooldownTracker.ContainsKey(selectedAbilityId)) {
+                     _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                  }
                   nextMajorSkillUseTime = NetworkTime.time + Random.Range(seaEntityAbilityData.attackBufferCountMin, seaEntityAbilityData.attackBufferCountMax);
                   return;
                case 50:
@@ -1031,7 +1050,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                      D.editorLog("{" + monsterType + "} Summon skill: {" + attackType + "} {" + seaEntityAbilityData.abilityName + "}", Color.green);
                      EnemyManager.self.summonSeaMonsters(transform.position, seaEntityAbilityData.summonSeamonsterId, instanceId, areaKey, seaEntityAbilityData.summonCount, this);
                      setIsInvulnerable(true);
-                     _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                     if (_abilityCooldownTracker.ContainsKey(selectedAbilityId)) {
+                        _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                     }
                      nextMajorSkillUseTime = NetworkTime.time + Random.Range(seaEntityAbilityData.attackBufferCountMin, seaEntityAbilityData.attackBufferCountMax);
                      return;
                   } else {
@@ -1054,10 +1075,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Track cooldown of boss monster ranged ability
       bool isRangedCooledDown = false;
       if (seaMonsterData != null && seaMonsterData.isRanged && seaMonsterData.roleType == RoleType.Master) {
-         isRangedCooledDown = NetworkTime.time - _abilityCooldownTracker[selectedAbilityId] > seaEntityAbilityData.coolDown && !seaEntityAbilityData.isMelee;
+         isRangedCooledDown = NetworkTime.time - lastAbilityCooldown > seaEntityAbilityData.coolDown && !seaEntityAbilityData.isMelee;
          if (isRangedCooledDown) {
             resetToDefaultAttack = false;
-            D.editorLog("Grant Ranged Attack: {"+ seaEntityAbilityData .abilityName+ "} Cooldown: " + (NetworkTime.time - _abilityCooldownTracker[selectedAbilityId]).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1") + ":" + seaEntityAbilityData.isMelee, Color.magenta);
+            D.editorLog("Grant Ranged Attack: {"+ seaEntityAbilityData .abilityName+ "} Cooldown: " + (NetworkTime.time - lastAbilityCooldown).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1") + ":" + seaEntityAbilityData.isMelee, Color.magenta);
          }
       }
 
@@ -1066,7 +1087,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          selectedAbilityId = seaMonsterData.skillIdList[0];
          seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
          attackType = seaEntityAbilityData.selectedAttackType;
-         D.editorLog("Revert to Melee Attack, Cooldown is: " + (NetworkTime.time - _abilityCooldownTracker[selectedAbilityId]).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1"), Color.magenta);
+         D.editorLog("Revert to Melee Attack, Cooldown is: " + (NetworkTime.time - lastAbilityCooldown).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1"), Color.magenta);
       }
 
       // Attack
@@ -1093,7 +1114,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             float projectileDelay = seaMonsterData.projectileDelay;
             D.adminLog("{" + monsterType + "} Launch delay: {" + launchDelay + "} ProjectileDelay: {" + projectileDelay + "}", D.ADMIN_LOG_TYPE.SeaAbility);
             launchProjectile(targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
-            _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+
+            if (_abilityCooldownTracker.ContainsKey(selectedAbilityId)) {
+               _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+            }
             if (monsterType == Type.Horror_Tentacle) {
                if (_isNextAttackSecondary) {
                   // Tentacle Minions can be commanded to fire a secondary attack
@@ -1118,7 +1142,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                if (seaMonsterData.roleType == RoleType.Master) {
                   D.editorLog("{" + monsterType + "} Melee skill: {" + attackType + "}", Color.green);
                   meleeAtSpot(targetEntity.transform.position, selectedAbilityId, seaMonsterData.maxMeleeDistanceGap);
-                  _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                  if (_abilityCooldownTracker.ContainsKey(selectedAbilityId)) {
+                     _abilityCooldownTracker[selectedAbilityId] = NetworkTime.time;
+                  }
                } else {
                   meleeAtSpot(targetEntity.transform.position, seaMonsterData.attackType);
                }

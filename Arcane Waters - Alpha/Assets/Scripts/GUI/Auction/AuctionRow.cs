@@ -62,7 +62,12 @@ public class AuctionRow : MonoBehaviour
       } else {
          itemCount.text = "";
       }
-      itemName.text = auction.itemName;
+
+      if (auction.itemName.Length < 1) {
+         itemName.text = EquipmentXMLManager.self.getItemName(auction.item);
+      } else {
+         itemName.text = auction.itemName;
+      }
       itemSellerName.text = $"by {auction.sellerName}";
       bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice) + "/";
       if (auction.isBuyoutAllowed) {
