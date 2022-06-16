@@ -730,6 +730,14 @@ public class NetEntity : NetworkBehaviour
       updateInvisibilityAlpha(isInvisible);
    }
 
+   [ClientRpc]
+   public void Rpc_RefreshSprites () {
+      if (this is BodyEntity) {
+         BodyEntity bodyEntityRef = (BodyEntity) this;
+         StartCoroutine(bodyEntityRef.CO_UpdateAllSprites());
+      }
+   }
+
    private void updateInvisibilityAlpha (bool isInvisible) {
       // Overwrite the visibility in ghost mode
       if (isGhost) {

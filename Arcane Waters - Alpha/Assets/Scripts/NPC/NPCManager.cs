@@ -228,6 +228,28 @@ public class NPCManager : MonoBehaviour {
       }
    }
 
+   public List<string> compileNpcNames () {
+      List<string> npcNameList = new List<string>();
+      foreach (Texture2D npcTypeRef in Resources.LoadAll<Texture2D>("Sprites/NPCs/Bodies/")) {
+         if (!npcNameList.Exists(_=>_ == npcTypeRef.name)) {
+            npcNameList.Add(npcTypeRef.name);
+         }
+      }
+
+      return npcNameList;
+   }
+
+   public List<string> compileEnemyNames () {
+      List<string> enemyNameList = new List<string>();
+      foreach (Texture2D enemyTypeRef in Resources.LoadAll<Texture2D>("Sprites/Enemies/LandMonsters/")) {
+         if (!enemyNameList.Exists(_=>_ == enemyTypeRef.name)) {
+            enemyNameList.Add(enemyTypeRef.name);
+         }
+      }
+
+      return enemyNameList;
+   }
+
    #region Private Variables
 
    // Keeps track of the NPCs, based on their id

@@ -20,6 +20,12 @@ public class AdminManager : NetworkBehaviour
 {
    #region Public Variables
 
+   public enum AdminSpriteType {
+      None = 0,
+      Npc = 1,
+      Enemy = 2
+   }
+
    // The email address we use for test accounts
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";
 
@@ -71,6 +77,8 @@ public class AdminManager : NetworkBehaviour
       }
 
       ChatManager.self.removeAdminCommands();
+      cm.addCommand(new CommandData("esprite", "Changes user sprite to enemy", requestSpriteChangeEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "id", "name" }, parameterAutocompletes: NPCManager.self.compileEnemyNames()));
+      cm.addCommand(new CommandData("nsprite", "Changes user sprite to npc", requestSpriteChangeNpc, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "id", "name" }, parameterAutocompletes: NPCManager.self.compileNpcNames()));
 
       cm.addCommand(new CommandData("set_admin", "Sets admin privileges for the user", requestSetAdminPrivileges, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "adminFlag" }));
       cm.addCommand(new CommandData("add_gold", "Gives an amount of gold to the user", requestAddGold, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "goldAmount" }));
@@ -2416,6 +2424,78 @@ public class AdminManager : NetworkBehaviour
 
             // Select the auto complete part
             ChatPanel.self.inputField.selectTextPart(ChatPanel.self.inputField.getTextData().Length - autoComplete.Length, ChatPanel.self.inputField.getTextData().Length);
+         }
+      }
+   }
+
+   protected void requestSpriteChangeEnemy (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      try {
+         string idVal = list[0];
+         string userName = list[1];
+         if (idVal.Length > 0) {
+            Cmd_ChangeSprite(2, idVal, userName);
+         } else {
+            ChatManager.self.addChat("Invalid Data: " + 2 + ":" + idVal, ChatInfo.Type.System);
+         }
+      } catch {
+         D.debug("Failed parameters: " + parameters);
+      }
+   }
+
+   protected void requestSpriteChangeNpc (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      try {
+         string idVal = list[0];
+         string userName = list[1];
+         if (idVal.Length > 0) {
+            Cmd_ChangeSprite(1, idVal, userName);
+         } else {
+            ChatManager.self.addChat("Invalid Data: " + 1 + ":" + idVal, ChatInfo.Type.System);
+         }
+      } catch {
+         D.debug("Failed parameters: " + parameters);
+      }
+   }
+
+   [Command]
+   protected void Cmd_ChangeSprite (int spriteType, string spriteId, string targetName) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      bool changeSelfInstead = false;
+      if (targetName.Length < 1) {
+         changeSelfInstead = true;
+      } else {
+         BodyEntity targetBody = BodyManager.self.getBodyWithName(targetName);
+         if (targetBody != null) {
+            if (targetBody is BodyEntity) {
+               BodyEntity bodyEntityRef = (BodyEntity) targetBody;
+               bodyEntityRef.spriteOverrideId = spriteId;
+               bodyEntityRef.spriteOverrideType = spriteType;
+               targetBody.Rpc_RefreshSprites();
+            }
+         } else {
+            changeSelfInstead = true;
+            _player.Target_ReceiveNormalChat("Unable to find user:{" + targetName + "}", ChatInfo.Type.System);
+         }
+      }
+
+      if (changeSelfInstead) {
+         if (_player is BodyEntity) {
+            BodyEntity bodyEntityRef = (BodyEntity) _player;
+            bodyEntityRef.spriteOverrideId = spriteId;
+            bodyEntityRef.spriteOverrideType = spriteType;
+            _player.Rpc_RefreshSprites();
          }
       }
    }

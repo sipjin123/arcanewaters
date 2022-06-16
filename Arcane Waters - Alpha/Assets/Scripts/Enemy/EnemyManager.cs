@@ -8,10 +8,14 @@ using Random = UnityEngine.Random;
 using Pathfinding;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using UnityEngine.Animations;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
 
+   // The dynamic animators
+   public RuntimeAnimatorController npcAnimator, enemyAnimator, playerAnimator;
+   
    // Self
    public static EnemyManager self;
 

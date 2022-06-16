@@ -14,6 +14,14 @@ public class BodyEntity : NetEntity
    public HatManager hatsManager;
    public GearManager gearManager;
 
+   // The sprite override for admin usage
+   [SyncVar]
+   public string spriteOverrideId;
+
+   // The type of sprite override for admin usage
+   [SyncVar]
+   public int spriteOverrideType;
+
    #endregion
 
    protected override void Awake () {
@@ -116,6 +124,56 @@ public class BodyEntity : NetEntity
          nameText.text = this.entityName;
          recolorNameText();
       }
+
+      bool isValidMorph = false;
+      if (isAdmin() && spriteOverrideType > 0 && spriteOverrideId.Length > 0) {
+         AdminManager.AdminSpriteType spriteType = (AdminManager.AdminSpriteType) spriteOverrideType;
+         switch (spriteType) {
+            case AdminManager.AdminSpriteType.Npc:
+               foreach (Animator animRef in _animators) {
+                  animRef.runtimeAnimatorController = EnemyManager.self.npcAnimator;
+               }
+               isValidMorph = true;
+               Sprite spriteRef = Resources.Load<Sprite>("Sprites/NPCs/Bodies/" + spriteOverrideId);
+               if (spriteRef != null) {
+                  _bodyLayer.getSpriteSwap().newTexture = spriteRef.texture;
+               } else {
+                  string newSpriteAddress = "Sprites/NPCs/Bodies/" + (spriteOverrideId + "_1").ToLower();
+                  Sprite backupSpriteRef = Resources.Load<Sprite>(newSpriteAddress);
+                  if (spriteRef != null) {
+                     _bodyLayer.getSpriteSwap().newTexture = spriteRef.texture;
+                  } else {
+                     D.debug("Failed morph:{" + spriteOverrideId + "}{" + newSpriteAddress + "}");
+                     spriteRef = Resources.Load<Sprite>("Sprites/NPCs/Bodies/monkey");
+                     _bodyLayer.getSpriteSwap().newTexture = spriteRef.texture;
+                  }
+               }
+               break;
+            case AdminManager.AdminSpriteType.Enemy:
+               foreach (Animator animRef in _animators) {
+                  animRef.runtimeAnimatorController = EnemyManager.self.enemyAnimator;
+               }
+               isValidMorph = true;
+               Sprite enemySpriteRef = Resources.Load<Sprite>("Sprites/Enemies/LandMonsters/" + (spriteOverrideId).ToString());
+               if (enemySpriteRef != null) {
+                  _bodyLayer.getSpriteSwap().newTexture = enemySpriteRef.texture;
+               } else {
+                  D.debug("Failed morph:{" + spriteOverrideId + "}");
+                  spriteRef = Resources.Load<Sprite>("Sprites/Enemies/LandMonsters/lizard");
+                  _bodyLayer.getSpriteSwap().newTexture = spriteRef.texture;
+               }
+               break;
+         }
+      }
+
+      if (isValidMorph) {
+         foreach (HairLayer hairLayerVal in _hairLayers) {
+            hairLayerVal.gameObject.SetActive(!isValidMorph);
+         }
+         _armorLayer.gameObject.SetActive(!isValidMorph);
+         _hatLayer.gameObject.SetActive(!isValidMorph);
+         _eyesLayer.gameObject.SetActive(!isValidMorph);
+      }
    }
 
    public virtual void recolorNameText () {
@@ -139,7 +197,7 @@ public class BodyEntity : NetEntity
       _previousFallDirection = this.fallDirection;
    }
 
-   protected IEnumerator CO_UpdateAllSprites () {
+   public IEnumerator CO_UpdateAllSprites () {
       // Wait until we receive data
       while (Util.isEmpty(this.entityName)) {
          yield return null;
