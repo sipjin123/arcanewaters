@@ -3071,7 +3071,9 @@ public class RPCManager : NetworkBehaviour
             if (useShopName) {
                ShopData shopData = new ShopData();
                shopData = ShopXMLManager.self.getShopDataById(shopId);
-               greetingText = shopData.shopGreetingText;
+               if (shopData != null) {
+                  greetingText = shopData.shopGreetingText;
+               }
             }
 
             _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), greetingText);

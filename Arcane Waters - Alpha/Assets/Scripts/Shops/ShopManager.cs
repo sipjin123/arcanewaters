@@ -122,128 +122,102 @@ public class ShopManager : MonoBehaviour {
    private void generateShopItems () {
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
          _itemsByShopId[shopData.shopId] = new List<int>();
-         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
-            if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Armor || rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Weapon) {
-               float randomizedChance = UnityEngine.Random.Range(0, 100);
-               if (randomizedChance < rawItemData.dropChance) {
-                  Item item = new Item {
-                     category = (Item.Category) rawItemData.shopItemCategoryIndex,
+         ShopData shopDataRef = ShopXMLManager.self.getShopDataById(shopData.shopId);
+         if (shopDataRef != null) {
+            foreach (ShopItemData rawItemData in shopDataRef.shopItems) {
+               if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Armor || rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Weapon) {
+                  float randomizedChance = UnityEngine.Random.Range(0, 100);
+                  if (randomizedChance < rawItemData.dropChance) {
+                     Item item = new Item {
+                        category = (Item.Category) rawItemData.shopItemCategoryIndex,
+                        itemTypeId = rawItemData.shopItemTypeIndex,
+                        id = _itemId++,
+                        paletteNames = "",
+                        data = ""
+                     };
+
+                     Rarity.Type rarity = Rarity.getRandom();
+
+                     WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(rawItemData.shopItemTypeIndex);
+                     if (weaponData != null) {
+                        if (weaponData.actionType == Weapon.ActionType.PlantCrop || weaponData.actionType == Weapon.ActionType.PlantTree) {
+                           rarity = Rarity.Type.Common;
+                        }
+                     }
+
+                     int randomizedPrice = rawItemData.shopItemCostMax;
+                     string data = "";
+                     if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
+                        List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.primary.name);
+                        List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.secondary.name);
+                        List<PaletteToolManager.PaletteRepresentation> power = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.power.name);
+                        string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", power.Count > 0 ? power.ChooseRandom().name : "" };
+                        item.paletteNames = Item.parseItmPalette(palettes);
+
+                        data = string.Format("damage={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                     }
+                     if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
+                        List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name);
+                        List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name);
+                        List<PaletteToolManager.PaletteRepresentation> accent = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.accent.name);
+                        string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", accent.Count > 0 ? accent.ChooseRandom().name : "" };
+                        item.paletteNames = Item.parseItmPalette(palettes);
+
+                        data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                     }
+                     if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Hats) {
+                        data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                     }
+
+                     item.data = data;
+
+                     item = item.getCastItem();
+
+                     // Set the item count
+                     if (item.canBeStacked()) {
+                        item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax + 1);
+                     } else {
+                        item.count = 1;
+                     }
+
+                     // Store the item
+                     _items[item.id] = item;
+
+                     // Add it to the list
+                     _itemsByShopId[shopData.shopId].Add(item.id);
+                  }
+               } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.CraftingIngredient) {
+                  Rarity.Type rarity = Rarity.getRandom();
+                  int randomizedPrice = rawItemData.shopItemCostMax;
+
+                  CraftingIngredients item = new CraftingIngredients {
+                     category = Item.Category.CraftingIngredients,
                      itemTypeId = rawItemData.shopItemTypeIndex,
+                     count = rawItemData.shopItemCountMin,
                      id = _itemId++,
                      paletteNames = "",
                      data = ""
                   };
 
-                  Rarity.Type rarity = Rarity.getRandom();
-
-                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(rawItemData.shopItemTypeIndex);
-                  if (weaponData != null) {
-                     if (weaponData.actionType == Weapon.ActionType.PlantCrop || weaponData.actionType == Weapon.ActionType.PlantTree) {
-                        rarity = Rarity.Type.Common;
-                     }
-                  }
-
-                  int randomizedPrice = rawItemData.shopItemCostMax;
-                  string data = "";
-                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
-                     List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.primary.name);
-                     List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.secondary.name);
-                     List<PaletteToolManager.PaletteRepresentation> power = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.power.name);
-                     string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", power.Count > 0 ? power.ChooseRandom().name : "" };
-                     item.paletteNames = Item.parseItmPalette(palettes);
-
-                     data = string.Format("damage={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-                  }
-                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
-                     List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name);
-                     List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name);
-                     List<PaletteToolManager.PaletteRepresentation> accent = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.accent.name);
-                     string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", accent.Count > 0 ? accent.ChooseRandom().name : "" };
-                     item.paletteNames = Item.parseItmPalette(palettes);
-
-                     data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-                  }
-                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Hats) {
-                     data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-                  }
-
+                  string data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   item.data = data;
-
-                  item = item.getCastItem();
-
-                  // Set the item count
-                  if (item.canBeStacked()) {
-                     item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax + 1);
-                  } else {
-                     item.count = 1;
-                  }
 
                   // Store the item
                   _items[item.id] = item;
 
                   // Add it to the list
                   _itemsByShopId[shopData.shopId].Add(item.id);
-               }
-            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.CraftingIngredient) {
-               Rarity.Type rarity = Rarity.getRandom();
-               int randomizedPrice = rawItemData.shopItemCostMax;
-
-               CraftingIngredients item = new CraftingIngredients {
-                  category = Item.Category.CraftingIngredients,
-                  itemTypeId = rawItemData.shopItemTypeIndex,
-                  count = rawItemData.shopItemCountMin,
-                  id = _itemId++,
-                  paletteNames = "",
-                  data = ""
-               };
-
-               string data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-               item.data = data;
-
-               // Store the item
-               _items[item.id] = item;
-
-               // Add it to the list
-               _itemsByShopId[shopData.shopId].Add(item.id);
-            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
-               Rarity.Type rarity = Rarity.getRandom();
-               int randomizedPrice = rawItemData.shopItemCostMax;
-
-               Item item = new Item {
-                  category = Item.Category.Blueprint,
-                  itemTypeId = rawItemData.shopItemTypeIndex,
-                  count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
-                  id = _itemId++,
-                  paletteNames = "",
-                  data = ""
-               };
-
-               string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-               item.data = data;
-
-               _items[item.id] = item;
-               _itemsByShopId[shopData.shopId].Add(item.id);
-            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.LootGroup) {
-               List<TreasureDropsData> lootGroupData = TreasureDropsDataManager.self.getTreasureDropsById(rawItemData.shopItemTypeIndex);
-               if (lootGroupData != null && lootGroupData.Count > 0) {
+               } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
                   Rarity.Type rarity = Rarity.getRandom();
                   int randomizedPrice = rawItemData.shopItemCostMax;
-                  TreasureDropsData randomizedSelection = lootGroupData.ChooseRandom();
-
-                  string groupName = TreasureDropsDataManager.self.getLootGroupName(rawItemData.shopItemTypeIndex);
-                  D.adminLog("0>Found loot group: {" + shopData.shopName + "}:{" + lootGroupData.Count + "}" +
-                     "1>{" + groupName + ":" + rawItemData.shopItemTypeIndex + "}" +
-                     "2>{" + randomizedSelection.item.category + ":" + randomizedSelection.item.itemTypeId + "}" +
-                     "3>{" + rawItemData.shopItemCategory + ":" + rawItemData.shopItemCategoryIndex + "} " +
-                     "4>{" + randomizedSelection.item.id + "-" + randomizedSelection.item.data + "}", D.ADMIN_LOG_TYPE.ShopContents);
 
                   Item item = new Item {
-                     category = randomizedSelection.item.category,
-                     itemTypeId = randomizedSelection.item.itemTypeId,
+                     category = Item.Category.Blueprint,
+                     itemTypeId = rawItemData.shopItemTypeIndex,
                      count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
                      id = _itemId++,
                      paletteNames = "",
-                     data = randomizedSelection.item.data
+                     data = ""
                   };
 
                   string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
@@ -251,10 +225,41 @@ public class ShopManager : MonoBehaviour {
 
                   _items[item.id] = item;
                   _itemsByShopId[shopData.shopId].Add(item.id);
-               } else {
-                  D.debug("Failed to retrieve loot group {"+rawItemData.shopItemTypeIndex+"} to be used in shop!");
+               } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.LootGroup) {
+                  List<TreasureDropsData> lootGroupData = TreasureDropsDataManager.self.getTreasureDropsById(rawItemData.shopItemTypeIndex);
+                  if (lootGroupData != null && lootGroupData.Count > 0) {
+                     Rarity.Type rarity = Rarity.getRandom();
+                     int randomizedPrice = rawItemData.shopItemCostMax;
+                     TreasureDropsData randomizedSelection = lootGroupData.ChooseRandom();
+
+                     string groupName = TreasureDropsDataManager.self.getLootGroupName(rawItemData.shopItemTypeIndex);
+                     D.adminLog("0>Found loot group: {" + shopData.shopName + "}:{" + lootGroupData.Count + "}" +
+                        "1>{" + groupName + ":" + rawItemData.shopItemTypeIndex + "}" +
+                        "2>{" + randomizedSelection.item.category + ":" + randomizedSelection.item.itemTypeId + "}" +
+                        "3>{" + rawItemData.shopItemCategory + ":" + rawItemData.shopItemCategoryIndex + "} " +
+                        "4>{" + randomizedSelection.item.id + "-" + randomizedSelection.item.data + "}", D.ADMIN_LOG_TYPE.ShopContents);
+
+                     Item item = new Item {
+                        category = randomizedSelection.item.category,
+                        itemTypeId = randomizedSelection.item.itemTypeId,
+                        count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
+                        id = _itemId++,
+                        paletteNames = "",
+                        data = randomizedSelection.item.data
+                     };
+
+                     string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                     item.data = data;
+
+                     _items[item.id] = item;
+                     _itemsByShopId[shopData.shopId].Add(item.id);
+                  } else {
+                     D.debug("Failed to retrieve loot group {" + rawItemData.shopItemTypeIndex + "} to be used in shop!");
+                  }
                }
             }
+         } else {
+            D.debug("There is no shop with id:{" + shopData.shopId + "}");
          }
       }
    }
@@ -301,32 +306,38 @@ public class ShopManager : MonoBehaviour {
          } else {
             _shipsByShopId.Add(shopData.shopId, new List<int>());
          }
-         foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
-            if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
-               int shipXmlId = shopItem.shopItemTypeIndex;
-               ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
-               Rarity.Type rarity = Rarity.getRandom();
 
-               ShipInfo ship = Ship.generateNewShip(shipXmlId, rarity);
-               ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
-               ship.shipId = _shipId--;
+         ShopData shopDataRef = ShopXMLManager.self.getShopDataById(shopData.shopId);
+         if (shopDataRef != null) {
+            foreach (ShopItemData shopItem in shopDataRef.shopItems) {
+               if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
+                  int shipXmlId = shopItem.shopItemTypeIndex;
+                  ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
+                  Rarity.Type rarity = Rarity.getRandom();
 
-               // Set a custom price
-               int price = shopItem.shopItemCostMax;
-               price = Util.roundToPrettyNumber(price);
-               ship.price = price;
+                  ShipInfo ship = Ship.generateNewShip(shipXmlId, rarity);
+                  ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
+                  ship.shipId = _shipId--;
 
-               // Store the ship
-               _ships[ship.shipId] = ship;
+                  // Set a custom price
+                  int price = shopItem.shopItemCostMax;
+                  price = Util.roundToPrettyNumber(price);
+                  ship.price = price;
 
-               // Add it to the list
-               if (_shipsByShopId.ContainsKey(shopData.shopId)) {
-                  _shipsByShopId[shopData.shopId].Add(ship.shipId);
-               } else {
-                  _shipsByShopId.Add(shopData.shopId, new List<int>());
-                  _shipsByShopId[shopData.shopId].Add(ship.shipId);
+                  // Store the ship
+                  _ships[ship.shipId] = ship;
+
+                  // Add it to the list
+                  if (_shipsByShopId.ContainsKey(shopData.shopId)) {
+                     _shipsByShopId[shopData.shopId].Add(ship.shipId);
+                  } else {
+                     _shipsByShopId.Add(shopData.shopId, new List<int>());
+                     _shipsByShopId[shopData.shopId].Add(ship.shipId);
+                  }
                }
             }
+         } else {
+            D.debug("There is no shop with id:{" + shopData.shopId + "}");
          }
       }
    }
@@ -338,20 +349,25 @@ public class ShopManager : MonoBehaviour {
 
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
          _offersByShopId[shopData.shopId] = new List<CropOffer>();
-         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
-            if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
-               // Set the offer characteristics
-               Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
-               Rarity.Type rarity = Rarity.getRandom();
+         ShopData shopDataRef = ShopXMLManager.self.getShopDataById(shopData.shopId);
+         if (shopDataRef != null) {
+            foreach (ShopItemData rawItemData in shopDataRef.shopItems) {
+               if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
+                  // Set the offer characteristics
+                  Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
+                  Rarity.Type rarity = Rarity.getRandom();
 
-               CropOffer offer = new CropOffer(_offerId++, "None", cropType, CropOffer.MAX_DEMAND / 2, rawItemData.shopItemCostMax, rarity);
+                  CropOffer offer = new CropOffer(_offerId++, "None", cropType, CropOffer.MAX_DEMAND / 2, rawItemData.shopItemCostMax, rarity);
 
-               // Store the offer
-               _offers[offer.id] = offer;
+                  // Store the offer
+                  _offers[offer.id] = offer;
 
-               // Add it to the list
-               _offersByShopId[shopData.shopId].Add(offer);
+                  // Add it to the list
+                  _offersByShopId[shopData.shopId].Add(offer);
+               }
             }
+         } else {
+            D.debug("There is no shop with id:{" + shopData.shopId + "}");
          }
       }
 
