@@ -111,6 +111,42 @@ namespace NubisDataHandling {
                         }
                      }
 
+                     if (craftableRequirements.resultItem.category == Item.Category.Ring) {
+                        RingStatData ringData = EquipmentXMLManager.self.getRingData(craftableRequirements.resultItem.itemTypeId);
+                        if (ringData == null) {
+                           D.debug("Cant find crafting data for Ring: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemName = ringData.equipmentName;
+                           itemDesc = ringData.equipmentDescription;
+                           itemIconPath = ringData.equipmentIconPath;
+                           itemData = RingStatData.serializeRingStatData(ringData);
+                        }
+                     }
+
+                     if (craftableRequirements.resultItem.category == Item.Category.Necklace) {
+                        NecklaceStatData necklaceData = EquipmentXMLManager.self.getNecklaceData(craftableRequirements.resultItem.itemTypeId);
+                        if (necklaceData == null) {
+                           D.debug("Cant find crafting data for Necklace: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemName = necklaceData.equipmentName;
+                           itemDesc = necklaceData.equipmentDescription;
+                           itemIconPath = necklaceData.equipmentIconPath;
+                           itemData = NecklaceStatData.serializeNecklaceStatData(necklaceData);
+                        }
+                     }
+
+                     if (craftableRequirements.resultItem.category == Item.Category.Trinket) {
+                        TrinketStatData trinketData = EquipmentXMLManager.self.getTrinketData(craftableRequirements.resultItem.itemTypeId);
+                        if (trinketData == null) {
+                           D.debug("Cant find crafting data for Trinket: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemName = trinketData.equipmentName;
+                           itemDesc = trinketData.equipmentDescription;
+                           itemIconPath = trinketData.equipmentIconPath;
+                           itemData = TrinketStatData.serializeTrinketStatData(trinketData);
+                        }
+                     }
+
                      // Process the item as a hat and extract the hat data
                      if (craftableRequirements.resultItem.category == Item.Category.CraftingIngredients) {
                         try {

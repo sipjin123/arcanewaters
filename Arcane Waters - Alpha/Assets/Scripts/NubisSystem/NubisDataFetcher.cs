@@ -256,6 +256,9 @@ namespace NubisDataHandling
          string weaponFetch = "";
          string armorFetch = "";
          string hatFetch = "";
+         string ringFetch = "";
+         string necklaceFetch = "";
+         string trinketFetch = "";
          string ingredientFetch = "";
          if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Armor)) {
             armorFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableArmors), userId);
@@ -265,6 +268,15 @@ namespace NubisDataHandling
          }
          if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Hats)) {
             hatFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableHats), userId);
+         }
+         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Necklace)) {
+            necklaceFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableNecklace), userId);
+         }
+         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Ring)) {
+            ringFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableRings), userId);
+         }
+         if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Trinket)) {
+            trinketFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableTrinkets), userId);
          }
          if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Contains(Item.Category.Ring) || categoryList.Contains(Item.Category.Necklace) || categoryList.Contains(Item.Category.Trinket)) {
             ingredientFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableIngredients), userId);
@@ -278,6 +290,9 @@ namespace NubisDataHandling
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients, Item.Category.Weapon);
          List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients, Item.Category.Armor);
          List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients, Item.Category.Hats);
+         List<CraftableItemData> ringCraftables = CraftableItem.processCraftableGroups(ringFetch, craftingIngredients, Item.Category.Ring);
+         List<CraftableItemData> necklaceCraftables = CraftableItem.processCraftableGroups(necklaceFetch, craftingIngredients, Item.Category.Necklace);
+         List<CraftableItemData> trinketCraftables = CraftableItem.processCraftableGroups(trinketFetch, craftingIngredients, Item.Category.Trinket);
          List<CraftableItemData> ingredientCraftables = CraftableItem.processCraftableGroups(ingredientFetch, craftingIngredients, Item.Category.CraftingIngredients);
 
          if (categoryList.Contains(Item.Category.None) || categoryList.Count < 1 || categoryList.Any(item => CraftingItemCategories.Contains(item))) {
@@ -312,6 +327,18 @@ namespace NubisDataHandling
          foreach (CraftableItemData hatData in hatCraftables) {
             craftableItems.Add(hatData.craftableItem);
             blueprintStatus.Add(hatData.craftingStatus);
+         }
+         foreach (CraftableItemData ringData in ringCraftables) {
+            craftableItems.Add(ringData.craftableItem);
+            blueprintStatus.Add(ringData.craftingStatus);
+         }
+         foreach (CraftableItemData necklaceData in necklaceCraftables) {
+            craftableItems.Add(necklaceData.craftableItem);
+            blueprintStatus.Add(necklaceData.craftingStatus);
+         }
+         foreach (CraftableItemData trinketData in trinketCraftables) {
+            craftableItems.Add(trinketData.craftableItem);
+            blueprintStatus.Add(trinketData.craftingStatus);
          }
          /* Enable this if filtering of crafting ingredients are needed, right now they are hard coded to be available
          foreach (CraftableItemData ingredientData in ingredientCraftables) {

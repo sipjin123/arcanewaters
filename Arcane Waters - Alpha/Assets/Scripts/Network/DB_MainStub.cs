@@ -41,6 +41,18 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static string fetchCraftableRings (int usrId) {
+      return "";
+   }
+
+   public static string fetchCraftableNecklace (int usrId) {
+      return "";
+   }
+
+   public static string fetchCraftableTrinkets (int usrId) {
+      return "";
+   }
+
    public static string fetchCraftableHats (int usrId) {
       return "";
    }

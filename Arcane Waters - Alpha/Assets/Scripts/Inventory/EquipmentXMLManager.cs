@@ -749,6 +749,24 @@ public class EquipmentXMLManager : MonoBehaviour {
                      return fetchedData.equipmentName + " Design";
                   }
                }
+               if (craftingItem.resultItem.category == Item.Category.Ring) {
+                  RingStatData fetchedData = getRingData(craftingItem.resultItem.itemTypeId);
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
+               }
+               if (craftingItem.resultItem.category == Item.Category.Necklace) {
+                  NecklaceStatData fetchedData = getNecklaceData(craftingItem.resultItem.itemTypeId);
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
+               }
+               if (craftingItem.resultItem.category == Item.Category.Trinket) {
+                  TrinketStatData fetchedData = getTrinketData(craftingItem.resultItem.itemTypeId);
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
+               }
                if (craftingItem.resultItem.category == Item.Category.CraftingIngredients) {
                   CraftingIngredients referenceItem = new CraftingIngredients(craftingItem.resultItem);
                   if (referenceItem != null) {
