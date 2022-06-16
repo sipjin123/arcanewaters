@@ -12,6 +12,12 @@ public class ServerMessageManager : MonoBehaviour
 {
    #region Public Variables
 
+   // Cache the duplicated user info for investigation
+   public List<UserInfo> duplicatedUserInfo = new List<UserInfo>();
+
+   // The last duplicate log time
+   public double lastDupeLogTime;
+
    #endregion
 
    private void Awake () {
@@ -239,6 +245,7 @@ public class ServerMessageManager : MonoBehaviour
             selectedUsrName = userObjects.userInfo.username;
          }
 
+         List<UserInfo> deletedUsers = new List<UserInfo>();
          if (accountId > 0) {
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
             userDeletionStatuses.AddRange(users.Select(_ => false));
@@ -251,7 +258,7 @@ public class ServerMessageManager : MonoBehaviour
                hatList.Add((Hat) uObjects.hat);
             }
 
-            List<UserInfo> deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, selectedUserId);
+            deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, selectedUserId);
             userDeletionStatuses.AddRange(deletedUsers.Select(_ => true));
             nameAvailabilityStatuses.AddRange(deletedUsers.Select(_ => DB_Main.getUserId(_.username) <= 0));
 
@@ -309,6 +316,29 @@ public class ServerMessageManager : MonoBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Filter users sharing the same character spot
+            List<int> slotsUsed = new List<int>();
+            List<int> duplicatedSlots = new List<int>();
+            foreach (UserInfo userInfoVal in users) {
+               if (slotsUsed.Contains(userInfoVal.charSpot)) {
+                  duplicatedSlots.Add(userInfoVal.charSpot);
+               } else {
+                  slotsUsed.Add(userInfoVal.charSpot);
+               }
+            }
+
+            foreach (int dupeSlot in duplicatedSlots) {
+               List<UserInfo> dupeList = users.FindAll(_ => _.charSpot == dupeSlot && !deletedUsers.Exists(q => q.userId == _.userId)).OrderBy(_ => _.userId).ToList();
+               if (dupeList.Count > 1) {
+                  duplicatedUserInfo.Add(dupeList[0]);
+
+                  if (NetworkTime.time - lastDupeLogTime > 300) {
+                     lastDupeLogTime = NetworkTime.time;
+                     D.adminLog("Added user: {" + dupeList[0].userId + ":" + dupeList[0].username + "} to dupe List, total of:{" + duplicatedUserInfo.Count + "}", D.ADMIN_LOG_TYPE.CharacterSlots);
+                  }
+               }
+            }
+
             if (accountId > 0) {
                // Stop the login process if the account is already logged in
                if (MyNetworkManager.isAccountAlreadyOnline(accountId, conn)) {
@@ -375,7 +405,14 @@ public class ServerMessageManager : MonoBehaviour
                // Set the armor palettes of the character
                int paletteIndex = 0;
                foreach (Item armorItem in armorItemList) {
-                  armorPalettes[paletteIndex] = EquipmentXMLManager.self.getArmorDataBySqlId(armorItem.itemTypeId).palettes;
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorItem.itemTypeId);
+                  if (armorData != null) {
+                     armorPalettes[paletteIndex] = armorData.palettes;
+                  } else {
+                     if (armorItem.itemTypeId > 0) {
+                        D.debug("Cant process armor type: {" + armorItem.itemTypeId + "}");
+                     }
+                  }
                   paletteIndex++;
                }
 
@@ -656,6 +693,13 @@ public class ServerMessageManager : MonoBehaviour
          conn.Send(characterValidMessage);
       });
 
+      // Prevent starting armor hack here
+      string invalidArmorWarning = "";
+      if (!CharacterScreen.STARTING_ARMOR_ID_LIST.Contains(msg.armorType)) {
+         invalidArmorWarning = "Warning! Attempting to select invalid starting armor: {" + msg.armorType + "}";
+         msg.armorType = CharacterScreen.STARTING_ARMOR_ID_LIST[0];
+      }
+
       // Need to create their Armor first
       int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorPalettes);
 
@@ -672,6 +716,15 @@ public class ServerMessageManager : MonoBehaviour
       int userId = DB_Main.createUser(accountId, adminFlag, userInfo, area);
       DB_Main.createUserHistoryEvent(new UserHistoryEventInfo(accountId, userId, userInfo.username, UserHistoryEventInfo.EventType.Create, DateTime.UtcNow));
       DB_Main.insertIntoJobs(userId);
+
+      // Track the user attempting to hack starting armor
+      if (invalidArmorWarning.Length > 0) {
+         if (userInfo != null) {
+            invalidArmorWarning += " for User:{" + userInfo.username + ":" + userInfo.userId + "}";
+         }
+
+         D.debug(invalidArmorWarning);
+      }
 
       // Update the armor as belonging to this new user id, and equip it
       DB_Main.setItemOwner(userId, armorId);
