@@ -7139,6 +7139,10 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_AdminSpawnBox () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       InteractableObjEntity spawnedBox = Instantiate(InteractableObjManager.self.interactableBox);
       Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addInteractableToInstance(spawnedBox, currInstance);
@@ -7151,6 +7155,10 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_AdminSpawnBall () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       InteractableObjEntity spawnedBall = Instantiate(InteractableObjManager.self.interactableBall);
       Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addInteractableToInstance(spawnedBall, currInstance);
@@ -7163,6 +7171,10 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_AdminSpawnBall2 () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       InteractableObjEntity spawnedBall = Instantiate(InteractableObjManager.self.interactableBallNetwork);
       Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addInteractableToInstance(spawnedBall, currInstance);
@@ -8858,6 +8870,10 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_UpdateAbilities (AbilitySQLData[] abilities) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (AbilitySQLData ability in abilities) {
             DB_Main.updateAbilitiesData(_player.userId, ability);

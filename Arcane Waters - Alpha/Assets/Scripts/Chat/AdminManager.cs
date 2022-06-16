@@ -78,73 +78,83 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("check_fps", "Checks the user's FPS (Not implemented yet)", requestCheckFPS, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("shutdown", "Shuts down the server (Not implemented yet)", requestShutdown, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("enemy", "Spawns a lizard enemy", requestSpawnEnemy, requiredPrefix: CommandType.Admin));
+
       cm.addCommand(new CommandData("spawn_friendlyship", "Spawns a friendly ship", requestFriendlyBotShipSpawn, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("spawn", "Spawns a custom enemy type", spawnCustomEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyType" }));
       cm.addCommand(new CommandData("create_shop_ships", "Creates shop ships (Not implemented yet)", requestCreateShopShips, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_shop_items", "Creates shop items (Not implemented yet)", requestCreateShopItems, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pgo", "Warps you to a user", requestPlayerGo, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
       cm.addCommand(new CommandData("goto", "Warps you to a user", requestPlayerGo, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
+
       cm.addCommand(new CommandData("summon", "Summons a user to you", requestSummonPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
       cm.addCommand(new CommandData("bot_waypoint", "Sets a bot waypoint (Not implemented yet)", requestBotWaypoint, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("all_abilities", "Gives you access to all abilities", requestAllAbilities, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("get_item", "Gives you an amount of a specified item", requestGetItem, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "category", "itemName", "quantity" }));
       cm.addCommand(new CommandData("ship_speedup", "Speeds up your ship", requestShipSpeedup, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("get_all_items", "Gives you all items in the game", requestGetAllItems, requiredPrefix: CommandType.Admin));
+
       cm.addCommand(new CommandData("interact_anvil", "Allows you to use the anvil", interactAnvil, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("restart", "Schedules a server restart. (Build version 0 is latest)", requestScheduleServerRestart, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "delayInMinutes", "buildVersion" }));
       cm.addCommand(new CommandData("cancel", "Cancels a scheduled server restart", requestCancelServerRestart, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("free_weapon", "Gives you a weapon with a specified palette", freeWeapon, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "weaponName", "paletteName" }));
       cm.addCommand(new CommandData("get_all_hats", "Gives you all hats in the game", requestGetAllHats, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("learn", "Teaches your player a new ability", requestGiveAbility, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "abilityName" }));
+
       cm.addCommand(new CommandData("invisible", "Turns your player invisible", requestInvisibility, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_voyage", "Creates a new voyage map", createVoyageInstance, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isPvp", "difficulty", "biome", "areaKey" }));
       cm.addCommand(new CommandData("ship_damage", "Sets your ship's damage", requestSetShipDamage, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "damage" }));
       cm.addCommand(new CommandData("ship_health", "Sets your ship's health", requestSetShipHealth, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "health" }));
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
       cm.addCommand(new CommandData("warp_anywhere", "Allows user warp anywhere without getting returned to town", requestWarpAnywhere, requiredPrefix: CommandType.Admin));
+
       cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
       cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
       cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
       cm.addCommand(new CommandData("who", "Checks connected players", requestPlayerList, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("lose", "Kills player in a land battle", requestLose, requiredPrefix: CommandType.Admin));
+
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
       cm.addCommand(new CommandData("throw_errors", "Throws various errors and warnings on the server to test the logger tool", requestThrowTestErrors, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
       cm.addCommand(new CommandData("toggle_nubis", "Enable or disable the usage of the Nubis server for this client", toggleNubis, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isEnabled" }));
       cm.addCommand(new CommandData("add_perk_points", "Gives the player perk points", requestPerkPoints, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numPoints" }));
       cm.addCommand(new CommandData("add_powerup", "Gives you a powerup of specified type and rarity", requestPowerup, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "powerupType", "powerupRarity" }));
+
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_join", "Warps the player to the current pvp game", joinPvp, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_force_start", "Forces the pvp game the player is in to start, regardless of how many players are in it", forceStartPvp, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_set_map", "Changes which map pvp games will be created in", setPvpMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
+
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("query_abilities", "Queries abilities to the users", queryAbilities, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "id", "limit" }));
       cm.addCommand(new CommandData("log_battle", "Logs the current battle manager info", logBattle, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
       cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "amount" }));
+      
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
       cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
       cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
+      
       cm.addCommand(new CommandData("log", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
       cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
       cm.addCommand(new CommandData("set_input_debugger", "Enables/disables the input debugger", requestSetInputDebugger, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
-
+      
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
       cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
       cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds", "enemy" }));
       cm.addCommand(new CommandData("freeze_ships", "Freezes all bot ships", freezeShips, requiredPrefix: CommandType.Admin));
-
+      
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
@@ -153,7 +163,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
       cm.addCommand(new CommandData("name_change", "Change the name of another player", requestNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername", "reason" }));
-
+      
       // Support commands
       cm.addCommand(new CommandData("force_single_player", "Forces Single Player mode for a specific account", requestForceSinglePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "reason" }));
       cm.addCommand(new CommandData("kick", "Disconnects a player from the game", requestKickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "reason" }));
@@ -222,6 +232,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSetInputDebugger (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       if (parameters == "1" || parameters == "true") {
          InputDebugger.setEnabled(true);
          D.debug("Enabled input debugging.");
@@ -232,11 +246,19 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSetLagMonitor (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SetLagMonitor(parameters);
    }
 
    [Command]
    private void Cmd_SetLagMonitor (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       if (parameters == "1" || parameters == "true") {
          EntityLagMonitor.self.monitoringEnabled = true;
          D.debug("Enabled lag monitor monitoring.");
@@ -247,15 +269,27 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestTestOpenWorld (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_TestOpenWorld(parameters);
    }
 
    private void requestFriendlyBotShipSpawn () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       _player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID, true);
    }
 
    [Command]
    private void Cmd_TestOpenWorld (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       int cpuCutoff = 90;
       int ramCutoff = 90;
       int numInitialAreas = 5;
@@ -387,11 +421,18 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestCreateOpenWorld (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_CreateOpenWorld(parameters);
    }
 
    [Command]
    private void Cmd_CreateOpenWorld (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
 
       // Default values
       int numAreas = 30;
@@ -510,11 +551,19 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestAddSilver (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_AddSilver(parameters);
    }
 
    [Command]
    private void Cmd_AddSilver (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] inputs = parameters.Split(' ');
       if (inputs.Length == 0) {
          return;
@@ -527,20 +576,36 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void setPvpMap (string mapName) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SetPvpMap(mapName);
    }
 
    [Command]
    private void Cmd_SetPvpMap (string mapName) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       PvpManager.currentMap = mapName;
    }
 
    private void forceStartPvp () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_ForceStartPvp();
    }
 
    [Command]
    private void Cmd_ForceStartPvp () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       PvpGame game = PvpManager.self.getGameWithPlayer(_player);
       if (game != null) {
          game.forceStart();
@@ -548,20 +613,36 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void joinPvp () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_JoinPvp();
    }
 
    [Command]
    private void Cmd_JoinPvp () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       PvpManager.self.joinBestPvpGameOrCreateNew(_player);
    }
 
    private void requestPerkPoints (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_AddPerkPoints(parameters);
    }
 
    [Command]
    private void Cmd_AddPerkPoints (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] inputs = parameters.Split(' ');
       if (inputs.Length == 0) {
          return;
@@ -581,21 +662,37 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestClearPowerups () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       PowerupPanel.self.clearSeaPowerups();
       Cmd_ClearPowerups();
    }
 
    [Command]
    private void Cmd_ClearPowerups () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       PowerupManager.self.clearPowerupsForUser(_player.userId);
    }
 
    private void requestPowerup (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_AddPowerup(parameters);
    }
 
    [Command]
    private void Cmd_AddPowerup (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] inputs = parameters.Split(' ');
 
       if (inputs.Length > 1) {
@@ -621,11 +718,19 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestPlayerList (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestPlayerList();
    }
 
    [Command]
    protected void Cmd_RequestPlayerList () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       List<NetEntity> entityList = EntityManager.self.getAllEntities();
       int index = 0;
       string message = "";
@@ -641,6 +746,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestLose (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_Lose(parameter);
    }
 
@@ -664,6 +773,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestWin (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_Win(parameter);
    }
 
@@ -775,10 +888,18 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestLogs (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestServerLog(parameters);
    }
 
    private void requestPortChange (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestPortChange(parameters);
    }
 
@@ -813,6 +934,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestGuildNameChange (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestGuildNameChange(parameters);
    }
 
@@ -848,6 +973,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSpawnObj (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       processSpawnObj(parameters);
    }
 
@@ -881,6 +1010,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestServerLogs (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       if (parameters.Contains("clearachievement")) {
          string message = "All steam achievements have reset!";
          Steamworks.SteamUserStats.ResetAllStats(true);
@@ -1064,10 +1197,18 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void networkProfile (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_NetworkProfile(parameters);
    }
 
    private void overridePassword (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_OverridePassword(parameters);
    }
 
@@ -1119,6 +1260,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestDifficulty (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SetDifficulty(parameters);
    }
 
@@ -1150,6 +1295,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestThrowTestErrors (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_ThrowTestErrors(parameters);
    }
 
@@ -1373,6 +1522,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void freezeShips () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_FreezeShips();
    }
 
@@ -1483,6 +1636,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestOre (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestOreVoyage(parameters);
    }
 
@@ -1514,6 +1671,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestGod () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       // Don't allow the player to use /admin god when they're dead
       PlayerShipEntity playerShip = _player.getPlayerShipEntity();
       if (playerShip) {
@@ -1529,20 +1690,36 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestGodWeapon () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string godWeaponName = "colts totally not overpowered test weapon";
       Cmd_CreateAndEquipItem(Item.Category.Weapon, godWeaponName, 1);
    }
 
    private void requestGodArmor () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string godArmorName = "ward";
       Cmd_CreateAndEquipItem(Item.Category.Armor, godArmorName, 1);
    }
 
    private void requestBanPlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.SoloBan);
    }
 
    private void requestBanPlayerIndefinite (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.SoloPermanentBan);
    }
 
@@ -1555,22 +1732,42 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestForceSinglePlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.ForceSinglePlayer);
    }
 
    private void requestKickPlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.Kick);
    }
 
    private void requestMute (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.Mute);
    }
 
    private void requestStealthMute (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.StealthMute);
    }
 
    private void requestUnMutePlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.LiftMute);
    }
 
@@ -1621,6 +1818,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestUnBanPlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       requestPenalty(parameters, PenaltyInfo.ActionType.LiftBan);
    }
 
@@ -1774,6 +1975,10 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    protected void Cmd_SpawnSeaEnemy (string parameters, Vector3 spawnPosition) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       if (list.Length > 0) {
          int enemyId = int.Parse(list[0]);
@@ -1946,6 +2151,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSpawnSeaEnemy (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SpawnSeaEnemy(parameters, Util.getMousePos());
    }
 
@@ -1958,6 +2167,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestAddShips () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_AddShips();
    }
 
@@ -1966,22 +2179,42 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestShutdown () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_Shutdown();
    }
 
    private void requestSpawnEnemy () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SpawnEnemy();
    }
 
    private void requestCreateShopShips () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_CreateShopShips();
    }
 
    private void requestCreateShopItems () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_CreateShopItems();
    }
 
    private void requestBotWaypoint () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_BotWaypoint();
    }
 
@@ -1990,14 +2223,26 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSetShipDamage (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SetShipDamage(parameter);
    }
 
    private void requestSetShipHealth (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_SetShipHealth(parameter);
    }
 
    private void requestXmlLogs (string parameter) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameter.Split(' ');
       if (list.Length > 0) {
          string xmlType = list[0];
@@ -2018,14 +2263,26 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestScreenLogs () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestScreenLog();
    }
 
    private void requestWarpAnywhere () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_RequestWarpAnywhere();
    }
 
-   private static void interactAnvil () {
+   private void interactAnvil () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE, new List<Item.Category>());
    }
 
@@ -2164,6 +2421,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestAddGold (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       int gold = 0;
       string username = "";
@@ -2182,6 +2443,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestSetAdminPrivileges (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       string username = "";
       int adminFlag = 0;
@@ -2232,7 +2497,11 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-   protected static void requestAllAbilities () {
+   private void requestAllAbilities () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       List<BasicAbilityData> allAbilities = AbilityManager.self.allGameAbilities;
       Global.player.rpc.Cmd_UpdateAbilities(AbilitySQLData.TranslateBasicAbility(allAbilities).ToArray());
    }
@@ -2257,6 +2526,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestPlayerGo (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       string targetPlayerName = "";
 
@@ -2273,16 +2546,28 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestWarp (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       // Send the request to the server
       Cmd_Warp(parameters);
    }
 
    protected void requestShipSpeedup () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       // Unlocks ship speed boost x2
       _player.shipSpeedupFlag = true;
    }
 
    protected void requestGetItem (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] sections = parameters.Split(' ');
       string categoryStr = "";
       string itemName = "";
@@ -2499,6 +2784,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestGetAllItems (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       int count = 100;
 
@@ -2552,6 +2841,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void getArmorWithPalettes (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] sections = parameters.Split(',');
       string itemName = "";
       const int count = 1;
@@ -2594,6 +2887,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestAddGems (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       int gems = 0;
       string username = "";
@@ -2762,6 +3059,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void createVoyageInstance (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
 
       // Default parameter values
@@ -3186,6 +3487,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void spawnCustomEnemy (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       parameters = parameters.Trim(' ').Replace(" ", "_");
       if (Enum.TryParse(parameters, true, out Enemy.Type enemyType)) {
          Cmd_SpawnCustomEnemy(enemyType);
@@ -3626,6 +3931,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void logBattle () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       D.debug("The battle id of player {" + _player.userId + "} is {" + _player.battleId + "}");
       string messageResult = "";
       if (_player.battleId > 0) {
@@ -3668,6 +3977,10 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    public void Cmd_QueryAbilities (int abilityId, int limit) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       List<int> newList = new List<int>();
       newList.Add(abilityId);
       AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(abilityId);
@@ -3715,6 +4028,9 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    public void Cmd_ResetShops () {
+      if (!_player.isAdmin()) {
+         return;
+      }
       D.debug("Shop items have now been regenerated!");
       ShopManager.self.randomlyGenerateShips();
       ShopManager.self.generateItemsFromXML();
@@ -3842,6 +4158,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    public void requestNameChange (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       Cmd_NameChange(parameters);
    }
 
