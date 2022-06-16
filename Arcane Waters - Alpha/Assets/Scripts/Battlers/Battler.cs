@@ -1597,7 +1597,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // If either sprite is owned by the client, play a camera shake
-            if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
+            if (Global.isCameraShakeEffectEnabled && (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId))) {
                BattleCamera.self.shakeCamera(.25f);
             }
 
@@ -2231,7 +2231,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Vector2 startPos = this.battleSpot.transform.position;
 
       // If the client's player is the target of this shake, then also shake the camera
-      if (Util.isPlayer(this.userId)) {
+      if (Global.isCameraShakeEffectEnabled && Util.isPlayer(this.userId)) {
          BattleCamera.self.shakeCamera(getShakeLength());
       }
 

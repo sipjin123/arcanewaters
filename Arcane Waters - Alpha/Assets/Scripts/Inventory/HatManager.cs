@@ -123,17 +123,7 @@ public class HatManager : EquipmentManager {
       this.hatType = hatData.hatType;
       this.palettes = hatPalettes == null ? hatData.palettes : hatPalettes;
 
-      NetworkConnection connection = null;
-
-      if (_body != null) {
-         connection = _body.connectionToClient;
-      }
-
-      if (_battler != null && _battler.player != null) {
-         connection = _battler.player.connectionToClient;
-      }
-
-      if (connection == null) {
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
          D.debug("Connection to client was null!");
          return;
       }

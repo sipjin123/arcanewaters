@@ -396,7 +396,7 @@ public class InstanceManager : MonoBehaviour
       instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;
       instance.difficulty = difficulty;
-
+      instance.isSinglePlayer = isSinglePlayer;
       instance.updateMaxPlayerCount(isSinglePlayer);
 
       if (CustomMapManager.isPrivateCustomArea(areaKey)) {
@@ -430,7 +430,7 @@ public class InstanceManager : MonoBehaviour
    public Instance getOpenInstance (string areaKey, bool isSinglePlayer) {
       if (!isSinglePlayer) {
          foreach (Instance instance in _instances.Values) {
-            if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
+            if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers() && !instance.isSinglePlayer) {
                return instance;
             }
          }
@@ -747,6 +747,7 @@ public class InstanceManager : MonoBehaviour
             Area areaReference = AreaManager.self.getArea(areaKey);
             if (areaReference != null) {
                Destroy(areaReference.gameObject);
+               D.adminLog("Destroying Area Object: {" + areaKey + "}", D.ADMIN_LOG_TYPE.AreaClearing);
             }
             AreaManager.self.removeArea(areaKey);
 
@@ -820,6 +821,7 @@ public class InstanceManager : MonoBehaviour
             port = instance.serverPort,
             area = instance.areaKey,
             pCount = getPlayerCountInInstance(instance.id),
+            maxPlayerCount = instance.getMaxPlayers(),
             voyage = voyage,
             difficulty = instance.difficulty,
             aliveEnemyCount = instance.aliveNPCEnemiesCount,

@@ -166,6 +166,9 @@ public class Instance : NetworkBehaviour
    // The user id registered to this area if this is a private area
    public int privateAreaUserId;
 
+   // When set to true, this instance was created for a user in single player mode
+   public bool isSinglePlayer = false;
+
    // The number of times the instance must be found empty before being removed (see checkIfInstanceIsEmpty for time between checks)
    public const int CHECKS_BEFORE_REMOVAL = 10;
 

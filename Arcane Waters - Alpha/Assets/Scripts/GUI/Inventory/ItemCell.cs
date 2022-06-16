@@ -557,6 +557,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       // Level requirement
       appendLevelRequirementTextToTooltip(item, ref tooltip.message);
 
+      // Soulbinding
+      appendBindInfoTextToTooltip(item, ref tooltip.message);
+
       updateCellColor(item.durability);
 
       // Saves the item
@@ -582,6 +585,16 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       if (reqLevel > 0) {
          tooltipMessage += string.Format("\n<color=#{0}>Requires Level {1}</color>", ColorUtility.ToHtmlStringRGBA(meetsRequirement ? Color.white : Color.red), reqLevel);
+      }
+   }
+
+   public static void appendBindInfoTextToTooltip (Item item, ref string tooltipMessage) {
+      Item.SoulBindingType sbtype = SoulBindingManager.getItemSoulbindingTypeClient(item);
+
+      if (sbtype == Item.SoulBindingType.Equip) {
+         tooltipMessage += string.Format("\n<color=#{0}>Bind On Equip</color>", ColorUtility.ToHtmlStringRGBA(new Color32(105, 255, 110, 255)));
+      } else if (sbtype == Item.SoulBindingType.Acquisition) {
+         tooltipMessage += string.Format("\n<color=#{0}>Bind On Acquire</color>", ColorUtility.ToHtmlStringRGBA(new Color32(105, 255, 210, 255)));
       }
    }
 

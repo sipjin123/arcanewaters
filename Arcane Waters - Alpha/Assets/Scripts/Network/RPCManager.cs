@@ -143,7 +143,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
-         int mailId = createMailCommon(-1, _player.userId, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false);
+         int mailId = createMailCommon(-1, _player.userId, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false, false);
          if (mailId < 0) {
             return;
          }
@@ -1037,9 +1037,15 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo,
+   public void Target_ReceiveSoulbindingInfo (NetworkConnection connection, ItemTypeSoulbinding[] info) {
+      SoulBindingManager.receiveItemSoulbindingDataFromServer(info);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo, int[] friendInstanceIds,
       Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount, bool isSteamFriendsTab) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
+      List<int> friendInstanceIdsList = new List<int>(friendInstanceIds);
 
       // Make sure the panel is showing
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
@@ -1049,7 +1055,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
+      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendInstanceIdsList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
    }
 
    [TargetRpc]
@@ -2148,6 +2154,20 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the updated shortcuts to the client
             Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
+         });
+      });
+   }
+
+   [Server]
+   public void sendItemTypeSoulbindInfo () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<ItemTypeSoulbinding> info = DB_Main.getAllSoulBindingTypeInfo();
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated shortcuts to the client
+            Target_ReceiveSoulbindingInfo(_player.connectionToClient, info.ToArray());
          });
       });
    }
@@ -4115,6 +4135,7 @@ public class RPCManager : NetworkBehaviour
 
          // Get the items from the database
          List<FriendshipInfo> friendshipInfoList = DB_Main.getFriendshipInfoList(_player.userId, friendshipStatus, pageNumber, itemsPerPage);
+         List<int> friendInstanceId = new List<int>();
 
          // Get the number of friends
          int friendCount = 0;
@@ -4132,6 +4153,13 @@ public class RPCManager : NetworkBehaviour
             pendingRequestCount = totalFriendInfoCount;
          }
 
+         if (friendshipStatus == Friendship.Status.Friends) {
+            foreach (FriendshipInfo info in friendshipInfoList) {
+               NetEntity netEntity = EntityManager.self.getEntity(info.friendUserId);
+               friendInstanceId.Add(netEntity != null ? netEntity.instanceId : 0);
+            }
+         }
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determine if the friends are online
@@ -4139,7 +4167,7 @@ public class RPCManager : NetworkBehaviour
                friend.isOnline = ServerNetworkingManager.self.isUserOnline(friend.friendUserId);
             }
 
-            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
+            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendInstanceId.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
          });
       });
    }
@@ -4232,7 +4260,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete) {
+   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete, bool canReply) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -4302,7 +4330,7 @@ public class RPCManager : NetworkBehaviour
          mailSubject = BadWordManager.ReplaceAll(mailSubject);
 
          // Create the mail
-         int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
+         int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack, canReply);
 
          if (mailId >= 0) {
             // Make sure that we charge the player only if the message went through
@@ -4327,7 +4355,7 @@ public class RPCManager : NetworkBehaviour
 
    // This function must be called from the background thread!
    [Server]
-   private int createMailCommon (int recipientUserId, int senderId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack) {
+   private int createMailCommon (int recipientUserId, int senderId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack, bool canReply) {
       // Check soul binding
       foreach (int itemId in attachedItemsIds) {
          // Get the item
@@ -4374,7 +4402,7 @@ public class RPCManager : NetworkBehaviour
       MailInfo mail = null;
 
       // Create the mail
-      mail = new MailInfo(-1, recipientUserId, senderId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack);
+      mail = new MailInfo(-1, recipientUserId, senderId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack, canReply);
       mail.mailId = DB_Main.createMail(mail);
 
       if (mail.mailId == -1) {
@@ -4437,7 +4465,7 @@ public class RPCManager : NetworkBehaviour
          MailInfo mail = null;
 
          // Create the mail
-         mail = new MailInfo(-1, recipientUserId, systemUser.userId, DateTime.UtcNow, false, mailSubject, message, false, false);
+         mail = new MailInfo(-1, recipientUserId, systemUser.userId, DateTime.UtcNow, false, mailSubject, message, false, false, false);
          mail.mailId = DB_Main.createMail(mail);
 
          if (mail.mailId == -1) {
@@ -4473,28 +4501,31 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         try {
+            // Get the mail content
+            MailInfo mail = DB_Main.getMailInfo(mailId);
 
-         // Get the mail content
-         MailInfo mail = DB_Main.getMailInfo(mailId);
+            // Get the attached items
+            List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
 
-         // Get the attached items
-         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
+            // If the mail had not been read before, set it as read
+            if (!mail.isRead) {
+               DB_Main.updateMailReadStatus(mailId, true);
+            }
 
-         // If the mail had not been read before, set it as read
-         if (!mail.isRead) {
-            DB_Main.updateMailReadStatus(mailId, true);
+            // Check if the user has unread mail
+            bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
+
+            int senderAccountId = DB_Main.getAccountId(mail.senderUserId);
+            bool isSystemMail = senderAccountId == MailManager.SYSTEM_ACCOUNT_ID;
+
+            // Back to the Unity thread to send the results back to the client
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail, isSystemMail);
+            });
+         } catch (Exception ex) {
+            D.error($"Exception encountered while fetching single mail from server. userId: {_player.userId}, mailId: {mailId}, msg: {ex.Message}, stk: {ex.StackTrace}");
          }
-
-         // Check if the user has unread mail
-         bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
-
-         int senderAccountId = DB_Main.getAccountId(mail.senderUserId);
-         bool isSystemMail = senderAccountId == MailManager.SYSTEM_ACCOUNT_ID;
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail, isSystemMail);
-         });
       });
    }
 
@@ -4608,7 +4639,7 @@ public class RPCManager : NetworkBehaviour
                      string mailSubject = fullSentMail.mailSubject + " [RE]";
                      string dormantUserName = DB_Main.getUserName(fullSentMail.recipientUserId);
                      string message = "The player '" + dormantUserName + "' didn't read your mail. The mail was sent back to you along with the included attachments. Original Message: <" + fullSentMail.message + ">";
-                     MailInfo sendBackMail = new MailInfo(-1, _player.userId, fullSentMail.recipientUserId, DateTime.UtcNow, false, mailSubject, message, false, false);
+                     MailInfo sendBackMail = new MailInfo(-1, _player.userId, fullSentMail.recipientUserId, DateTime.UtcNow, false, mailSubject, message, false, false, false);
                      sendBackMail.mailId = DB_Main.createMail(sendBackMail);
 
                      if (sendBackMail.mailId == -1) {
@@ -4739,6 +4770,11 @@ public class RPCManager : NetworkBehaviour
 
    }
 
+   [Command]
+   public void Cmd_CheckForUnreadMails () {
+      checkForUnreadMails();
+   }
+
    [Server]
    public void checkForUnreadMails () {
       // Background thread
@@ -4747,9 +4783,7 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (hasUnreadMail) {
-               _player.Target_ReceiveUnreadMailNotification(_player.connectionToClient);
-            }
+            _player.Target_ReceiveUnreadMailNotification(_player.connectionToClient, hasUnreadMail);
          });
       });
    }
@@ -8357,7 +8391,7 @@ public class RPCManager : NetworkBehaviour
       // Get or create the Battle instance
       Battle battle = BattleManager.self.createTeamBattle(area, instance, null, attackers, localBattler, null);
       battle.isPvp = true;
-
+      
       // Handles ability related logic
       List<PlayerBodyEntity> totalPlayerBodies = new List<PlayerBodyEntity>();
 
@@ -9482,7 +9516,7 @@ public class RPCManager : NetworkBehaviour
          return false;
       }
 
-      if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: true)) {
+      if (SoulBindingManager.Bkg_ShouldBeSoulBoundOnEquipSpecifically(item)) {
          if (!Bkg_IsItemSoulBound(item)) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveEquipSoulbindingWarning(_player.connectionToClient, item);
@@ -11198,7 +11232,7 @@ public class RPCManager : NetworkBehaviour
                return;
             }
 
-            ServerNetworkingManager.self.server.Server_FindUserLocationForJoinFriend(_player.userId, friendUserId);
+            ServerNetworkingManager.self.findUserLocationForFriendJoin(_player.userId, friendUserId);
          });
       });
    }

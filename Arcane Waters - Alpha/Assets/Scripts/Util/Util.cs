@@ -42,7 +42,7 @@ public class Util : MonoBehaviour
    public static DateTime EARLY_ACCESS_END = new DateTime(2012, 1, 1, 0, 0, 0);
 
    // When a biome is released, these dates should be set to 1 week after the release time, in UTC
-   public static DateTime[] BIOME_RELEASE_PERIOD_ENDS = new DateTime[] { 
+   public static DateTime[] BIOME_RELEASE_PERIOD_ENDS = new DateTime[] {
       new DateTime(2012, 1, 1, 0, 0, 0), // None
       new DateTime(2012, 1, 1, 0, 0, 0), // Forest
       new DateTime(2012, 1, 1, 0, 0, 0), // Desert
@@ -799,7 +799,7 @@ public class Util : MonoBehaviour
    }
 
    public static void tryToRunInServerBackground (Action action) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -812,11 +812,11 @@ public class Util : MonoBehaviour
          action();
       });
 
-      #endif
+#endif
    }
 
    public static void dbBackgroundExec (Action<object> commandAction) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -829,7 +829,7 @@ public class Util : MonoBehaviour
          DB_Main.exec(cmd => commandAction(cmd));
       });
 
-      #endif
+#endif
    }
 
    public static string removeNumbers (string input) {
@@ -1278,6 +1278,14 @@ public class Util : MonoBehaviour
       return fileNamesArray;
    }
 
+   public static bool IsPointerOverUIObject (Vector2 pointerPosition) {
+      PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+      eventDataCurrentPosition.position = pointerPosition;
+      List<RaycastResult> results = new List<RaycastResult>();
+      EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+      return results.Count > 0;
+   }
+
    public static int getGameVersion () {
       // If the manifest does not exist, set the game version to a high value to allow the connection to the server
       int gameVersion = int.MaxValue;
@@ -1395,9 +1403,9 @@ public class Util : MonoBehaviour
          if (deploymentConfig != null && deploymentConfig.ContainsKey("buildId")) {
             jenkinsBuildIdNumber = deploymentConfig["buildId"].ToString();
          } else {
-            #if !UNITY_EDITOR
+#if !UNITY_EDITOR
                D.debug("Invalid naming convention! {" + deploymentConfigAsset.text + "}");
-            #endif
+#endif
          }
       } catch {
          D.debug("Failed to get jenkins build id number");

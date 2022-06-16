@@ -13,6 +13,19 @@ public class SupportTicketManager : GenericGameManager
    // Self
    public static SupportTicketManager self;
 
+   // Support Ticket Type
+   public enum SupportTicketType
+   {
+      // None
+      None = 0,
+
+      // Feedback
+      Feedback = 1,
+
+      // Complaint
+      Complaint = 2
+   }
+
    #endregion
 
    protected override void Awake () {
@@ -40,22 +53,26 @@ public class SupportTicketManager : GenericGameManager
    }
 
    public void sendComplaint (int targetAccId, int targetUsrId, string targetUsername, string description) {
-      StopAllCoroutines();
-      StartCoroutine(CO_CollectDataAndSendComplaint(targetAccId, targetUsrId, targetUsername, description));
+      sendSupportTicket(targetAccId, targetUsrId, targetUsername, description, SupportTicketType.Complaint);
    }
 
-   private IEnumerator CO_CollectDataAndSendComplaint (int targetAccId, int targetUsrId, string targetUsername, string description) {
+   public void sendSupportTicket (int targetAccId, int targetUsrId, string targetUsername, string description, SupportTicketType supportTicketType) {
+      StopAllCoroutines();
+      StartCoroutine(CO_CollectDataAndSendComplaint(targetAccId, targetUsrId, targetUsername, description, supportTicketType));
+   }
+
+   private IEnumerator CO_CollectDataAndSendComplaint (int targetAccId, int targetUsrId, string targetUsername, string description, SupportTicketType supportTicketType) {
       NetEntity player = Global.player;
 
       if (player == null) {
-         D.warning("Can't submit a complaint because we don't have a player object");
+         D.warning("Can't submit support ticket because we don't have a player object");
          yield break;
       }
 
       // Make sure we're not spamming the server
       if (_lastTicketTime.ContainsKey(player.userId)) {
          if (Time.time - _lastTicketTime[player.userId] < _complaintInterval) {
-            D.warning("Complaint already submitted");
+            D.warning("Support ticket already submitted");
             yield break;
          }
       }
@@ -113,14 +130,22 @@ public class SupportTicketManager : GenericGameManager
          yield return wwwSubmit.SendWebRequest();
 
          if (wwwSubmit.responseCode == 200) {
-            ChatManager.self.addChat("Complaint submitted successfully.", ChatInfo.Type.System);
+            if (supportTicketType == SupportTicketType.Complaint) {
+               ChatManager.self.addChat("Complaint submitted successfully.", ChatInfo.Type.System);
+            } else {
+               ChatManager.self.addChat("Support Message sent successfully.", ChatInfo.Type.System);
+            }
          } else {
-            ChatManager.self.addChat("Could not submit complaint", ChatInfo.Type.Error);
+            if (supportTicketType == SupportTicketType.Complaint) {
+               ChatManager.self.addChat("Could not submit complaint", ChatInfo.Type.Error);
+            } else {
+               ChatManager.self.addChat("Could not send Support Message", ChatInfo.Type.Error);
+            }
          }
 
          _lastTicketTime[Global.player.userId] = Time.time;
       } else {
-         D.error("Could not get token for complaint submit action.");
+         D.error("Could not get token for support ticket submit action.");
       }
    }
 

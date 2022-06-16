@@ -83,6 +83,9 @@ public class OptionsPanel : Panel
    // Determines if soul binding warnings should be shown
    public Toggle showSoulbindingWarningsToggle;
 
+   // A toggle controlling whether to enable the camera shake effect
+   public Toggle cameraShakeToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -288,6 +291,15 @@ public class OptionsPanel : Panel
       showSoulbindingWarningsToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_SHOW_SOUL_BINDING_WARNINGS, value ? 1 : 0);
          Global.showSoulbindingWarnings = value;
+      });
+
+      bool enableCameraShakeEffect = PlayerPrefs.GetInt(OptionsManager.PREF_ENABLE_CAMERA_SHAKE, 1) == 1 ? true : false;
+      cameraShakeToggle.isOn = enableCameraShakeEffect;
+      Global.isCameraShakeEffectEnabled = enableCameraShakeEffect;
+      cameraShakeToggle.onValueChanged.RemoveAllListeners();
+      cameraShakeToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_ENABLE_CAMERA_SHAKE, value ? 1 : 0);
+         Global.isCameraShakeEffectEnabled = value;
       });
 
       // Build string and show version number
@@ -670,6 +682,14 @@ public class OptionsPanel : Panel
          () => {
             Application.Quit();
          });
+   }
+
+   public void onHelpButtonPress () {
+      if (PanelManager.self == null) {
+         return;
+      }
+
+      PanelManager.self.linkIfNotShowing(Panel.Type.Help);
    }
 
    public void logOut () {

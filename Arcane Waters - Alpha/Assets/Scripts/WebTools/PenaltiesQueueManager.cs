@@ -34,10 +34,10 @@ public class PenaltiesQueueManager : GenericGameManager
             foreach (PenaltiesQueueItem item in queue) {
                List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(item.targetAccId);
 
-               bool isMuted = penalties.Any(x => x.isMute());
-               bool isBanned = penalties.Any(x => x.isBan());
+               bool isMuted = penalties.Any(x => x.IsMute());
+               bool isBanned = penalties.Any(x => x.IsBan());
 
-               PenaltyInfo newPenalty = new PenaltyInfo(item.sourceAccId, item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime, WebToolsUtil.ActionSource.WebTools);
+               PenaltyInfo newPenalty = new PenaltyInfo(item.sourceAccId, item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime);
 
                switch (item.penaltyType) {
                   case PenaltyInfo.ActionType.Mute:
@@ -71,8 +71,8 @@ public class PenaltiesQueueManager : GenericGameManager
                         D.log(string.Format("Penalty Queue: Account #{0} is not currently muted.", item.targetAccId));
                      }
                      break;
-                  case PenaltyInfo.ActionType.Ban:
-                  case PenaltyInfo.ActionType.PermanentBan:
+                  case PenaltyInfo.ActionType.SoloBan:
+                  case PenaltyInfo.ActionType.SoloPermanentBan:
                      if (isBanned) {
                         D.log(string.Format("Penalty Queue: Account #{0} is already banned.", item.targetAccId));
                      } else {
@@ -87,7 +87,7 @@ public class PenaltiesQueueManager : GenericGameManager
                      break;
                   case PenaltyInfo.ActionType.LiftBan:
                      if (isBanned) {
-                        newPenalty.id = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan).id;
+                        newPenalty.id = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.SoloBan || x.penaltyType == PenaltyInfo.ActionType.SoloPermanentBan).id;
 
                         if (DB_Main.savePenalty(newPenalty)) {
                            UnityThreadHelper.UnityDispatcher.Dispatch(() => {

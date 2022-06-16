@@ -37,36 +37,9 @@ public class PenaltyInfo
    // The time for the penalty
    public int penaltyTime;
 
-   // The source of this penalty
-   public WebToolsUtil.ActionSource penaltySource;
-
-   // The expiration date for the penalty (mute & ban)
-   public long expiresAt = DateTime.MinValue.Ticks;
-
    #endregion
 
    public PenaltyInfo () { }
-
-   public PenaltyInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string targetUsrName, ActionType penaltyType, WebToolsUtil.ActionSource penaltySource, string penaltyReason, int penaltyTime = 0, int id = 0) {
-      this.id = id;
-      this.sourceAccId = sourceAccId;
-      this.sourceUsrId = sourceUsrId;
-      this.sourceUsrName = sourceUsrName;
-      this.targetAccId = targetAccId;
-      this.targetUsrId = targetUsrId;
-      this.targetUsrName = targetUsrName;
-      this.penaltyType = penaltyType;
-      this.penaltyTime = penaltyTime;
-      this.penaltySource = penaltySource;
-
-      if (!string.IsNullOrEmpty(penaltyReason)) {
-         this.penaltyReason = penaltyReason;
-      }
-
-      if (penaltyTime > 0) {
-         this.expiresAt = DateTime.UtcNow.AddSeconds(penaltyTime).Ticks;
-      }
-   }
 
    public PenaltyInfo (NetEntity source, UserAccountInfo target, ActionType penaltyType, string reason, int seconds, int penaltyId = 0) {
       this.id = penaltyId;
@@ -83,23 +56,18 @@ public class PenaltyInfo
       this.penaltyTime = seconds;
 
       this.penaltyType = penaltyType;
-
-      this.penaltySource = WebToolsUtil.ActionSource.Game;
    }
 
-   public PenaltyInfo (int sourceAccId, int targetAccId, ActionType penaltyType, string penaltyReason, int penaltyTime, WebToolsUtil.ActionSource penaltySource) {
+   public PenaltyInfo (int sourceAccId, int targetAccId, ActionType penaltyType, string penaltyReason, int penaltyTime) {
       this.sourceAccId = sourceAccId;
       this.targetAccId = targetAccId;
       this.penaltyType = penaltyType;
       this.penaltyTime = penaltyTime;
-      this.penaltySource = penaltySource;
 
       if (!string.IsNullOrEmpty(penaltyReason)) {
          this.penaltyReason = penaltyReason;
       }
    }
-
-
 
    #if IS_SERVER_BUILD
 
@@ -113,22 +81,20 @@ public class PenaltyInfo
       this.targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
       this.penaltyType = (ActionType) DataUtil.getInt(dataReader, "penaltyType");
       this.penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
-      this.penaltySource = (WebToolsUtil.ActionSource) DataUtil.getInt(dataReader, "penaltySource");
       this.penaltyTime = DataUtil.getInt(dataReader, "penaltyTime");
-      this.expiresAt = DataUtil.getDateTime(dataReader, "expiresAt").Ticks;
    }
 
    #endif
 
-   public bool isMute () {
+   public bool IsMute () {
       return this.penaltyType == ActionType.Mute || this.penaltyType == ActionType.StealthMute;
    }
 
-   public bool isBan () {
-      return this.penaltyType == ActionType.Ban || this.penaltyType == ActionType.PermanentBan;
+   public bool IsBan () {
+      return this.penaltyType == ActionType.SoloBan || this.penaltyType == ActionType.SoloPermanentBan;
    }
 
-   public bool isLiftType () {
+   public bool IsLiftType () {
       return this.penaltyType == ActionType.LiftMute || this.penaltyType == ActionType.LiftBan;
    }
 
@@ -141,13 +107,15 @@ public class PenaltyInfo
       None = 0,
       Mute = 1,
       StealthMute = 2,
-      Ban = 3,
-      PermanentBan = 4,
+      SoloBan = 3,
+      SoloPermanentBan = 4,
       Kick = 5,
       ForceSinglePlayer = 6,
       LiftMute = 7,
       LiftBan = 8,
-      LiftForceSinglePlayer = 9
+      LiftForceSinglePlayer = 9,
+      StealthSoloBan = 10,
+      FullPermanentBan = 11
    }
 }
 

@@ -534,7 +534,7 @@ public class PlayerShipEntity : ShipEntity
 
       checkAudioListener();
 
-      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
+      if (InputManager.self.inputMaster.General.InteractClick.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
          if (!PriorityOverProcessActionLogic.isAnyHovered()) {
             NetEntity ship = getClickedBody();
             if (ship != null && ship is PlayerShipEntity) {
@@ -582,7 +582,7 @@ public class PlayerShipEntity : ShipEntity
       boostUpdate();
 
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
-      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PriorityOverProcessActionLogic.isAnyHovered()) {
+      if (InputManager.self.inputMaster.General.InteractClick.WasPerformedThisFrame() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
       }
    }

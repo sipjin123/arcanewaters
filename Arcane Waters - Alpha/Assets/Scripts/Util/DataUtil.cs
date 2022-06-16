@@ -24,6 +24,17 @@ public class DataUtil {
       return dataReader.GetUInt64(key);
    }
 
+   public static ushort getUshort (MySqlDataReader dataReader, string key) {
+      var ordinal = dataReader.GetOrdinal(key);
+
+      // Default to 0
+      if (dataReader.IsDBNull(ordinal)) {
+         return 0;
+      }
+
+      return dataReader.GetUInt16(key);
+   }
+
    public static int getInt (MySqlDataReader dataReader, string key) {
       var ordinal = dataReader.GetOrdinal(key);
 

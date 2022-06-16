@@ -232,6 +232,9 @@ public class MailPanel : Panel
       deleteMailButton.onClick.RemoveAllListeners();
       deleteMailButton.onClick.AddListener(() => deleteMail(mailIdForDeleteButton));
 
+      // Show reply button if recipient can reply to mail
+      replyMailButton.gameObject.SetActive(mail.canReply);
+      
       // Configure the reply button
       replyMailButton.onClick.RemoveAllListeners();
       replyMailButton.onClick.AddListener(() => composeReplyTo(mail.senderUserName, mail.mailSubject));
@@ -443,7 +446,7 @@ public class MailPanel : Panel
 
       // Create the mail
       Global.player.rpc.Cmd_CreateMail(recipientName, subjectInput.text, messageInput.text,
-      attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete);
+      attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete, true);
    }
 
    public void confirmSendMail () {
@@ -556,6 +559,14 @@ public class MailPanel : Panel
 
       if (_currentPage >= _maxPage) {
          nextPageButton.enabled = false;
+      }
+   }
+
+   public override void hide () {
+      base.hide();
+
+      if (Global.player != null && Mirror.NetworkClient.active) {
+         Global.player.rpc.Cmd_CheckForUnreadMails();
       }
    }
 

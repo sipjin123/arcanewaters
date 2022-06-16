@@ -261,7 +261,6 @@ public class AreaManager : MonoBehaviour
 
    public void removeArea (string areaKey) {
       _areas.Remove(areaKey);
-
       EnemyManager.self.removeSpawners(areaKey);
    }
 

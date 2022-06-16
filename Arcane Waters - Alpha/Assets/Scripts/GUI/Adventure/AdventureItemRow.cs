@@ -265,8 +265,12 @@ public class AdventureItemRow : MonoBehaviour
       recoloredSprite.recolor(item.paletteNames);
 
       tooltip.message = getTooltipText(item);
+
       // Level requirement
       ItemCell.appendLevelRequirementTextToTooltip(item, ref tooltip.message);
+
+      // Soulbinding
+      ItemCell.appendBindInfoTextToTooltip(item, ref tooltip.message);
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();

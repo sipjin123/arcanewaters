@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System;
 using Mirror;
 
-public class EquipmentManager : NetworkBehaviour {
+public class EquipmentManager : NetworkBehaviour
+{
    #region Public Variables
 
    // The Layers we're interested in
@@ -26,6 +27,24 @@ public class EquipmentManager : NetworkBehaviour {
       }
 
       return _body.gender;
+   }
+
+   protected bool tryGetConnectionToClient (out NetworkConnection connection) {
+      connection = null;
+
+      if (_body != null) {
+         connection = _body.connectionToClient;
+      }
+
+      if (_battler != null && _battler.player != null) {
+         connection = _battler.player.connectionToClient;
+      }
+
+      if (connection == null) {
+         return false;
+      }
+
+      return true;
    }
 
    #region Private Variables

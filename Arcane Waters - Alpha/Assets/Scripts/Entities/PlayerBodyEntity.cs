@@ -184,6 +184,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isLocalPlayer && !Util.isBatch()) {
          // Gamepad action trigger
+         InputManager.self.inputMaster.General.InteractNearby.performed += OnInteractNearbyPerformed;
          InputManager.self.inputMaster.Land.Action.performed += OnActionPerformed;
 
          // Gamepad jump trigger
@@ -251,8 +252,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   private void OnInteractNearbyPerformed (InputAction.CallbackContext ctx) {
+      triggerInteract(false);
+   }
+
    private void OnActionPerformed (InputAction.CallbackContext ctx) {
-      triggerInteractAction(false);
+      triggerAction(true);
    }
 
    private void OnJumpPerformed (InputAction.CallbackContext ctx) {
@@ -265,6 +270,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       base.OnDestroy();
 
       if (!Util.isBatch()) {
+         InputManager.self.inputMaster.General.InteractNearby.performed -= OnInteractNearbyPerformed;
          InputManager.self.inputMaster.Land.Action.performed -= OnActionPerformed;
          InputManager.self.inputMaster.Land.Jump.performed -= OnJumpPerformed;
       }
@@ -798,7 +804,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (
-         InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() &&
+         InputManager.self.inputMaster.General.InteractClick.WasPressedThisFrame() &&
          !PanelManager.self.hasPanelInLinkedList() &&
          !PanelManager.self.isFullScreenSeparatePanelShowing()
       ) {
@@ -811,28 +817,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
-      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame()) {
+      if (InputManager.self.inputMaster.General.InteractClick.WasPerformedThisFrame()) {
          tryToOpenChest();
       }
    }
 
-   private void triggerInteractAction (bool faceMouseDirection = true) {
+   private void triggerAction (bool faceMouseDirection = true) {
       if (isJumping() || !isJumpGrounded()) {
          return;
       }
 
-      // First check under the mouse
-      bool foundInteractable = tryInteractUnderMouse();
+      if (!interactingAnimation) {
+         tryActionAnimation(faceMouseDirection);
+      }
+   }
 
-      // If no interactables under the mouse, check in a radius
-      if (!foundInteractable) {
-         foundInteractable = tryInteractNearby();
+   private void triggerInteract (bool faceMouseDirection = true) {
+      if (isJumping() || !isJumpGrounded()) {
+         return;
       }
 
-      // Don't allow the player to enter the interact animation if they're jumping
-      if (!foundInteractable && !isJumping() && !interactingAnimation) {
-         tryInteractAnimation(faceMouseDirection);
-      }
+      tryInteractNearby();
    }
 
    private bool tryInteractUnderMouse () {
@@ -880,21 +885,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // If we clicked on some ore, interact with it
          OreNode oreNode = hit.GetComponent<OreNode>();
          if (oreNode) {
-            tryInteractAnimation();
+            tryActionAnimation();
             return true;
          }
 
          // If we clicked on a crop, interact with it
          CropSpot cropSpot = hit.GetComponent<CropSpot>();
          if (cropSpot) {
-            tryInteractAnimation();
+            tryActionAnimation();
             return true;
          }
 
          // If we clicked on an interactable object, interact with it
          InteractableObjEntity interactableObj = hit.GetComponent<InteractableObjEntity>();
          if (interactableObj) {
-            tryInteractAnimation(false, true);
+            tryActionAnimation(false, true);
             return true;
          }
 
@@ -950,7 +955,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return foundInteractable;
    }
 
-   private void tryInteractAnimation (bool faceMouseDirection = true, bool playLocallyFirst = false) {
+   private void tryActionAnimation (bool faceMouseDirection = true, bool playLocallyFirst = false) {
       // Skip for batch mode
       if (Util.isBatch()) return;
 
@@ -1261,7 +1266,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             PanelManager.self.itemShortcutPanel.activateShortcut(Random.Range(1, 6));
             break;
          case 6:
-            triggerInteractAction();
+            triggerInteract();
             break;
          default:
             break;

@@ -82,6 +82,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/point", "Point at something", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Point), parameterNames: new List<string>() { "target" }));
       _commandData.Add(new CommandData("/wave", "Wave your hand", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Wave), parameterNames: new List<string>() { "target" }));
       _commandData.Add(new CommandData("/sit", "Sit on the ground", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Sit)));
+      _commandData.Add(new CommandData("/help", "Opens the Help panel", processHelpCommand));
    }
 
    public void startChatManagement () {
@@ -115,7 +116,15 @@ public class ChatManager : GenericGameManager
          !chatPanel.nameInputField.isFocused &&
          !string.IsNullOrEmpty(_lastWhisperSender)
       ) {
-         chatPanel.inputField.setText("/whisper " + _lastWhisperSender + " ");
+         if (chatPanel.currentChatType != ChatInfo.Type.Whisper) {
+            // If current chat type is not whisper set text with whisper command and last whisper sender
+            chatPanel.inputField.setText("/whisper " + _lastWhisperSender + " ");
+         } else {
+            // If current chat type is whisper set text to empty and set whisper recipient with last whisper sender
+            chatPanel.nameInputField.text = _lastWhisperSender;
+            chatPanel.inputField.setText(string.Empty);
+         }
+
          chatPanel.focusInputField();
       }
 
@@ -1025,7 +1034,7 @@ public class ChatManager : GenericGameManager
       self.addChat(msg, ChatInfo.Type.System);
    }
 
-   private void requestUnstuck () {
+   public void requestUnstuck () {
       if (Global.player != null && Global.player.getPlayerBodyEntity() != null && !Global.player.getPlayerBodyEntity().isSitting() && !Global.player.getPlayerBodyEntity().isEmoting()) {
          Global.player.rpc.Cmd_TeleportToCurrentAreaSpawnLocation();
          return;
@@ -1046,6 +1055,20 @@ public class ChatManager : GenericGameManager
 
       // Sound effect
       SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.FRIEND_REQUEST, SoundEffectManager.AMB_SW_PARAM, 1);
+   }
+
+   public void addUnreadMailNotification () {
+      string message = "You have mail. Click here to have a look!";
+
+      // Prevent spamming
+      if (_chats != null && _chats.Count > 0 && Util.areStringsEqual(message, _chats.Last().text)) {
+         return;
+      }
+
+      addChat(message, ChatInfo.Type.UnreadMailNotification);
+
+      // Sound effect
+      SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.MAIL_NOTIFICATION, SoundEffectManager.AMB_SW_PARAM, 1);
    }
 
    [Server]
@@ -1113,6 +1136,14 @@ public class ChatManager : GenericGameManager
          chatInfo.recipient = "";
          ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
       }
+   }
+
+   private void processHelpCommand () {
+      if (PanelManager.self == null) {
+         return;
+      }
+
+      PanelManager.self.linkIfNotShowing(Panel.Type.Help);
    }
 
    #region Private Variables

@@ -136,14 +136,17 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
       puppet.endPos = getDestination();
 
-      // Instantiate the bounce effect
-      SimpleAnimation anim = Instantiate(webBouncePrefab, transform.position, Quaternion.identity).GetComponent<SimpleAnimation>();
-      anim.updateIndexMinMax(bounceWebMin, bounceWebMax);
+      // Run only in client
+      if (puppet.entity.isClient) {
+         // Instantiate the bounce effect
+         SimpleAnimation anim = Instantiate(webBouncePrefab, transform.position, Quaternion.identity).GetComponent<SimpleAnimation>();
+         anim.updateIndexMinMax(bounceWebMin, bounceWebMax);
 
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, transform.position);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, transform.position);
 
-      // Command to play the sound effect for other clients, using a RPC
-      puppet.entity.Cmd_PlayWebSound(transform.position);
+         // Command to play the sound effect for other clients, using a RPC
+         puppet.entity.Cmd_PlayWebSound(transform.position);
+      }
 
       // Determine what direction the player should be facing in while they bounce / fall
       float bounceAngle = Util.angle(getDestination() - (Vector2) puppet.entity.transform.position);
@@ -264,9 +267,9 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       // Find any colliders at the location
       int colCount = Physics2D.OverlapCircle(checkPosition, checkRadius, new ContactFilter2D { useTriggers = false }, _colliderBuffer);
 
-      // Ignore enemies
+      // Ignore enemies and players
       foreach (Collider2D collider in _colliderBuffer) {
-         if (collider?.GetComponent<Enemy>()) {
+         if (collider != null && (collider.gameObject.layer == LayerMask.NameToLayer(LayerUtil.PLAYER_BIPEDS) || collider.GetComponent<Enemy>() || collider.GetComponent<PlayerBodyEntity>())) {
             colCount--;
          }
       }

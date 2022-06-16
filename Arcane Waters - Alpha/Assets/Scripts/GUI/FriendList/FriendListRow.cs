@@ -35,6 +35,9 @@ public class FriendListRow : MonoBehaviour
    // The warp button
    public Button warpButton;
 
+   // The label that displays the instance Id
+   public Text instanceIdLabel;
+
    #endregion
 
    public void setRowForFriendshipInfo (FriendshipInfo entry) {
@@ -91,6 +94,15 @@ public class FriendListRow : MonoBehaviour
       }
 
       warpButton.gameObject.SetActive(show);
+   }
+
+   public void setInstanceId(bool show, int instanceId) {
+      if (!instanceIdLabel) {
+         return;
+      }
+
+      instanceIdLabel.gameObject.SetActive(show);
+      instanceIdLabel.text = $"(Room #{instanceId})";
    }
 
    #region Private Variables

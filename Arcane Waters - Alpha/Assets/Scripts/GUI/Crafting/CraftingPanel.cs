@@ -598,7 +598,8 @@ public class CraftingPanel : Panel
             tooltip.message = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
             tooltip.message += Item.isUsingEquipmentXML(item.category) ? "\nDurability = " + item.durability : "";
             ItemCell.appendLevelRequirementTextToTooltip(item, ref tooltip.message);
-            
+            ItemCell.appendBindInfoTextToTooltip(item, ref tooltip.message);
+
             // Disable the preset tooltip game object
             itemCell.tooltip.gameObject.SetActive(false);
          }

@@ -14,6 +14,7 @@ public class LayerUtil : MonoBehaviour
    public const string GRID_COLLIDERS = "GridColliders";
    public const string SEA_STRUCTURES = "Enemy";
    public const string DEFAULT = "Default";
+   public const string PLAYER_BIPEDS = "PlayerBipeds";
 
    #endregion
 

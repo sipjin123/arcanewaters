@@ -72,7 +72,7 @@ public class GearManager : EquipmentManager
    #endregion
 
    [TargetRpc]
-   public void Target_ReceiveEquipRing (int newRingId, int newRingSqlId, string rawData, bool equipOnStart) {
+   public void Target_ReceiveEquipRing (NetworkConnection connection, int newRingId, int newRingSqlId, string rawData, bool equipOnStart) {
       RingStatData ringData = Util.xmlLoad<RingStatData>(rawData);
       cachedRingData = ringData;
 
@@ -93,7 +93,7 @@ public class GearManager : EquipmentManager
    }
 
    [TargetRpc]
-   public void Target_ReceiveEquipNecklace (int newNecklaceId, int newNecklaceSqlId, string rawData, bool equipOnStart) {
+   public void Target_ReceiveEquipNecklace (NetworkConnection connection, int newNecklaceId, int newNecklaceSqlId, string rawData, bool equipOnStart) {
       NecklaceStatData necklaceData = Util.xmlLoad<NecklaceStatData>(rawData);
       cachedNecklaceData = necklaceData;
 
@@ -114,7 +114,7 @@ public class GearManager : EquipmentManager
    }
 
    [TargetRpc]
-   public void Target_ReceiveEquipTrinket (int newTrinketId, int newTrinketSqlId, string rawData, bool equipOnStart) {
+   public void Target_ReceiveEquipTrinket (NetworkConnection connection, int newTrinketId, int newTrinketSqlId, string rawData, bool equipOnStart) {
       TrinketStatData trinketData = Util.xmlLoad<TrinketStatData>(rawData);
       cachedTrinketData = trinketData;
 
@@ -168,7 +168,12 @@ public class GearManager : EquipmentManager
       this.equippedRingDbId = newDbId;
       this.ringSpriteId = ringData.ringType;
 
-      Target_ReceiveEquipRing(newDbId, ringXmlId, RingStatData.serializeRingStatData(ringData), equipOnStart);
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
+         D.debug("Connection to client was null!");
+         return;
+      }
+
+      Target_ReceiveEquipRing(connection, newDbId, ringXmlId, RingStatData.serializeRingStatData(ringData), equipOnStart);
       Rpc_EquipRing(RingStatData.serializeRingStatData(ringData));
    }
 
@@ -188,7 +193,12 @@ public class GearManager : EquipmentManager
       this.equippedNecklaceDbId = newDbId;
       this.necklaceSpriteId = necklaceData.necklaceType;
 
-      Target_ReceiveEquipNecklace(newDbId, necklaceXmlId, NecklaceStatData.serializeNecklaceStatData(necklaceData), equipOnStart);
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
+         D.debug("Connection to client was null!");
+         return;
+      }
+
+      Target_ReceiveEquipNecklace(connection, newDbId, necklaceXmlId, NecklaceStatData.serializeNecklaceStatData(necklaceData), equipOnStart);
       Rpc_EquipNecklace(NecklaceStatData.serializeNecklaceStatData(necklaceData));
    }
 
@@ -208,7 +218,12 @@ public class GearManager : EquipmentManager
       this.equippedTrinketDbId = newDbId;
       this.trinketSpriteId = trinketData.trinketType;
 
-      Target_ReceiveEquipTrinket(newDbId, trinketXmlId, TrinketStatData.serializeTrinketStatData(trinketData), equipOnStart);
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
+         D.debug("Connection to client was null!");
+         return;
+      }
+
+      Target_ReceiveEquipTrinket(connection, newDbId, trinketXmlId, TrinketStatData.serializeTrinketStatData(trinketData), equipOnStart);
       Rpc_EquipTrinket(TrinketStatData.serializeTrinketStatData(trinketData));
    }
 

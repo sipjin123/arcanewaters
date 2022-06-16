@@ -2053,9 +2053,14 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
+   public void Target_ReceiveUnreadMailNotification (NetworkConnection conn, bool hasUnreadMail) {
       // TODO: Do mail logic here
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAIL_NOTIFICATION);
+      BottomBar.self.setUnreadMailNotificationStatus(hasUnreadMail);
+
+      if (hasUnreadMail) {
+         ChatManager.self.addUnreadMailNotification();
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAIL_NOTIFICATION);
+      }
    }
 
    [TargetRpc]
@@ -2524,6 +2529,9 @@ public class NetEntity : NetworkBehaviour
          AreaManager.self.getArea(this.areaKey).updateBlockingVisualTiles(this);
 
          yield return null;
+         
+         // Request for NPC quest in area after player is spawned
+         rpc.Cmd_RequestNPCQuestInArea();
 
          // If player is trying to join a steam friend, handle it here
          if (Global.joinSteamFriendID > 0) {
@@ -3073,8 +3081,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_BroadcastUpdatedCrop (CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
-      this.cropManager.receiveUpdatedCrop(cropInfo, justGrew, isQuickGrow);
+   public void Rpc_BroadcastUpdatedCrop (CropInfo cropInfo, bool justGrew) {
+      this.cropManager.receiveUpdatedCrop(cropInfo, justGrew);
    }
 
    [ClientRpc]

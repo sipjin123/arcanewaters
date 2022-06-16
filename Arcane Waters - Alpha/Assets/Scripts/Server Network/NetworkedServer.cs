@@ -190,10 +190,6 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ServerRPC]
    public void recalculateOpenAreas () {
-      if (!isMasterServer()) {
-         return;
-      }
-
       // Count the number of players assigned to each area
       playerCountPerArea.Clear();
       foreach (KeyValuePair<int, AssignedUserInfo> KV in assignedUserIds) {

@@ -704,6 +704,7 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForPendingFriendshipRequests();
             player.rpc.sendVoyageGroupMembersInfo();
             player.rpc.setAdminBattleParameters();
+            player.rpc.sendItemTypeSoulbindInfo();
             if (userOwnerInfo != null) {
                player.rpc.sendPlayerName(userOwnerInfo.userId, userOwnerInfo.username);
             }

@@ -172,7 +172,7 @@ public class FriendListPanel : Panel
       }
    }
 
-   public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, Friendship.Status friendshipStatus,
+   public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, List<int> friendInstanceIdsList, Friendship.Status friendshipStatus,
       int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount, bool isSteamFriendsTab) {
       _friendshipStatusFilter = friendshipStatus;
       FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
@@ -265,6 +265,8 @@ public class FriendListPanel : Panel
          SteamFriendsManager.requestFriendListImages(datas);
       } else {
          // Create the friend rows
+         int friendCounter = 0;
+
          foreach (FriendshipInfo friend in friendshipInfoList) {
             // Use different prefabs and parameters for each tab
             switch (friendshipStatus) {
@@ -285,10 +287,19 @@ public class FriendListPanel : Panel
                   bool tutorialTownExists = Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out string biomeHomeTownAreaKey);
                   bool showWarpButton = tutorialTownExists && friend.isOnline && !string.IsNullOrWhiteSpace(biomeHomeTownAreaKey) && Util.areStringsEqual(friend.friendAreaKey, biomeHomeTownAreaKey);
                   rowFriend.toggleWarpButton(showWarpButton);
+
+                  if (friendInstanceIdsList != null && friendCounter < friendInstanceIdsList.Count) {
+                     int instanceId = friendInstanceIdsList[friendCounter];
+                     rowFriend.setInstanceId(instanceId > 0, instanceId);
+                  } else {
+                     rowFriend.setInstanceId(false, 0);
+                  }
                   break;
                default:
                   break;
             }
+
+            friendCounter++;
          }
       }
 

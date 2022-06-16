@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System;
 using Mirror;
 
-public class WeaponManager : EquipmentManager {
+public class WeaponManager : EquipmentManager
+{
    #region Public Variables
 
    // The Layers we're interested in
@@ -108,7 +109,7 @@ public class WeaponManager : EquipmentManager {
 
 
    [TargetRpc]
-   public void Target_EquipWeapon(NetworkConnection connection, int newWeaponId, int newWeaponSqlId, int newWeaponType, string rawWeaponData, string newPalettes, int count, bool equipOnStart) {
+   public void Target_EquipWeapon (NetworkConnection connection, int newWeaponId, int newWeaponSqlId, int newWeaponType, string rawWeaponData, string newPalettes, int count, bool equipOnStart) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawWeaponData);
       cachedWeaponData = weaponData;
 
@@ -141,7 +142,7 @@ public class WeaponManager : EquipmentManager {
       int newType = weaponData == null ? 0 : weaponData.weaponType;
       updateSprites(newType, newPalettes);
    }
-   
+
    public void updateDurability (int newDurability) {
       D.adminLog("Weapon durability modified from [" + weaponDurability + "] to [" + newDurability + "]", D.ADMIN_LOG_TYPE.Refine);
       weaponDurability = newDurability;
@@ -150,7 +151,6 @@ public class WeaponManager : EquipmentManager {
    [Server]
    public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes, int durability, int count, bool equipOnStart = false) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponDataId);
-
       if (weaponData == null) {
          weaponData = WeaponStatData.getDefaultData();
       }
@@ -169,17 +169,7 @@ public class WeaponManager : EquipmentManager {
       this.weaponDurability = durability;
       this.count = count;
 
-      NetworkConnection connection = null;
-
-      if (_body != null) {
-         connection = _body.connectionToClient;
-      }
-
-      if (_battler != null && _battler.player != null) {
-         connection = _battler.player.connectionToClient;
-      }
-
-      if (connection == null) {
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
          D.debug("Connection to client was null!");
          return;
       }

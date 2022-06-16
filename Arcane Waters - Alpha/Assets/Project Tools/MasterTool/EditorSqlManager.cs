@@ -242,3 +242,15 @@ public class XMLPair {
    // Determines if this data is enabled
    public bool isEnabled;
 }
+
+[Serializable]
+public class PaletteXMLPair : XMLPair {
+    // The subcategory
+    public string xmlSubCategory;
+
+    // The tag Id
+    public int xmlTagId;
+
+    // The palette type
+    public int xmlPaletteType;
+}

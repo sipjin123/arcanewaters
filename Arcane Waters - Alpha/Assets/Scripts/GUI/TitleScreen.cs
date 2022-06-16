@@ -215,7 +215,9 @@ public class TitleScreen : MonoBehaviour {
          showTermsOfService();
          return;
       }
-      
+
+      _startingClient = true;
+
       if (ServerHistoryManager.self.isServerHistoryActive()) {
          // Check if the server is online by looking at the boot history using Nubis
          NubisDataFetcher.self.getOnlineServersListForClientLogin(isSteam);
@@ -241,6 +243,8 @@ public class TitleScreen : MonoBehaviour {
       } else {
          displayError(ErrorMessage.Type.FailedUserOrPass);
       }
+
+      _startingClient = false;
    }
 
    public void continueAfterCheckingClientVersion () {
@@ -265,7 +269,12 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public bool isActive () {
-      return !NetworkClient.active && !NetworkServer.active && !Global.isRedirecting && !CharacterScreen.self.isShowing();
+      return 
+         !_startingClient &&
+         !NetworkClient.active && 
+         !NetworkServer.active && 
+         !Global.isRedirecting && 
+         !CharacterScreen.self.isShowing();
    }
 
    public void displayError (ErrorMessage.Type errorType, ErrorMessage message = null) {
@@ -369,6 +378,9 @@ public class TitleScreen : MonoBehaviour {
 
    // Check whether client app has confirmed that its version is up to date
    private bool _hasClientVersionBeenApproved = false;
+
+   // Are starting up the client
+   private bool _startingClient = false;
 
    #endregion
 }

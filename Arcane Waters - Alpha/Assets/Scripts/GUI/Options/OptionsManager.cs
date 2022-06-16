@@ -38,6 +38,9 @@ public class OptionsManager : GenericGameManager {
    // Player Prefs key for soul bindings warning
    public const string PREF_SHOW_SOUL_BINDING_WARNINGS = "CHAT_SHOW_SOUL_BINDING_WARNINGS";
 
+   // PLayer Prefs key for the Camera Shake Effect
+   public const string PREF_ENABLE_CAMERA_SHAKE = "ENABLE_CAMERA_SHAKE";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 
@@ -77,6 +80,7 @@ public class OptionsManager : GenericGameManager {
       Global.sprintConstantly = PlayerPrefs.GetInt(PREF_SPRINT_CONSTANTLY, 0) == 1;
       Global.ignoreGuildAllianceInvites = PlayerPrefs.GetInt(PREF_GUILD_ALLIANCE_INVITE, 0) == 1;
       Global.showHealText = PlayerPrefs.GetInt(SHOW_HEAL_TEXT, 0) == 1;
+      Global.isCameraShakeEffectEnabled = PlayerPrefs.GetInt(PREF_ENABLE_CAMERA_SHAKE, 1) == 1;
    }
 
    private void Start () {

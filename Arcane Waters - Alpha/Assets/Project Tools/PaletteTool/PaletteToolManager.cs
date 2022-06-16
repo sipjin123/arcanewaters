@@ -830,10 +830,10 @@ public class PaletteToolManager : XmlDataToolManager {
 
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(false);
+         List<PaletteXMLPair> rawXMLData = DB_Main.getPaletteXML(false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (XMLPair xmlPair in rawXMLData) {
+            foreach (PaletteXMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                PaletteToolData paletteData = Util.xmlLoad<PaletteToolData>(newTextAsset);
 

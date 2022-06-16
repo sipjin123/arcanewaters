@@ -46,6 +46,9 @@ public class MailInfo
    // Is this mail going to be sent back to the sender after expiration?
    public bool sendBack;
 
+   // Can recipient reply to mail
+   public bool canReply;
+   
    #endregion
 
    public MailInfo () { }
@@ -62,6 +65,8 @@ public class MailInfo
       this.mailSubject = DataUtil.getString(dataReader, "mailSubject");
       this.autoDelete = DataUtil.getBoolean(dataReader, "autoDelete");
       this.sendBack = DataUtil.getBoolean(dataReader, "sendBack");
+      this.canReply = DataUtil.getBoolean(dataReader, "canReply");
+
       if (isForList) {
          this.attachedItemsCount = DataUtil.getInt(dataReader, "attachedItemCount");
       } else {
@@ -72,7 +77,7 @@ public class MailInfo
 #endif
 
    public MailInfo (int mailId, int recipientUserId, int senderUserId, DateTime receptionDate, bool isRead,
-      string mailSubject, string message, bool autoDelete, bool sendBack) {
+      string mailSubject, string message, bool autoDelete, bool sendBack, bool canReply) {
       this.mailId = mailId;
       this.recipientUserId = recipientUserId;
       this.senderUserId = senderUserId;
@@ -82,6 +87,7 @@ public class MailInfo
       this.message = message;
       this.autoDelete = autoDelete;
       this.sendBack = sendBack;
+      this.canReply = canReply;
    }
 
    public override bool Equals (object rhs) {

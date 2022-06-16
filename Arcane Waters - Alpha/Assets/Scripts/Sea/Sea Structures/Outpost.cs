@@ -268,6 +268,11 @@ public class Outpost : SeaStructureTower, IObserver
       foodBar.gameObject.SetActive(false);
 
       setDirection(direction);
+
+      // Important to disable colliders after SetDirection, since that adds another collider
+      foreach (Collider2D col in GetComponentsInChildren<Collider2D>()) {
+         col.enabled = false;
+      }
    }
 
    public void setDirection (Direction direction) {
@@ -281,6 +286,10 @@ public class Outpost : SeaStructureTower, IObserver
 
       dockRenderer.sprite = dockDirectionSprites[spriteIndex];
 
+      // Clean up previously added colliders
+      foreach (PolygonCollider2D poly in dockRenderer.gameObject.GetComponents<PolygonCollider2D>()) {
+         Destroy(poly);
+      }
       // Add collider to dock here so it gets generated based on sprite
       dockRenderer.gameObject.AddComponent<PolygonCollider2D>();
    }

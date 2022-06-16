@@ -45,6 +45,13 @@ public class ChatInputField : MonoBehaviour
 
       _isRecentlyChanged = false;
    }
+   
+   public void OnApplicationFocus (bool hasFocus) {
+      // Disable input field when application lose focus
+      if (!hasFocus && _inputField.isFocused) {
+         deactivateInputField();
+      }
+   }
 
    private void UpdateItemIcons () {
       for (int i = 0; i < _inputField.textComponent.textInfo.linkCount; i++) {

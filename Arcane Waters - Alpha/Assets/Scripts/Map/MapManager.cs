@@ -60,13 +60,6 @@ public class MapManager : MonoBehaviour
       if (useMapQueueing) {
          if (queuedMapCreation.Count > 0) {
             queuedMapCreation.Add(newLiveMapData);
-            if (Mirror.NetworkServer.active) {
-               if (!ServerNetworkingManager.self.doesLocalServerHaveQueuedArea(areaKey)) {
-                  if (ServerNetworkingManager.self.server != null) {
-                     ServerNetworkingManager.self.server.addAreaToQueueList(areaKey);
-                  }
-               }
-            }
             string message = "Added new content to queue {" + areaKey + "}{" + newLiveMapData.biome + "}{" + newLiveMapData.mapPos + "}{" + queuedMapCreation.Count + "}";
             if (Util.isCloudBuild()) {
                D.debug(">>>==<<<" + message);
@@ -81,13 +74,6 @@ public class MapManager : MonoBehaviour
                D.editorLog(message, Color.green);
             }
             queuedMapCreation.Add(newLiveMapData);
-            if (Mirror.NetworkServer.active) {
-               if (!ServerNetworkingManager.self.doesLocalServerHaveQueuedArea(areaKey)) {
-                  if (ServerNetworkingManager.self.server != null) {
-                     ServerNetworkingManager.self.server.addAreaToQueueList(areaKey);
-                  }
-               }
-            }
             createLiveMap(newLiveMapData.areaKey, newLiveMapData.mapInfo, newLiveMapData.mapPos, newLiveMapData.mapCustomData, newLiveMapData.biome);
          }
       } else {

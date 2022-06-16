@@ -19,6 +19,7 @@ MonoBehaviour:
   - dog_1
   - monkey
   - parrot_1
+  - little_chicken
   angryReaction:
   - badger
   - fox
@@ -29,8 +30,7 @@ MonoBehaviour:
   - spider
   confusedReaction:
   - chicken
-  - little_chicken
+  - snail
   - rooster
   - seagull_1
   - seagull_2
-  - snail

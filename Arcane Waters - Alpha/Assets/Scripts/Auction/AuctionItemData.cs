@@ -78,6 +78,18 @@ public class AuctionItemData {
          int durability = DataUtil.getInt(dataReader, "durability");
 
          this.item = ItemGenerator.generate(category, itemTypeId, count, itemId, palettes, data, durability);
+         /*this.item = new Item {
+            category = category,
+            itemTypeId = itemTypeId,
+            count = count,
+            durability = durability,
+            data = data,
+            paletteNames = palettes,
+            iconPath = "",
+            itemName = "",
+            itemDescription = "",
+            id = itemId
+         };*/
       } else {
          this.item = new Item();
       }

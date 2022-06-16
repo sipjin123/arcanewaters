@@ -200,7 +200,7 @@ public class BattleUIManager : MonoBehaviour {
          try {
             Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
             if (randomTarget == null) {
-               D.debug("Warning, no live targets found using Random Target Selection!");
+               D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
             } else {
                BattleSelectionManager.self.clickBattler(randomTarget);
             }
@@ -314,7 +314,7 @@ public class BattleUIManager : MonoBehaviour {
                            try {
                               Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
                               if (randomTarget == null) {
-                                 D.debug("Warning, no live targets found using Random Target Selection!");
+                                 D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
                               } else {
                                  BattleSelectionManager.self.clickBattler(randomTarget);
                               }
@@ -448,7 +448,7 @@ public class BattleUIManager : MonoBehaviour {
          if (!isInitialEnemySelected) {
             Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
             if (randomTarget == null) {
-               D.debug("Warning, no live targets found using Random Target Selection!");
+               D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
             } else {
                BattleSelectionManager.self.clickBattler(randomTarget);
             }

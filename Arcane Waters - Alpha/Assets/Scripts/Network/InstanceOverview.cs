@@ -17,6 +17,9 @@ public class InstanceOverview
    // Player count in this instance
    public int pCount = 0;
 
+   // The max player count allowed in this instance
+   public int maxPlayerCount = 0;
+
    // Voyage info, if this instance has it
    public Voyage voyage;
 

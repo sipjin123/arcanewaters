@@ -89,7 +89,7 @@ public class ArmorManager : EquipmentManager {
    }
 
    [TargetRpc]
-   public void Target_ReceiveEquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes, bool equipOnStart) {
+   public void Target_ReceiveEquipArmor (NetworkConnection connection, int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes, bool equipOnStart) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       cachedArmorData = armorData;
 
@@ -157,7 +157,12 @@ public class ArmorManager : EquipmentManager {
       this.palettes = palettes;
       this.armorDurability = durability;
 
-      Target_ReceiveEquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes, equipOnStart);
+      if (!tryGetConnectionToClient(out NetworkConnection connection)) {
+         D.debug("Connection to client was null!");
+         return;
+      }
+
+      Target_ReceiveEquipArmor(connection, armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes, equipOnStart);
       Rpc_EquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
    }
 

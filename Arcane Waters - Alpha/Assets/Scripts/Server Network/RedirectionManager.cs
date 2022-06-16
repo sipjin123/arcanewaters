@@ -81,7 +81,8 @@ public class RedirectionManager : GenericGameManager
       }
 
       try {
-         string logMsg = string.Format($"Redirecting user {userName} (id {userId}, {currentAddress}) from [{currentAreaKey}, {currentServerPort}] to [{destinationAreaKey}, {bestServer.networkedPort.Value}]. Destination server has {bestServer.connectedUserIds.Count} connected players ({bestServer.assignedUserIds.Count} assigned). Total server count: {ServerNetworkingManager.self.servers.Count}");
+         string singlePlayerString = isSinglePlayer ? "[single player]. " : "";
+         string logMsg = string.Format($"Redirecting user {userName} (id {userId}, {currentAddress}) from [{currentAreaKey}, {currentServerPort}] to [{destinationAreaKey}, {bestServer.networkedPort.Value}]. {singlePlayerString}Destination server has {bestServer.connectedUserIds.Count} connected players ({bestServer.assignedUserIds.Count} assigned). Total server count: {ServerNetworkingManager.self.servers.Count}");
          D.debug(logMsg);
       } catch {
          D.debug("Found best server but cannot get details");

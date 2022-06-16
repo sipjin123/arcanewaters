@@ -80,6 +80,10 @@ public class SpeakChatLine : ChatLine, IScrollHandler
             if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {
                BottomBar.self.toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.InvitesReceived);
             }
+         } else if (chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
+            if (!PanelManager.self.get(Panel.Type.Mail).isShowing()) {
+               BottomBar.self.toggleMailPanel();
+            }
          } else {
             D.adminLog("ContextMenu: Interact was performed via speak line button CMD-1: " +
                "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
@@ -108,7 +112,7 @@ public class SpeakChatLine : ChatLine, IScrollHandler
    }
 
    public bool isValidInteraction () {
-      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement || chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement || chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification || chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
          return true;
       }
 

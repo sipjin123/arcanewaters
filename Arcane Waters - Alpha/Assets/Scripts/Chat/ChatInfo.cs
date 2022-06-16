@@ -30,7 +30,8 @@ public class ChatInfo
       PvpAnnouncement = 15,
       UserOnline = 16,
       UserOffline = 17,
-      PendingFriendRequestsNotification = 18
+      PendingFriendRequestsNotification = 18,
+      UnreadMailNotification = 19
    };
 
    // The Chat ID from the database

@@ -151,10 +151,12 @@ public class ChatPanel : MonoBehaviour {
    public Color guildChatLocalColor, guildChatOtherColor, officerChatLocalColor, officerChatOtherColor;
    public Color adminNameColor;
    public Color pendingFriendRequestNotificationColor;
+   public Color unreadMailNotificationColor;
 
    // Default sprites used with the generic icon of a Chat Line
    public Sprite friendsSprite;
    public Sprite systemSprite;
+   public Sprite mailSprite;
 
    // Return true if mouse is currently hovering the chat panel
    public bool isHoveringChat;
@@ -443,8 +445,8 @@ public class ChatPanel : MonoBehaviour {
          ChatManager.self.autoCompletePanel.performOptionClicked(0);
       }
 
-      // Activate the input field when enter is pressed and the field is unfocused, except if the player is writing a mail      
-      if (KeyUtils.GetEnterKeyDown() && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
+      // Activate the input field when enter is pressed and the field is unfocused, except if the player is writing a mail or a support message      
+      if (KeyUtils.GetEnterKeyDown() && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() && !((HelpPanel) PanelManager.self.get(Panel.Type.Help)).isWritingMessage()) {
          if (!wasJustFocused()) {
 
             if (Global.player != null) {
@@ -627,6 +629,9 @@ public class ChatPanel : MonoBehaviour {
       } else if (chatInfo.messageType == ChatInfo.Type.System) {
          chatRowComponent.toggleGenericIcon(true);
          chatRowComponent.setGenericIcon(systemSprite);
+      } else if (chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(mailSprite);
       }
 
       // Refresh the actions associated to this chat message
@@ -719,7 +724,7 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification || chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
          resultFormat = string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType, isLocalPlayer), message);
       }
 
@@ -1011,6 +1016,9 @@ public class ChatPanel : MonoBehaviour {
                if (Time.time - chatLine.creationTime > CHAT_MESSAGE_DISPLAY_DURATION) {
                   chatLine.transform.parent.gameObject.SetActive(false);
                }
+               if (Global.player != null && Global.player.battleId > 0) {
+                  chatLine.transform.parent.gameObject.SetActive(false);
+               }
             }
          } else {
             chatLine.transform.parent.gameObject.SetActive(true);
@@ -1096,6 +1104,8 @@ public class ChatPanel : MonoBehaviour {
             return globalChatLocalColor;
          case ChatInfo.Type.PendingFriendRequestsNotification:
             return pendingFriendRequestNotificationColor;
+         case ChatInfo.Type.UnreadMailNotification:
+            return unreadMailNotificationColor;
          default:
             return Color.white;
       }
@@ -1187,7 +1197,7 @@ public class ChatPanel : MonoBehaviour {
       inputField.selectionColor = selectionColor;
    }
 
-   private void setMode (Mode mode) {
+   public void setMode (Mode mode) {
       _mode = mode;
 
       // Panel show, hide and resize is handled in the update

@@ -184,13 +184,13 @@ public class GuildPanel : Panel {
 
    public void receiveGuildAlliesFromServer (List<GuildInfo> guildAlliesInfo) {
       guildAllyEntryParent.gameObject.DestroyChildren();
+      guildAlliesPanel.SetActive(true);
       foreach (GuildInfo guildInfo in guildAlliesInfo) {
          GuildAllyInfoTemplate allyInfo = Instantiate(guildAllyEntryPrefab, guildAllyEntryParent.transform);
          allyInfo.setGuildInfo(guildInfo);
          bool canRemoveGuildAlliances = Global.player == null ? false : Global.player.guildRankPriority <= 1;
          allyInfo.removeButtonObj.SetActive(canRemoveGuildAlliances);
       }
-      guildAlliesPanel.SetActive(true);
       guildAllyLoadBlocker.SetActive(false);
    }
 

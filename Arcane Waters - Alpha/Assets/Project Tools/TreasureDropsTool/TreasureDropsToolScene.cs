@@ -87,45 +87,6 @@ public class TreasureDropsToolScene : MonoBehaviour {
          genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.BiomeType, biomeTypeText, biomeSelectedEvent);
       });
 
-      addWeapon.onClick.AddListener(() => {
-         Item.Category category = Item.Category.Weapon;
-
-         changeItemTypeEvent.RemoveAllListeners();
-         changeItemTypeEvent.AddListener(() => {
-            TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
-            int weaponType = int.Parse(cachedItemIndex.text);
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
-            processItemTemplate(template, category, weaponType, WeaponStatData.serializeWeaponStatData(weaponData), weaponData.equipmentIconPath);
-         });
-         genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
-      });
-
-      addArmor.onClick.AddListener(() => {
-         Item.Category category = Item.Category.Armor;
-
-         changeItemTypeEvent.RemoveAllListeners();
-         changeItemTypeEvent.AddListener(() => {
-            TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
-            int armorType = int.Parse(cachedItemIndex.text);
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorType);
-            processItemTemplate(template, category, armorType, ArmorStatData.serializeArmorStatData(armorData), armorData.equipmentIconPath);
-         });
-         genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
-      });
-
-      addHat.onClick.AddListener(() => {
-         Item.Category category = Item.Category.Hats;
-
-         changeItemTypeEvent.RemoveAllListeners();
-         changeItemTypeEvent.AddListener(() => {
-            TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
-            int hatType = int.Parse(cachedItemIndex.text);
-            HatStatData hatData = EquipmentXMLManager.self.getHatData(hatType);
-            processItemTemplate(template, category, hatType, HatStatData.serializeHatStatData(hatData), hatData.equipmentIconPath);
-         });
-         genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
-      });
-
       addCraftingIngredient.onClick.AddListener(() => {
          Item.Category category = Item.Category.CraftingIngredients;
 

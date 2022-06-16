@@ -82,13 +82,15 @@ public class OutpostManagerClient : ClientMonoBehaviour
             }
          }
       } else {
-         if (AreaManager.self.tryGetArea(Global.player.areaKey, out Area area)) {
-            if (area.hasTileAttribute(TileAttributes.Type.LandInSea, Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition))) {
-               // Add a context menu for building an outpost
-               D.adminLog("ContextMenu: Interact was performed via action key sea, no object hovered", D.ADMIN_LOG_TYPE.Player_Menu);
-               PanelManager.self.contextMenuPanel.clearButtons();
-               PanelManager.self.contextMenuPanel.addButton("Build Outpost", OutpostManagerClient.self.buildButtonClick);
-               PanelManager.self.contextMenuPanel.show("World");
+         if (!Util.IsPointerOverUIObject(MouseUtils.mousePosition)) {
+            if (AreaManager.self.tryGetArea(Global.player.areaKey, out Area area)) {
+               if (area.hasTileAttribute(TileAttributes.Type.LandInSea, Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition))) {
+                  // Add a context menu for building an outpost
+                  D.adminLog("ContextMenu: Interact was performed via action key sea, no object hovered", D.ADMIN_LOG_TYPE.Player_Menu);
+                  PanelManager.self.contextMenuPanel.clearButtons();
+                  PanelManager.self.contextMenuPanel.addButton("Build Outpost", OutpostManagerClient.self.buildButtonClick);
+                  PanelManager.self.contextMenuPanel.show("World");
+               }
             }
          }
       }

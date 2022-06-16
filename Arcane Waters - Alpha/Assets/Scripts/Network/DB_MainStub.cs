@@ -103,6 +103,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static List<AuctionItemData> getAuctionListString (string pageNumber, string rowsPerPage, string categoryFilter, string userId, string auctionFilter) {
+      return new List<AuctionItemData>();
+   }
+
    public static List<AuctionItemData> getAuctionList (int pageNumber, int rowsPerPage, Item.Category[] categoryFilter, int userId, AuctionPanel.ListFilter auctionFilter) {
       return new List<AuctionItemData>();
    }
@@ -1656,16 +1660,16 @@ public class DB_MainStub : MonoBehaviour
       return -1;
    }
 
-   public static List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
-      return new List<XMLPair>();
+   public static List<PaletteXMLPair> getPaletteXML (bool onlyEnabledPalettes) {
+      return new List<PaletteXMLPair>();
    }
 
-   public static List<XMLPair> getPaletteXML (int tagId) {
-      return new List<XMLPair>();
+   public static List<PaletteXMLPair> getPaletteXML (int tagId) {
+      return new List<PaletteXMLPair>();
    }
 
-   public static List<XMLPair> getPaletteXML (int tagId, string subcategory) {
-      return new List<XMLPair>();
+   public static List<PaletteXMLPair> getPaletteXML (int tagId, string subcategory) {
+      return new List<PaletteXMLPair>();
    }
 
    public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
@@ -1702,6 +1706,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static bool hasUserVisitedArea (int userId, string areaKey) {
       return false;
+   }
+
+   public static int getUserCountHavingVisitedArea (string areaKey) {
+      return 0;
    }
 
    public static void noteUserAreaVisit (int userId, string areaKey) {
@@ -1814,6 +1822,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static Item.SoulBindingType getSoulBindingType (Item.Category itemCategory, int itemTypeId) {
       return Item.SoulBindingType.None;
+   }
+
+   public static List<ItemTypeSoulbinding> getAllSoulBindingTypeInfo () {
+      return new List<ItemTypeSoulbinding>();
    }
 
    public static bool updateItemSoulBinding (int itemId, bool isBound) {

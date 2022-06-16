@@ -59,6 +59,7 @@ public class D : MonoBehaviour {
       AreaClearing = 46,
       ShopContents = 47,
       EnemyLandSpawn = 48,
+      CharacterSlots = 49
    }
 
    // Any log files older than this will be deleted

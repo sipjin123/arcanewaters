@@ -54,8 +54,12 @@ public class AdminInstanceListRow : MonoBehaviour
       areaText.text = instance.area + (string.IsNullOrWhiteSpace(instance.voyage.areaName) ? "" : " (" + instance.voyage.areaName + ")");
       leagueIndexText.text = instance.voyage.isLeague ? instance.voyage.leagueIndex.ToString() : "-";
       difficultyText.text = Voyage.getDifficultyEnum(instance.difficulty).ToString() + " (" + instance.difficulty + ")";
-      playerCountText.text = instance.pCount.ToString();
-      enemiesCountText.text = instance.aliveEnemyCount + "/" + instance.totalEnemyCount;
+      playerCountText.text = instance.pCount.ToString() + "/" + instance.maxPlayerCount.ToString();
+      if (instance.voyage == null || instance.voyage.voyageId <= 0) {
+         enemiesCountText.text = instance.totalEnemyCount.ToString();
+      } else {
+         enemiesCountText.text = (instance.aliveEnemyCount < 0 ? "0" : instance.aliveEnemyCount.ToString()) + "/" + instance.totalEnemyCount;
+      }
       isPvPText.text = instance.isPvp ? "Yes" : "No";
       timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
       biomeText.text = instance.biome.ToString();

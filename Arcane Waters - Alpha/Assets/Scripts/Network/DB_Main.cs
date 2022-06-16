@@ -39,7 +39,7 @@ public class DatabaseCredentials
 
 public class DB_Main : DB_MainStub
 {
-#region NubisFeatures
+   #region NubisFeatures
 
    public static new string fetchSingleBlueprint (int bpId, int usrId) {
       try {
@@ -563,7 +563,7 @@ public class DB_Main : DB_MainStub
          return new List<int>();
       }
    }
-   
+
    public static new List<AbilitySQLData> userAbilities (int usrId, AbilityEquipStatus abilityEquipStatus) {
       string addedCondition = "";
 
@@ -599,18 +599,18 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Public Variables
+   #region Public Variables
 
    public static string RemoteServer
    {
       get { return _remoteServer; }
    }
 
-#endregion
+   #endregion
 
-#region XML Content Handling
+   #region XML Content Handling
 
    public static new void writeZipData (byte[] bytes, int slot) {
       try {
@@ -856,9 +856,9 @@ public class DB_Main : DB_MainStub
       return updateContent;
    }
 
-#endregion
+   #endregion
 
-#region Server Communications
+   #region Server Communications
 
    public static new ChatInfo getLatestChatInfo () {
       ChatInfo latestChatInfo = new ChatInfo();
@@ -887,9 +887,9 @@ public class DB_Main : DB_MainStub
       return latestChatInfo;
    }
 
-#endregion
+   #endregion
 
-#region Abilities
+   #region Abilities
 
    public static new bool hasAbility (int userId, int abilityId) {
       try {
@@ -970,7 +970,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
    public static new List<QuestTimer> getQuestTimers () {
       List<QuestTimer> questTimerDataList = new List<QuestTimer>();
@@ -1034,7 +1034,7 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-#region Achievements
+   #region Achievements
 
    public static new List<AchievementData> getAchievementData (int userID, ActionType actionType) {
       List<AchievementData> achievementTypeList = new List<AchievementData>();
@@ -1122,9 +1122,9 @@ public class DB_Main : DB_MainStub
       return achievementList;
    }
 
-#endregion
+   #endregion
 
-#region Battler Abilities XML
+   #region Battler Abilities XML
 
    public static new void updateBattleAbilities (int skillId, string abilityName, string abilityXML, int abilityType) {
       string skillIdKey = "xml_id, ";
@@ -1239,9 +1239,9 @@ public class DB_Main : DB_MainStub
       return xmlContent;
    }
 
-#endregion
+   #endregion
 
-#region Treasure Drops XML
+   #region Treasure Drops XML
 
    public static new void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
       string xmlIdKey = "xmlId, ";
@@ -1300,9 +1300,9 @@ public class DB_Main : DB_MainStub
       return xmlContent;
    }
 
-#endregion
+   #endregion
 
-#region Sound Effects
+   #region Sound Effects
 
    public static new List<SoundEffect> getSoundEffects () {
       List<SoundEffect> effects = new List<SoundEffect>();
@@ -1390,9 +1390,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region NPC Quest and Relationship
+   #region NPC Quest and Relationship
 
    public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {
@@ -1686,7 +1686,7 @@ public class DB_Main : DB_MainStub
       return questList;
    }
 
-#endregion
+   #endregion
 
    public static new List<SQLEntryNameClass> getSQLDataByName (EditorSQLManager.EditorToolType editorType) {
       List<SQLEntryNameClass> rawDataList = new List<SQLEntryNameClass>();
@@ -1745,7 +1745,7 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-#region Crops XML Data
+   #region Crops XML Data
 
    public static new void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
       string xmlIdKey = "xml_id, ";
@@ -1831,9 +1831,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Ship Ability XML Data
+   #region Ship Ability XML Data
 
    public static new void updateShipAbilityXML (string rawData, string shipAbilityName, int xmlId) {
       string xml_id_key = "xml_id, ";
@@ -1916,9 +1916,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Monster XML Data
+   #region Monster XML Data
 
    public static new void updateLandMonsterXML (string rawData, int typeIndex, Enemy.Type enemyType, string battlerName, bool isActive) {
       string xml_id_key = "xml_id, ";
@@ -2004,9 +2004,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region SeaMonster XML Data
+   #region SeaMonster XML Data
 
    public static new void updateSeaMonsterXML (string rawData, int typeIndex, SeaMonsterEntity.Type enemyType, string battlerName, bool isActive) {
       string xml_id_key = "xml_id, ";
@@ -2092,9 +2092,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region NPC Quest XML Data
+   #region NPC Quest XML Data
 
    public static new void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
       string xmlIdKey = "xmlId, ";
@@ -2183,9 +2183,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region NPC XML Data
+   #region NPC XML Data
 
    public static new void updateNPCXML (string rawData, int typeIndex) {
       try {
@@ -2253,9 +2253,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Custom Maps
+   #region Custom Maps
 
    public static new void setCustomHouseBase (object command, int userId, int baseMapId) {
       MySqlCommand cmd = command as MySqlCommand;
@@ -2405,9 +2405,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Map Customization
+   #region Map Customization
 
    public static new MapCustomizationData getMapCustomizationData (object command, int mapId, int ownerId) {
       MySqlCommand cmd = command as MySqlCommand;
@@ -2460,9 +2460,9 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
-#endregion
+   #endregion
 
-#region Map Editor Data
+   #region Map Editor Data
 
    public static new int getMapId (string areaKey) {
       string cmdText = "SELECT id FROM global.maps_v2 WHERE name = @areaKey;";
@@ -2805,7 +2805,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#region MAP TOOL
+   #region MAP TOOL
 
    public static new List<MapSpawn> getMapSpawnsById (int mapId) {
       List<MapSpawn> result = new List<MapSpawn>();
@@ -3296,7 +3296,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
    public static new void publishLatestVersionForAllGroup (int mapId) {
       using (MySqlConnection conn = getConnection())
@@ -3345,9 +3345,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Shop XML Data
+   #region Shop XML Data
 
    public static new void updateShopXML (string rawData, string shopName, int xmlId) {
       string xml_id_key = "xml_id, ";
@@ -3474,9 +3474,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Ship XML Data
+   #region Ship XML Data
 
    public static new void updateShipXML (string rawData, int typeIndex, Ship.Type shipType, string shipName, bool isActive) {
       string xml_id_key = "xml_id, ";
@@ -3561,9 +3561,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Achievement XML Data
+   #region Achievement XML Data
 
    public static new void updateAchievementXML (string rawData, string name, int xmlId) {
       string xml_id_key = "xml_id, ";
@@ -3646,9 +3646,9 @@ public class DB_Main : DB_MainStub
       }
       return rawDataList;
    }
-#endregion
+   #endregion
 
-#region Perks XML
+   #region Perks XML
 
    public static new void updatePerksXML (string rawData, int perkId) {
       try {
@@ -3716,9 +3716,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Perks
+   #region Perks
 
    public static new bool resetPerkPointsAll (int usrId, int perkPoints = 0) {
       int rowsAffeced = 0;
@@ -3886,9 +3886,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Books Data
+   #region Books Data
 
    public static new void upsertBook (string bookContent, string name, int bookId) {
       try {
@@ -3983,9 +3983,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Discoveries Data
+   #region Discoveries Data
 
    public static new void duplicateDiscovery (DiscoveryData data) {
       try {
@@ -4184,9 +4184,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Palette XML Data
+   #region Palette XML Data
 
    public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, string tag) {
       string xml_id_key = "paletteId, ";
@@ -4259,8 +4259,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
-      List<XMLPair> rawDataList = new List<XMLPair>();
+   public static new List<PaletteXMLPair> getPaletteXML (bool onlyEnabledPalettes) {
+      List<PaletteXMLPair> rawDataList = new List<PaletteXMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -4273,11 +4273,13 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair newXML = new XMLPair {
+                  PaletteXMLPair newXML = new PaletteXMLPair {
                      isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("id"),
-                     xmlOwnerId = dataReader.GetInt32("creatorUserId"),
+                     xmlSubCategory = dataReader.GetString("subcategory"),
+                     xmlTagId = dataReader.GetInt32("tagId"),
+                     xmlPaletteType = dataReader.GetInt32("paletteType"),
 
                      // TODO: Confirm if this is no longer needed, it no longer exists in the SQL Table
                      //tag = dataReader.GetString("tag"),
@@ -4317,8 +4319,8 @@ public class DB_Main : DB_MainStub
       return id;
    }
 
-   public static new List<XMLPair> getPaletteXML (int tagId) {
-      List<XMLPair> rawDataList = new List<XMLPair>();
+   public static new List<PaletteXMLPair> getPaletteXML (int tagId) {
+      List<PaletteXMLPair> rawDataList = new List<PaletteXMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -4332,11 +4334,14 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair newXML = new XMLPair {
+                  PaletteXMLPair newXML = new PaletteXMLPair {
                      isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("id"),
                      xmlOwnerId = dataReader.GetInt32("creatorUserID"),
+                     xmlSubCategory = dataReader.GetString("subcategory"),
+                     xmlTagId = dataReader.GetInt32("tagId"),
+                     xmlPaletteType = dataReader.GetInt32("paletteType"),
                   };
                   rawDataList.Add(newXML);
                }
@@ -4348,8 +4353,8 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   public static new List<XMLPair> getPaletteXML (int tagId, string subcategory) {
-      List<XMLPair> rawDataList = new List<XMLPair>();
+   public static new List<PaletteXMLPair> getPaletteXML (int tagId, string subcategory) {
+      List<PaletteXMLPair> rawDataList = new List<PaletteXMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -4364,11 +4369,14 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair newXML = new XMLPair {
+                  PaletteXMLPair newXML = new PaletteXMLPair {
                      isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("id"),
                      xmlOwnerId = dataReader.GetInt32("creatorUserID"),
+                     xmlSubCategory = dataReader.GetString("subcategory"),
+                     xmlTagId = dataReader.GetInt32("tagId"),
+                     xmlPaletteType = dataReader.GetInt32("paletteType"),
                   };
                   rawDataList.Add(newXML);
                }
@@ -4380,9 +4388,9 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-#endregion
+   #endregion
 
-#region Crafting XML Data
+   #region Crafting XML Data
 
    public static new void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
       string xml_id_key = "xml_id, ";
@@ -4468,9 +4476,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Background XML Data
+   #region Background XML Data
 
    public static new int updateBackgroundXML (int xmlId, string rawData, string bgName) {
       int latestXMLId = 0;
@@ -4559,9 +4567,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Equipment XML Data
+   #region Equipment XML Data
 
    public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentType equipType, string equipmentName, bool isEnabled) {
       string tableName = "";
@@ -4750,9 +4758,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Item Definitions Xml Data
+   #region Item Definitions Xml Data
 
    public static new List<ItemDefinition> getItemDefinitions () {
       List<ItemDefinition> result = new List<ItemDefinition>();
@@ -4848,9 +4856,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Haircuts XML
+   #region Haircuts XML
 
    public static new void updateHaircutXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
@@ -4915,9 +4923,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Dyes XML
+   #region Dyes XML
 
    public static new void updateDyeXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
@@ -5008,9 +5016,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Gems XML
+   #region Gems XML
 
    public static new void updateGemsXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
@@ -5075,9 +5083,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Ship Skins XML
+   #region Ship Skins XML
 
    public static new void updateShipSkinXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
@@ -5142,9 +5150,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Consumables XML
+   #region Consumables XML
 
    public static new void updateConsumableXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
@@ -5209,9 +5217,9 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region ToolTip
+   #region ToolTip
 
    public static new string getTooltipXmlContent () {
       string xmlContent = "";
@@ -5263,9 +5271,9 @@ public class DB_Main : DB_MainStub
       return new List<TooltipSqlData>(rawDataList);
    }
 
-#endregion
+   #endregion
 
-#region Companions Features
+   #region Companions Features
 
    public static new void updateCompanionExp (int xmlId, int userId, int exp) {
       try {
@@ -5385,7 +5393,7 @@ public class DB_Main : DB_MainStub
       return newCompanionInfo;
    }
 
-#endregion
+   #endregion
 
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
@@ -5441,7 +5449,7 @@ public class DB_Main : DB_MainStub
       return newItemList;
    }
 
-#region Treasure Chest Interaction
+   #region Treasure Chest Interaction
 
    public static new TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
 
@@ -5496,9 +5504,9 @@ public class DB_Main : DB_MainStub
       return lastTreasureId;
    }
 
-#endregion
+   #endregion
 
-#region Crops Xml
+   #region Crops Xml
 
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
@@ -5626,9 +5634,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Plantable Trees
+   #region Plantable Trees
 
    public static new List<PlantableTreeDefinition> getPlantableTreeDefinitions (object command) {
       MySqlCommand cmd = command as MySqlCommand;
@@ -5734,9 +5742,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Equipment Features
+   #region Equipment Features
 
    public static new List<Armor> getArmorForAccount (int accId, int userId = 0) {
       List<Armor> armorList = new List<Armor>();
@@ -6230,7 +6238,7 @@ public class DB_Main : DB_MainStub
       return success;
    }
 
-#endregion
+   #endregion
 
    public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
@@ -6321,7 +6329,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#region User Currency Features
+   #region User Currency Features
 
    public static new void setAdmin (int userId, int adminFlag) {
       try {
@@ -6473,9 +6481,9 @@ public class DB_Main : DB_MainStub
       return xp;
    }
 
-#endregion
+   #endregion
 
-#region Chat System Features / Bug Reporting Features
+   #region Chat System Features / Bug Reporting Features
 
    public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress, string extra) {
       int chatId = 0;
@@ -6574,9 +6582,9 @@ public class DB_Main : DB_MainStub
       return list;
    }
 
-#endregion
+   #endregion
 
-#region Accounts Features / User Info Features
+   #region Accounts Features / User Info Features
 
    public static new int getAccountId (string accountName, string accountPassword, string accountPasswordCapsLock) {
       int accountId = -1;
@@ -6751,7 +6759,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@permaBan", PenaltyInfo.ActionType.PermanentBan);
+            cmd.Parameters.AddWithValue("@permaBan", PenaltyInfo.ActionType.SoloPermanentBan);
 
             DebugQuery(cmd);
 
@@ -6774,8 +6782,8 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand saveCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource) " +
-            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource)", conn)) {
+         using (MySqlCommand saveCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime) " +
+            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime)", conn)) {
             conn.Open();
             saveCmd.Prepare();
 
@@ -6788,12 +6796,11 @@ public class DB_Main : DB_MainStub
             saveCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
             saveCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
             saveCmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
-            saveCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
 
             DebugQuery(saveCmd);
             success = saveCmd.ExecuteNonQuery() == 1;
 
-            if (penalty.id > 0 && penalty.isLiftType()) {
+            if (penalty.id > 0 && penalty.IsLiftType()) {
                using (MySqlCommand liftCmd = new MySqlCommand("UPDATE global.account_penalties_v2 SET lifted = 1 WHERE id = @id", conn)) {
                   liftCmd.Prepare();
 
@@ -7866,10 +7873,10 @@ public class DB_Main : DB_MainStub
 
    public static new void insertTrackedUserActions (List<TrackedUserAction> actions) {
       StringBuilder sCommand = new StringBuilder("INSERT INTO tracked_user_actions (userId, accId, type, timestamp) VALUES ");
-      foreach(TrackedUserAction action in actions) {
+      foreach (TrackedUserAction action in actions) {
          sCommand.Append(string.Format("('{0}','{1}','{2}','{3}'),", action.userId, action.accId, (uint) action.type, action.time.ToString("yyyy-MM-dd HH:mm:ss")));
       }
-      
+
       // If we had any actions, we will have a wrong comma at the end
       if (actions.Count > 0) {
          sCommand.Remove(sCommand.Length - 1, 1);
@@ -7891,9 +7898,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region RemoteSettings
+   #region RemoteSettings
 
    public static new RemoteSetting getRemoteSetting (string rsName) {
       RemoteSetting setting = null;
@@ -8026,9 +8033,9 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-#endregion
+   #endregion
 
-#region Inventory Features
+   #region Inventory Features
 
    public static new Item createNewItem (int userId, Item baseItem) {
       Item newItem = baseItem.Clone();
@@ -9116,7 +9123,7 @@ public class DB_Main : DB_MainStub
       return shortcutList;
    }
 
-#endregion
+   #endregion
 
    public static new void deleteAllFromTable (int accountId, int userId, string table) {
       try {
@@ -9184,7 +9191,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#region Ship Features
+   #region Ship Features
 
    public static new ShipInfo getShipInfo (int shipId) {
       ShipInfo shipInfo = null;
@@ -9239,7 +9246,7 @@ public class DB_Main : DB_MainStub
    public static new ShipInfo createStartingShip (int userId) {
       Ship.Type shipType = Ship.Type.Type_1;
 
-      ShipInfo shipInfo = Ship.generateNewShip(shipType, Rarity.Type.Common);
+      ShipInfo shipInfo = Ship.generateNewShip(shipType, Rarity.Type.Common, useMinStats: true);
       shipInfo.userId = userId;
       shipInfo.palette1 = PaletteDef.ShipHull.Brown;
       shipInfo.palette2 = PaletteDef.ShipHull.Brown;
@@ -9439,9 +9446,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Jobs Features / Guild Features
+   #region Jobs Features / Guild Features
 
    public static new int setGuildInventoryIfNotExists (int guildId, int inventoryId) {
       // Set inventory ID if inventory ID is 0, otherwise return that existing ID
@@ -10187,9 +10194,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Trade History
+   #region Trade History
 
    public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
       try {
@@ -10294,9 +10301,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Leader Boards
+   #region Leader Boards
 
    public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
@@ -10511,9 +10518,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Friendship
+   #region Friendship
 
    public static new void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
       try {
@@ -10729,7 +10736,7 @@ public class DB_Main : DB_MainStub
       return userIdsList;
    }
 
-#endregion
+   #endregion
 
    public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
       try {
@@ -11020,7 +11027,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#region Metrics
+   #region Metrics
 
    public static new bool setGameMetric (string machineId, string processId, string processName, string name, string value, Metric.MetricValueType valueType, string description = "") {
       bool result = false;
@@ -11154,9 +11161,9 @@ public class DB_Main : DB_MainStub
       return playersCount;
    }
 
-#endregion
+   #endregion
 
-#region Custom Item Collection
+   #region Custom Item Collection
 
    public static new CustomItemCollection createCustomItemCollection () {
       CustomItemCollection col = new CustomItemCollection(0);
@@ -11164,9 +11171,9 @@ public class DB_Main : DB_MainStub
       return col;
    }
 
-#endregion
+   #endregion
 
-#region Mail
+   #region Mail
 
    public static new int createMail (MailInfo mailInfo) {
       int mailId = -1;
@@ -11174,8 +11181,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message, autoDelete, sendBack) " +
-            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message, @autoDelete, @sendBack)", conn)) {
+            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message, autoDelete, sendBack, canReply) " +
+            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message, @autoDelete, @sendBack, @canReply)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -11187,6 +11194,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@message", mailInfo.message);
             cmd.Parameters.AddWithValue("@autoDelete", mailInfo.autoDelete);
             cmd.Parameters.AddWithValue("@sendBack", mailInfo.sendBack);
+            cmd.Parameters.AddWithValue("@canReply", mailInfo.canReply);
             DebugQuery(cmd);
 
             // Execute the command
@@ -11433,9 +11441,9 @@ public class DB_Main : DB_MainStub
       return mailCount > 0;
    }
 
-#endregion
+   #endregion
 
-#region Minimum Version
+   #region Minimum Version
 
    public static new int getMinimumClientGameVersionForWindows () {
       int minVersion = 0;
@@ -11581,9 +11589,9 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-#endregion
+   #endregion
 
-#region Auction Features
+   #region Auction Features
 
    public static new void deleteAuction (int auctionId) {
       try {
@@ -11643,6 +11651,48 @@ public class DB_Main : DB_MainStub
       }
 
       return auctionId;
+   }
+
+   public static new string getAuctionListString (string pageNumber, string rowsPerPage, string categoryFilter, string userId, string auctionFilter) {
+      List<AuctionItemData> auctionList = new List<AuctionItemData>();
+      int userIdVal = int.Parse(userId);
+      int pageNumVar = int.Parse(pageNumber);
+      int rowPerPageVar = int.Parse(rowsPerPage);
+      int categoryVar = int.Parse(categoryFilter);
+      int auctionFilterVar = int.Parse(auctionFilter);
+      List<Item.Category> categoryVarList = new List<Item.Category>();
+      categoryVarList.Add((Item.Category) categoryVar);
+      string whereClause = getAuctionListWhereClause(userIdVal, categoryVarList.ToArray(), (AuctionPanel.ListFilter) auctionFilterVar);
+      string newQuery =
+            "SELECT * FROM auction_table_v1 " +
+            "LEFT JOIN items ON(items.usrId = -auction_table_v1.mailId AND auction_table_v1.mailId > 0) " +
+            whereClause +
+            " ORDER BY expiryDate LIMIT @start, @perPage";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("@start", (pageNumVar - 1) * rowPerPageVar);
+            cmd.Parameters.AddWithValue("@perPage", rowPerPageVar);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader, true);
+                  auctionList.Add(newAuctionItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return AuctionItemData.getXmlDataGroup(auctionList);
    }
 
    public static new string getAuctionList (int pageNumber, int rowsPerPage, Item.Category[] categoryFilter, int userId, AuctionPanel.ListFilter auctionFilter) {
@@ -11709,7 +11759,7 @@ public class DB_Main : DB_MainStub
       return auctionCount;
    }
 
-   private static string getAuctionListWhereClause (int userId, Item.Category[] categoryFilter, AuctionPanel.ListFilter auctionFilter) {
+   public static string getAuctionListWhereClause (int userId, Item.Category[] categoryFilter, AuctionPanel.ListFilter auctionFilter) {
       StringBuilder clause = new StringBuilder();
 
       // Set the main auction filters
@@ -11877,9 +11927,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region World Map
+   #region World Map
 
    public static new void addVisitedAreas (int userId, IEnumerable<string> areaKeys) {
       if (areaKeys == null || areaKeys.Count() == 0) {
@@ -12000,9 +12050,9 @@ public class DB_Main : DB_MainStub
       return userCount;
    }
 
-#endregion
+   #endregion
 
-#region Area Visit List
+   #region Area Visit List
 
    public static new void noteUserAreaVisit (int userId, string areaKey) {
       // First query inserts a new area visit, second deletes all records, except 100 newest
@@ -12099,9 +12149,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-#endregion
+   #endregion
 
-#region Admin Settings
+   #region Admin Settings
 
    public static new void addAdminGameSettings (AdminGameSettings settings) {
       try {
@@ -12204,9 +12254,9 @@ public class DB_Main : DB_MainStub
       return settings;
    }
 
-#endregion
+   #endregion
 
-#region Purchases
+   #region Purchases
 
    public static new ulong createSteamOrder () {
       try {
@@ -12327,9 +12377,9 @@ public class DB_Main : DB_MainStub
       return lastSteamOrderId;
    }
 
-#endregion
+   #endregion
 
-#region Store
+   #region Store
 
    public static new ulong createStoreItem () {
       try {
@@ -12440,9 +12490,9 @@ public class DB_Main : DB_MainStub
       return storeItems;
    }
 
-#endregion
+   #endregion
 
-#region Haircuts
+   #region Haircuts
 
    public static new Haircut getHaircut (int hcId) {
       Haircut haircut = null;
@@ -12490,9 +12540,9 @@ public class DB_Main : DB_MainStub
       return haircuts;
    }
 
-#endregion
+   #endregion
 
-#region WorldMap
+   #region WorldMap
 
    public static new void clearWorldMap () {
       try {
@@ -12693,9 +12743,9 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-#endregion
+   #endregion
 
-#region Soul Binding
+   #region Soul Binding
 
    public static new Item.SoulBindingType getSoulBindingType (Item.Category itemCategory, int itemTypeId) {
       Item.SoulBindingType type = Item.SoulBindingType.None;
@@ -12720,6 +12770,32 @@ public class DB_Main : DB_MainStub
       }
 
       return type;
+   }
+
+   public static new List<ItemTypeSoulbinding> getAllSoulBindingTypeInfo () {
+      List<ItemTypeSoulbinding> result = new List<ItemTypeSoulbinding>();
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT sbdItemTypeId, sbdItemCategory, sbdSoulBindingType FROM global.soul_binding_definitions;", connection)) {
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     result.Add(new ItemTypeSoulbinding {
+                        bindingType = (Item.SoulBindingType) DataUtil.getInt(reader, "sbdSoulBindingType"),
+                        itemCategory = (Item.Category) DataUtil.getInt(reader, "sbdItemCategory"),
+                        itemTypeId = DataUtil.getUshort(reader, "sbdItemTypeId")
+                     });
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
    }
 
    public static new bool updateItemSoulBinding (int itemId, bool isBound) {
@@ -12768,9 +12844,9 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-#endregion
+   #endregion
 
-#region Reward Codes
+   #region Reward Codes
 
    public static new bool useRewardCode (int codeId) {
       bool result = false;
@@ -12881,9 +12957,9 @@ public class DB_Main : DB_MainStub
       return codes;
    }
 
-#endregion
+   #endregion
 
-#region User History
+   #region User History
 
    public static bool createUserHistoryEvent (UserHistoryEventInfo eventInfo) {
       try {
@@ -12911,7 +12987,7 @@ public class DB_Main : DB_MainStub
       return false;
    }
 
-#endregion
+   #endregion
 
    public static new void readTest () {
       try {
@@ -12968,7 +13044,7 @@ public class DB_Main : DB_MainStub
 
    }
 
-#region Equipment Translation
+   #region Equipment Translation
 
    protected static Ring getRing (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "ringId");
@@ -13028,7 +13104,7 @@ public class DB_Main : DB_MainStub
       return new Hat(itemId, itemTypeId, palettes, itemData, durability);
    }
 
-#endregion
+   #endregion
 
    public static new int getUsrAdminFlag (int accountId) {
       int result = -1;
@@ -13079,7 +13155,7 @@ public class DB_Main : DB_MainStub
       return playersNames.ToArray();
    }
 
-#region Wrapper Call Methods
+   #region Wrapper Call Methods
 
    public static new T exec<T> (Func<object, T> action) {
       using (MySqlConnection conn = getConnection())
@@ -13125,7 +13201,7 @@ public class DB_Main : DB_MainStub
       }));
    }
 
-#endregion
+   #endregion
 
    public static MySqlConnection getConnection () {
       return getConnection(_connectionString);
@@ -13209,7 +13285,7 @@ public class DB_Main : DB_MainStub
 
    */
 
-#region Account creation and Update
+   #region Account creation and Update
    public static new int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
 
@@ -13255,7 +13331,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
    }
-   
+
    public static new void saveSessionEvent (SessionEventInfo sessionEvent) {
       string ipAddress = Util.formatIpAddress(sessionEvent.ipAddress);
 
@@ -13266,7 +13342,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO global.sessions_history(accId, usrId, usrName, ipAddress, sessionEvent, machineIdentifier, deploymentId) "+
+            "INSERT INTO global.sessions_history(accId, usrId, usrName, ipAddress, sessionEvent, machineIdentifier, deploymentId) " +
             "VALUES(@accId, @usrId, @usrName, @ipAddress, @sessionEvent, @machineIdentifier, @deploymentId)", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -13278,7 +13354,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sessionEvent", sessionEvent.eventType);
             cmd.Parameters.AddWithValue("@machineIdentifier", sessionEvent.machineIdent);
             cmd.Parameters.AddWithValue("@deploymentId", sessionEvent.deploymentId);
-            
+
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
          }
@@ -13388,16 +13464,16 @@ public class DB_Main : DB_MainStub
    //   }
    //}
 
-#endregion
+   #endregion
 
-#region Db debug
+   #region Db debug
    private static void DebugQuery (MySqlCommand cmd) {
       if (!CommandCodes.get(CommandCodes.Type.SERVER_DB_DEBUG)) return;
       D.warning(cmd.CommandText);
    }
-#endregion
+   #endregion
 
-#region Server stats
+   #region Server stats
    public static new void serverStatStarted (string machine, int port) {
       try {
          using (MySqlConnection connection = getConnection()) {
@@ -13465,9 +13541,9 @@ public class DB_Main : DB_MainStub
          D.error(ex.Message);
       }
    }
-#endregion
+   #endregion
 
-#region LandPowerup XML Data
+   #region LandPowerup XML Data
 
    public static new List<XMLPair> getLandPowerupXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
@@ -13498,7 +13574,7 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-#endregion
+   #endregion
    /*
    public static new void deleteAccount (int accountId) {
       try {
@@ -14599,7 +14675,7 @@ public class DB_Main : DB_MainStub
 
    */
 
-#region Private Variables
+   #region Private Variables
 
    private static string _database = "ruby";
    private static string _remoteServer = "db.arcanewaters.com";
@@ -14607,7 +14683,7 @@ public class DB_Main : DB_MainStub
    private static string _password = "atZTKNmtjeNs5DquCMR55LnMZ5snndQZ";
    private static string _connectionString = getDefaultConnectionString(_remoteServer);
 
-#endregion
+   #endregion
 }
 
 #endif

@@ -135,6 +135,9 @@ public class Global
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 
+   // If the camera shake effect is enabled during battles
+   public static bool isCameraShakeEffectEnabled = true;
+
    #endregion
 
    public static void setUserEquipment (Item weapon, Item armor, Item hat, Item ring, Item necklace, Item trinket) {

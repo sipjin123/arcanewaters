@@ -43,12 +43,15 @@ public class CountdownScreen : MonoBehaviour
       if (_timePassed > DELAY_BEFORE_INPUT_INTERRUPTION &&
          (Global.player.isMoving() || (!Global.player.isDead() && Global.player.hasAnyCombat()))) {
          
-         if (isShowing()) {
-            cancelButton.onClick.Invoke();
-         }
+         // Only do it if cancel button is available, otherwise we assume screen is not cancelable
+         if (cancelButton.gameObject.activeSelf) {
+            if (isShowing()) {
+               cancelButton.onClick.Invoke();
+            }
 
-         // Stop the countdown
-         hide();
+            // Stop the countdown
+            hide();
+         }
       }
 
       // Decrease the remaining seconds

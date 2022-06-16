@@ -1539,11 +1539,11 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestBanPlayer (string parameters) {
-      requestPenalty(parameters, PenaltyInfo.ActionType.Ban);
+      requestPenalty(parameters, PenaltyInfo.ActionType.SoloBan);
    }
 
    private void requestBanPlayerIndefinite (string parameters) {
-      requestPenalty(parameters, PenaltyInfo.ActionType.PermanentBan);
+      requestPenalty(parameters, PenaltyInfo.ActionType.SoloPermanentBan);
    }
 
    public void requestBanPlayerWithConfirmation (string userName, int seconds, string reason) {
@@ -1551,7 +1551,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      PanelManager.self.showConfirmationPanel($"Are you sure you want to ban {userName}?", () => Cmd_ApplyPenalty(userName, seconds, reason, PenaltyInfo.ActionType.Ban));
+      PanelManager.self.showConfirmationPanel($"Are you sure you want to ban {userName}?", () => Cmd_ApplyPenalty(userName, seconds, reason, PenaltyInfo.ActionType.SoloBan));
    }
 
    private void requestForceSinglePlayer (string parameters) {
@@ -1585,9 +1585,9 @@ public class AdminManager : NetworkBehaviour
       bool requireTime = true; // some penalties don't require a duration
       string reason = string.Empty;
 
-      if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute || penaltyType == PenaltyInfo.ActionType.Ban) {
+      if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute || penaltyType == PenaltyInfo.ActionType.SoloBan) {
          requiredCount = 2; // username, time, [reason]
-      } else if (penaltyType == PenaltyInfo.ActionType.PermanentBan || penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ||
+      } else if (penaltyType == PenaltyInfo.ActionType.SoloPermanentBan || penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ||
          penaltyType == PenaltyInfo.ActionType.LiftMute || penaltyType == PenaltyInfo.ActionType.LiftBan) {
          requireTime = false;
       }
@@ -1643,7 +1643,7 @@ public class AdminManager : NetworkBehaviour
             currAction = "kick";
          } else if (penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
             currAction = "force Single Player Mode to";
-         } else if (penaltyType == PenaltyInfo.ActionType.Ban || penaltyType == PenaltyInfo.ActionType.PermanentBan || penaltyType == PenaltyInfo.ActionType.LiftBan) {
+         } else if (penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan || penaltyType == PenaltyInfo.ActionType.LiftBan) {
             if (penaltyType == PenaltyInfo.ActionType.LiftBan) {
                currAction = "unban";
             } else {
@@ -1663,7 +1663,7 @@ public class AdminManager : NetworkBehaviour
                if (penaltyType == PenaltyInfo.ActionType.LiftMute) {
                   penaltyTypes.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.Mute, PenaltyInfo.ActionType.StealthMute });
                } else if (penaltyType == PenaltyInfo.ActionType.LiftBan) {
-                  penaltyTypes.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.Ban, PenaltyInfo.ActionType.PermanentBan });
+                  penaltyTypes.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.SoloBan, PenaltyInfo.ActionType.SoloPermanentBan });
                } else {
                   penaltyTypes.Add(penaltyType);
                }
@@ -1675,11 +1675,11 @@ public class AdminManager : NetworkBehaviour
                   newPenaltyInfo.penaltyType = targetInfo.forceSinglePlayer ? PenaltyInfo.ActionType.LiftForceSinglePlayer : PenaltyInfo.ActionType.ForceSinglePlayer;
                }
 
-               if (currPenaltyInfo != null && !currPenaltyInfo.isLiftType()) {
+               if (currPenaltyInfo != null && !currPenaltyInfo.IsLiftType()) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat(string.Format("{0} is already {1}.", targetInfo.username, pastAction), ChatInfo.Type.Error);
                   });
-               } else if (currPenaltyInfo == null && newPenaltyInfo.isLiftType()) {
+               } else if (currPenaltyInfo == null && newPenaltyInfo.IsLiftType()) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat(string.Format("{0} is not {1}.", targetInfo.username, pastAction), ChatInfo.Type.Error);
                   });
@@ -1691,14 +1691,14 @@ public class AdminManager : NetworkBehaviour
                         successMessage += $"has been {pastAction} for {seconds} seconds.";
                      } else if (penaltyType == PenaltyInfo.ActionType.LiftMute) {
                         successMessage += $"is not {pastAction} anymore.";
-                     } else if (penaltyType == PenaltyInfo.ActionType.Kick || penaltyType == PenaltyInfo.ActionType.Ban ||
-                     penaltyType == PenaltyInfo.ActionType.PermanentBan) {
+                     } else if (penaltyType == PenaltyInfo.ActionType.Kick || penaltyType == PenaltyInfo.ActionType.SoloBan ||
+                     penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
                         successMessage += $"has been {pastAction}";
 
-                        if (penaltyType == PenaltyInfo.ActionType.Ban) {
-                           successMessage += $" until {Util.getTimeInEST(DateTime.UtcNow.AddSeconds(seconds))} EST.";
-                        } else if (penaltyType == PenaltyInfo.ActionType.PermanentBan) {
-                           successMessage += " indefinitely.";
+                        if (penaltyType == PenaltyInfo.ActionType.SoloBan) {
+                           successMessage += $" until {Util.getTimeInEST(DateTime.UtcNow.AddSeconds(seconds))} EST";
+                        } else if (penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
+                           successMessage += " indefinitely";
                         }
 
                         successMessage += ".";
@@ -1712,9 +1712,9 @@ public class AdminManager : NetworkBehaviour
 
                      if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute ||
                      penaltyType == PenaltyInfo.ActionType.LiftMute || penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ||
-                     penaltyType == PenaltyInfo.ActionType.Ban || penaltyType == PenaltyInfo.ActionType.PermanentBan) {
+                     penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
                         ServerNetworkingManager.self.applyPenaltyToPlayer(targetInfo.accountId, penaltyType, seconds);
-                        if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.Ban || penaltyType == PenaltyInfo.ActionType.PermanentBan) {
+                        if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
                            ServerNetworkingManager.self.censorGlobalMessagesFromUser(targetInfo.userId);
                         }
                      }
@@ -1752,9 +1752,9 @@ public class AdminManager : NetworkBehaviour
             break;
          case PenaltyInfo.ActionType.ForceSinglePlayer:
          case PenaltyInfo.ActionType.Kick:
-         case PenaltyInfo.ActionType.Ban:
-         case PenaltyInfo.ActionType.PermanentBan:
-            if (penaltyType == PenaltyInfo.ActionType.Ban || penaltyType == PenaltyInfo.ActionType.PermanentBan) {
+         case PenaltyInfo.ActionType.SoloBan:
+         case PenaltyInfo.ActionType.SoloPermanentBan:
+            if (penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
                message = "Your account has been suspended ";
             }
 
@@ -1762,7 +1762,7 @@ public class AdminManager : NetworkBehaviour
                message = "You have been kicked out of the server.";
             } else if (penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
                message = "This account has been locked to Single Player mode.";
-            } else if (penaltyType == PenaltyInfo.ActionType.PermanentBan) {
+            } else if (penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
                message += "indefinitely.";
             } else {
                message += $" until {Util.getTimeInEST(DateTime.UtcNow.AddSeconds(seconds))} EST.";
@@ -3312,13 +3312,13 @@ public class AdminManager : NetworkBehaviour
 
             switch (category) {
                case Item.Category.Armor:
-                  _player.rpc.requestSetArmorId(itemId);
+                  _player.rpc.requestSetArmorId(itemId, Global.showSoulbindingWarnings);
                   break;
                case Item.Category.Weapon:
-                  _player.rpc.requestSetWeaponId(itemId);
+                  _player.rpc.requestSetWeaponId(itemId, Global.showSoulbindingWarnings);
                   break;
                case Item.Category.Hats:
-                  _player.rpc.requestSetHatId(itemId);
+                  _player.rpc.requestSetHatId(itemId, Global.showSoulbindingWarnings);
                   break;
             }
          });

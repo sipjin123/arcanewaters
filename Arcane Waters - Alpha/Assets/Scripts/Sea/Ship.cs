@@ -135,9 +135,9 @@ public class Ship : SeaEntity {
       }
    }
 
-   public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity) {
+   public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity, bool useMinStats = false) {
       ShipData fetchedShipData = ShipDataManager.self.getShipData(shipType);
-      return generateTheShip(fetchedShipData, fetchedShipData.shipType, rarity);
+      return generateTheShip(fetchedShipData, fetchedShipData.shipType, rarity, useMinStats);
    }
 
    public static ShipInfo generateNewShip (int shipXmlId, Rarity.Type rarity) {
@@ -145,15 +145,15 @@ public class Ship : SeaEntity {
       return generateTheShip(fetchedShipData, fetchedShipData.shipType, rarity);
    }
 
-   private static ShipInfo generateTheShip (ShipData fetchedShipData, Ship.Type shipType, Rarity.Type rarity) {
+   private static ShipInfo generateTheShip (ShipData fetchedShipData, Ship.Type shipType, Rarity.Type rarity, bool useMinStats = false) {
       System.Random rand = new System.Random();
-      int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
-      float damage = rand.NextFloat(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
-      int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
-      int food = rand.Next(fetchedShipData.baseFoodMin, fetchedShipData.baseFoodMax);
+      int cargoRoom = (useMinStats) ? fetchedShipData.baseCargoRoomMin : rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
+      float damage = (useMinStats) ? fetchedShipData.baseDamageModifierMin : rand.NextFloat(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
+      int health = (useMinStats) ? fetchedShipData.baseHealthMin : rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
+      int food = (useMinStats) ? fetchedShipData.baseFoodMin : rand.Next(fetchedShipData.baseFoodMin, fetchedShipData.baseFoodMax);
       int price = getBasePrice(fetchedShipData.shipID);
-      int attackRange = rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
-      int speed = rand.Next(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
+      int attackRange = (useMinStats) ? fetchedShipData.baseRangeMin : rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
+      int speed = (useMinStats) ? fetchedShipData.baseSpeedMin : rand.Next(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
       speed = Mathf.Clamp(speed, 70, 130);
 
       // Let's use nice numbers

@@ -31,7 +31,7 @@ public class CropManager : NetworkBehaviour
    }
 
    [Client]
-   public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects, bool isQuickGrow) {
+   public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
 
       Crop crop = Instantiate(cropPrefab);
@@ -158,18 +158,7 @@ public class CropManager : NetworkBehaviour
             // Registers the planting action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.PlantCrop);
 
-            // Checks achievements to determine if the plant will grow quickly for tutorial purposes
-            bool quickGrow = false;
-            if (harvestCropAchievements.Count < 1) {
-               quickGrow = true;
-            }
-            foreach (AchievementData achievementData in harvestCropAchievements) {
-               if (achievementData.count < TUTORIAL_CROP_COUNT) {
-                  quickGrow = true;
-               }
-            }
-
-            cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+            cropInfo = getUpdatedCropInfo(cropInfo);
 
             // Store the result
             _crops.Add(cropInfo);
@@ -196,7 +185,7 @@ public class CropManager : NetworkBehaviour
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropToPlayers(cropInfo, false, quickGrow);
+            sendCropToPlayers(cropInfo, false);
 
             onPlantCropEnd(cropNumber);
          });
@@ -222,13 +211,13 @@ public class CropManager : NetworkBehaviour
       _player.rpc.sendItemShortcutList();
    }
 
-   private void sendCropToPlayers (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {
+   private void sendCropToPlayers (CropInfo cropInfo, bool justGrew) {
       D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
          + cropInfo.growthLevel + "} IsMax:{"
          + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
 
       // Send the new Crop to the players
-      _player.Rpc_BroadcastUpdatedCrop(cropInfo, justGrew, isQuickGrow);
+      _player.Rpc_BroadcastUpdatedCrop(cropInfo, justGrew);
    }
 
    [Server]
@@ -286,20 +275,6 @@ public class CropManager : NetworkBehaviour
             // Registers the watering action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.WaterCrop);
 
-            // Checks achievements to determine if the plant will grow quickly for tutorial purposes
-            bool quickGrow = false;
-            if (farmPlayerHarvestCropAchievements.Count < 1) {
-               quickGrow = true;
-            }
-            foreach (AchievementData achievementData in farmPlayerHarvestCropAchievements) {
-               if (achievementData.count < TUTORIAL_CROP_COUNT) {
-                  quickGrow = true;
-               }
-            }
-            if (quickGrow) {
-               cropToWater.waterInterval = 3;
-            }
-
             // Store the updated list
             CropInfo updatedCropToWater = increaseCropGrowthLevel(cropToWater);
 
@@ -331,7 +306,7 @@ public class CropManager : NetworkBehaviour
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropToPlayers(updatedCropToWater, true, quickGrow);
+            sendCropToPlayers(updatedCropToWater, true);
          });
       });
    }
@@ -552,29 +527,15 @@ public class CropManager : NetworkBehaviour
       // Get the crops for this player from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<CropInfo> cropList = DB_Main.getCropInfo(userId);
-         List<AchievementData> harvestCropAchievements = DB_Main.getAchievementData(userId, ActionType.HarvestCrop);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
-            // Checks achievements to determine if the plant will grow quickly for tutorial purposes
-            bool quickGrow = false;
-            if (harvestCropAchievements.Count < 1) {
-               quickGrow = true;
-            }
-            foreach (AchievementData achievementData in harvestCropAchievements) {
-               if (achievementData.count < TUTORIAL_CROP_COUNT) {
-                  quickGrow = true;
-                  break;
-               }
-            }
-
             // Modifies the water interval for crops
-            cropList = getUpdatedCropArrayInfo(quickGrow, cropList);
+            cropList = getUpdatedCropArrayInfo(cropList);
             _crops = cropList;
 
             // Send it to the player
-            this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), quickGrow);
+            this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray());
 
             // Note that we're done loading them
             _cropsDoneLoading = true;
@@ -594,7 +555,7 @@ public class CropManager : NetworkBehaviour
             _crops = cropList;
 
             // Send it to the player
-            this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), false);
+            this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray());
 
             // Note that we're done loading them
             _cropsDoneLoading = true;
@@ -602,32 +563,27 @@ public class CropManager : NetworkBehaviour
       });
    }
 
-   private List<CropInfo> getUpdatedCropArrayInfo (bool quickGrow, List<CropInfo> cropList) {
+   private List<CropInfo> getUpdatedCropArrayInfo (List<CropInfo> cropList) {
       List<CropInfo> newCropInfoList = new List<CropInfo>();
 
       // Alter water interval for each crop info
       for (int i = 0; i < cropList.Count; i++) {
          CropInfo cropInfo = cropList[i];
-         cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+         cropInfo = getUpdatedCropInfo(cropInfo);
          newCropInfoList.Add(cropInfo);
       }
 
       return newCropInfoList;
    }
 
-   private CropInfo getUpdatedCropInfo (bool quickGrow, CropInfo cropInfo) {
-      if (quickGrow) {
-         // For tutorial purposes, set the water interval into 3 seconds
-         cropInfo.waterInterval = 3;
-      } else {
-         // Crop water interval accepts seconds, the crop data registers minutes to ripe, so multiply by 60 to get the seconds 
-         CropsData fetchedCropData = CropsDataManager.self.getCropData(cropInfo.cropType);
-         cropInfo.waterInterval = fetchedCropData.minutesToRipe * 60;
-      }
+   private CropInfo getUpdatedCropInfo (CropInfo cropInfo) {
+      // Crop water interval accepts seconds, the crop data registers minutes to ripe, so multiply by 60 to get the seconds 
+      CropsData fetchedCropData = CropsDataManager.self.getCropData(cropInfo.cropType);
+      cropInfo.waterInterval = fetchedCropData.minutesToRipe * 60;
       return cropInfo;
    }
 
-   public void receiveUpdatedCrop (CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
+   public void receiveUpdatedCrop (CropInfo cropInfo, bool justGrew) {
 
       // Only try to trigger the tutorial for the player who owns the farm
       if (Global.player != null && _player.userId == Global.player.userId) {
@@ -645,11 +601,23 @@ public class CropManager : NetworkBehaviour
         + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
       }
 
-      createCrop(cropInfo, justGrew, true, isQuickGrow);
+      createCrop(cropInfo, justGrew, true);
    }
 
    [TargetRpc]
-   public void Target_ReceiveCropArray (NetworkConnection connection, CropInfo[] crops, bool quickGrow) {
+   public void Target_ReceiveCropArray (NetworkConnection connection, CropInfo[] crops) {
+      if (_receiveCropsCoroutine != null) {
+         StopCoroutine(_receiveCropsCoroutine);
+      }
+
+      _receiveCropsCoroutine = StartCoroutine(CO_ReceiveCropArray(crops));
+   }
+
+   private IEnumerator CO_ReceiveCropArray (CropInfo[] crops) {
+      while (PanelManager.self.loadingScreen.isShowing()) {
+         yield return null;
+      }
+
       CropSpotManager.self.resetCropSpots();
 
       // Destroy any existing crops on the client
@@ -659,7 +627,7 @@ public class CropManager : NetworkBehaviour
 
       // Create the new list of crops
       foreach (CropInfo cropInfo in crops) {
-         createCrop(cropInfo, false, false, quickGrow);
+         createCrop(cropInfo, false, false);
       }
    }
 
@@ -747,6 +715,9 @@ public class CropManager : NetworkBehaviour
 
    // A list of crops that are currently processing watering or planting
    private List<int> _cropsProcessing = new List<int>();
+
+   // A reference to the coroutine that handles receiving crops
+   private Coroutine _receiveCropsCoroutine = null;
 
    #endregion
 }

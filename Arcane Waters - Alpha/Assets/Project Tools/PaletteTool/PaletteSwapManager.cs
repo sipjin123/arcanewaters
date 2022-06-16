@@ -121,13 +121,18 @@ public class PaletteSwapManager : GenericGameManager {
       _paletteNamesRegistry = new Dictionary<string, string>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(true);
+         List<PaletteXMLPair> rawXMLData = DB_Main.getPaletteXML(true);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (XMLPair xmlPair in rawXMLData) {
+            foreach (PaletteXMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                PaletteToolData paletteData = Util.xmlLoad<PaletteToolData>(newTextAsset);
-
+               
+               // override values
+               paletteData.subcategory = xmlPair.xmlSubCategory;
+               paletteData.tagId = xmlPair.xmlTagId;
+               paletteData.paletteType = xmlPair.xmlPaletteType;
+               
                // Save the palette data in the memory cache
                _paletteDataList.Add(paletteData);
                _paletteDataRegistry.Add(xmlPair.xmlId, paletteData);

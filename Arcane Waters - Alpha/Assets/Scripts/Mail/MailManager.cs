@@ -58,7 +58,7 @@ public class MailManager : GenericGameManager {
             foreach (int userId in userIdsList) {
                entity = EntityManager.self.getEntity(userId);
                if (entity != null) {
-                  entity.Target_ReceiveUnreadMailNotification(entity.connectionToClient);
+                  entity.Target_ReceiveUnreadMailNotification(entity.connectionToClient, true);
                } 
             }
 
