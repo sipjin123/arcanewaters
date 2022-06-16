@@ -127,6 +127,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
@@ -156,6 +159,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
@@ -192,6 +198,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Hat newHat = HatStatData.translateDataToHat(hatData);
@@ -221,6 +230,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Ring newRing = RingStatData.translateDataToRing(ringData);
@@ -250,6 +262,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Necklace newNecklace = NecklaceStatData.translateDataToNecklace(necklaceData);
@@ -279,6 +294,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
+               if (Global.player != null && !Global.player.isAdmin()) {
+                  gameObject.SetActive(false);
+               }
                return;
             } else {
                Trinket newTrinket = TrinketStatData.translateDataToTrinket(trinketData);

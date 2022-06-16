@@ -61,22 +61,64 @@ public class BlueprintRow : MonoBehaviour
       // Retrieve the icon sprite and coloring depending on the type
       if (resultItem.category == Item.Category.Weapon) {
          WeaponStatData weaponData = WeaponStatData.getStatData(resultItem.data, resultItem.itemTypeId);
-         itemNameText.text = weaponData.equipmentName;
-         icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+         if (weaponData != null) {
+            itemNameText.text = weaponData.equipmentName;
+            icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
 
-         resultItem.paletteNames = PaletteSwapManager.extractPalettes(weaponData.defaultPalettes);
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(weaponData.defaultPalettes);
+         } else {
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
       } else if (resultItem.category == Item.Category.Armor) {
          ArmorStatData armorData = ArmorStatData.getStatData(resultItem.data, resultItem.itemTypeId);
-         itemNameText.text = armorData.equipmentName;
-         icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+         if (armorData != null) {
+            itemNameText.text = armorData.equipmentName;
+            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
 
-         resultItem.paletteNames = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
+         } else {
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
       } else if (resultItem.category == Item.Category.Hats) {
          HatStatData hatData = HatStatData.getStatData(resultItem.data, resultItem.itemTypeId);
-         itemNameText.text = hatData.equipmentName;
-         icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+         if (hatData != null) {
+            itemNameText.text = hatData.equipmentName;
+            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
 
-         resultItem.paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
+         } else {
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
+      } else if (resultItem.category == Item.Category.Ring) {
+         RingStatData ringData = RingStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         if (ringData != null) {
+            itemNameText.text = ringData.equipmentName;
+            icon.sprite = ImageManager.getSprite(ringData.equipmentIconPath);
+
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(ringData.defaultPalettes);
+         } else {
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
+      } else if (resultItem.category == Item.Category.Necklace) {
+         NecklaceStatData necklaceData = NecklaceStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         if (necklaceData != null) {
+            itemNameText.text = necklaceData.equipmentName;
+            icon.sprite = ImageManager.getSprite(necklaceData.equipmentIconPath);
+
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(necklaceData.defaultPalettes);
+         } else {
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
+      } else if (resultItem.category == Item.Category.Trinket) {
+         TrinketStatData trinketData = TrinketStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         if (trinketData != null) {
+            itemNameText.text = trinketData.equipmentName;
+            icon.sprite = ImageManager.getSprite(trinketData.equipmentIconPath);
+
+            resultItem.paletteNames = PaletteSwapManager.extractPalettes(trinketData.defaultPalettes);
+         } else{
+            D.debug("Missing: {" + resultItem.category + "} Blueprint");
+         }
       } else if (resultItem.category == Item.Category.CraftingIngredients) {
          CraftingIngredients ingredientReference = new CraftingIngredients(resultItem);
          itemNameText.text = ingredientReference.getName();
