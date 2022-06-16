@@ -131,6 +131,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // If the interact animation frame should collide with anything
    public UnityEvent interactCollisionEvent = new UnityEvent();
 
+   // The last user invited for pvp, server side use only
+   public int lastPvpInvitedUser = 0;
+
    [Header("Emoting")]
 
    [SyncVar]

@@ -8087,6 +8087,10 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_InviteToPvp (int inviteeUserId) {
+      if (_player is PlayerBodyEntity) {
+         ((PlayerBodyEntity) _player).lastPvpInvitedUser = inviteeUserId;
+      }
+
       BodyEntity inviteeEntity = BodyManager.self.getBody(inviteeUserId);
       if (inviteeEntity != null) {
          if (inviteeEntity.areaKey == _player.areaKey) {
@@ -8125,10 +8129,14 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_AcceptPvpInvite (int inviterUserId) {
+      if (_player.battleId > 0) {
+         return;
+      }
+
       List<BattlerInfo> rightBattlersInfo = new List<BattlerInfo>();
       List<BattlerInfo> leftBattlersInfo = new List<BattlerInfo>();
 
-      BodyEntity inviterEntity = BodyManager.self.getBody(inviterUserId);
+      PlayerBodyEntity inviterEntity = (PlayerBodyEntity) BodyManager.self.getBody(inviterUserId);
       if (inviterEntity == null) {
          _player.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
          return;
@@ -8136,6 +8144,11 @@ public class RPCManager : NetworkBehaviour
       if (inviterEntity.areaKey != _player.areaKey) {
          _player.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
          inviterEntity.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
+         return;
+      }
+
+      if (inviterEntity.lastPvpInvitedUser != _player.userId) {
+         D.debug("Player:{" + inviterEntity.userId + "} did not invite this user:{" + inviterUserId + "}");
          return;
       }
 
@@ -8428,6 +8441,7 @@ public class RPCManager : NetworkBehaviour
       // Process all abilities for each player
       foreach (PlayerBodyEntity playerBody in totalPlayerBodies) {
          processPlayerAbilities(playerBody, new List<PlayerBodyEntity> { playerBody });
+         playerBody.rpc.Target_ReceiveBackgroundInfo(playerBody.connectionToClient, -1, true);
       }
    }
 
