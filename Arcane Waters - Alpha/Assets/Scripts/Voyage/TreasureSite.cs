@@ -258,13 +258,6 @@ public class TreasureSite : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Area area = AreaManager.self.getArea(areaKey);
             
-            // If site is in land, remove target destinations and refer to warp target for POI
-            if (area != null && !area.isSea) {
-               destinationArea = "";
-               spawnTarget = "";
-               return;
-            }
-
             while (_randomTreasureSites.Count > 0) {
                destinationArea = _randomTreasureSites.ChooseRandom();
                foreach (MapSpawn spawn in mapSpawns) {

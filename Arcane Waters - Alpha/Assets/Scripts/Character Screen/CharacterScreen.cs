@@ -315,6 +315,8 @@ public class CharacterScreen : GenericGameManager {
    }
 
    public void toggleCharacters (bool show) {
+      SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_AT_MENU_KEY);
+
       foreach (CharacterSpot spot in _spots.Values) {
          if (spot.character != null) {
             spot.character.gameObject.SetActive(show);

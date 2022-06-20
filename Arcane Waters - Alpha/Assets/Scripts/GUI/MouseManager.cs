@@ -217,7 +217,7 @@ public class MouseManager : ClientMonoBehaviour
       }
 
       // Only consider clickable boxes if no panel is opened
-      if (!PanelManager.self.hasPanelInLinkedList()) {
+      if (!PanelManager.self.isAnyPanelShowing()) {
          // Check if we're hovering over a clickable box
          _boxBeingHovered = gameObjectUnderMouse.GetComponent<ClickableBox>();
 

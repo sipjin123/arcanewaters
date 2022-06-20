@@ -81,7 +81,7 @@ namespace MapCreationTool
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {
-                  DB_Main.createMap(mapVersion);
+                  DB_Main.createMap(mapVersion, "Created initial version of the map");
                } catch (Exception ex) {
                   dbError = ex.Message;
                }

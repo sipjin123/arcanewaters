@@ -492,7 +492,7 @@ public class PlayerShipEntity : ShipEntity
       if (NetworkServer.active) {
          // Add heal per second
          SeaBuffData healData = getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
-         if (healData != null) {
+         if (healData != null && !isDead()) {
             if ((NetworkTime.time - healData.lastBuffTick) > 1) {
                healData.lastBuffTick = NetworkTime.time;
                int healValue = (int) (healData.buffMagnitude * maxHealth);
@@ -534,7 +534,7 @@ public class PlayerShipEntity : ShipEntity
 
       checkAudioListener();
 
-      if (InputManager.self.inputMaster.General.InteractClick.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
+      if (InputManager.self.inputMaster.General.InteractClick.WasPerformedThisFrame() && !PanelManager.self.isAnyPanelShowing()) {
          if (!PriorityOverProcessActionLogic.isAnyHovered()) {
             NetEntity ship = getClickedBody();
             if (ship != null && ship is PlayerShipEntity) {

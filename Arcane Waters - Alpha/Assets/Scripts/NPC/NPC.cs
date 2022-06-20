@@ -224,7 +224,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
-         _graphicRaycaster.gameObject.SetActive(!(PanelManager.self.hasPanelInLinkedList() || PanelManager.isLoading));
+         _graphicRaycaster.gameObject.SetActive(!(PanelManager.self.isAnyPanelShowing() || PanelManager.isLoading));
       }
 
       if (isUnderExternalControl) {

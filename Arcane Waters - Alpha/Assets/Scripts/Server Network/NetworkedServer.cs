@@ -730,6 +730,19 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_CreatePOIInstanceInServer (int serverPort, int voyageGroupId, string areaKey) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_CreatePOIInstance, voyageGroupId, areaKey);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_CreatePOIInstance (int voyageGroupId, string areaKey) {
+      POISiteManager.self.createPOIInstanceInThisServer(voyageGroupId, areaKey);
+   }
+
+   [ServerRPC]
    public void MasterServer_SendVoyageGroupCompositionToMembers (int groupId) {
       if (!VoyageGroupManager.self.tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
          return;

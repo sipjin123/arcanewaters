@@ -237,7 +237,7 @@ public class BottomBar : MonoBehaviour {
       if (!panel.isShowing()) {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
-            PanelManager.self.linkPanel(panel.type);
+            PanelManager.self.showPanel(panel.type);
             panel.refreshPanel(true, desiredTab);
          }
       } else {

@@ -12,7 +12,7 @@ public class VoyageSignboard : Signboard
    #endregion
 
    protected override void onClick () {
-      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      PanelManager.self.showPanel(Panel.Type.NoticeBoard);
       PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard).refreshPanel(NoticeBoardPanel.Mode.BiomeActivity);
    }
 

@@ -103,9 +103,10 @@ public class RedirectionManager : GenericGameManager
       bool isLeagueArea = VoyageManager.isAnyLeagueArea(destinationAreaKey);
       bool isPvpArenaArea = VoyageManager.isPvpArenaArea(destinationAreaKey);
       bool isTreasureSiteArea = VoyageManager.isTreasureSiteArea(destinationAreaKey);
+      bool isPOIArea = VoyageManager.isPOIArea(destinationAreaKey);
 
-      // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
-      if (voyageId > 0 && (isLeagueArea || isPvpArenaArea || isTreasureSiteArea)) {
+      // If the player is in a voyage group and warping to a group-specific area, get the unique server hosting it
+      if (voyageId > 0 && (isLeagueArea || isPvpArenaArea || isTreasureSiteArea || isPOIArea)) {
          if (!ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer server)) {
             D.error("Couldn't find the server hosting the voyage: {" + voyageId + "}");
             D.adminLog("From [" + currentServerPort + "] FAIL: Failed to get Voyage/PVP: {" + server.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + voyageId + "} " +

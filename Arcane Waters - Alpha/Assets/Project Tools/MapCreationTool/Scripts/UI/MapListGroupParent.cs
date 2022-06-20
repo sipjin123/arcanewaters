@@ -180,7 +180,7 @@ namespace MapCreationTool
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   UI.loadingPanel.display($"Changing Biome of a Group:\nUploading: { i }/{ results.Count }");
                });
-               DB_Main.createNewMapVersion(results[i], biome);
+               DB_Main.createNewMapVersion(results[i], biome, Overlord.authUserId, "Changed Biome to " + biome.ToString());
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {

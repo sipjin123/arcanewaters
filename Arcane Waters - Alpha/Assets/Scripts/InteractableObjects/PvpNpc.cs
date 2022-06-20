@@ -48,7 +48,7 @@ public class PvpNpc : MonoBehaviour, IMapEditorDataReceiver
       }
       if (Vector2.Distance(Global.player.transform.position, transform.position) < INTERACT_DISTANCE) {
          // Enable pvp panel
-         PanelManager.self.linkIfNotShowing(Panel.Type.PvpNpc);
+         PanelManager.self.showPanel(Panel.Type.PvpNpc);
       }
    }
 

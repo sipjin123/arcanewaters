@@ -475,10 +475,10 @@ public class Area : MonoBehaviour
                   ownerName = entityName;
                }
             } else {
-               return customMapManager.typeDisplayName;
+               return $"Your {customMapManager.typeDisplayName}";
             }
          } else {
-            return customMapManager.typeDisplayName;
+            return $"Your {customMapManager.typeDisplayName}";
          }
 
          return $"{ ownerName }'s { customMapManager.typeDisplayName }";

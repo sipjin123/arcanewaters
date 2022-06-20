@@ -69,7 +69,7 @@ public class WorldMapPanel : Panel
       }
 
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Type.WorldMap);
+      PanelManager.self.showPanel(Type.WorldMap);
 
       List<WorldMapPanelAreaCoords> visitedWorldMapPanelAreasCoords = WorldMapManager.self.getVisitedAreasCoordsList().Select(transformCoords).ToList();
 
@@ -232,7 +232,7 @@ public class WorldMapPanel : Panel
       Global.player.rpc.Cmd_RequestWarpToArea(areaTarget, spawnTarget);
 
       // Close any opened panel
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    public void requestGroupMembersLocations () {

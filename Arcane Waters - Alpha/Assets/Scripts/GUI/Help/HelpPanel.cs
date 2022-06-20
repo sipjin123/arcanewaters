@@ -211,7 +211,7 @@ public class HelpPanel : Panel
 
       // Close this panel
       if (isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 

@@ -37,7 +37,7 @@ public class PenaltiesQueueManager : GenericGameManager
                bool isMuted = penalties.Any(x => x.IsMute());
                bool isBanned = penalties.Any(x => x.IsBan());
 
-               PenaltyInfo newPenalty = new PenaltyInfo(item.sourceAccId, item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime);
+               PenaltyInfo newPenalty = new PenaltyInfo(item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime);
 
                switch (item.penaltyType) {
                   case PenaltyInfo.ActionType.Mute:

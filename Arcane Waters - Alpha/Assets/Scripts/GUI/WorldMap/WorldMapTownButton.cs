@@ -49,7 +49,7 @@ public class WorldMapTownButton : MonoBehaviour
    }
 
    public void onLocationButtonPressed (string areaKey) {
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    #region Private Variables

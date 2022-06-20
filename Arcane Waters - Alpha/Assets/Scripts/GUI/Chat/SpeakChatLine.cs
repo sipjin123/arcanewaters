@@ -74,7 +74,7 @@ public class SpeakChatLine : ChatLine, IScrollHandler
       if (isValidInteraction()) {
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             NoticeBoardPanel noticeBoardPanel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
-            PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+            PanelManager.self.showPanel(Panel.Type.NoticeBoard);
             noticeBoardPanel.refreshPanel(NoticeBoardPanel.Mode.PvpArena);
          } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
             if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {

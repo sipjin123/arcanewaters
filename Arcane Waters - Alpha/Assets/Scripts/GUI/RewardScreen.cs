@@ -20,7 +20,7 @@ public class RewardScreen : Panel
    public override void Start () {
       base.Start();
       confirmButton.onClick.AddListener(() => {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       });
    }
 

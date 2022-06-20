@@ -13,9 +13,6 @@ public class PanelManager : GenericGameManager {
    // The stack of panels we want to manage (generally optional panels that can be discarded at any time)
    public List<Panel> panelStack;
 
-   // The modal panels that we want to manage (important panels shown one at a time, require action by the user)
-   public List<Panel> modalPanels;
-
    // Screens which are separate from the panel stack
    public ConfirmScreen confirmScreen;
    public NoticeScreen noticeScreen;
@@ -79,7 +76,7 @@ public class PanelManager : GenericGameManager {
       }
 
       // If a panel was loading and one shows up, disable the loading status
-      if (isLoading && hasPanelInLinkedList()) {
+      if (isLoading && isAnyPanelShowing()) {
          isLoading = false;
       }
 
@@ -87,7 +84,7 @@ public class PanelManager : GenericGameManager {
       if (
          !TitleScreen.self.isShowing() &&
          !CharacterScreen.self.isShowing() &&
-         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true
+         (InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true || Keyboard.current.escapeKey.wasPressedThisFrame)
       ) {
          onEscapeKeyPressed();
       }
@@ -115,10 +112,8 @@ public class PanelManager : GenericGameManager {
          !TitleScreen.self.isShowing() &&
          !PvpShopPanel.self.isActive() &&
          InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() != true &&
-         (
-            InputManager.self.inputMaster?.UIShotcuts.Options.WasPressedThisFrame() == true ||
-            Keyboard.current.escapeKey.wasPressedThisFrame
-         )
+         !Keyboard.current.escapeKey.wasPressedThisFrame &&
+         InputManager.self.inputMaster?.UIShotcuts.Options.WasPressedThisFrame() == true
       ) {
          BottomBar.self.toggleOptionsPanel();
       } else if (InputManager.self.inputMaster?.UIShotcuts.Map.WasPressedThisFrame() == true) {
@@ -144,14 +139,14 @@ public class PanelManager : GenericGameManager {
             AdminPanel.self.show();
          }
       } 
-      
+
       // Handle escape button only when character screen is active
       else if (CharacterScreen.self.isShowing() && KeyUtils.GetKeyUp(Key.Escape)) {
          // Show option on character screen to give user logout option
          if (!get(Panel.Type.Options).isShowing()) {
-            linkPanel(Panel.Type.Options);
+            showPanel(Panel.Type.Options);
          } else {
-            unlinkPanel();
+            hideCurrentPanel();
          }
       }
 
@@ -179,10 +174,14 @@ public class PanelManager : GenericGameManager {
          itemSelectionScreen.hide();
       } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
          AuctionPanel.self.auctionInfoPanel.hide();
-      } else if (hasPanelInLinkedList() && get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
-         unlinkPanel();
+      } else if (get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
+         hideCurrentPanel();
       } else if (PvpShopPanel.self.isActive()) {
          PvpShopPanel.self.hideEntirePanel();
+      } else if (get<NoticeBoardPanel>(Panel.Type.NoticeBoard).pvpArenaSection.pvpArenaInfoPanel.isShowing()) {
+         NoticeBoardPanel.self.pvpArenaSection.pvpArenaInfoPanel.hide();
+      } else if (isAnyPanelShowing()) {
+         hideCurrentPanel();
       } else if (
          !((OptionsPanel) get(Panel.Type.Options)).isShowing() &&
          !TitleScreen.self.termsOfServicePanel.activeSelf
@@ -190,9 +189,7 @@ public class PanelManager : GenericGameManager {
          // Play SFX
          SoundEffectManager.self.playGuiMenuOpenSfx();
 
-         linkPanel(Panel.Type.Options);
-      } else {
-         unlinkPanel();
+         showPanel(Panel.Type.Options);
       }
    }
 
@@ -218,67 +215,28 @@ public class PanelManager : GenericGameManager {
       return get(panelType) as T;
    }
 
-   public Panel linkPanel (Panel.Type panelType) {
-      // Hide any currently showing panels
-      hidePanels();
-
-      // Check if panel is already in the linkedList
-      if (!_linkedList.Contains(panelType)) {
-         // Not in linkedList so add the panel type to the front of the linkedList
-         _linkedList.AddFirst(panelType);
-         return showPanel(panelType);
-      }
-      else {
-         // Panel is already in linkedList.  Find it and move it to the front of the list.
-         LinkedListNode<Panel.Type> previous = null;
-         LinkedListNode<Panel.Type> current = _linkedList.First;
-         LinkedListNode<Panel.Type> temp = null;
-
-         while (current != null) {
-            if (panelType == current.Value) { // item has been found
-               previous = current.Next;
-               temp = current;
-               _linkedList.Remove(current);
-               _linkedList.AddFirst(temp);
-               return showPanel(_linkedList.First.Value);
-            }
-            previous = current;
-            current = current.Next;
-         }
-         return _panels[Panel.Type.Options];
-      }
-   }
-
-   public void linkIfNotShowing (Panel.Type panelType) {
+   public void showPanel (Panel.Type panelType) {
       // If it's already showing, we're done
       if (get(panelType).isShowing()) {
          return;
       }
 
-      linkPanel(panelType);
+      // Hide any currently showing panels
+      hideCurrentPanel();
+
+      // Show the requested panel
+      Panel panel = _panels[panelType];
+      panel.show();
    }
 
-   public void unlinkPanel () {
-      hidePanels();
-
-      // If the linkedList is already empty, we don't have to do anything
-      if (_linkedList.Count == 0) {
-         return;
+   public void hideCurrentPanel () {
+      // Cycle over all of our panels and make sure they're all disabled
+      foreach (Panel panel in _panels.Values) {
+         panel.hide();
       }
-
-      // Remove the panel from top of the stack
-      _linkedList.Remove(_linkedList.First);
-
-      // If the linkedList is empty now, we're done
-      if (_linkedList.Count == 0) {
-         return;
-      }
-
-      // Show whatever panel is now at the front of linkedList
-      showPanel(_linkedList.First.Value);
    }
 
-   public bool hasPanelInLinkedList () {
+   public bool isAnyPanelShowing () {
       foreach (Panel panel in panelStack) {
          if (panel.gameObject.activeSelf && panel.canvasGroup.alpha > 0f) {
             return true;
@@ -288,79 +246,35 @@ public class PanelManager : GenericGameManager {
       return false;
    }
 
-   public bool isFirstPanelInLinkedList (Panel.Type panelType) {
-      if (_linkedList.Count > 0 && _linkedList.First.Value == panelType) {
-         return true;
-      } else {
-         return false;
+   public bool areMultiplePanelsShowing () {
+      int showingCount = 0;
+      foreach (Panel panel in panelStack) {
+         if (panel.gameObject.activeSelf && panel.canvasGroup.alpha > 0f) {
+            showingCount++;
+         }
       }
+
+      return showingCount > 1;
    }
 
    public void togglePanel (Panel.Type panelType) {
       Panel panel = get(panelType);
 
-      // If it's already showing, remove it from the front of the linkedList
+      // If it's already showing, hide it
       if (panel.isShowing()) {
-         unlinkPanel();
+         hideCurrentPanel();
       } else {
-         // Otherwise, just add it to the linkedList and show it now
-         linkPanel(panelType);
+         // Otherwise, show it
+         showPanel(panelType);
       }
 
       // Hide any tooltips that were previously showing
       hideToolTips();
    }
 
-   public void toggleMainPanel (Panel.Type panelType) {
-      Panel panel = get(panelType);
-      bool wasShowing = panel.gameObject.activeSelf;
-
-      // Whenever a main panel is toggled either on or off, always clear out the display list
-      clearLinkedList();
-
-      // Link the panel if it wasn't already showing
-      if (!wasShowing) {
-         linkPanel(panelType);
-      }
-   }
-
-   public void clearLinkedList () {
-      _linkedList.Clear();
-
-      // Make sure nothing is showing now
-      hidePanels();
-   }
-
-   public Panel getModalPanel (Panel.Type panelType) {
-      foreach (Panel panel in modalPanels) {
-         if (panel.type == panelType) {
-            return panel;
-         }
-      }
-
-      return null;
-   }
-
-   public void showModalPanel (Panel.Type panelType) {
-      // Hide everything else
-      clearAll();
-
-      // Look for the panel in our list of modal panels
-      foreach (Panel panel in modalPanels) {
-         if (panel.type == panelType) {
-            panel.show();
-            return;
-         }
-      }
-
-      D.debug("Couldn't find modal panel with type: " + panelType);
-      return;
-   }
-
    public void hideAllPanels () {
-      while (hasPanelInLinkedList()) {
-         unlinkPanel();
-      }
+      hideCurrentPanel();
+
       tradeConfirmScreen.hide();
       itemSelectionScreen.hide();
       VoyageGroupManager.self.hideVoyageGroupInvitation();
@@ -378,17 +292,6 @@ public class PanelManager : GenericGameManager {
          if (panel.isShowing()) {
             panel.hide();
          }
-      }
-   }
-
-   public void clearAll () {
-
-      // Clear the linkedList of optional panels
-      clearLinkedList();
-
-      // Clear out all of our non-optional panels
-      foreach (Panel panel in modalPanels) {
-         panel.hide();
       }
    }
 
@@ -436,20 +339,6 @@ public class PanelManager : GenericGameManager {
       }
 
       return false;
-   }
-
-   protected Panel showPanel (Panel.Type panelType) {
-      Panel panel = _panels[panelType];
-      panel.show();
-
-      return _panels[panelType];
-   }
-
-   protected void hidePanels () {
-      // Cycle over all of our panels and make sure they're all disabled
-      foreach (Panel panel in _panels.Values) {
-         panel.hide();
-      }
    }
 
    public void showPowerupPanel () {

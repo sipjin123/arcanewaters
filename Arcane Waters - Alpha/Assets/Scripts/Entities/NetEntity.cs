@@ -2437,7 +2437,7 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection, int instanceId, int serverPort) {
       // Only admins can warp to voyage areas without indicating the voyageId
-      if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
+      if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea) || VoyageManager.isPOIArea(newArea))) {
          VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
          return;
       }
@@ -2537,7 +2537,7 @@ public class NetEntity : NetworkBehaviour
          AreaManager.self.getArea(this.areaKey).updateBlockingVisualTiles(this);
 
          yield return null;
-         
+
          // Request for NPC quest in area after player is spawned
          rpc.Cmd_RequestNPCQuestInArea();
 
@@ -2578,9 +2578,7 @@ public class NetEntity : NetworkBehaviour
          }
          LocationBanner.self.setText(displayname);
 
-         // Show area name in steam
-         // NOTE: not gonna work like this, needs to implement rich presence keys
-         SteamFriendsManager.setSteamDisplayStatus("In " + displayname);
+         updateRichPresenseBasedOnArea(areaKey);
 
          // Update the tutorial
          TutorialManager3.self.onUserSpawns(this.userId);
@@ -2619,6 +2617,56 @@ public class NetEntity : NetworkBehaviour
          SoundEffectManager.self.playBgMusic(bgParam, ambienceParam);
 
          WorldMapWaypointsManager.self.refreshWaypoints();
+      }
+   }
+
+   [Client]
+   public void updateRichPresenseBasedOnArea (string areaKey) {
+      try {
+         if (WorldMapManager.isWorldMapArea(areaKey)) {
+            SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_OPEN_WORLD_KEY);
+            return;
+         }
+
+         if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+            if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
+               SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_GUILD_MAP_KEY);
+               return;
+            }
+
+            if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
+               // Check if it is someone else's farm, prepend the name if so
+               int userId = CustomMapManager.getUserId(areaKey);
+               if (Global.player != null && userId != Global.player.userId) {
+                  // Friend's house?
+               } else {
+                  SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_PRIVATE_MAP_KEY);
+                  return;
+               }
+            }
+         }
+
+         if (AreaManager.self.tryGetAreaInfo(areaKey, out var map)) {
+            if (map.specialType == Area.SpecialType.Town) {
+               SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_IN_TOWN_KEY);
+               return;
+            }
+
+            if (map.specialType == Area.SpecialType.PvpArena) {
+               SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_IN_PVP_KEY);
+               return;
+            }
+
+            if (map.specialType == Area.SpecialType.LeagueSeaBoss) {
+               SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_BOSS_FIGHT_KEY);
+               return;
+            }
+         }
+
+         // Reset status if matches nothing
+         SteamFriendsManager.setRichPresenceStatus("");
+      } catch (Exception e) {
+         D.error(e.ToString());
       }
    }
 

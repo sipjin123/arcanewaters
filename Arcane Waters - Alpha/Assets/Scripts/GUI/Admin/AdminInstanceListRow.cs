@@ -52,7 +52,13 @@ public class AdminInstanceListRow : MonoBehaviour
       idText.text = instance.id.ToString();
       portText.text = instance.port.ToString();
       areaText.text = instance.area + (string.IsNullOrWhiteSpace(instance.voyage.areaName) ? "" : " (" + instance.voyage.areaName + ")");
-      leagueIndexText.text = instance.voyage.isLeague ? instance.voyage.leagueIndex.ToString() : "-";
+      if (instance.voyage.isLeague) {
+         leagueIndexText.text = "L" + instance.voyage.leagueIndex.ToString();
+      } else if (VoyageManager.isPOIArea(instance.area)) {
+         leagueIndexText.text = "POI";
+      } else {
+         leagueIndexText.text = "-";
+      }
       difficultyText.text = Voyage.getDifficultyEnum(instance.difficulty).ToString() + " (" + instance.difficulty + ")";
       playerCountText.text = instance.pCount.ToString() + "/" + instance.maxPlayerCount.ToString();
       if (instance.voyage == null || instance.voyage.voyageId <= 0) {

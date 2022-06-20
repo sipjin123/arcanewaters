@@ -2728,7 +2728,8 @@ public class DB_Main : DB_MainStub
       int mapVersion = -1;
       int mapId = -1;
       string displayName = "";
-      string cmdText = "SELECT id,publishedVersion,displayName FROM global.maps_v2 WHERE (name=@mapName)";
+      int specialType = 0;
+      string cmdText = "SELECT id,publishedVersion,displayName,specialType FROM global.maps_v2 WHERE (name=@mapName)";
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2742,6 +2743,7 @@ public class DB_Main : DB_MainStub
                   mapId = dataReader.GetInt32("id");
                   mapVersion = dataReader.GetInt32("publishedVersion");
                   displayName = dataReader.GetString("displayName");
+                  specialType = dataReader.GetInt32("specialType");
                   //string mapName = dataReader.GetString("name");
                   //string gameData = dataReader.GetString("gameData");
                   //int version = dataReader.GetInt32("publishedVersion");
@@ -2775,6 +2777,7 @@ public class DB_Main : DB_MainStub
                   string gameData = dataReader.GetString("gameData");
                   mapInfo = new MapInfo(mapName, gameData, mapVersion);
                   mapInfo.displayName = displayName;
+                  mapInfo.specialType = specialType;
                }
             }
          }
@@ -2966,7 +2969,7 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new void createMap (MapVersion mapVersion) {
+   public static new void createMap (MapVersion mapVersion, string comment) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -3029,6 +3032,8 @@ public class DB_Main : DB_MainStub
             throw e;
          }
       }
+
+      insertMapChangeComment(mapVersion.mapId, mapVersion.version, mapVersion.map.creatorID, comment);
    }
 
    public static new void duplicateMapGroup (int mapId, int newCreatorId) {
@@ -3146,7 +3151,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome) {
+   public static new MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome, int creatorUserId, string comment) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -3214,6 +3219,9 @@ public class DB_Main : DB_MainStub
             }
 
             transaction.Commit();
+
+            insertMapChangeComment(result.mapId, result.version, creatorUserId, comment);
+
             return result;
          } catch (Exception e) {
             transaction.Rollback();
@@ -3222,7 +3230,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, EditorType editorType, bool infiniteCommandTimeout = false) {
+   public static new void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, EditorType editorType, int creatorUserId, string comment, bool infiniteCommandTimeout = false) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          if (infiniteCommandTimeout) {
@@ -3289,6 +3297,8 @@ public class DB_Main : DB_MainStub
             throw e;
          }
       }
+
+      insertMapChangeComment(mapVersion.mapId, mapVersion.version, creatorUserId, comment);
    }
 
    public static new void deleteMap (int id) {
@@ -3395,6 +3405,8 @@ public class DB_Main : DB_MainStub
    #endregion
 
    public static new void publishLatestVersionForAllGroup (int mapId) {
+      List<int> ids = new List<int> { mapId };
+
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -3403,12 +3415,9 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            List<int> ids = new List<int> { mapId };
-
             // Find all children of a map
             ids.AddRange(getChildMapIds(cmd, mapId));
 
-            // Delete parent and children
             foreach (int id in ids) {
                cmd.Parameters.Clear();
                cmd.CommandText = "UPDATE global.maps_v2 SET publishedVersion = (SELECT max(version) FROM global.map_versions_v2 WHERE mapId = @id) WHERE id = @id";
@@ -3422,6 +3431,10 @@ public class DB_Main : DB_MainStub
             transaction.Rollback();
             throw e;
          }
+      }
+
+      foreach (int id in ids) {
+         noteMapVersionPublish(id);
       }
    }
 
@@ -3438,6 +3451,51 @@ public class DB_Main : DB_MainStub
 
          // Execute the command
          cmd.ExecuteNonQuery();
+      }
+
+      noteMapVersionPublish(version.mapId);
+   }
+
+   protected static new void noteMapVersionPublish (int mapId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO global.map_publish_log(mapId, mapVersion) " +
+            "SELECT id, publishedVersion FROM global.maps_v2 WHERE id = @mapId; ", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mapId", mapId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   protected static new void insertMapChangeComment (int mapId, int mapVersion, int userId, string comment) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO global.map_change_comments(mapId, mapVersion, userId, comment) " +
+            "VALUES (@mapId, @mapVersion, @userId, @comment)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mapId", mapId);
+            cmd.Parameters.AddWithValue("@mapVersion", mapVersion);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@comment", comment);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
       }
    }
 
@@ -6823,12 +6881,14 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             $"SELECT * FROM global.account_penalties_v2 " +
-            $"WHERE penaltyType IN {sqlArray} AND targetAccId = @accId AND NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) AND lifted = 0 " +
+            $"WHERE penaltyType IN {sqlArray} AND targetAccId = @accId AND (NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) OR penaltyType = @permaBan) AND lifted = 0 " +
             "ORDER BY addedAt DESC LIMIT 1", conn)) {
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@permaBan", (int) PenaltyInfo.ActionType.SoloPermanentBan);
+
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {

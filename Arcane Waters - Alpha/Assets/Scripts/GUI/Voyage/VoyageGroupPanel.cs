@@ -230,7 +230,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Close the current voyage panel if it is open
       if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 
@@ -274,7 +274,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Close the current voyage panel if it is open
       if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 

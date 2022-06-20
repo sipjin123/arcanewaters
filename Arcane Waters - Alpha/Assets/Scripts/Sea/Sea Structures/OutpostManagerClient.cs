@@ -30,7 +30,7 @@ public class OutpostManagerClient : ClientMonoBehaviour
             _buildModeActive = false;
          }
 
-         if (PanelManager.self.hasPanelInLinkedList()) {
+         if (PanelManager.self.isAnyPanelShowing()) {
             _buildModeActive = false;
          }
       }

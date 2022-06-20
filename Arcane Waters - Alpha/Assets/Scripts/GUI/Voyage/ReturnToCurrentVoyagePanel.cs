@@ -46,7 +46,7 @@ public class ReturnToCurrentVoyagePanel : Panel
 
    public void warpToCurrentVoyageMap () {
       Global.player.rpc.Cmd_WarpToCurrentVoyageMap();
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    public void onLeaveVoyageButtonPressed () {

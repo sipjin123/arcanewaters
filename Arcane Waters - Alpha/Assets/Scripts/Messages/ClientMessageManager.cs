@@ -318,7 +318,7 @@ public class ClientMessageManager : MonoBehaviour {
             SoundEffectManager.self.playBuySellSfx();
 
             // Hide the ship panel
-            PanelManager.self.unlinkPanel();
+            PanelManager.self.hideCurrentPanel();
 
             // Show a confirmation panel
             PanelManager.self.noticeScreen.show("You purchased a new ship!");

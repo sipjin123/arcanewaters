@@ -79,9 +79,9 @@ public class Panel : MonoBehaviour, IPointerClickHandler
          OnPanelOpened();
       }
 
-      // Throw a warning if the panel is displayed without adding it to the panel list
-      if (!PanelManager.self.isFirstPanelInLinkedList(type)) {
-         D.warning("The panel " + type + " has not been added to the panel list. Use PanelManager.linkIfNotShowing() to show panels.");
+      // Throw a warning if the panel is displayed while another is already showing
+      if (PanelManager.self.areMultiplePanelsShowing()) {
+         D.warning("The panel " + type + " was displayed above another. Use PanelManager.showPanel() to show panels.");
       }
    }
 
@@ -95,6 +95,10 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       canvasGroup.blocksRaycasts = false;
       this.gameObject.SetActive(false);
 
+      if (Util.isAnyInputFieldFocused()) {
+         EventSystem.current.SetSelectedGameObject(null);
+      }
+
       // Call event
       if (OnPanelClosed != null) {
          OnPanelClosed();
@@ -107,7 +111,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
 
    public virtual void close () {
       if (isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 

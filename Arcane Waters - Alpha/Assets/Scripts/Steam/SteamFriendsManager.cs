@@ -13,6 +13,15 @@ public class SteamFriendsManager : MonoBehaviour
    // Key we use to set join friend connect parameter
    public const string JOIN_FRIEND_PARAM_PREFIX = "join-friend-";
 
+   // Constant we use for Rich Presence key/values
+   public const string RP_STATUS_AT_MENU_KEY = "#StatusAtMenu";
+   public const string RP_STATUS_OPEN_WORLD_KEY = "#StatusOpenWorld";
+   public const string RP_STATUS_GUILD_MAP_KEY = "#StatusGuildMap";
+   public const string RP_STATUS_IN_PVP_KEY = "#StatusInPVP";
+   public const string RP_STATUS_BOSS_FIGHT_KEY = "#StatusInBossFight";
+   public const string RP_STATUS_IN_TOWN_KEY = "#StatusInTown";
+   public const string RP_STATUS_PRIVATE_MAP_KEY = "#StatusPrivateMap";
+
    #endregion
 
    private void OnEnable () {
@@ -121,7 +130,7 @@ public class SteamFriendsManager : MonoBehaviour
       return result;
    }
 
-   public static void setSteamDisplayStatus (string status) {
+   public static void setRichPresenceStatus (string status) {
       if (SteamManager.Initialized) {
          SteamFriends.SetRichPresence("steam_display", status);
       }

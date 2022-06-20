@@ -354,7 +354,7 @@ public class Instance : NetworkBehaviour
       }
 
       // Voyage instances always exist for at least their starting 'open' duration
-      if (isVoyage && !isLeague) {
+      if (isVoyage && !isLeague && !VoyageManager.isPOIArea(areaKey)) {
          TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(creationDate));
          if (timeSinceStart.TotalSeconds < Voyage.INSTANCE_OPEN_DURATION) {
             return;
@@ -364,6 +364,11 @@ public class Instance : NetworkBehaviour
       // Sea voyage and treasure site instances exist as long as there is a group linked to them
       if ((VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))
          && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
+         return;
+      }
+
+      // POI instances exist as long as the POI site (group of POI instances) exists
+      if (VoyageManager.isPOIArea(areaKey) && POISiteManager.self.doesPOISiteExistForInstance(voyageId)) {
          return;
       }
        

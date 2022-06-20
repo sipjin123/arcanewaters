@@ -590,7 +590,7 @@ public class DB_MainStub : MonoBehaviour
       return new List<MapSpawn>();
    }
 
-   public static void createMap (MapVersion mapVersion) {
+   public static void createMap (MapVersion mapVersion, string comment) {
 
    }
 
@@ -602,11 +602,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome) {
+   public static MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome, int creatorUserId, string comment) {
       return null;
    }
 
-   public static void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, MapCreationTool.EditorType editorType, bool infiniteCommandTimeout = false) {
+   public static void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, MapCreationTool.EditorType editorType, int creatorUserId, string comment, bool infiniteCommandTimeout = false) {
 
    }
 
@@ -627,6 +627,14 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void setLiveMapVersion (MapVersion version) {
+
+   }
+
+   protected static void insertMapChangeComment (int mapId, int mapVersion, int userId, string comment) {
+
+   }
+
+   protected static void noteMapVersionPublish (int mapId) {
 
    }
 
@@ -1689,7 +1697,7 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void saveSessionEvent (SessionEventInfo sessionEvent) {
-      
+
    }
 
    //public static void storeGameAccountLoginEvent (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {

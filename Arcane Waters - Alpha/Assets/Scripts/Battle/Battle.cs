@@ -332,7 +332,7 @@ public class Battle : NetworkBehaviour {
                         D.adminLog("Boss is attacking using regular attack", D.ADMIN_LOG_TYPE.Boss);
                         BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                      }
-                  } else { 
+                  } else {
                      // Do logic here if enemy is disabled by status, possibly launch a visual feedback to the clients
                   }
                } else {

@@ -210,7 +210,7 @@ public class ChatPanel : MonoBehaviour {
 
       // Focus the chat window if the forward slash key is released
       if (
-         !PanelManager.self.hasPanelInLinkedList() &&
+         !PanelManager.self.isAnyPanelShowing() &&
          InputManager.self.inputMaster.UIShotcuts.ChatCommand.WasPressedThisFrame()
       ) {
          if (MailPanel.self == null || !MailPanel.self.isWritingMail()) {
@@ -564,6 +564,22 @@ public class ChatPanel : MonoBehaviour {
       prepareChatLineText(chatLine);
       setChatLineText(chatLine);
 
+      // Show the generic icon if needed
+      chatRowComponent.toggleGenericIcon(false);
+      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(friendsSprite);
+      } else if (chatInfo.messageType == ChatInfo.Type.System) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(systemSprite);
+      } else if (chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(mailSprite);
+      }
+
+      // Refresh the actions associated to this chat message
+      chatRowComponent.refreshActions();
+
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
          rowGuildIcon.gameObject.SetActive(false);
          return;
@@ -620,22 +636,6 @@ public class ChatPanel : MonoBehaviour {
          bool shouldHighlight = chatLine.getFormattedText().ToLower().Contains("@" + Global.player.entityName.ToLower());
          chatRowComponent.toggleHighlight(shouldHighlight);
       }
-
-      // Show the generic icon if needed
-      chatRowComponent.toggleGenericIcon(false);
-      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
-         chatRowComponent.toggleGenericIcon(true);
-         chatRowComponent.setGenericIcon(friendsSprite);
-      } else if (chatInfo.messageType == ChatInfo.Type.System) {
-         chatRowComponent.toggleGenericIcon(true);
-         chatRowComponent.setGenericIcon(systemSprite);
-      } else if (chatInfo.messageType == ChatInfo.Type.UnreadMailNotification) {
-         chatRowComponent.toggleGenericIcon(true);
-         chatRowComponent.setGenericIcon(mailSprite);
-      }
-
-      // Refresh the actions associated to this chat message
-      chatRowComponent.refreshActions();
    }
 
    private void setChatLineText (SpeakChatLine chatLine) {

@@ -45,53 +45,6 @@ public class InstanceManager : MonoBehaviour
          }
       }
 
-      // Handle warping to POI areas
-      if (AreaManager.self.tryGetAreaInfo(areaKey, out var m) && m.specialType == Area.SpecialType.POI) {
-         // Force create group for user if does not have any
-         if (player.voyageGroupId < 1) {
-            VoyageGroupManager.self.createGroup(player.userId, -1, true);
-            bool voyageGroupData = VoyageGroupManager.self.tryGetGroupByUser(player.userId, out VoyageGroupInfo targetVoyageGroup);
-            player.voyageGroupId = voyageGroupData ? targetVoyageGroup.groupId : -1;
-            VoyageGroupManager.self.sendGroupCompositionToMembers(player.voyageGroupId);
-         }
-         
-         tryGetPOIInstance(player.voyageGroupId, out Instance newInstance);
-         Instance inst = newInstance;
-         VoyageGroupInfo newVoyageGroup = null;
-         string loggedVoyageGroupData = "";
-         if (inst != null) {
-            instance = inst;
-            D.adminLog("Found primary Voyage instance: " + player.voyageGroupId + " Instance:{" + newInstance.id + ":" + newInstance.areaKey + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-         } else {
-            if (player.voyageGroupId  > 0) {
-               VoyageGroupManager.self.tryGetPOIGroupById(player.voyageGroupId, out newVoyageGroup);
-               loggedVoyageGroupData = newVoyageGroup == null ? "xx" : newVoyageGroup.voyageId.ToString();
-               D.adminLog("Fetched group by GroupId: " + player.voyageGroupId+ ":" + loggedVoyageGroupData, D.ADMIN_LOG_TYPE.POI_WARP);
-            } else {
-               VoyageGroupManager.self.tryGetGroupByUser(player.userId, out newVoyageGroup);
-               loggedVoyageGroupData = newVoyageGroup == null ? "xx" : newVoyageGroup.voyageId.ToString();
-               D.adminLog("Fetched group by UserId: " + player.voyageGroupId+ ":" + loggedVoyageGroupData, D.ADMIN_LOG_TYPE.POI_WARP);
-            }
-
-            if (newVoyageGroup != null) {
-               tryGetPOIInstance(newVoyageGroup.voyageId, out Instance newerInstance);
-               if (newerInstance != null) {
-                  D.adminLog("Found backup Voyage instance: " + newVoyageGroup.voyageId + " Instance:{" + newerInstance.id + ":" + newerInstance.areaKey + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-                  instance = newerInstance;
-               } else {
-                  D.adminLog("Failed to find backup Voyage instance: " + newVoyageGroup.voyageId + " " + player.voyageGroupId, D.ADMIN_LOG_TYPE.POI_WARP);
-               }
-            } else {
-               D.adminLog("Voyage group does not exist! {" + player.voyageGroupId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-            }
-
-            if (instance == null) {
-               instance = createNewInstance(areaKey, false, player.voyageGroupId);
-               D.adminLog("Failed to get voyage instance, Created new one:: {" + player.voyageGroupId + ":" + loggedVoyageGroupData + "} Instance:{" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-            }
-         }
-      }
-
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
          if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
@@ -156,9 +109,13 @@ public class InstanceManager : MonoBehaviour
                   D.adminLog("Created New Instance for Voyage", D.ADMIN_LOG_TYPE.InstanceProcess);
                }
             }
+         } else if (VoyageManager.isPOIArea(areaKey)) {
+            if (!POISiteManager.self.tryGetInstanceForGroup(player.voyageGroupId, areaKey, out instance)) {
+               D.warning($"Could not determine the POI instance for player {player.userId}, area {areaKey}");
+            }
          }
       } else {
-         if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey)) {
             int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
             if (voyageInstanceId > 0) {
                Instance inst = getInstance(voyageInstanceId);
@@ -576,26 +533,6 @@ public class InstanceManager : MonoBehaviour
          if (i.isVoyage && i.voyageId == voyageId) {
             instance = i;
             return true;
-         }
-      }
-
-      return false;
-   }
-
-   public bool tryGetPOIInstance (int voyageId, out Instance instance) {
-      instance = null;
-
-      foreach (Instance i in _instances.Values) {
-         bool isValidPOI = false;
-         if (AreaManager.self.getMapInfo(i.areaKey) != null) {
-            isValidPOI = AreaManager.self.getMapInfo(i.areaKey).specialType == Area.SpecialType.POI;
-         }
-         if (i.voyageId == voyageId && isValidPOI) {
-            instance = i;
-            D.adminLog("valid instance: {" + i.id + ":" + i.areaKey + "} {" + i.voyageId + " " + voyageId + "} {" + isValidPOI + ":" + i.isVoyage + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-            return true;
-         } else {
-            D.adminLog("invalid instance: {" + i.id + ":" + i.areaKey + "} {" + i.voyageId + " " + voyageId + "} {" + isValidPOI + ":" + i.isVoyage + "}", D.ADMIN_LOG_TYPE.POI_WARP);
          }
       }
 

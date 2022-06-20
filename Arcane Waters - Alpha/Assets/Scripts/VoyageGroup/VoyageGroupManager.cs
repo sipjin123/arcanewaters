@@ -91,6 +91,11 @@ public class VoyageGroupManager : MonoBehaviour
          yield break;
       }
 
+      if (VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage v) && VoyageManager.isPOIArea(v.areaKey)) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "All group members must leave the land area before inviting more!");
+         yield break;
+      }
+
       // Make sure the invitee is online
       NetworkedServer inviteeServer = ServerNetworkingManager.self.getServerContainingUser(inviteeInfo.userId);
       if (inviteeServer == null) {
@@ -409,6 +414,8 @@ public class VoyageGroupManager : MonoBehaviour
 
                errorMessage = "You cannot invite more players while group members are close to danger!";
                return true;
+            } else if (VoyageManager.isPOIArea(voyage.areaKey)) {
+               return voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_HARD;
             } else if (!voyage.isPvP && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
                return true;
             } else if (voyage.isPvP && voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_PVP) {
@@ -416,23 +423,6 @@ public class VoyageGroupManager : MonoBehaviour
             }
          }
       }
-      return false;
-   }
-
-   [Server]
-   public bool tryGetPOIGroupById (int groupId, out VoyageGroupInfo voyageGroup) {
-      voyageGroup = default;
-
-      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (KeyValuePair<int, VoyageGroupInfo> voyageInfo in server.voyageGroups) {
-            D.adminLog("--> {" + voyageInfo.Key + ":" + voyageInfo.Value.groupId + ":" + voyageInfo.Value.voyageId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
-         }
-         if (server.voyageGroups.ContainsKey(groupId)) {
-            voyageGroup = server.voyageGroups[groupId];
-            return true;
-         }
-      }
-
       return false;
    }
 

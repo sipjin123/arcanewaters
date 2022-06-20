@@ -759,10 +759,7 @@ public class ChatManager : GenericGameManager
       // Skip for batch mode
       if (Util.isBatch()) return false;
       
-      GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
-
-      // Check if we're typing in an input field
-      if (currentSelection != null && Util.hasInputField(currentSelection)) {
+      if (Util.isAnyInputFieldFocused()) {
          return true;
       }
 
@@ -1143,7 +1140,7 @@ public class ChatManager : GenericGameManager
          return;
       }
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.Help);
+      PanelManager.self.showPanel(Panel.Type.Help);
    }
 
    #region Private Variables

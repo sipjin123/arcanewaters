@@ -2289,6 +2289,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          transform.position = battleSpot.transform.position;
       }
 
+      // Set steam status based on this battle
+      if (battle != null && isLocalBattler()) {
+         setRichPresenceBasedOnBattle();
+      }
+
       // Remove the indicators
       clearAttackIndicators();
    }
@@ -2975,6 +2980,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // If we're showing a Battle, exit out
          if (CameraManager.isShowingBattle()) {
             CameraManager.disableBattleDisplay();
+         }
+
+         // Reset rich presence
+         if (Global.player != null) {
+            Global.player.updateRichPresenseBasedOnArea(Global.player.areaKey);
          }
 
          // Destroy the attack indicators

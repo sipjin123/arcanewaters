@@ -88,9 +88,16 @@ public class PerformanceUtil : MonoBehaviour {
          _totalRamHistParams.Add("itemids", "33622");
       }
 
-      string url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
-      string user = "integration";
-      string password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
+      string url = "";
+      string user = "";
+      string password = "";
+
+      #if IS_SERVER_BUILD
+      url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
+      user = "integration";
+      password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
+      #endif
+      
       _zabbixContext = new Context(url, user, password);
 
       updateZabbixTotalRam();

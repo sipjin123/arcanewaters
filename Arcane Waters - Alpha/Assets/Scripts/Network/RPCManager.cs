@@ -242,7 +242,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveAuctionInfo (NetworkConnection connection, AuctionItemData auctionInfo) {
-      PanelManager.self.linkIfNotShowing(Panel.Type.Auction);
+      PanelManager.self.showPanel(Panel.Type.Auction);
       ((AuctionPanel) PanelManager.self.get(Panel.Type.Auction)).auctionInfoPanel.receiveAuctionFromServer(auctionInfo);
    }
 
@@ -273,7 +273,7 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
    }
 
@@ -472,7 +472,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveProcessRewardToggle (NetworkConnection connection) {
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
       if (panel.isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
          panel.hide();
       }
    }
@@ -488,7 +488,7 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
    }
 
@@ -516,7 +516,7 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
    }
 
@@ -530,7 +530,7 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
    }
 
@@ -541,7 +541,7 @@ public class RPCManager : NetworkBehaviour
 
       // Close the panel
       if (panel.isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 
@@ -655,7 +655,7 @@ public class RPCManager : NetworkBehaviour
 
       // Close the panel if it is showing
       if (panel.isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
       RewardManager.self.showRecruitmentNotice(companionInfo.companionName, companionInfo.iconPath);
    }
@@ -681,7 +681,7 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
    }
 
@@ -689,7 +689,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
       List<Item> newCastedItems = Util.unserialize<Item>(itemArray);
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.Adventure);
+      PanelManager.self.showPanel(Panel.Type.Adventure);
 
       AdventureShopScreen.self.updateGreetingText(greetingText);
       AdventureShopScreen.self.updatePanelWithItems(gold, newCastedItems);
@@ -697,7 +697,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, string greetingText) {
-      PanelManager.self.linkIfNotShowing(Panel.Type.Merchant);
+      PanelManager.self.showPanel(Panel.Type.Merchant);
       MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), greetingText);
    }
 
@@ -712,7 +712,7 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.Shipyard);
+      PanelManager.self.showPanel(Panel.Type.Shipyard);
 
       ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText, sailorLevel);
    }
@@ -724,7 +724,7 @@ public class RPCManager : NetworkBehaviour
 
       if (forceOpenPanel) {
          if (!panel.isShowing()) {
-            PanelManager.self.linkPanel(Panel.Type.Guild);
+            PanelManager.self.showPanel(Panel.Type.Guild);
          }
 
          // Update the Inventory Panel with the items we received from the server
@@ -740,7 +740,7 @@ public class RPCManager : NetworkBehaviour
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(Panel.Type.Options);
+         PanelManager.self.showPanel(Panel.Type.Options);
       }
 
       // Update the Inventory Panel with the items we received from the server
@@ -755,7 +755,7 @@ public class RPCManager : NetworkBehaviour
       FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass them along to the Flagship panel
@@ -969,7 +969,7 @@ public class RPCManager : NetworkBehaviour
       TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass them along to the Trade History panel
@@ -986,7 +986,7 @@ public class RPCManager : NetworkBehaviour
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass them along to the Leader Boards panel
@@ -1051,7 +1051,7 @@ public class RPCManager : NetworkBehaviour
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -1066,7 +1066,7 @@ public class RPCManager : NetworkBehaviour
       VisitListPanel panel = (VisitListPanel) PanelManager.self.get(Panel.Type.VisitPanel);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -1089,7 +1089,7 @@ public class RPCManager : NetworkBehaviour
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Send the invitation with the received userId
@@ -1104,7 +1104,7 @@ public class RPCManager : NetworkBehaviour
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -1121,7 +1121,7 @@ public class RPCManager : NetworkBehaviour
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -1137,7 +1137,7 @@ public class RPCManager : NetworkBehaviour
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
+         PanelManager.self.showPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -1158,7 +1158,7 @@ public class RPCManager : NetworkBehaviour
       List<Voyage> voyageList = new List<Voyage>(voyageArray);
 
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.Voyage);
+      PanelManager.self.showPanel(Panel.Type.Voyage);
 
       // Pass the data to the panel
       VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
@@ -1177,7 +1177,7 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.ReturnToCurrentVoyagePanel);
+      PanelManager.self.showPanel(Panel.Type.ReturnToCurrentVoyagePanel);
 
       // Pass the data to the panel
       ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
@@ -3227,7 +3227,7 @@ public class RPCManager : NetworkBehaviour
       List<QuestDataNode> questDataNodes = Util.unserialize<QuestDataNode>(rawQuestNodeList);
 
       // Pass the data to the panel
-      PanelManager.self.linkIfNotShowing(panel.type);
+      PanelManager.self.showPanel(panel.type);
       panel.updatePanelWithQuestSelection(questId, questDataNodes.ToArray(), npcId, npcName, friendshipLevel, greetingText, userFlagshipName);
    }
 
@@ -5688,7 +5688,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ClosePanelAfterLeaveGuild () {
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    [Command]
@@ -6610,6 +6610,12 @@ public class RPCManager : NetworkBehaviour
          D.error($"Could not find an exit spawn next to the voyage entrance in area {_player.areaKey}");
       }
 
+      // Check if the player is in a group, linked to a non-league instance
+      if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && _player.tryGetVoyage(out Voyage v) && !v.isLeague) {
+         // Remove the user from his group
+         VoyageGroupManager.self.removeUserFromGroup(groupInfo, _player);
+      }
+
       if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // Create a new league with the same biome than the player's current instance
          if (exitSpawn == null) {
@@ -6621,7 +6627,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Check if the user has already joined a voyage
-      if (_player.tryGetVoyage(out Voyage voyage)) {
+      if (_player.tryGetVoyage(out Voyage voyage) && voyage.isLeague) {
          Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately", false);
 
          // Display a panel with the current voyage map details
@@ -6763,7 +6769,7 @@ public class RPCManager : NetworkBehaviour
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.PvpScoreBoard);
+      PanelManager.self.showPanel(Panel.Type.PvpScoreBoard);
 
       SoundEffectManager.self.playGuiMenuOpenSfx();
 
@@ -6898,7 +6904,7 @@ public class RPCManager : NetworkBehaviour
 
       if (!WorldMapManager.isWorldMapArea(playerToRemove.areaKey)) {
          // If the player is in a voyage area or is in ghost mode, warp him to the closest town
-         if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
+         if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || VoyageManager.isPOIArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
             if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
                playerToRemove.spawnInBiomeHomeTown(Biome.Type.Forest);
             } else {
@@ -6956,6 +6962,19 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (!VoyageManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.isWorldMapArea(_player.areaKey)) {
+         if (VoyageManager.isPOIArea(_player.areaKey)) {
+            // In POI areas, search for the POISite that contains the valid instances for the group
+            if (POISiteManager.self.tryGetInstanceForGroup(_player.voyageGroupId, _player.areaKey, out Instance instance)) {
+               if (instance == _player.getInstance()) {
+                  return true;
+               }
+            }
+
+            if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
+               D.adminLog($"Player can't stay in POI area - invalid instance for area {_player.areaKey}", D.ADMIN_LOG_TYPE.Warp_To_Town);
+               return false;
+            }
+         }
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
@@ -7043,8 +7062,8 @@ public class RPCManager : NetworkBehaviour
       // Check if it appropriate to consume world area visit streak and do so if needed
       checkConsumeWorldAreaVisitStreak();
 
-      // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)
+      // If the area is a PvP area, a League or a TreasureSite, add the player to the GameStats System
+      if (VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)
          || _player.areaKey.Contains(Area.TUTORIAL_AREA) || _player.areaKey.Contains(Area.STARTING_TOWN_SEA)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
@@ -7067,8 +7086,8 @@ public class RPCManager : NetworkBehaviour
       // Send World Map information
       requestWorldMapData();
 
-      // Verify the voyage consistency only if the user is in a voyage group or voyage area
-      if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      // Verify the voyage consistency only if the user is in a group-specific area
+      if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey) && !VoyageManager.isPOIArea(_player.areaKey)) {
          return;
       }
 
@@ -10457,7 +10476,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveUserCountHavingVisitedBiomes (NetworkConnection connection, int forestUserCount) {
-      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      PanelManager.self.showPanel(Panel.Type.NoticeBoard);
       ((NoticeBoardPanel) PanelManager.self.get(Panel.Type.NoticeBoard)).biomeActivityPanelSection.receiveUserCountHavingVisitedBiomes(forestUserCount);
    }
 
@@ -10581,7 +10600,7 @@ public class RPCManager : NetworkBehaviour
       List<Voyage> voyageList = new List<Voyage>(voyageArray);
 
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.NoticeBoard);
+      PanelManager.self.showPanel(Panel.Type.NoticeBoard);
       NoticeBoardPanel panel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
 
       // Pass the data to the panel
@@ -11001,7 +11020,7 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveServerInstanceOverview (InstanceOverview overview) {
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.AdminInstanceList);
+      PanelManager.self.showPanel(Panel.Type.AdminInstanceList);
 
       // Pass the data to the panel
       AdminInstanceListPanel panel = PanelManager.self.get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList);
@@ -11100,7 +11119,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveUserInfoForCharacterInfoPanel (NetworkConnection connection, UserObjects userObjects, Jobs jobXP) {
 
       // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.CharacterInfo);
+      PanelManager.self.showPanel(Panel.Type.CharacterInfo);
 
       // Pass the data to the panel
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);

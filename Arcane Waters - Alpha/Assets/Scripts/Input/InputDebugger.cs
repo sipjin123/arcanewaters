@@ -94,7 +94,7 @@ public class InputDebugger : MonoBehaviour {
          text.text = getBoolString(Util.isGeneralInputAllowed());
       }
       
-      notHasPanelInLinkedList.text = getBoolString(!(PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.get(Panel.Type.PvpScoreBoard).isShowing()));
+      notHasPanelInLinkedList.text = getBoolString(!(PanelManager.self.isAnyPanelShowing() && !PanelManager.self.get(Panel.Type.PvpScoreBoard).isShowing()));
       notPanelManagerIsLoading.text = getBoolString(!PanelManager.isLoading);
       notIsWritingMail.text = getBoolString(!((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail());
       areaManagerHasArea.text = getBoolString(Global.player != null && AreaManager.self.hasArea(Global.player.areaKey));

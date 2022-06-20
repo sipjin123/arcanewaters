@@ -372,7 +372,7 @@ public class NPCPanel : Panel
    }
 
    public void dialogueEndClickedOn () {
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    public void backToQuestSelectionRowClickedOn () {

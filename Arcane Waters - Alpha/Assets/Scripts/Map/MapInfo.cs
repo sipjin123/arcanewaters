@@ -18,7 +18,10 @@ public class MapInfo {
 
    // The display name of the map
    public string displayName;
-      
+
+   // The special type of the map
+   public int specialType;
+
    #endregion
 
    public MapInfo (string mapName, string gameData, int version) {

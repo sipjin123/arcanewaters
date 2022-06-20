@@ -101,7 +101,7 @@ public class TeamCombatPanel : Panel
             }
             //Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray());
 
-            PanelManager.self.unlinkPanel();
+            PanelManager.self.hideCurrentPanel();
          }
       });
    }

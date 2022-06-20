@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
+/// <summary>
+/// Voyages are instances that are created for a specific group and that can only be accessed by that group. This is different from the 'voyage' feature as presented to players.
+/// </summary>
 [Serializable]
 public class Voyage
 {

@@ -24,7 +24,7 @@ public class OutpostPanel : Panel
 
    public void open (Outpost outpost) {
       _outpost = outpost;
-      PanelManager.self.linkIfNotShowing(Type.Outpost);
+      PanelManager.self.showPanel(Type.Outpost);
 
       // Guild name
       guildNameText.text = outpost.guildName;

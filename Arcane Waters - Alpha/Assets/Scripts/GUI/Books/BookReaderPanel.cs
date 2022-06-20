@@ -66,7 +66,7 @@ public class BookReaderPanel : Panel
       _currentBookContent = _currentBook.content;
 
       // Show the panel
-      PanelManager.self.linkIfNotShowing(Type.BookReader);
+      PanelManager.self.showPanel(Type.BookReader);
    }
 
    private void updatePageNumbers () {

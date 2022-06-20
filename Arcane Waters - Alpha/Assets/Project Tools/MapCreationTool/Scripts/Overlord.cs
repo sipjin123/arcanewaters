@@ -52,6 +52,8 @@ namespace MapCreationTool
       public static RemoteMaps remoteMaps { get; private set; }
       public static RemoteSpawns remoteSpawns { get; private set; }
 
+      public static int authUserId => MasterToolAccountManager.self.currentAccountID;
+
       private void Awake () {
          CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
 

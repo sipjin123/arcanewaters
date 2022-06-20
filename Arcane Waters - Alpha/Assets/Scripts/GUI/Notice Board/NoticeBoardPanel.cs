@@ -101,6 +101,12 @@ public class NoticeBoardPanel : Panel
       }
    }
 
+   public override void hide () {
+      base.hide();
+      biomeActivityPanelSection.hide();
+      pvpArenaSection.hide();
+   }
+
    #region Private Variables
 
    // The current mode

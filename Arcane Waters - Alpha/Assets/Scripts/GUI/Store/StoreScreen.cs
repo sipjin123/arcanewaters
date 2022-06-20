@@ -111,7 +111,7 @@ public class StoreScreen : Panel
 
       // Display the panel
       if (!isShowing()) {
-         PanelManager.self.linkPanel(Type.Store);
+         PanelManager.self.showPanel(Type.Store);
       }
    }
 

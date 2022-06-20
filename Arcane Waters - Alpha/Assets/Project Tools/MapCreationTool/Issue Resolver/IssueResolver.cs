@@ -140,7 +140,7 @@ namespace MapCreationTool.IssueResolving
                   if (config.createNewVersion) {
                      bool wasLatestVersion = DrawBoard.loadedVersion.map.publishedVersion == DrawBoard.loadedVersion.version;
                      Action uploadAction = () => {
-                        MapVersion uploadedVersion = DB_Main.createNewMapVersion(newVersion, biome);
+                        MapVersion uploadedVersion = DB_Main.createNewMapVersion(newVersion, biome, Overlord.authUserId, config.comment);
 
                         // Publish the uploaded version if configured and the previous version was the latest one before
                         if (config.publishMapIfLatest) {
@@ -156,7 +156,9 @@ namespace MapCreationTool.IssueResolving
                   } else {
                      newVersion.version = DrawBoard.loadedVersion.version;
                      newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
-                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion, biome, editorType, false), newVersion.map.name));
+                     scheduledUpload.Enqueue((() =>
+                        DB_Main.updateMapVersion(newVersion, biome, editorType, Overlord.authUserId, config.comment, false),
+                        newVersion.map.name));
                   }
                }
 
@@ -710,6 +712,7 @@ namespace MapCreationTool.IssueResolving
          public bool saveMaps;
          public bool createNewVersion;
          public bool publishMapIfLatest;
+         public string comment;
       }
    }
 }

@@ -107,7 +107,7 @@ public class AdminInstanceListPanel : Panel
 
    public void warpToVoyage (Voyage voyage) {
       Global.player.rpc.Cmd_WarpAdminToVoyageInstanceAsGhost(voyage.voyageId, voyage.areaKey);
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    public override void hide () {

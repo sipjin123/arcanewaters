@@ -23,7 +23,7 @@ public class CustomMapsPanel : Panel
 
    public void displayFor (CustomMapManager manager, bool warpAfterSelecting = false) {
       // Show panel if it is not showing already
-      PanelManager.self.linkIfNotShowing(type);
+      PanelManager.self.showPanel(type);
 
       _customMapManager = manager;
       _warpAfterSelecting = warpAfterSelecting;
@@ -78,7 +78,7 @@ public class CustomMapsPanel : Panel
       }
 
       if (_warpAfterSelecting) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
 
          if (customMapKey.Equals(_customMapManager?.mapTypeAreaKey)) {
             if (GuildPanel.self != null) {

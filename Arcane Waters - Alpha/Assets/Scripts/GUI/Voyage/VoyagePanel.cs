@@ -60,7 +60,7 @@ public class VoyagePanel : Panel
       }
 
       // Close the panel
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    #region Private Variables

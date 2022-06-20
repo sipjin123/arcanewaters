@@ -110,7 +110,13 @@ public class WorldMapSpotsGenerationTool : MonoBehaviour
                   Map m = dataField.objectValue<Map>();
                   spot.target = m.name;
                   spot.displayName = m.displayName;
-                  spot.specialType = (int) m.specialType;
+                  spot.specialType = (int)m.specialType;
+
+                  MapInfo targetMapInfo = JsonUtility.FromJson<MapInfo>(DB_Main.getMapInfo(spot.target));
+                  if (targetMapInfo != null) {
+                     spot.displayName = targetMapInfo.displayName;
+                     spot.specialType = targetMapInfo.specialType;
+                  }
                }
 
                DataField dfSpawnTarget = prefab.d.FirstOrDefault(d => d.k == DataField.WARP_TARGET_SPAWN_KEY);

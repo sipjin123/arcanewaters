@@ -197,6 +197,8 @@ public class TitleScreen : MonoBehaviour {
    public void showLoginPanels() {
       defaultLoginPanel.SetActive(!SteamManager.Initialized);
       steamLoginPanel.SetActive(SteamManager.Initialized);
+
+      SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_AT_MENU_KEY);
    }
 
    public void hideLoginPanels() {
@@ -312,7 +314,7 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void openOptions () {
-      PanelManager.self.linkPanel(Panel.Type.Options);
+      PanelManager.self.showPanel(Panel.Type.Options);
    }
 
    private string getTermsOfServiceKey () {

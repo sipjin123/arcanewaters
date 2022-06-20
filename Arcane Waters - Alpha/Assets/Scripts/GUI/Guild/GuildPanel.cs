@@ -329,7 +329,7 @@ public class GuildPanel : Panel {
       // Exit all panels
       PanelManager.self.confirmScreen.hide();
       if (Global.player.guildRankPriority != 0) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 
@@ -415,7 +415,7 @@ public class GuildPanel : Panel {
 
    public void goToGuildMapButtonClicked () {
       Global.player.Cmd_GoToGuildMap();
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    #region Sorting

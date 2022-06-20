@@ -91,7 +91,7 @@ public class AdminPanel : Panel
          refreshMetrics();
       }
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.Admin);
+      PanelManager.self.showPanel(Panel.Type.Admin);
    }
 
    private void requestRemoteSettings () {

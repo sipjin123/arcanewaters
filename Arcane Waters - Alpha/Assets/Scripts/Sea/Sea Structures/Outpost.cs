@@ -23,6 +23,9 @@ public class Outpost : SeaStructureTower, IObserver
 
    // List of outposts in the client
    public static List<SeaStructure> outpostsClient = new List<SeaStructure>();
+   
+   [SyncVar]
+   public bool displayMaterials;
 
    // Renderer, which displays the dock
    public SpriteRenderer dockRenderer;
@@ -73,8 +76,8 @@ public class Outpost : SeaStructureTower, IObserver
       if (NetworkClient.active) {
          Minimap.self.addOutpostIcon(this);
          if (initialMaterials < 1) {
+            supplyMaterialPanel.SetActive(displayMaterials);
             materialRequirementText.text = 0 + "/" + MATERIAL_REQUIREMENT;
-            supplyMaterialPanel.SetActive(true);
             supplyMaterialBlocker.SetActive(false);
          }
       }
@@ -218,7 +221,7 @@ public class Outpost : SeaStructureTower, IObserver
    }
 
    [TargetRpc]
-   public void Rpc_ReceiveFailMessage (NetworkConnection connection, string message) {
+   public void Target_ReceiveFailMessage (NetworkConnection connection, string message) {
       ChatManager.self.addChat(message, ChatInfo.Type.System);
       supplyMaterialBlocker.SetActive(false);
       addMaterialButton.interactable = true;
@@ -261,12 +264,12 @@ public class Outpost : SeaStructureTower, IObserver
    }
 
    public void setAsBuildHighlight (bool validBuild, Direction direction) {
+      supplyMaterialPanel.SetActive(false);
       foreach (SpriteRenderer ren in _spriteRenderers) {
          Util.setAlpha(ren, validBuild ? 1f : 0.5f);
       }
 
       foodBar.gameObject.SetActive(false);
-
       setDirection(direction);
 
       // Important to disable colliders after SetDirection, since that adds another collider

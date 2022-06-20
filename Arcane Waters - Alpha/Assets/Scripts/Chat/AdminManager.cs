@@ -20,7 +20,8 @@ public class AdminManager : NetworkBehaviour
 {
    #region Public Variables
 
-   public enum AdminSpriteType {
+   public enum AdminSpriteType
+   {
       None = 0,
       Npc = 1,
       Enemy = 2
@@ -142,27 +143,27 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("log_battle", "Logs the current battle manager info", logBattle, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
       cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "amount" }));
-      
+
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
       cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
       cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
-      
+
       cm.addCommand(new CommandData("log", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
       cm.addCommand(new CommandData("change_guild_name", "Changes the guild name", requestGuildNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "newGuildName" }));
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
       cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
       cm.addCommand(new CommandData("set_input_debugger", "Enables/disables the input debugger", requestSetInputDebugger, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
-      
+
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
       cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
       cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds", "enemy" }));
       cm.addCommand(new CommandData("freeze_ships", "Freezes all bot ships", freezeShips, requiredPrefix: CommandType.Admin));
-      
+
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
@@ -171,7 +172,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
       cm.addCommand(new CommandData("name_change", "Change the name of another player", requestNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername", "reason" }));
-      
+
       // Support commands
       cm.addCommand(new CommandData("force_single_player", "Forces Single Player mode for a specific account", requestForceSinglePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "reason" }));
       cm.addCommand(new CommandData("kick", "Disconnects a player from the game", requestKickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "reason" }));
@@ -1867,24 +1868,28 @@ public class AdminManager : NetworkBehaviour
                   _player.Target_ReceiveNormalChat(string.Format("You can't {0} yourself.", currAction), ChatInfo.Type.Error);
                });
             } else {
-               List<PenaltyInfo.ActionType> penaltyTypes = new List<PenaltyInfo.ActionType>();
+               List<PenaltyInfo.ActionType> penalties = new List<PenaltyInfo.ActionType>();
 
-               if (penaltyType == PenaltyInfo.ActionType.LiftMute) {
-                  penaltyTypes.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.Mute, PenaltyInfo.ActionType.StealthMute });
-               } else if (penaltyType == PenaltyInfo.ActionType.LiftBan) {
-                  penaltyTypes.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.SoloBan, PenaltyInfo.ActionType.SoloPermanentBan });
+               if (penaltyType == PenaltyInfo.ActionType.LiftMute || penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute) {
+                  penalties.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.Mute, PenaltyInfo.ActionType.StealthMute });
+               } else if (penaltyType == PenaltyInfo.ActionType.LiftBan || penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
+                  penalties.AddRange(new List<PenaltyInfo.ActionType> { PenaltyInfo.ActionType.SoloBan, PenaltyInfo.ActionType.SoloPermanentBan });
                } else {
-                  penaltyTypes.Add(penaltyType);
+                  penalties.Add(penaltyType);
                }
 
-               PenaltyInfo currPenaltyInfo = DB_Main.getPenaltyForAccount(targetInfo.accountId, penaltyTypes);
+               PenaltyInfo currPenaltyInfo = DB_Main.getPenaltyForAccount(targetInfo.accountId, penalties);
                PenaltyInfo newPenaltyInfo = new PenaltyInfo(_player, targetInfo, penaltyType, reason, seconds);
+
+               if (currPenaltyInfo != null && newPenaltyInfo.IsLiftType()) {
+                  newPenaltyInfo.id = currPenaltyInfo.id;
+               }
 
                if (penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
                   newPenaltyInfo.penaltyType = targetInfo.forceSinglePlayer ? PenaltyInfo.ActionType.LiftForceSinglePlayer : PenaltyInfo.ActionType.ForceSinglePlayer;
                }
 
-               if (currPenaltyInfo != null && !currPenaltyInfo.IsLiftType()) {
+               if (currPenaltyInfo != null && !newPenaltyInfo.IsLiftType()) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat(string.Format("{0} is already {1}.", targetInfo.username, pastAction), ChatInfo.Type.Error);
                   });
@@ -1898,7 +1903,7 @@ public class AdminManager : NetworkBehaviour
 
                      if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute) {
                         successMessage += $"has been {pastAction} for {seconds} seconds.";
-                     } else if (penaltyType == PenaltyInfo.ActionType.LiftMute) {
+                     } else if (penaltyType == PenaltyInfo.ActionType.LiftMute || penaltyType == PenaltyInfo.ActionType.LiftBan) {
                         successMessage += $"is not {pastAction} anymore.";
                      } else if (penaltyType == PenaltyInfo.ActionType.Kick || penaltyType == PenaltyInfo.ActionType.SoloBan ||
                      penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
@@ -1917,15 +1922,19 @@ public class AdminManager : NetworkBehaviour
                         successMessage += "is no longer locked to Single Player Mode.";
                      }
 
-                     _player.Target_ReceiveNormalChat(successMessage, ChatInfo.Type.System);
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        _player.Target_ReceiveNormalChat(successMessage, ChatInfo.Type.System);
+                     });
 
                      if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.StealthMute ||
                      penaltyType == PenaltyInfo.ActionType.LiftMute || penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ||
                      penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
-                        ServerNetworkingManager.self.applyPenaltyToPlayer(targetInfo.accountId, penaltyType, seconds);
-                        if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
-                           ServerNetworkingManager.self.censorGlobalMessagesFromUser(targetInfo.userId);
-                        }
+                        UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                           ServerNetworkingManager.self.applyPenaltyToPlayer(targetInfo.accountId, penaltyType, seconds);
+                           if (penaltyType == PenaltyInfo.ActionType.Mute || penaltyType == PenaltyInfo.ActionType.SoloBan || penaltyType == PenaltyInfo.ActionType.SoloPermanentBan) {
+                              ServerNetworkingManager.self.censorGlobalMessagesFromUser(targetInfo.userId);
+                           }
+                        });
                      }
                   } else {
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -3400,7 +3409,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Handle warping to an instance that is specific to a group
-      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey) || VoyageManager.isPvpArenaArea(targetLocation.areaKey)) {
+      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey) || VoyageManager.isPvpArenaArea(targetLocation.areaKey) || VoyageManager.isPOIArea(targetLocation.areaKey)) {
          if (!VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage targetVoyage)) {
             ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: could not find the target voyage.");
             return;

@@ -118,7 +118,7 @@ public class RestartManager : GenericGameManager
    }
 
    private IEnumerator CO_trackTimeToServerRestart () {
-      double[] secondsDiff = { 60, 30, 10 };
+      double[] secondsDiff = {30*60, 20*60, 10*60, 5*60, 60, 30, 10 };
 
       // Reset server restart sheduled flag if restart time is expired
       if (_isServerRestartScheduled && _timeOfNextServerRestart < DateTime.UtcNow) {

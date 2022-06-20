@@ -64,6 +64,7 @@ namespace MapCreationTool
       public static VersionListPanel versionListPanel { get; private set; }
       public static SettingsPanel settingsPanel { get; private set; }
       public static MapDetailsPanel mapDetailsPanel { get; private set; }
+      public static AdditionalInputPanel additionalInputField { get; private set; }
       public static MapObjectStateVariables.ObjectStateEditorPanel objectStateEditorPanel { get; private set; }
 
       // Reference to self
@@ -142,6 +143,7 @@ namespace MapCreationTool
          settingsPanel = GetComponentInChildren<SettingsPanel>();
          mapDetailsPanel = GetComponentInChildren<MapDetailsPanel>();
          objectStateEditorPanel = GetComponentInChildren<MapObjectStateVariables.ObjectStateEditorPanel>();
+         additionalInputField = GetComponentInChildren<AdditionalInputPanel>();
 
          uiPanels = GetComponentsInChildren<UIPanel>();
 
@@ -346,50 +348,59 @@ namespace MapCreationTool
                messagePanel.displayUnauthorized("You are not the creator of this map");
                return;
             }
-            saveButton.interactable = false;
-            try {
-               MapVersion mapVersion = new MapVersion {
-                  mapId = DrawBoard.loadedVersion.map.id,
-                  version = DrawBoard.loadedVersion.version,
-                  createdAt = DrawBoard.loadedVersion.createdAt,
-                  updatedAt = DateTime.UtcNow,
-                  editorData = DrawBoard.instance.formSerializedData(),
-                  gameData = DrawBoard.instance.formExportData(),
-                  map = DrawBoard.loadedVersion.map,
-                  spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapId, DrawBoard.loadedVersion.version)
-               };
 
-               mapVersion.map.editorType = Tools.editorType;
-               mapVersion.map.biome = Tools.biome;
+            additionalInputField.open(
+               "Describe changes",
+               "Describe the changes that were made",
+               () => saveProcess_commentAdded(additionalInputField.string1Input),
+               null);
+         }
+      }
 
-               if (!Overlord.validateMap(out string errors)) {
-                  throw new Exception("Failed validating a map:" + Environment.NewLine + Environment.NewLine + errors);
+      private void saveProcess_commentAdded (string comment) {
+         saveButton.interactable = false;
+         try {
+            MapVersion mapVersion = new MapVersion {
+               mapId = DrawBoard.loadedVersion.map.id,
+               version = DrawBoard.loadedVersion.version,
+               createdAt = DrawBoard.loadedVersion.createdAt,
+               updatedAt = DateTime.UtcNow,
+               editorData = DrawBoard.instance.formSerializedData(),
+               gameData = DrawBoard.instance.formExportData(),
+               map = DrawBoard.loadedVersion.map,
+               spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapId, DrawBoard.loadedVersion.version)
+            };
+
+            mapVersion.map.editorType = Tools.editorType;
+            mapVersion.map.biome = Tools.biome;
+
+            if (!Overlord.validateMap(out string errors)) {
+               throw new Exception("Failed validating a map:" + Environment.NewLine + Environment.NewLine + errors);
+            }
+
+            UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string dbError = null;
+               try {
+                  DB_Main.updateMapVersion(mapVersion, Tools.biome, Tools.editorType, Overlord.authUserId, comment, true);
+               } catch (Exception ex) {
+                  dbError = ex.Message;
                }
 
-               UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  string dbError = null;
-                  try {
-                     DB_Main.updateMapVersion(mapVersion, Tools.biome, Tools.editorType, true);
-                  } catch (Exception ex) {
-                     dbError = ex.Message;
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (dbError != null) {
+                     messagePanel.displayError(dbError);
+                  } else {
+                     DrawBoard.changeLoadedVersion(mapVersion);
+                     Overlord.loadAllRemoteData();
                   }
-
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     if (dbError != null) {
-                        messagePanel.displayError(dbError);
-                     } else {
-                        DrawBoard.changeLoadedVersion(mapVersion);
-                        Overlord.loadAllRemoteData();
-                     }
-                     saveButton.interactable = true;
-                  });
+                  saveButton.interactable = true;
                });
-               loadingPanel.display("Saving map version", dbTask);
-            } catch (Exception ex) {
-               saveButton.interactable = true;
-               messagePanel.displayError(ex.Message);
-               Debug.Log(ex);
-            }
+            });
+            loadingPanel.display("Saving map version", dbTask);
+         } catch (Exception ex) {
+            saveButton.interactable = true;
+            messagePanel.displayError(ex.Message);
+            Debug.Log(ex);
          }
       }
 
@@ -421,6 +432,14 @@ namespace MapCreationTool
             return;
          }
 
+         additionalInputField.open(
+               "Describe changes",
+               "Describe the changes that were made",
+               () => newMapVersion_commentAdded(additionalInputField.string1Input),
+               null);
+      }
+
+      private void newMapVersion_commentAdded (string comment) {
          try {
             MapVersion mapVersion = new MapVersion {
                mapId = DrawBoard.loadedVersion.map.id,
@@ -441,7 +460,7 @@ namespace MapCreationTool
                string dbError = null;
                MapVersion createdVersion = null;
                try {
-                  createdVersion = DB_Main.createNewMapVersion(mapVersion, Tools.biome);
+                  createdVersion = DB_Main.createNewMapVersion(mapVersion, Tools.biome, Overlord.authUserId, comment);
                } catch (Exception ex) {
                   dbError = ex.Message;
                }

@@ -348,24 +348,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (isLocalPlayer) {
-         // If the player is sitting down and tries to move or jump, get up
-         Vector2 movementInput = InputManager.getMovementInput();
-         bool anyMotion = Mathf.Abs(movementInput.x) >= 0.5f || Mathf.Abs(movementInput.y) >= 0.5f;
+         if (!ChatManager.isTyping() && !PanelManager.self.isAnyPanelShowing()) {
+            // If the player is sitting down and tries to move or jump, get up
+            Vector2 movementInput = InputManager.getMovementInput();
+            bool anyMotion = Mathf.Abs(movementInput.x) >= 0.5f || Mathf.Abs(movementInput.y) >= 0.5f;
 
-         if (sittingInfo.isSitting) {
-            if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-               exitChair();
+            if (sittingInfo.isSitting) {
+               if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+                  exitChair();
+               }
             }
-         }
 
-         // If the player is emoting and tries to move or jump, stop
-         if (isEmoting()) {
-            if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-               stopEmote();
+            // If the player is emoting and tries to move or jump, stop
+            if (isEmoting()) {
+               if (anyMotion || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+                  stopEmote();
+               }
             }
-         }
 
-         checkIfPlayerIsStuck();
+            checkIfPlayerIsStuck();
+         }
       }
    }
 
@@ -808,7 +810,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (
          InputManager.self.inputMaster.General.InteractClick.WasPressedThisFrame() &&
-         !PanelManager.self.hasPanelInLinkedList() &&
+         !PanelManager.self.isAnyPanelShowing() &&
          !PanelManager.self.isFullScreenSeparatePanelShowing()
       ) {
          NetEntity body = getClickedBody();
@@ -922,6 +924,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
       List<NPC> npcsNearby = new List<NPC>();
       List<TreasureChest> treasuresNearby = new List<TreasureChest>();
+      List<VaryingStateObject> objectsNearby = new List<VaryingStateObject>();
 
       int currentCount = 0;
       if (hits.Length > 0) {
@@ -931,13 +934,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
             currentCount++;
 
-            if (hit.GetComponent<NPC>() != null) {
-               npcsNearby.Add(hit.GetComponent<NPC>());
+            NPC hitNpc = hit.GetComponent<NPC>();
+            if (hitNpc) {
+               npcsNearby.Add(hitNpc);
             }
 
             TreasureChest chest = hit.GetComponent<TreasureChest>();
             if (chest && !chest.hasBeenOpened() && chest.instanceId == instanceId) {
-               treasuresNearby.Add(hit.GetComponent<TreasureChest>());
+               treasuresNearby.Add(chest);
+            }
+
+            // If we clicked on an interactable object, interact with it
+            VaryingStateObject varyingStateObject = hit.GetComponent<VaryingStateObject>();
+            if (varyingStateObject != null && varyingStateObject.clientTriesInteracting(transform.position)) {
+               objectsNearby.Add(varyingStateObject);
             }
          }
 
@@ -947,10 +957,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
 
          // Loot the nearest lootbag/treasure chest
-         interactNearestLoot(treasuresNearby);
-
-         // If there are no loots nearby, interact with nearest npc
-         if (treasuresNearby.Count < 1) {
+         if (treasuresNearby.Count > 0) {
+            interactNearestLoot(treasuresNearby);
+         } else if (objectsNearby.Count > 0) {
+            interactNearestVaryingStateObject(objectsNearby);
+         } else if (npcsNearby.Count > 0) {
             interactNearestNpc(npcsNearby);
          }
       }
@@ -1128,6 +1139,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          forceLookAt(targetNpc.sortPoint.transform.position);
       } else {
          npcList.Clear();
+      }
+   }
+
+   private void interactNearestVaryingStateObject (List<VaryingStateObject> objectList) {
+      VaryingStateObject targetObject = null;
+
+      float nearestTargetDistance = float.MaxValue;
+      foreach (VaryingStateObject obj in objectList) {
+         float objDistance = Vector2.Distance(transform.position, obj.transform.position);
+         if (objDistance < nearestTargetDistance) {
+            nearestTargetDistance = objDistance;
+            targetObject = obj;
+         }
+      }
+
+      if (targetObject != null) {
+         targetObject.clientTriesInteracting(transform.position);
+         forceLookAt(targetObject.transform.position);
+      } else {
+         objectList.Clear();
       }
    }
 

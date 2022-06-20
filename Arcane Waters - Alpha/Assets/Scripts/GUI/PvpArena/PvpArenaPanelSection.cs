@@ -75,7 +75,7 @@ public class PvpArenaPanelSection : MonoBehaviour
 
    public void joinPvpArena (Voyage voyage, PvpTeamType team) {
       Global.player.rpc.Cmd_JoinPvpArena(voyage.voyageId, team);
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    public bool isShowing () {

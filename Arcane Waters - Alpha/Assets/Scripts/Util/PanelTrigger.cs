@@ -25,7 +25,7 @@ public class PanelTrigger : MonoBehaviour {
 
       // Only do this for our own player
       if (entity != null && entity == Global.player) {
-         PanelManager.self.linkPanel(panelType);
+         PanelManager.self.showPanel(panelType);
       }
    }
 

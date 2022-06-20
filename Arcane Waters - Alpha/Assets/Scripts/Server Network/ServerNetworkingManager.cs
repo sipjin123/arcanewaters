@@ -401,6 +401,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_RequestVoyageInstanceCreation, parameters);
    }
 
+   public void createPOIInstanceInServer (int serverPort, int voyageGroupId, string areaKey) {
+      server.InvokeServerRpc(server.MasterServer_CreatePOIInstanceInServer, serverPort, voyageGroupId, areaKey);
+   }
+
    public void sendVoyageGroupCompositionToMembers (int groupId) {
       server.InvokeServerRpc(server.MasterServer_SendVoyageGroupCompositionToMembers, groupId);
    }

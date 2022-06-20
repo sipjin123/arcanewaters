@@ -412,6 +412,12 @@ public class VoyageManager : GenericGameManager {
             Instance instance = InstanceManager.self.getInstance(admin.instanceId);
             StartCoroutine(CO_ForceAdminWarpToTreasureSite(admin, newArea, instance.biome));
          }
+      } else if (isPOIArea(newArea)) {
+         if (admin.tryGetVoyage(out Voyage v) && string.Equals(v.areaKey, newArea)) {
+            admin.spawnInNewMap(v.voyageId, newArea, Direction.South);
+         } else {
+            POISiteManager.self.warpUserToPOIArea(admin, newArea, "", Direction.South);
+         }
       }
    }
 

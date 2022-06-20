@@ -59,7 +59,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
          return false;
       }
 
-      return instance.isPvP || instance.isVoyage || instance.isLeague || VoyageManager.isTreasureSiteArea(instance.areaKey);
+      return instance.isPvP || instance.isLeague || VoyageManager.isTreasureSiteArea(instance.areaKey);
    }
 
    private void updateVisibilityCheck () {

@@ -72,28 +72,28 @@ public class RewardManager : MonoBehaviour {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setItemDataGroup(loots);
-      PanelManager.self.linkPanel(Panel.Type.Reward);
+      PanelManager.self.showPanel(Panel.Type.Reward);
    }
 
    public void showRecruitmentNotice (string recruitedName, string recruitedIconPath) {
       // Calls the panel and injects the info of the recruited npc
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setRecruitmentData(recruitedName, recruitedIconPath);
-      PanelManager.self.linkPanel(Panel.Type.Reward);
+      PanelManager.self.showPanel(Panel.Type.Reward);
    }
 
    public void showAbilityRewardNotice (string abilityName, string abilityIconPath) {
       // Calls the panel and injects the info of the rewarded ability
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setAbilityReward(abilityName, abilityIconPath);
-      PanelManager.self.linkPanel(Panel.Type.Reward);
+      PanelManager.self.showPanel(Panel.Type.Reward);
    }
 
    public void showItemInRewardPanel (Item loot) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setItemData(loot);
-      PanelManager.self.linkPanel(Panel.Type.Reward);
+      PanelManager.self.showPanel(Panel.Type.Reward);
    }
 
    #region Private Variables

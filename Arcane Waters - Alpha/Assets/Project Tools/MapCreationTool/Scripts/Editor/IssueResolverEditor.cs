@@ -11,6 +11,9 @@ namespace MapCreationTool.IssueResolving
       private bool createNewVersion = true;
       private bool publishMapIfLatest = false;
 
+      // Explains what are we doing by running this issue resolver
+      public string comment;
+
       public override void OnInspectorGUI () {
          DrawDefaultInspector();
 
@@ -22,6 +25,8 @@ namespace MapCreationTool.IssueResolving
          createNewVersion = EditorGUILayout.Toggle("Create new version", createNewVersion);
          EditorGUILayout.LabelField("If we are saving a new version and the previous version was published, should we publish this one?", EditorStyles.wordWrappedMiniLabel);
          publishMapIfLatest = EditorGUILayout.Toggle("Publish if latest", publishMapIfLatest);
+         EditorGUILayout.LabelField("Will be saved in map change history, if maps are saved", EditorStyles.wordWrappedMiniLabel);
+         comment = EditorGUILayout.TextField(comment, "Comment");
 
          if (Application.isEditor && Application.isPlaying && Overlord.instance != null && IssueResolver.instance != null && Overlord.allRemoteDataLoaded && !IssueResolver.running) {
             if (GUILayout.Button("Resolve Issues")) {
@@ -30,7 +35,8 @@ namespace MapCreationTool.IssueResolving
                      alterData = alterData,
                      saveMaps = saveMaps,
                      createNewVersion = createNewVersion,
-                     publishMapIfLatest = publishMapIfLatest
+                     publishMapIfLatest = publishMapIfLatest,
+                     comment = comment
                   });
                }
             }

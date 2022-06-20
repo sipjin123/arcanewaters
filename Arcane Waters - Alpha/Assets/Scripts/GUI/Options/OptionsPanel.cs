@@ -619,7 +619,7 @@ public class OptionsPanel : Panel
 
             // Close this panel
             if (isShowing()) {
-               PanelManager.self.unlinkPanel();
+               PanelManager.self.hideCurrentPanel();
             }
          }
 
@@ -646,7 +646,7 @@ public class OptionsPanel : Panel
          PanelManager.self.countdownScreen.show();
 
          // Close this panel
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       } else {
          logOut();
       }
@@ -661,7 +661,7 @@ public class OptionsPanel : Panel
 
       // Close this panel
       if (isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
    }
 
@@ -670,11 +670,11 @@ public class OptionsPanel : Panel
    }
 
    public void onKeybindingsButtonPress () {
-      PanelManager.self.linkIfNotShowing(Type.Keybindings);
+      PanelManager.self.showPanel(Type.Keybindings);
    }
 
    public void onGifButtonPress () {
-      PanelManager.self.linkIfNotShowing(Type.GIFReplaySettings);
+      PanelManager.self.showPanel(Type.GIFReplaySettings);
    }
 
    public void onExitButtonPress () {
@@ -689,7 +689,7 @@ public class OptionsPanel : Panel
          return;
       }
 
-      PanelManager.self.linkIfNotShowing(Panel.Type.Help);
+      PanelManager.self.showPanel(Panel.Type.Help);
    }
 
    public void logOut () {
@@ -705,7 +705,7 @@ public class OptionsPanel : Panel
 
       // Close this panel
       if (isShowing()) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
 
       LoadingUtil.executeAfterFade(() => {

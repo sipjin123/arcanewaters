@@ -74,7 +74,7 @@ public class WorldMapBiome : MonoBehaviour
    }
 
    public void onLocationButtonPressed (string areaKey) {
-      PanelManager.self.unlinkPanel();
+      PanelManager.self.hideCurrentPanel();
    }
 
    #region Private Variables

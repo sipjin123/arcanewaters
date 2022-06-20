@@ -661,6 +661,17 @@ public class Util : MonoBehaviour
       ExecuteEvents.Execute(button.gameObject, null, ExecuteEvents.submitHandler);
    }
 
+   public static bool isAnyInputFieldFocused () {
+      GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
+
+      // Check if we're typing in an input field
+      if (currentSelection != null && Util.hasInputField(currentSelection)) {
+         return true;
+      }
+
+      return false;
+   }
+
    public static bool isServerBuild () {
       bool isServerBuild = false;
 
@@ -1202,7 +1213,7 @@ public class Util : MonoBehaviour
    }
 
    public static bool isGeneralInputAllowed () {
-      return !((PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.get(Panel.Type.PvpScoreBoard).isShowing()) ||
+      return !((PanelManager.self.isAnyPanelShowing() && !PanelManager.self.get(Panel.Type.PvpScoreBoard).isShowing()) ||
          PanelManager.isLoading ||
          ChatPanel.self.inputField.isFocused ||
          ChatPanel.self.nameInputField.isFocused ||
@@ -1443,7 +1454,7 @@ public class Util : MonoBehaviour
 
       // Close any visible panel
       if (PanelManager.self != null) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
 
       // Activate the Title Screen camera
@@ -1492,7 +1503,7 @@ public class Util : MonoBehaviour
 
       // Close any visible panel
       if (PanelManager.self != null) {
-         PanelManager.self.unlinkPanel();
+         PanelManager.self.hideCurrentPanel();
       }
 
       // Activate the Title Screen camera
