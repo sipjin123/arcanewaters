@@ -292,6 +292,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public double lastCastBlockTime;
    public string lastCastData;
 
+   // The battle effect holder for players to display
+   public BattlerEffectHolder playerBattleEffectHolder;
+
    // Caches the sizes of the monsters in pixel for offset purposes
    public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
@@ -525,6 +528,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    private void Update () {
       if (!hasAssignedNetId) {
          return;
+      }
+
+      // For pvp combat, make sure the visual display on top of the user is shown
+      if (isPvp && playerBattleEffectHolder != null && (selectedBattleBar != null && !selectedBattleBar.gameObject.activeInHierarchy)) {
+         if (debuffList.Count > 0) {
+            foreach (KeyValuePair<Status.Type, StatusData> debuffStat in debuffList) {
+               playerBattleEffectHolder.updateEffect(debuffStat.Key, true);
+            }
+         } else {
+            playerBattleEffectHolder.updateEffect(Status.Type.None, false);
+         }
+      }
+
+      // Make sure the health bar is enabled for the user on pvp
+      if (selectedBattleBar != null && isPvp && BattleSelectionManager.self.selectedBattler == this && !isLocalBattler()) {
+         selectedBattleBar.toggleDisplay(true, true);
       }
 
       if (isAlreadyDead && !hasPlayedDeathAnim) {
@@ -957,6 +976,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (battlerType == BattlerType.AIEnemyControlled && BattleSelectionManager.self.selectedBattler == this) {
             showBattleBar = true;
          }
+      }
+
+      if (isPvp) {
+         showBattleBar = true;
       }
 
       if (selectedBattleBar != null) {

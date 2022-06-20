@@ -408,6 +408,11 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void triggerAbility (AbilityButton abilityButton, AbilityType abilityType) {
+      if (_playerLocalBattler != null && _playerLocalBattler.isDisabledByDebuff) {
+         D.adminLog("Cant cast ability! Still disabled!", D.ADMIN_LOG_TYPE.CombatStatus);
+         return;
+      }
+
       deselectOtherAbilities();
 
       // If no target, start selecting

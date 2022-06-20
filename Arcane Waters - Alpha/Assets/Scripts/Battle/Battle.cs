@@ -228,7 +228,9 @@ public class Battle : NetworkBehaviour {
                         }*/
                         break;
                      case Status.Type.Stunned:
-                        battler.isDisabledByDebuff = true;
+                        if (!battler.isDisabledByDebuff) {
+                           battler.isDisabledByDebuff = true;
+                        }
                         break;
                   }
 

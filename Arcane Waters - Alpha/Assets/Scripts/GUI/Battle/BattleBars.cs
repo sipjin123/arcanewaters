@@ -166,6 +166,9 @@ public class BattleBars : MonoBehaviour {
 
          // Remove all expired stats from the GUI Canvas
          for (int i = 0; i < expiredStatList.Count; i++) {
+            if (expiredStatList[0] == Status.Type.Stunned && !_battler.canCastAbility()) {
+               _battler.setBattlerCanCastAbility(true);
+            }
             removeDebuffStatus(expiredStatList[0]);
             expiredStatList.RemoveAt(0);
          }

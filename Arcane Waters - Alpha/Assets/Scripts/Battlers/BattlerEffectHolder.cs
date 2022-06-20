@@ -15,24 +15,36 @@ public class BattlerEffectHolder : MonoBehaviour {
    #endregion
 
    public void updateEffect (Status.Type statusType, bool isEnabled) {
-      burningEffectObj.SetActive(false);
-      stunEffectObj.SetActive(false);
-      slowEffectObj.SetActive(false);
-
+      GameObject statusReference = null;
       switch (statusType) {
          case Status.Type.Burning:
-            burningEffectObj.SetActive(isEnabled);
+            statusReference = burningEffectObj;
             break;
          case Status.Type.Slowed:
-            slowEffectObj.SetActive(isEnabled);
+            statusReference = slowEffectObj;
             break;
          case Status.Type.Stunned:
-            stunEffectObj.SetActive(isEnabled);
+            statusReference = stunEffectObj;
             break;
+      }
+
+
+      if (statusReference != burningEffectObj) {
+         burningEffectObj.SetActive(false);
+      }
+      if (statusReference != stunEffectObj) {
+         stunEffectObj.SetActive(false);
+      }
+      if (statusReference != slowEffectObj) {
+         slowEffectObj.SetActive(false);
+      }
+
+      if (statusReference != null) {
+         statusReference.SetActive(isEnabled);
       }
    }
 
    #region Private Variables
-      
+
    #endregion
 }
