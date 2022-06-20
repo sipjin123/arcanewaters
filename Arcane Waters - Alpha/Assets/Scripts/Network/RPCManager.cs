@@ -10728,6 +10728,7 @@ public class RPCManager : NetworkBehaviour
             outpost.guildIconSigil = _player.guildIconSigil;
             outpost.guildIconSigilPalettes = _player.guildIconSigilPalettes;
             outpost.guildName = _player.guildName;
+            outpost.displayMaterials = true;
 
             InstanceManager.self.addOutpostToInstance(outpost, instance);
             NetworkServer.Spawn(outpost.gameObject);
@@ -10760,22 +10761,25 @@ public class RPCManager : NetworkBehaviour
          int excessValue = Outpost.MATERIAL_REQUIREMENT - (outpost.initialMaterials + supplyValue);
          supplyValue += excessValue;
       }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> itemList = DB_Main.getCraftingIngredients(_player.userId, new List<CraftingIngredients.Type> { CraftingIngredients.Type.Wood });
          if (itemList.Count > 0) {
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, supplyValue);
-
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                outpost.initialMaterials += supplyValue;
                outpost.Rpc_ReceiveInitialMaterials(outpost.initialMaterials, supplyValue);
-               string message = "Received " + supplyValue + " Wood";
+               string message = "Outpost Received " + supplyValue + " Wood";
                outpost.Rpc_FloatingMessage(message);
                if (outpost.initialMaterials >= Outpost.MATERIAL_REQUIREMENT) {
-                  outpost.StartCoroutine(outpost.CO_ActivateAfter(3f));
+                  outpost.StartCoroutine(outpost.CO_ActivateAfter(0f));
+                  outpost.Rpc_FloatingMessage("Outpost Complete!");
                }
             });
          } else {
-            outpost.Rpc_ReceiveFailMessage(_player.connectionToClient, "Not enough Wood!");
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               outpost.Target_ReceiveFailMessage(_player.connectionToClient, "Not enough Wood!");
+            });
          }
       });
    }

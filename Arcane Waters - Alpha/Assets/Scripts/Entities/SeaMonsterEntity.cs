@@ -1003,7 +1003,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // TODO: Make this block of code dynamic and web tool dependent for flexibility
       // Handle custom master behavior here
-      if (seaMonsterData.roleType == RoleType.Master && seaEntityAbilityData != null) {
+      if (seaMonsterData != null && seaMonsterData.roleType == RoleType.Master && seaEntityAbilityData != null) {
          // Determine if ability has already cooled down, if not then select default ability
          bool isCooledDown = NetworkTime.time - lastAbilityCooldown > seaEntityAbilityData.coolDown;
          bool isLastAbilityTimeLapsed = NetworkTime.time > nextMajorSkillUseTime;
@@ -1074,11 +1074,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Track cooldown of boss monster ranged ability
       bool isRangedCooledDown = false;
-      if (seaMonsterData != null && seaMonsterData.isRanged && seaMonsterData.roleType == RoleType.Master) {
+      if (seaMonsterData != null && seaMonsterData.isRanged && seaMonsterData.roleType == RoleType.Master && seaEntityAbilityData != null) {
          isRangedCooledDown = NetworkTime.time - lastAbilityCooldown > seaEntityAbilityData.coolDown && !seaEntityAbilityData.isMelee;
          if (isRangedCooledDown) {
             resetToDefaultAttack = false;
-            D.editorLog("Grant Ranged Attack: {"+ seaEntityAbilityData .abilityName+ "} Cooldown: " + (NetworkTime.time - lastAbilityCooldown).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1") + ":" + seaEntityAbilityData.isMelee, Color.magenta);
+            D.editorLog("Grant Ranged Attack: {"+ seaEntityAbilityData.abilityName+ "} Cooldown: " + (NetworkTime.time - lastAbilityCooldown).ToString("f1") + " / " + seaEntityAbilityData.coolDown.ToString("f1") + ":" + seaEntityAbilityData.isMelee, Color.magenta);
          }
       }
 
@@ -1091,7 +1091,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Attack
-      if (attackType != Attack.Type.None) {
+      if (attackType != Attack.Type.None && seaMonsterData != null) {
          if ((seaMonsterData.isRanged && seaMonsterData.roleType != RoleType.Master) || isRangedCooledDown) {
             int abilityId = -1;
             string abilityName = "";
