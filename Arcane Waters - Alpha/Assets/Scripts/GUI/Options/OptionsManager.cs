@@ -81,6 +81,7 @@ public class OptionsManager : GenericGameManager {
       Global.ignoreGuildAllianceInvites = PlayerPrefs.GetInt(PREF_GUILD_ALLIANCE_INVITE, 0) == 1;
       Global.showHealText = PlayerPrefs.GetInt(SHOW_HEAL_TEXT, 0) == 1;
       Global.isCameraShakeEffectEnabled = PlayerPrefs.GetInt(PREF_ENABLE_CAMERA_SHAKE, 1) == 1;
+      Global.autoFarm = PlayerPrefs.GetInt(PREF_AUTO_FARM, 0) == 1 ? true : false;
    }
 
    private void Start () {

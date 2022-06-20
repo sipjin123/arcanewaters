@@ -263,7 +263,6 @@ public class OptionsPanel : Panel
 
       bool autoFarm = PlayerPrefs.GetInt(OptionsManager.PREF_AUTO_FARM, 0) == 1 ? true : false;
       autoFarmToggle.isOn = autoFarm;
-      Global.autoFarm = autoFarm;
       autoFarmToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_AUTO_FARM, value ? 1 : 0);
          Global.autoFarm = value;
