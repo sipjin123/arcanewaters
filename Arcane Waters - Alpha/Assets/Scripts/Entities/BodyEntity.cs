@@ -39,7 +39,7 @@ public class BodyEntity : NetEntity
       base.Start();
 
       // Set our sprite sheets according to our types
-      StartCoroutine(CO_UpdateAllSprites());
+      StartCoroutine(CO_UpdateAllSprites(false));
 
       // Set our name to something meaningful
       this.name = "Body (user " + userId + ")";
@@ -197,10 +197,13 @@ public class BodyEntity : NetEntity
       _previousFallDirection = this.fallDirection;
    }
 
-   public IEnumerator CO_UpdateAllSprites () {
+   public IEnumerator CO_UpdateAllSprites (bool isMorphed) {
       // Wait until we receive data
       while (Util.isEmpty(this.entityName)) {
          yield return null;
+      }
+      if (isMorphed) {
+         Instantiate(PrefabsManager.self.poofPrefab, this.sortPoint.transform.position, Quaternion.identity);
       }
 
       this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palettes);

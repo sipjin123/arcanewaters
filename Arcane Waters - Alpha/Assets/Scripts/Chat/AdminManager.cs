@@ -2445,7 +2445,7 @@ public class AdminManager : NetworkBehaviour
       string[] list = parameters.Split(' ');
       try {
          string idVal = list[0];
-         string userName = list[1];
+         string userName = list.Length > 1 ? list[1] : "";
          if (idVal.Length > 0) {
             Cmd_ChangeSprite(2, idVal, userName);
          } else {
@@ -2481,6 +2481,10 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      StartCoroutine(CO_ProcessSpriteSwap(spriteType, spriteId, targetName));
+   }
+
+   protected IEnumerator CO_ProcessSpriteSwap (int spriteType, string spriteId, string targetName) {
       bool changeSelfInstead = false;
       if (targetName.Length < 1) {
          changeSelfInstead = true;
@@ -2491,7 +2495,8 @@ public class AdminManager : NetworkBehaviour
                BodyEntity bodyEntityRef = (BodyEntity) targetBody;
                bodyEntityRef.spriteOverrideId = spriteId;
                bodyEntityRef.spriteOverrideType = spriteType;
-               targetBody.Rpc_RefreshSprites();
+               yield return new WaitForSeconds(1);
+               targetBody.Rpc_RefreshSprites(true);
             }
          } else {
             changeSelfInstead = true;
@@ -2504,7 +2509,8 @@ public class AdminManager : NetworkBehaviour
             BodyEntity bodyEntityRef = (BodyEntity) _player;
             bodyEntityRef.spriteOverrideId = spriteId;
             bodyEntityRef.spriteOverrideType = spriteType;
-            _player.Rpc_RefreshSprites();
+            yield return new WaitForSeconds(1);
+            _player.Rpc_RefreshSprites(true);
          }
       }
    }

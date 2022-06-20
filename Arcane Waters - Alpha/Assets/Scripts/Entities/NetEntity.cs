@@ -731,10 +731,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_RefreshSprites () {
+   public void Rpc_RefreshSprites (bool isMorphed) {
       if (this is BodyEntity) {
          BodyEntity bodyEntityRef = (BodyEntity) this;
-         StartCoroutine(bodyEntityRef.CO_UpdateAllSprites());
+         StartCoroutine(bodyEntityRef.CO_UpdateAllSprites(isMorphed));
       }
    }
 
