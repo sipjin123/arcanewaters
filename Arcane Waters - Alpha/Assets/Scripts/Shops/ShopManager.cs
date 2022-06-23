@@ -62,12 +62,23 @@ public class ShopManager : MonoBehaviour {
       return null;
    }
 
-   public ShipInfo getShip (int shipId) {
+   public ShipInfo getShip (int shipId, int shopId = -1) {
       if (_ships.ContainsKey(shipId)) {
+         if (shopId > 0) {
+            // TODO: Do shop id filtering here in the future if needed
+            List<ShipInfo> shopSpecificShip = _ships.Values.ToList().FindAll(_ => _.shipId == shipId);
+            if (shopSpecificShip.Count > 0) {
+               return shopSpecificShip[0];
+            }
+         }
          return _ships[shipId];
       }
 
       return null;
+   }
+
+   public Dictionary<int, ShipInfo> getShipList () {
+      return _ships;
    }
 
    public void generateItemsFromXML () {

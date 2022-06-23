@@ -754,7 +754,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText, int sailorLevel) {
+   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText, int sailorLevel, int shopId) {
       List<ShipInfo> newShipInfo = new List<ShipInfo>();
       if (shipArray.Length != 0) {
          // Translate Abilities
@@ -766,7 +766,7 @@ public class RPCManager : NetworkBehaviour
 
       PanelManager.self.showPanel(Panel.Type.Shipyard);
 
-      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText, sailorLevel);
+      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText, sailorLevel, shopId);
    }
 
    [TargetRpc]
@@ -5331,8 +5331,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyShip (int shipId) {
-      ShipInfo ship = ShopManager.self.getShip(shipId);
+   public void Cmd_BuyShip (int shipId, int shopId) {
+      ShipInfo ship = ShopManager.self.getShip(shipId, shopId);
 
       if (ship == null) {
          D.warning("Couldn't find ship for ship id: " + shipId);
@@ -5354,6 +5354,9 @@ public class RPCManager : NetworkBehaviour
 
             // Create a new instance of the ship
             newShipInfo = DB_Main.createShipFromShipyard(_player.userId, ship);
+            D.adminLog("--> Buying ship with id:{" + shipId + "} Stats:" +
+               "{Dmg:" + (ship.damage * 100).ToString("f1") + " HP:" + ship.maxHealth.ToString("f1") + "}" +
+               "{T:" + ship.shipType + " S:" + ship.speed + "}", D.ADMIN_LOG_TYPE.ShipPurchase);
          }
 
          // Back to Unity thread
@@ -9301,10 +9304,15 @@ public class RPCManager : NetworkBehaviour
             int sailorLevel = LevelUtil.levelForXp(currJobXPData.sailorXP);
             if (shopData == null) {
                D.debug("Shop data is missing for: " + shopId + " - " + _player.areaKey);
-               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "", sailorLevel);
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "", sailorLevel, -1);
             } else {
+               foreach (ShipInfo shipInfo in list) {
+                  D.adminLog("->" + shopData.shopName + " {" + shipInfo.shipId + ":" + shipInfo.sailType + "}" +
+                     "{Dmg:" + (shipInfo.damage * 100).ToString("f3") + " Hp:" + shipInfo.health + "}" +
+                     "{R" + shipInfo.attackRange.ToString("f1") + " S:" + shipInfo.speed + "}", D.ADMIN_LOG_TYPE.ShipPurchase);
+               }
                string greetingText = shopData.shopGreetingText;
-               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText, sailorLevel);
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText, sailorLevel, shopId);
             }
          });
       });

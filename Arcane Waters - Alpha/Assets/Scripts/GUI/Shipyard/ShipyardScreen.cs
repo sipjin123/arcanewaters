@@ -50,26 +50,26 @@ public class ShipyardScreen : Panel {
       Global.player.rpc.Cmd_GetShipsForArea(shopId);
    }
 
-   public void buyButtonPressed (int shipId) {
+   public void buyButtonPressed (int shipId, int shopId) {
       ShipInfo shipInfo = getShipInfo(shipId);
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => buyButtonConfirmed(shipId));
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => buyButtonConfirmed(shipId, shopId));
 
       // Show a confirmation panel
       PanelManager.self.confirmScreen.show("Do you want to buy the " + shipInfo.shipName + "?");
    }
 
-   protected void buyButtonConfirmed (int shipId) {
+   protected void buyButtonConfirmed (int shipId, int shopId) {
       // Hide the confirm screen
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_BuyShip(shipId);
+      Global.player.rpc.Cmd_BuyShip(shipId, shopId);
    }
 
-   public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText, int sailorLevel) {
+   public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText, int sailorLevel, int shopId) {
       if (greetingText.Length < 1) {
          greetingText = AdventureShopScreen.UNAVAILABLE_ITEMS;
       }
@@ -113,7 +113,7 @@ public class ShipyardScreen : Panel {
                string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
                template.skillIcon.sprite = ImageManager.getSprite(iconPath);
             }
-            row.setRowForItem(shipInfo, shipData, sailorLevel);
+            row.setRowForItem(shipInfo, shipData, sailorLevel, shopId);
          } else {
             D.debug("Cannot create shop entry Ship: " + shipInfo.shipType + " not existing in data file");
          }

@@ -36,6 +36,10 @@ public class FlagshipPanel : Panel {
          // Look up the info for this row
          ShipInfo shipInfo = shipList[i];
 
+         D.adminLog("----> Loaded ship with id:{" + shipInfo.shipId + "} Stats:" +
+            "{Dmg:" + (shipInfo.damage * 100).ToString("f1") + "% HP:" + shipInfo.maxHealth.ToString("f1") + "}" +
+            "{T:" + shipInfo.shipType + " S:" + shipInfo.speed + "}", D.ADMIN_LOG_TYPE.ShipPurchase);
+
          // Create a new row
          FlagshipRow row = Instantiate(rowPrefab, scrollViewContent.transform, false);
          row.transform.SetParent(scrollViewContent.transform, false);
