@@ -39,6 +39,12 @@ public class GuildCreatePanel : SubPanel
    // The message indicating why the guild name is invalid
    public Text nameErrorText;
 
+   // Reference to the create button
+   public Button createButton;
+
+   // Reference to the cancel button
+   public Button cancelButton;
+
    #endregion
 
    public void Awake () {
@@ -116,7 +122,7 @@ public class GuildCreatePanel : SubPanel
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(createGuildConfirmed);
 
       // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to create the guild " + getGuildNameInUpperCase() + "?");
+      PanelManager.self.confirmScreen.show($"Are you sure you want to create the guild '{getGuildNameInUpperCase()}' ?", cost: GuildManager.getGuildCreationCost());
    }
 
    public void onCancelButtonPressed () {
@@ -124,6 +130,7 @@ public class GuildCreatePanel : SubPanel
    }
 
    public void createGuildConfirmed () {
+      deactivate();
       PanelManager.self.confirmScreen.hide();
       Global.player.rpc.Cmd_CreateGuild(getGuildNameInUpperCase(), _borders[_borderIndex], _backgrounds[_backgroundIndex],
          _sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _backgroundPalette1, _backgroundPalette2 }), Item.parseItmPalette(new string[2]{_sigilPalette1, _sigilPalette2}));
@@ -221,6 +228,26 @@ public class GuildCreatePanel : SubPanel
       if (isOn) {
          _sigilPalette2 = paletteName;
          refreshSigil();
+      }
+   }
+
+   public void activate () {
+      if (createButton) {
+         createButton.interactable = true;
+      }
+
+      if (cancelButton) {
+         cancelButton.interactable = true;
+      }
+   }
+
+   public void deactivate () {
+      if (createButton) {
+         createButton.interactable = false;
+      }
+
+      if (cancelButton) {
+         cancelButton.interactable = false;
       }
    }
 

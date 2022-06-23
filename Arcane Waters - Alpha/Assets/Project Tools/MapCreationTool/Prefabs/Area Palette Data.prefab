@@ -623,7 +623,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 64
+  m_RootOrder: 63
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1278133302756033998
 MonoBehaviour:
@@ -1048,7 +1048,6 @@ Transform:
   - {fileID: 8414881306168434685}
   - {fileID: 4392712057578432367}
   - {fileID: 675627680720601925}
-  - {fileID: 4359545234436692012}
   - {fileID: 6274008021919227081}
   - {fileID: 5560478011220752216}
   - {fileID: 8530292228057445736}
@@ -1979,7 +1978,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 66
+  m_RootOrder: 65
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4865135605591083436
 MonoBehaviour:
@@ -2132,51 +2131,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 6870899083421059003, guid: 1d56e7c4fe2f79e44b5887dea23a818c, type: 3}
   inUnityEditorOnly: 0
---- !u!1 &5083636118722216400
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4359545234436692012}
-  - component: {fileID: 6618030263635684317}
-  m_Layer: 0
-  m_Name: Test object with state
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4359545234436692012
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5083636118722216400}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.95, y: 54.33, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 62
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6618030263635684317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5083636118722216400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 5931019525329019556, guid: cd61d3e86d8a7bd48aa6d1a46c80483a, type: 3}
-  inUnityEditorOnly: 1
 --- !u!1 &5160905498187458892
 GameObject:
   m_ObjectHideFlags: 0
@@ -13500,15 +13454,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -13760,15 +13714,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -17736,7 +17690,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 63
+  m_RootOrder: 62
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &313207121994602153
 MonoBehaviour:
@@ -20046,7 +20000,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 65
+  m_RootOrder: 64
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8480863813575668561
 MonoBehaviour:
@@ -21637,7 +21591,7 @@ Tilemap:
       - {fileID: 21300242, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300244, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300246, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 17, y: 8, z: 0}

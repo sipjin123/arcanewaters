@@ -303,6 +303,7 @@ public class GuildPanel : Panel {
 
    public void createGuildPressed () {
       guildCreatePanel.show();
+      guildCreatePanel.activate();
    }
 
    public void ranksGuildPressed () {

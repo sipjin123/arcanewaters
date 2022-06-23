@@ -7,16 +7,17 @@ using System.Linq;
 using System;
 using MLAPI.Messaging;
 
-public class POISiteManager : MonoBehaviour
+public class POISiteManager : GenericGameManager
 {
 
    public static POISiteManager self;
 
-   public void Awake () {
+   protected override void Awake () {
+      base.Awake();
       self = this;
    }
 
-   public void Start () {
+   public void startPOISiteManagement () {
       InvokeRepeating(nameof(clearPOISites), 10f, 5f);
    }
 
@@ -145,6 +146,10 @@ public class POISiteManager : MonoBehaviour
 
    [Server]
    public void clearPOISites () {
+      if (!NetworkServer.active) {
+         return;
+      }
+
       List<POISite> siteToRemoveList = new List<POISite>();
       foreach (POISite site in _poiSiteList) {
          // If the group doesn't exist anymore, we can remove the site

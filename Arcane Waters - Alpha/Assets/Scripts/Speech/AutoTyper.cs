@@ -16,55 +16,55 @@ public class AutoTyper : MonoBehaviour {
 
    #endregion
 
-   public static void TypeText (Text textElement, string text) {
-      TypeText(textElement, text, CHAR_DELAY, true);
+   public static void typeText (Text textElement, string text) {
+      typeText(textElement, text, CHAR_DELAY, true);
    }
 
-   public static void TypeText (Text textElement, string text, bool usePlaceholderSpaces) {
-      TypeText(textElement, text, CHAR_DELAY, usePlaceholderSpaces);
+   public static void typeText (Text textElement, string text, bool usePlaceholderSpaces) {
+      typeText(textElement, text, CHAR_DELAY, usePlaceholderSpaces);
    }
 
-   public static void TypeText (Text textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+   public static void typeText (Text textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
       textElement.StopAllCoroutines();
-      textElement.StartCoroutine(SetText(textElement, text, characterDelay, usePlaceholderSpaces));
+      textElement.StartCoroutine(setText(textElement, text, characterDelay, usePlaceholderSpaces));
    }
 
-   public static void TypeText (TextMeshProUGUI textElement, string text, bool usePlaceholderSpaces) {
-      TypeText(textElement, text, CHAR_DELAY, usePlaceholderSpaces);
+   public static void typeText (TextMeshProUGUI textElement, string text, bool usePlaceholderSpaces) {
+      typeText(textElement, text, CHAR_DELAY, usePlaceholderSpaces);
    }
 
-   public static void TypeText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+   public static void typeText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
       textElement.StopAllCoroutines();
-      textElement.StartCoroutine(SetText(textElement, text, characterDelay, usePlaceholderSpaces));
+      textElement.StartCoroutine(setText(textElement, text, characterDelay, usePlaceholderSpaces));
    }
 
-   public static void TypeWords (Text textElement, string text) {
+   public static void typeWords (Text textElement, string text) {
       textElement.StopAllCoroutines();
-      textElement.StartCoroutine(SetWords(textElement, text, WORD_DELAY));
+      textElement.StartCoroutine(setWords(textElement, text, WORD_DELAY));
    }
 
-   public static void FinishText (Text textElement, string text) {
+   public static void finishText (Text textElement, string text) {
       textElement.StopAllCoroutines();
       textElement.text = text;
    }
 
-   public static void FinishText (TextMeshProUGUI text) {
+   public static void finishText (TextMeshProUGUI text) {
       text.GetComponent<RollingTextFade>().finishFading();
    }
 
-   public static void SlowlyRevealText (Text textElement, string text) {
+   public static void slowlyRevealText (Text textElement, string text) {
       textElement.StopAllCoroutines();
       textElement.text = CLEAR_START + text + CLEAR_END;
 
       // Slowly move the CLEAR_START forward in the text
-      textElement.StartCoroutine(MoveColorClearForward(textElement));
+      textElement.StartCoroutine(moveColorClearForward(textElement));
    }
 
-   public static void SlowlyRevealText (TextMeshProUGUI text, string msg) {
+   public static void slowlyRevealText (TextMeshProUGUI text, string msg) {
       text.GetComponent<RollingTextFade>().fadeInText(msg);
    }
 
-   protected static IEnumerator SetText (Text textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+   protected static IEnumerator setText (Text textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
       float lastBeepTime = 0f;
       textElement.text = "";
 
@@ -103,7 +103,7 @@ public class AutoTyper : MonoBehaviour {
       }
    }
 
-   protected static IEnumerator SetText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+   protected static IEnumerator setText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
       float lastBeepTime = 0f;
       textElement.text = "";
 
@@ -150,7 +150,7 @@ public class AutoTyper : MonoBehaviour {
       }
    }
 
-   protected static IEnumerator SetWords (Text textElement, string text, float wordDelay) {
+   protected static IEnumerator setWords (Text textElement, string text, float wordDelay) {
       textElement.text = "";
       string[] words = text.Split(' ');
 
@@ -164,7 +164,7 @@ public class AutoTyper : MonoBehaviour {
       }
    }
 
-   protected static IEnumerator MoveColorClearForward (Text textElement) {
+   protected static IEnumerator moveColorClearForward (Text textElement) {
       yield return new WaitForSeconds(CHAR_DELAY);
 
       string msg = textElement.text;
@@ -189,7 +189,7 @@ public class AutoTyper : MonoBehaviour {
          //SoundEffectManager.self.playFmodSfx(SoundEffectManager.CLICK_TAB);
 
          // Keep moving forward
-         textElement.StartCoroutine(MoveColorClearForward(textElement));
+         textElement.StartCoroutine(moveColorClearForward(textElement));
       }
    }
 

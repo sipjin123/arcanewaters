@@ -895,7 +895,7 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static void deleteCrop (int cropId, int userId) {
+   public static void deleteCrop (int cropId, int userId, string areaKey) {
 
    }
 
@@ -952,8 +952,8 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void addGold (int userId, int amount) {
-
+   public static bool addGold (int userId, int amount) {
+      return false;
    }
 
    public static void addGoldAndXP (int userId, int gold, int XP) {
@@ -1874,6 +1874,21 @@ public class DB_MainStub : MonoBehaviour
 
    public static IEnumerable<RewardCode> getUnusedRewardCodes (string steamId, string consumerId) {
       return Array.Empty<RewardCode>();
+   }
+
+   #endregion
+
+   #region Server Network
+
+   public static int createServerNetworkLargeMessage (byte[] message) {
+      return 0;
+   }
+
+   public static byte[] getServerNetworkLargeMessage (int messageId) {
+      return null;
+   }
+
+   public static void deleteServerNetworkLargeMessage (int messageId) {
    }
 
    #endregion

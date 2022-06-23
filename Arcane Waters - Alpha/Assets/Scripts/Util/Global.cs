@@ -138,6 +138,12 @@ public class Global
    // If the camera shake effect is enabled during battles
    public static bool isCameraShakeEffectEnabled = true;
 
+   // Flag if player can receive invites for other players
+   public static bool doNotDisturbEnabled = false;
+   
+   // Flag if slow text option is enabled
+   public static bool slowTextEnabled = false;
+
    #endregion
 
    public static void setUserEquipment (Item weapon, Item armor, Item hat, Item ring, Item necklace, Item trinket) {

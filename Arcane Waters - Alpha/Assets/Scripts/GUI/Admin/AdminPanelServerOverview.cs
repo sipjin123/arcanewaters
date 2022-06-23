@@ -73,7 +73,7 @@ public class AdminPanelServerOverview : MonoBehaviour
 
    public void getLog () {
       downloadLogButton.interactable = false;
-      Global.player.admin.getRemoteServerLogString(data.serverNetworkId);
+      Global.player.admin.getRemoteServerLogString(data.port);
    }
 
    public void openLogFile () {

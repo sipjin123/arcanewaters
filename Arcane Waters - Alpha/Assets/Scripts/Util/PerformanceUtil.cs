@@ -95,7 +95,7 @@ public class PerformanceUtil : MonoBehaviour {
       #if IS_SERVER_BUILD
       url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
       user = "integration";
-      password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
+      password = "xhsR8jmqhvt3QM7F4knZzVKJRugTVdpL";
       #endif
       
       _zabbixContext = new Context(url, user, password);

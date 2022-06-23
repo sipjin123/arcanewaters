@@ -242,10 +242,17 @@ public class GuildManager : MonoBehaviour {
       });
    }
 
+   public static int getGuildCreationCost () {
+      return Math.Max(0, GUILD_CREATION_COST);
+   }
+
    #region Private Variables
 
    // Stores past invites that have been sent
    protected HashSet<GuildInvite> _pastInvites = new HashSet<GuildInvite>();
+
+   // The cost for creating a guild
+   private static int GUILD_CREATION_COST = 150;
 
    #endregion
 }

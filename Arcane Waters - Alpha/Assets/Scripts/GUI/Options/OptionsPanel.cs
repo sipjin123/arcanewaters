@@ -86,6 +86,12 @@ public class OptionsPanel : Panel
    // A toggle controlling whether to enable the camera shake effect
    public Toggle cameraShakeToggle;
 
+   // A toggle controlling whether to enable slow text effect
+   public Toggle slowTextEffectToggle;
+   
+   // A toggle controlling whether to enable the camera shake effect
+   public Toggle doNotDisturbToggle;
+   
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -144,7 +150,7 @@ public class OptionsPanel : Panel
    public GameObject demoUserText = null;
 
    // Reference to invite link of Arcane Waters Discord game-talk channel
-   public const string DISCORD_URL_INVITE = "https://discord.gg/Evj3a5PNYb"; 
+   public const string DISCORD_URL_INVITE = "https://discord.gg/arcanewaters"; 
    
    // Reference to Discord confirmation window title
    public const string DISCORD_CONFIRM_TITLE = "Opening Discord?";
@@ -299,6 +305,24 @@ public class OptionsPanel : Panel
       cameraShakeToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_ENABLE_CAMERA_SHAKE, value ? 1 : 0);
          Global.isCameraShakeEffectEnabled = value;
+      });
+      
+      bool slowTextEnable = PlayerPrefs.GetInt(OptionsManager.PREF_ENABLE_SLOW_TEXT, 1) == 1 ? true : false;
+      slowTextEffectToggle.isOn = slowTextEnable;
+      Global.slowTextEnabled = slowTextEnable;
+      slowTextEffectToggle.onValueChanged.RemoveAllListeners();
+      slowTextEffectToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_ENABLE_SLOW_TEXT, value ? 1 : 0);
+         Global.slowTextEnabled = value;
+      });
+      
+      bool doNotDisturbEnable = PlayerPrefs.GetInt(OptionsManager.PREF_DO_NOT_DISTURB, 0) == 1 ? true : false;
+      doNotDisturbToggle.isOn = doNotDisturbEnable;
+      Global.doNotDisturbEnabled = doNotDisturbEnable;
+      doNotDisturbToggle.onValueChanged.RemoveAllListeners();
+      doNotDisturbToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_DO_NOT_DISTURB, value ? 1 : 0);
+         Global.doNotDisturbEnabled = value;
       });
 
       // Build string and show version number

@@ -110,7 +110,7 @@ public class TutorialPanel3 : MonoBehaviour
 
       // Type the npc text
       if (canvasGroup.IsShowing()) {
-         AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
+         AutoTyper.slowlyRevealText(npcSpeechText, _npcSpeech);
       }
 
       // Set the step index
@@ -163,7 +163,7 @@ public class TutorialPanel3 : MonoBehaviour
       if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey) || isCameraFading) {
          if (canvasGroup.IsShowing()) {
             canvasGroup.Hide();
-            AutoTyper.FinishText(npcSpeechText);
+            AutoTyper.finishText(npcSpeechText);
             _timeSinceWarp = 0;
          }
       } else if (!canvasGroup.IsShowing()) {
@@ -171,8 +171,8 @@ public class TutorialPanel3 : MonoBehaviour
          _timeSinceWarp += Time.deltaTime;
          if (_timeSinceWarp > DELAY_AFTER_WARP) {
             canvasGroup.Show();
-            AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
-            AutoTyper.FinishText(npcSpeechText);
+            AutoTyper.slowlyRevealText(npcSpeechText, _npcSpeech);
+            AutoTyper.finishText(npcSpeechText);
          }
       } else {
          // Fade in or out some sections
@@ -212,7 +212,7 @@ public class TutorialPanel3 : MonoBehaviour
          // If the user clicks on the NPC face or text, fully write the text right away
          if (KeyUtils.GetButtonDown(MouseButton.Left)
             && RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
-            AutoTyper.FinishText(npcSpeechText);
+            AutoTyper.finishText(npcSpeechText);
          }
       }
    }
@@ -266,7 +266,7 @@ public class TutorialPanel3 : MonoBehaviour
    public void onEnterBattle () {
       if (canvasGroup.IsShowing()) {
          canvasGroup.Hide();
-         AutoTyper.FinishText(npcSpeechText);
+         AutoTyper.finishText(npcSpeechText);
          _timeSinceWarp = 0;
       }
    }
@@ -286,7 +286,7 @@ public class TutorialPanel3 : MonoBehaviour
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_POP_UP);
 
       TutorialManager3.self.updateArrow();
-      AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
+      AutoTyper.slowlyRevealText(npcSpeechText, _npcSpeech);
    }
 
    public Mode getMode () {

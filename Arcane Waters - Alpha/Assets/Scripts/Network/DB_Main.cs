@@ -3875,27 +3875,33 @@ public class DB_Main : DB_MainStub
    #region Perks
 
    public static new bool resetPerkPointsAll (int usrId, int perkPoints = 0) {
-      int rowsAffeced = 0;
+      int rowsAffected = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM perks WHERE usrId=@usrId AND perkId > 0; UPDATE perks SET perkPoints=@perkPoints WHERE usrId=@usrId AND perkId=0;", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM perks WHERE usrId=@usrId AND perkId > 0; " + 
+            "INSERT INTO perks (usrId, perkId, perkPoints) " + 
+            "VALUES(@usrId, @perkId, @perkPoints) " + 
+            "ON DUPLICATE KEY UPDATE perkPoints = @perkPoints;"
+            , conn)) {
 
             conn.Open();
 
             cmd.Parameters.AddWithValue("@usrId", usrId);
             cmd.Parameters.AddWithValue("@perkPoints", perkPoints);
+            cmd.Parameters.AddWithValue("@perkId", 0);
 
             cmd.Prepare();
             DebugQuery(cmd);
 
-            rowsAffeced = cmd.ExecuteNonQuery();
+            rowsAffected = cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return rowsAffeced > 0;
+      return rowsAffected > 0;
    }
 
    public static new List<Perk> getPerkPointsForUser (int usrId) {
@@ -5754,12 +5760,13 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE crops SET growthLevel = growthLevel + 1, lastWaterTimestamp=UNIX_TIMESTAMP() WHERE usrId=@usrId AND cropNumber=@cropNumber;", conn)) {
+            "UPDATE crops SET growthLevel = growthLevel + 1, lastWaterTimestamp=UNIX_TIMESTAMP() WHERE usrId=@usrId AND cropNumber=@cropNumber AND areaKey=@areaKey;", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", cropInfo.userId);
             cmd.Parameters.AddWithValue("@cropNumber", cropInfo.cropNumber);
+            cmd.Parameters.AddWithValue("@areaKey", cropInfo.areaKey);
             DebugQuery(cmd);
 
             // Execute the command
@@ -5770,14 +5777,15 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void deleteCrop (int cropNumber, int userId) {
+   public static new void deleteCrop (int cropNumber, int userId, string areaKey) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crops WHERE usrId=@usrId AND cropNumber=@cropNumber", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crops WHERE usrId=@usrId AND cropNumber=@cropNumber AND areaKey=@areaKey", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@cropNumber", cropNumber);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
             DebugQuery(cmd);
 
             // Execute the command
@@ -6503,7 +6511,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void addGold (int userId, int amount) {
+   public static new bool addGold (int userId, int amount) {
+      bool result = false;
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET usrGold = usrGold + @amount WHERE usrId=@usrId", conn)) {
@@ -6514,11 +6524,13 @@ public class DB_Main : DB_MainStub
             DebugQuery(cmd);
 
             // Execute the command
-            cmd.ExecuteNonQuery();
+            result = cmd.ExecuteNonQuery() > 0;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+
+      return result;
    }
 
    public static new void addGoldAndXP (int userId, int gold, int XP) {
@@ -6909,13 +6921,13 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_penalties_v2 " +
-            "WHERE targetAccId = @accId AND (NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) OR penaltyType = @permaBan) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_penalties_v2 WHERE targetAccId = @accId " +
+            "AND (NOW() < TIMESTAMPADD(SECOND, penaltyTime, addedAt) OR penaltyType = @permaBan) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@permaBan", PenaltyInfo.ActionType.SoloPermanentBan);
+            cmd.Parameters.AddWithValue("@permaBan", (int) PenaltyInfo.ActionType.SoloPermanentBan);
 
             DebugQuery(cmd);
 
@@ -13141,6 +13153,85 @@ public class DB_Main : DB_MainStub
       }
 
       return false;
+   }
+
+   #endregion
+
+   #region Server Network
+
+   public static new int createServerNetworkLargeMessage (byte[] message) {
+      int messageId = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO server_network_large_message (messageSize, message) " +
+            "VALUES(@messageSize, @message)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@messageSize", message.Length);
+            cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = message;
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            messageId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return messageId;
+   }
+
+   public static new byte[] getServerNetworkLargeMessage (int messageId) {
+      byte[] message = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM server_network_large_message WHERE messageId=@messageId"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@messageId", messageId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int messageSize = dataReader.GetInt32("messageSize");
+                  message = new byte[messageSize];
+                  dataReader.GetBytes(dataReader.GetOrdinal("message"), 0, message, 0, messageSize);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return message;
+   }
+
+   public static new void deleteServerNetworkLargeMessage (int messageId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM server_network_large_message WHERE messageId=@messageId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@messageId", messageId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    #endregion

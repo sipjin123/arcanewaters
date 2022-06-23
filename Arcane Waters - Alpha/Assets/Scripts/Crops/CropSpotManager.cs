@@ -20,11 +20,13 @@ public class CropSpotManager : MonoBehaviour {
       self = this;
    }
 
-   public void resetCropSpots () {
+   public void resetCropSpots (string newAreaKey = "") {
       _cropSpots.Clear();
 
       foreach (CropSpot cropSpot in FindObjectsOfType<CropSpot>()) {
-         storeCropSpot(cropSpot);
+         if (newAreaKey != "" && cropSpot.areaKey == newAreaKey) {
+            storeCropSpot(cropSpot);
+         }
       }
    }
 

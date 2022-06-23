@@ -59,7 +59,9 @@ public class D : MonoBehaviour {
       AreaClearing = 46,
       ShopContents = 47,
       EnemyLandSpawn = 48,
-      CharacterSlots = 49
+      CharacterSlots = 49,
+      ShipPurchase = 50,
+      NpcFriendship = 51
    }
 
    // Any log files older than this will be deleted
@@ -81,12 +83,6 @@ public class D : MonoBehaviour {
 
    // The maximum number of server log chunks that will be sent to clients
    public static int MAX_SERVER_LOG_CHUNK_COUNT = 20;
-
-   // The maximum size (bytes) of the server log chunks when sending it to clients through the master server
-   public static int MAX_MASTER_SERVER_LOG_CHUNK_SIZE = 1024;
-
-   // The maximum number of server log chunks that will be sent to clients through the master server
-   public static int MAX_MASTER_SERVER_LOG_CHUNK_COUNT = 64;
 
    // Stores the contents of the last retrieved server log
    public static List<byte> serverLogBytes = new List<byte>();
@@ -466,6 +462,19 @@ public class D : MonoBehaviour {
             fi.Delete();
          }
       }
+   }
+
+   public static byte[] getLogForSendingToClient () {
+      // Transform into a byte array to avoid the 'buffer is too small' error
+      byte[] data = Encoding.ASCII.GetBytes(getLogString());
+
+      // Remove the beginning of the log if it is too large
+      int maxServerLogSize = D.MAX_SERVER_LOG_CHUNK_SIZE * D.MAX_SERVER_LOG_CHUNK_COUNT;
+      if (data.Length > maxServerLogSize) {
+         data = data.RangeSubset(data.Length - maxServerLogSize, maxServerLogSize);
+      }
+
+      return data;
    }
 
    #region Private Variables

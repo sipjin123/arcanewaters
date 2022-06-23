@@ -30,7 +30,11 @@ MonoBehaviour:
   canInheritPosition: 0
   canControlPosition: 0
   positionStep: {x: 0, y: 0}
-  dataFields: []
+  dataFields:
+  - name: makes sound
+    defaultValue: true
+    toolTip: Does this lever make a sound when used by a player
+    type: 3
   selectDataFields: []
   customDataFields: []
   hasVariableObjectState: 1

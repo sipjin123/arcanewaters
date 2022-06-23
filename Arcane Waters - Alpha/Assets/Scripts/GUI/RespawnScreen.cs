@@ -122,9 +122,9 @@ public class RespawnScreen : MonoBehaviour {
    public void hide () {
       if (canvasGroup.IsShowing()) {
          canvasGroup.Hide();
-
-         setLifeboatVisibility(false);
       }
+
+      setLifeboatVisibility(false);
    }
 
    public bool isShowing () {

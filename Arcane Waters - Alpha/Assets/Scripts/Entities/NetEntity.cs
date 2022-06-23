@@ -347,6 +347,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool isPlayerAlly;
 
+   // List of muted user ids
+   public List<int> mutedUsers;
+
    #endregion
 
    protected virtual void Awake () {
@@ -456,6 +459,8 @@ public class NetEntity : NetworkBehaviour
          if (_autoMove) {
             InvokeRepeating(nameof(autoMove), UnityEngine.Random.Range(0f, AUTO_MOVE_ACTION_DURATION), AUTO_MOVE_ACTION_DURATION);
          }
+
+         initMutedUsers();
       }
 
       // Set invisible and disable colliders if the entity is in ghost mode
@@ -693,6 +698,10 @@ public class NetEntity : NetworkBehaviour
 
    public int muteTimeRemaining () {
       return (int) (new DateTime(this.muteExpirationDate) - DateTime.UtcNow).TotalSeconds;
+   }
+
+   public bool isUserMuted (int userId) {
+      return mutedUsers.Contains(userId);
    }
 
    [TargetRpc]
@@ -1964,6 +1973,10 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin, string extra) {
+      if (isUserMuted(senderUserId)) {
+         return;
+      }
+
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
       ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, guildName, isSenderMuted, isSenderAdmin, extra: extra);
@@ -1981,6 +1994,10 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, string guildName, int senderId, bool isSenderMuted, string extra) {
+      if (isUserMuted(senderId)) {
+         return;
+      }
+
       ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, guildName, isSenderMuted, extra: extra);
 
       // Add it to the Chat Manager
@@ -2006,6 +2023,11 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveGuildInvitationNotification (NetworkConnection conn, int guildId, string inviterName, int inviterUserId, string guildName) {
+      // Ignore invite if do not disturb flag is enabled
+      if (Global.doNotDisturbEnabled) {
+         return;
+      }
+
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptInviteOnClient(guildId, inviterName, inviterUserId, entityName, userId, guildName));
@@ -3074,6 +3096,75 @@ public class NetEntity : NetworkBehaviour
       ReceiveSilverCurrencyImpl(silverCount, rewardReason, pos);
    }
 
+   private void initMutedUsers () {
+      if (isClient) {
+         _muteListKey = "MUTED_USERS_" + userId;
+         mutedUsers = getStoredUsers();
+      }
+   }
+
+   private List<int> getStoredUsers () {
+      List<int> result = new List<int>();
+      try {
+         if (PlayerPrefs.HasKey(_muteListKey)) {
+            result.AddRange(PlayerPrefs.GetString(_muteListKey).Split(',').Select(x => int.Parse(x)));
+         }
+      } catch {
+         D.log("Error: Could not get local muted accounts list.");
+      }
+
+      return result;
+   }
+
+   private void storeMutedAccounts () {
+      try {
+         mutedUsers = mutedUsers.Distinct().OrderBy(u => u).ToList();
+
+         if (mutedUsers.Count > 0) {
+            PlayerPrefs.SetString(_muteListKey, string.Join(",", mutedUsers));
+            PlayerPrefs.Save();
+         } else {
+            PlayerPrefs.DeleteKey(_muteListKey);
+         }
+      } catch {
+         D.log("Error: Could not store muted accounts, locally.");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMutedPlayer (int usrId, string username) {
+      if (userId == usrId) {
+         ChatManager.self.addChat("You can't mute yourself.", ChatInfo.Type.Error);
+         return;
+      }
+
+      if (isUserMuted(usrId)) {
+         ChatManager.self.addChat(string.Format("{0} is already muted.", username), ChatInfo.Type.Error);
+      } else {
+         mutedUsers.Add(usrId);
+         storeMutedAccounts();
+
+         ChatManager.self.addChat(string.Format("{0} is now muted. Use /unmute {0} to revert this.", username), ChatInfo.Type.System);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUnmutedPlayer (int usrId, string username) {
+      if (userId == usrId) {
+         ChatManager.self.addChat("You can't unmute yourself.", ChatInfo.Type.Error);
+         return;
+      }
+
+      if (!isUserMuted(usrId)) {
+         ChatManager.self.addChat(string.Format("{0} is not muted.", username), ChatInfo.Type.Error);
+      } else {
+         mutedUsers.Remove(usrId);
+         storeMutedAccounts();
+
+         ChatManager.self.addChat(string.Format("{0} is no longer muted.", username), ChatInfo.Type.System);
+      }
+   }
+
    public void ReceiveSilverCurrencyImpl (int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 targetPos) {
       Vector3 pos = targetPos;
 
@@ -3339,6 +3430,9 @@ public class NetEntity : NetworkBehaviour
 
    // The time at which the last farm xp notification has been shown
    protected double _lastFarmingXpNotificationTime = 0;
+
+   // Key used to store our personal mute list
+   private string _muteListKey = "";
 
    #endregion
 }

@@ -19,7 +19,7 @@ public class ConfirmMessage : NetworkMessage
       ModifiedOwnAuction = 21, BidOnAuction = 22, EditGuildRanks = 23, GuildActionLocal = 24,
       GuildActionGlobal = 25, GuildActionUpdate = 26, CorrectClientVersion = 27, SoldAuctionItem = 28,
       ReturnAuctionItem = 29, UsedConsumable = 30, UsedArmorDye = 31, UsedHatDye = 32, UsedWeaponDye = 33,
-      ItemSoulBound = 34, GeneralPopup = 35, RestoredUser = 36
+      ItemSoulBound = 34, GeneralPopup = 35, RestoredUser = 36, ModifiedAuction = 37
    }
 
    // The Type of confirmation

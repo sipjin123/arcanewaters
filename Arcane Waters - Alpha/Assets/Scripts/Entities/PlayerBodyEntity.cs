@@ -256,11 +256,15 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void OnInteractNearbyPerformed (InputAction.CallbackContext ctx) {
-      triggerInteract(false);
+      if (Util.isGeneralInputAllowed() && !isFalling() && !isDead()) {
+         triggerInteract(false);
+      }
    }
 
    private void OnActionPerformed (InputAction.CallbackContext ctx) {
-      triggerAction(true);
+      if (InputManager.isActionInputEnabled()) {
+         triggerAction(true);
+      }
    }
 
    private void OnJumpPerformed (InputAction.CallbackContext ctx) {

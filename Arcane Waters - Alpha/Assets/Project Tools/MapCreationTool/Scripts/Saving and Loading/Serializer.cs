@@ -409,6 +409,8 @@ namespace MapCreationTool.Serialization
       public const string WHIRLPOOL_RADIAL_FORCE_KEY = "radial force amount";
       public const string WHIRLPOOL_TANGENTIAL_FORCE_KEY = "tangential force amount";
 
+      public const string LEVER_MAKES_SOUND_KEY = "makes sound";
+
       public string k; // Key
       public string v; // Value
 

@@ -115,7 +115,7 @@ public class SpeechBubble : MonoBehaviour
       _itemIcons.Clear();
 
       // Start typing the text into the speech bubble
-      AutoTyper.TypeText(speechText, textToSay, false);
+      AutoTyper.typeText(speechText, textToSay, false);
 
       // Explicitly set this, in case our new text is the same size as our old text
       _lastTextChangeTime = Time.time;

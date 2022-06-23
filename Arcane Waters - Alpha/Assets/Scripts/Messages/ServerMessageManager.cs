@@ -305,7 +305,6 @@ public class ServerMessageManager : MonoBehaviour
          Perk removedPerk = perks.Find((x) => PerkManager.removedPerkIds.Contains(x.perkId));
          if (removedPerk != null) {
             int totalPerkPoints = 0;
-
             foreach (Perk perk in perks) {
                totalPerkPoints += perk.points;
             }

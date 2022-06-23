@@ -179,7 +179,8 @@ public class VaryingStateObject : NetworkBehaviour, IMapEditorDataReceiver, IObs
       _hovered = true;
 
       if (canUserInteractWith && _haveOutline) {
-         _outline.setVisibility(true);
+         // Don't use outlines on-pointer anymore
+         //_outline.setVisibility(true);
       }
    }
 

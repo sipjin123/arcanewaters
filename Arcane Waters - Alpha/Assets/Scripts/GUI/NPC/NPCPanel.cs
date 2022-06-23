@@ -102,6 +102,7 @@ public class NPCPanel : Panel
       base.Awake();
 
       self = this;
+      _defaultTexColor = npcDialogueText.color;
    }
 
    public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText, string userFlagshipName) {
@@ -133,8 +134,8 @@ public class NPCPanel : Panel
          // End the conversation if there are no quest titles fetched
          npcDialogueText.enabled = true;
          _npcDialogueLine = getDynamicDialog(greetingText);
-         if (isShowing()) {
-            AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         if (isShowing()) { 
+            showDialogue(_npcDialogueLine);
          }
 
          addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
@@ -210,8 +211,8 @@ public class NPCPanel : Panel
             // End the dialogue if the quest node is greater than the quest list
             npcDialogueText.enabled = true;
             _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
-            if (isShowing()) {
-               AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+            if (isShowing()) { 
+               showDialogue(_npcDialogueLine);
             }
             D.adminLog("Step4-B: Dialogue node being Ended now QID:{" + questId + ":" + questData.questGroupName + "}NID:{" + questNodeId + "}DID:{" + dialogueId + "} " +
                "{" + (questNodeId) + "/" + questData.questDataNodes.Length + "} : {" + questData.questDataNodes[questNodeId].questNodeTitle + "} " +
@@ -227,8 +228,8 @@ public class NPCPanel : Panel
             if (dialogueNode != null) {
                npcDialogueText.enabled = true;
                _npcDialogueLine = getDynamicDialog(dialogueNode.npcDialogue);
-               if (isShowing()) {
-                  AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+               if (isShowing()) { 
+                  showDialogue(_npcDialogueLine);
                }
 
                if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
@@ -281,8 +282,8 @@ public class NPCPanel : Panel
                // End the dialogue if the quest node is greater than the quest list
                npcDialogueText.enabled = true;
                _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
-               if (isShowing()) {
-                  AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+               if (isShowing()) { 
+                  showDialogue(_npcDialogueLine);
                }
 
                addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
@@ -293,8 +294,8 @@ public class NPCPanel : Panel
          // End dialogue of no quest was loaded
          npcDialogueText.enabled = true;
          _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
-         if (isShowing()) {
-            AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         if (isShowing()) { 
+            showDialogue(_npcDialogueLine);
          }
 
          addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
@@ -477,7 +478,7 @@ public class NPCPanel : Panel
       
       // If the panel is already showing, start writing the new text
       if (isShowing()) {
-         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         showDialogue(_npcDialogueLine);
       }
 
       // By default, hide the quest objectives section
@@ -534,7 +535,7 @@ public class NPCPanel : Panel
       if (text == null) {
          row.initData(clickableType);
       } else {
-         row.initData(clickableType, text);
+         row.initData(clickableType, getDynamicDialog(text));
       }
 
       // Set up the click function
@@ -584,6 +585,17 @@ public class NPCPanel : Panel
       return dialog;
    }
 
+   private void showDialogue (string dialogue) {
+      if (Global.slowTextEnabled) {
+         // If slow text flag is enabled use auto typer slow text reveal
+         AutoTyper.slowlyRevealText(npcDialogueText, dialogue);
+      } else {
+         // Show dialogue instantly
+         npcDialogueText.text = dialogue;
+         npcDialogueText.color = _defaultTexColor;
+      }
+   }
+
    #region Private Variables
 
    // The NPC associated with this panel
@@ -606,6 +618,9 @@ public class NPCPanel : Panel
 
    // The cached name of the user flagship
    protected string userFlagshipName = "";
+   
+   // Store default color of panel greeting text
+   private Color _defaultTexColor;
 
    #endregion
 }

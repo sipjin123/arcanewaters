@@ -58,7 +58,8 @@ public class PenaltyInfo
       this.penaltyType = penaltyType;
    }
 
-   public PenaltyInfo (int targetAccId, ActionType penaltyType, string penaltyReason, int penaltyTime) {
+   public PenaltyInfo (int sourceAccId, int targetAccId, ActionType penaltyType, string penaltyReason, int penaltyTime) {
+      this.sourceAccId = sourceAccId;
       this.targetAccId = targetAccId;
       this.penaltyType = penaltyType;
       this.penaltyTime = penaltyTime;

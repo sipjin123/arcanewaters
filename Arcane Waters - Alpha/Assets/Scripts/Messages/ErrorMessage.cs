@@ -18,7 +18,7 @@ public class ErrorMessage : NetworkMessage
       InvalidUsername = 15, ServerDown = 16, NoCropsOfThatType = 17, NotEnoughGems = 18, NotEnoughGold = 19,
       Misc = 20, Kicked = 21, ServerOffline = 22, SteamWebOffline = 23, PvpJoinError = 24, MailInvalidUserName = 25,
       PlayerCountLimitReached = 26, UserNotAdmin = 27, PurchaseError = 28, Generic = 29, UseItemFailed = 30, StoreItemPurchaseFailed = 31,
-      ItemIsSoulBound = 32, RestoreNameTaken = 33, RestoreInvalidUsername = 34
+      ItemIsSoulBound = 32, RestoreNameTaken = 33, RestoreInvalidUsername = 34, GuildCreationFailed = 35
    }
 
    // The Type of error

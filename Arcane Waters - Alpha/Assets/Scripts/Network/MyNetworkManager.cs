@@ -292,6 +292,9 @@ public class MyNetworkManager : NetworkManager
 
       // Start the chat management
       ChatManager.self.startChatManagement();
+
+      // Start the POI Site management
+      POISiteManager.self.startPOISiteManagement();
    }
 
    private void initializeXmlData () {

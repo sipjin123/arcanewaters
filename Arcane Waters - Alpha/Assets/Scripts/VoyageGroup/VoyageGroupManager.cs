@@ -513,6 +513,11 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    public void receiveGroupInvitation (int voyageGroupId, string inviterName) {
+      // Ignore invite if do not disturb flag is enabled
+      if (Global.doNotDisturbEnabled) {
+         return;
+      }
+
       // Test if the player is already being invited to a voyage
       if (_invitationGroupId != -1) {
          return;

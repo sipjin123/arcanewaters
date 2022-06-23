@@ -384,6 +384,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
+   private void setRichPresenceBasedOnBattle () {
+      foreach (Battler battler in battle.getParticipants()) {
+         if (battler.isBossType) {
+            SteamFriendsManager.setRichPresenceStatus(SteamFriendsManager.RP_STATUS_BOSS_FIGHT_KEY);
+            return;
+         }
+      }
+   }
+
    private void autoAttackSimulation () {
       // Simulate target selection ordered by user id
       BattleUIManager.self.selectNextTarget(true);

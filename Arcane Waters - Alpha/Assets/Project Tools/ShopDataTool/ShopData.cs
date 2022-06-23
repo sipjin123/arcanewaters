@@ -8,6 +8,7 @@ public class ShopData {
    public string shopIconPath = "";
    public string shopGreetingText = "No Greeting Text Setup";
    public string areaAttachment = "";
+   public string shopkeeperName = "";
 
    public ShopItemData[] shopItems = new ShopItemData[0];
 }

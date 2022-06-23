@@ -83,6 +83,8 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/wave", "Wave your hand", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Wave), parameterNames: new List<string>() { "target" }));
       _commandData.Add(new CommandData("/sit", "Sit on the ground", (_) => requestPlayEmote(_, EmoteManager.EmoteTypes.Sit)));
       _commandData.Add(new CommandData("/help", "Opens the Help panel", processHelpCommand));
+      _commandData.Add(new CommandData("/mute", "Adds a player to your personal mute list", (_) => requestMutePlayer(_, false), parameterNames: new List<string>() { "username" }));
+      _commandData.Add(new CommandData("/unmute", "Removes a player from your personal mute list", (_) => requestMutePlayer(_, true), parameterNames: new List<string>() { "username" }));
    }
 
    public void startChatManagement () {
@@ -256,7 +258,16 @@ public class ChatManager : GenericGameManager
       }
    }
 
-   private string computeEmoteChatMessage(EmoteManager.EmoteTypes emoteType, string target) {
+   private void requestMutePlayer (string parameters, bool unmute) {
+      // We need to specify an username
+      if (string.IsNullOrEmpty(parameters)) {
+         addChat("You need to specify an username", ChatInfo.Type.System);
+         return;
+      }
+      Global.player.rpc.Cmd_RequestMutePlayer(parameters, unmute);
+   }
+
+   private string computeEmoteChatMessage (EmoteManager.EmoteTypes emoteType, string target) {
       switch (emoteType) {
          case EmoteManager.EmoteTypes.Dance:
             return Util.isEmpty(target) ? $"dances" : $"dances and would like {target} to join!";
@@ -273,7 +284,7 @@ public class ChatManager : GenericGameManager
       }
    }
 
-   public void requestEmoteList() {
+   public void requestEmoteList () {
       StringBuilder sb = new StringBuilder();
       sb.Append("The available emotes are: ");
 
@@ -363,7 +374,7 @@ public class ChatManager : GenericGameManager
          // Extract recipient name from message
          string recipientName = extractWhisperNameFromChat(message);
          string command = message;
-         
+
          if (recipientName != string.Empty) {
             // Remove recipient name from message then execute chat command
             command = message.Replace(recipientName, "").TrimStart();
@@ -375,7 +386,7 @@ public class ChatManager : GenericGameManager
             return;
          }
       }
-      
+
       sendMessageToServer(message, ChatInfo.Type.Whisper);
 
       // Add the whisper name to the history
@@ -423,8 +434,8 @@ public class ChatManager : GenericGameManager
          message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
       } else if (message.StartsWith(ChatPanel.WHISPER_PREFIX_FULL)) {
          message = message.Replace(ChatPanel.WHISPER_PREFIX_FULL, "");
-      } 
-      
+      }
+
       // Return empty name if whisper prefix is followed by admin command
       if (ChatUtil.commandTypePrefixes[CommandType.Admin].Any(prefix => message.StartsWith(prefix))) {
          return string.Empty;
@@ -517,7 +528,7 @@ public class ChatManager : GenericGameManager
             }
          }
       }
-      
+
       _sentMessageHistory.Add(textToProcess);
 
       // Check if it's a chat command
@@ -529,7 +540,7 @@ public class ChatManager : GenericGameManager
          string extra = (startIndex >= 0 && strLength > 0)
             ? WorldMapManager.self.encodeSpot(WorldMapManager.self.getSpotFromGeoCoords(geoCoords))
             : string.Empty;
-         
+
          sendMessageToServer(textToProcess, ChatPanel.self.currentChatType, extra);
       }
 
@@ -758,7 +769,7 @@ public class ChatManager : GenericGameManager
    public static bool isTyping () {
       // Skip for batch mode
       if (Util.isBatch()) return false;
-      
+
       if (Util.isAnyInputFieldFocused()) {
          return true;
       }
@@ -1036,7 +1047,7 @@ public class ChatManager : GenericGameManager
          Global.player.rpc.Cmd_TeleportToCurrentAreaSpawnLocation();
          return;
       }
-      
+
       addChat("Can't do that now...", ChatInfo.Type.System);
    }
 
@@ -1047,7 +1058,7 @@ public class ChatManager : GenericGameManager
       if (_chats != null && _chats.Count > 0 && Util.areStringsEqual(message, _chats.Last().text)) {
          return;
       }
-      
+
       addChat(message, ChatInfo.Type.PendingFriendRequestsNotification);
 
       // Sound effect
@@ -1147,7 +1158,7 @@ public class ChatManager : GenericGameManager
 
    // Reference to admin command prefixes
    private readonly List<string> _adminPrefixes = ChatUtil.commandTypePrefixes[CommandType.Admin];
-   
+
    // A list of the data for all available chat commands
    protected List<CommandData> _commandData = new List<CommandData>();
 
@@ -1186,6 +1197,6 @@ public class ChatManager : GenericGameManager
 
    // Chat messages sent to disconnected/redirected users
    protected List<ChatInfo> _missedChatMessages = new List<ChatInfo>();
-   
+
    #endregion
 }

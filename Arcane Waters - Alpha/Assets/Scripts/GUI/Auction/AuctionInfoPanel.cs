@@ -40,6 +40,7 @@ public class AuctionInfoPanel : SubPanel
    public Text buyoutPriceConsult;
    public GameObject cancelAuctionContainer;
    public GameObject youWonThisAuctionGO;
+   public Button adminCancelAuctionButton;
 
    // The create section fields
    public Toggle duration1hToggle;
@@ -61,6 +62,15 @@ public class AuctionInfoPanel : SubPanel
    public Button buyoutButton;
 
    #endregion
+
+   public override void show () {
+      base.show();
+
+      if (adminCancelAuctionButton) {
+         bool isAdmin = Global.player != null && Global.player.isAdmin();
+         adminCancelAuctionButton.gameObject.SetActive(isAdmin);
+      }
+   }
 
    public void displayAuction (int auctionId) {
       Global.player.rpc.Cmd_GetAuction(auctionId);
@@ -364,6 +374,22 @@ public class AuctionInfoPanel : SubPanel
          }, null, true, 0, "Are you sure you want to cancel your auction for \"" + _auction.itemName + "\" ? ");
    }
 
+   public void onAdminCancelAuctionButtonPressed () {
+      if (Global.player == null || !Global.player.isAdmin()) {
+         return;
+      }
+
+      PanelManager.self.showConfirmationPanel("Cancel Auction", onAdminCancelAuctionConfirmed, null, true, 0, "Are you sure you want to cancel this auction for \"" + _auction.itemName + "\" ? ");
+   }
+
+   private void onAdminCancelAuctionConfirmed () {
+      if (Global.player == null || !Global.player.isAdmin()) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_CancelAuctionAdmin(_auction.auctionId);
+   }
+
    public void onBuyoutToggleValueChanged () {
       if (buyoutPriceToggle.isOn) {
          buyoutPriceCreate.interactable = true;
@@ -373,7 +399,6 @@ public class AuctionInfoPanel : SubPanel
          buyoutPriceCreate.text = "";
       }
    }
-
 
    #region Private Variables
 

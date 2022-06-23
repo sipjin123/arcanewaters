@@ -145,7 +145,6 @@ public class TreasureManager : MonoBehaviour {
          foreach (int validUserId in validUserIds) {
             if (!chest.allowedUserIds.Contains(validUserId)) {
                chest.allowedUserIds.Add(validUserId);
-
                int bonusChests = 0;
                if (PerkManager.self.perkActivationRoll(validUserId, Perk.Category.ItemDropChances)) {
                   D.debug("User {" + validUserId + "} Received a Bonus loot using Perks");

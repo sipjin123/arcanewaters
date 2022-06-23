@@ -356,7 +356,7 @@ public class CropManager : NetworkBehaviour
 
       // Remove it from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteCrop(cropToHarvest.cropNumber, cropToHarvest.userId);
+         DB_Main.deleteCrop(cropToHarvest.cropNumber, cropToHarvest.userId, cropToHarvest.areaKey);
 
          // Add new crop to inventory
          Item itemToCreate = new Item {
@@ -618,7 +618,11 @@ public class CropManager : NetworkBehaviour
          yield return null;
       }
 
-      CropSpotManager.self.resetCropSpots();
+      if (Global.player != null) {
+         CropSpotManager.self.resetCropSpots(Global.player.areaKey);
+      } else {
+         CropSpotManager.self.resetCropSpots();
+      }
 
       // Destroy any existing crops on the client
       foreach (Crop crop in FindObjectsOfType<Crop>()) {

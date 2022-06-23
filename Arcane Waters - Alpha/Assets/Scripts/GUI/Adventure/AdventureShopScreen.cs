@@ -47,6 +47,7 @@ public class AdventureShopScreen : Panel
       base.Awake();
 
       self = this;
+      _defaultTexColor = greetingText.color;
    }
 
    public void refreshPanel () {
@@ -118,7 +119,14 @@ public class AdventureShopScreen : Panel
       greetingText.text = text;
 
       // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+      if (Global.slowTextEnabled) {
+         // If slow text flag is enabled use auto typer slow text reveal
+         AutoTyper.slowlyRevealText(greetingText, _greetingText);
+      } else {
+         // Show dialogue instantly
+         greetingText.text = _greetingText;
+         greetingText.color = _defaultTexColor;
+      }
    }
 
    public void updatePanelWithItems (int gold, List<Item> itemList) {
@@ -167,6 +175,9 @@ public class AdventureShopScreen : Panel
 
    // Keeps track of what our starting text is
    protected string _greetingText = "";
+   
+   // Store default color of panel greeting text
+   private Color _defaultTexColor;
 
    #endregion
 }

@@ -39,6 +39,7 @@ public class MerchantScreen : Panel {
 
       // Clear out any crop rows
       cropRowsContainer.DestroyChildren();
+      _defaultTexColor = greetingText.color;
    }
 
    public void refreshPanel () {
@@ -110,7 +111,14 @@ public class MerchantScreen : Panel {
       _greetingText = greetingText;
 
       // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
+      if (Global.slowTextEnabled) {
+         // If slow text flag is enabled use auto typer slow text reveal
+         AutoTyper.slowlyRevealText(this.greetingText, _greetingText);
+      } else {
+         // Show dialogue instantly
+         this.greetingText.text = _greetingText;
+         this.greetingText.color = _defaultTexColor;
+      }
 
       // Clear out any old info
       cropRowsContainer.DestroyChildren();
@@ -145,5 +153,8 @@ public class MerchantScreen : Panel {
    // Keeps track of what our starting text is
    protected string _greetingText = "";
 
+   // Store default color of panel greeting text
+   private Color _defaultTexColor;
+   
    #endregion
 }

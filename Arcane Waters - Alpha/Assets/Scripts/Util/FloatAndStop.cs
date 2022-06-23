@@ -85,7 +85,7 @@ public class FloatAndStop : MonoBehaviour {
       yield return new WaitForSeconds(1f);
 
       // Slowly reveal the name of the item
-      AutoTyper.SlowlyRevealText(nameText, itemName);
+      AutoTyper.slowlyRevealText(nameText, itemName);
    }
 
    #region Private Variables

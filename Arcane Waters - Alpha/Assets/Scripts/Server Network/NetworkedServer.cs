@@ -1141,85 +1141,6 @@ public class NetworkedServer : NetworkedBehaviour
       return (int) (_pastFrameTimes.Count / (_pastFrameTimes.Last.Value - _pastFrameTimes.First.Value));
    }
 
-   #region Log Retrieval
-
-   public void requestServerLog (AdminManager man, ulong serverNetworkId) {
-      // Note down the manager that requested this to return to him later
-      _serverLogsRequesters[man.netId] = man;
-      InvokeServerRpc(MasterServer_RequestServerLog, serverNetworkId, man.netId);
-   }
-
-   [ServerRPC]
-   public void MasterServer_RequestServerLog (ulong serverNetworkId, uint forNetId) {
-      // If log is needed for the master server, we can form it immediately
-      if (serverNetworkId == ServerNetworkingManager.self.server.NetworkId) {
-         requestServerLog(serverNetworkId, forNetId);
-         return;
-      }
-
-      // Otherwise find the server and send a request for the log
-      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         if (server.NetworkId == serverNetworkId) {
-            InvokeClientRpcOnClient(Server_RequestServerLog, server.OwnerClientId, serverNetworkId, forNetId);
-            return;
-         }
-      }
-
-      D.warning("Could not find server " + serverNetworkId + " to retrieve logs");
-   }
-
-   [ClientRPC]
-   public void Server_RequestServerLog (ulong serverNetworkId, uint forNetId) {
-      requestServerLog(serverNetworkId, forNetId);
-   }
-
-   private void requestServerLog (ulong serverNetworkId, uint forNetId) {
-      // Transform into a byte array
-      byte[] data = Encoding.ASCII.GetBytes(D.getLogString());
-
-      // Remove the beginning of the log if it is too large
-      int maxServerLogSize = D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE * D.MAX_MASTER_SERVER_LOG_CHUNK_COUNT;
-      if (data.Length > maxServerLogSize) {
-         data = data.RangeSubset(data.Length - maxServerLogSize, maxServerLogSize);
-      }
-
-      // Split the log into chunks smaller than the RPC size limit per message
-      int lastIndex = 0;
-      while (lastIndex < data.Length) {
-         byte[] chunk = data.RangeSubset(lastIndex, Mathf.Min(D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE, data.Length - lastIndex));
-         lastIndex += D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE;
-
-         // If we are not the master server, send over to it first
-         if (ServerNetworkingManager.self.server.isMasterServer()) {
-            receiveServerLogDataMasterServer(chunk, lastIndex >= data.Length, serverNetworkId, forNetId);
-         } else {
-            InvokeServerRpc(MasterServer_ReceiveServerLogData, chunk, lastIndex >= data.Length, serverNetworkId, forNetId);
-         }
-      }
-   }
-
-   [ServerRPC(RequireOwnership = false)]
-   public void MasterServer_ReceiveServerLogData (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
-      receiveServerLogDataMasterServer(serverLogData, last, serverNetworkId, forNetId);
-   }
-
-   private void receiveServerLogDataMasterServer (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
-      InvokeClientRpcOnOwner(Server_ReceiveServerLog, serverLogData, last, serverNetworkId, forNetId);
-   }
-
-   [ClientRPC]
-   public void Server_ReceiveServerLog (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
-      // We arrived at the server, which received log request from the client
-      // Figure out which client requested it and send the partial log data to him
-      if (_serverLogsRequesters.TryGetValue(forNetId, out AdminManager man)) {
-         if (man != null) {
-            man.Target_ReceivePartialRemoteServerLogBytes(serverLogData, serverNetworkId, last);
-         }
-      }
-   }
-
-   #endregion
-
    #region Network Overview Reports
 
    public void requestNetworkInstanceList (RPCManager man) {
@@ -1343,6 +1264,10 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
+   #endregion
+
+   #region Admin Game Settings
+
    [ServerRPC]
    public void MasterServer_UpdateAdminGameSettings () {
       InvokeClientRpcOnEveryone(Server_UpdateAdminGameSettings);
@@ -1355,6 +1280,69 @@ public class NetworkedServer : NetworkedBehaviour
 
    #endregion
 
+   #region Log Retrieval
+
+   [ServerRPC]
+   public void MasterServer_RequestLogFromServer (int targetServerPort, int requesterUserId, int requesterServerPort) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServer(targetServerPort);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_RequestLog, targetServerPort, requesterUserId, requesterServerPort);
+      }
+   }
+
+
+   [ClientRPC]
+   public void Server_RequestLog (int targetServerPort, int requesterUserId, int requesterServerPort) {
+      // Get the log
+      byte[] log = D.getLogForSendingToClient();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Store the log in DB
+         int messageId = DB_Main.createServerNetworkLargeMessage(log);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send back the messageId to the requester server
+            InvokeServerRpc(MasterServer_ReceiveLog, messageId, targetServerPort, requesterUserId, requesterServerPort);
+         });
+      });
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReceiveLog (int messageId, int targetServerPort, int requesterUserId, int requesterServerPort) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServer(requesterServerPort);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveLog, messageId, targetServerPort, requesterUserId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveLog (int messageId, int targetServerPort, int requesterUserId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the log
+         byte[] log = DB_Main.getServerNetworkLargeMessage(messageId);
+
+         // Delete the temporary entry in DB
+         DB_Main.deleteServerNetworkLargeMessage(messageId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Get the requester entity
+            if (!EntityManager.self.tryGetEntity(requesterUserId, out NetEntity player)) {
+               return;
+            }
+
+            // Split the log into chunks smaller than the Mirror size limit per message
+            int lastIndex = 0;
+            while (lastIndex < log.Length) {
+               byte[] chunk = log.RangeSubset(lastIndex, Mathf.Min(D.MAX_SERVER_LOG_CHUNK_SIZE, log.Length - lastIndex));
+               lastIndex += D.MAX_SERVER_LOG_CHUNK_SIZE;
+               player.admin.Target_ReceivePartialRemoteServerLogBytes(chunk, targetServerPort, lastIndex >= log.Length);
+            }
+         });
+      });
+   }
+
+   #endregion
+
    #region Private Variables
 
    // Which users are requesting network instance list
@@ -1362,9 +1350,6 @@ public class NetworkedServer : NetworkedBehaviour
 
    // Which users are requesting network overview
    private Dictionary<uint, RPCManager> _networkOverviewRequesters = new Dictionary<uint, RPCManager>();
-
-   // Which users are requesting server logs
-   private Dictionary<uint, AdminManager> _serverLogsRequesters = new Dictionary<uint, AdminManager>();
 
    // List of frame times over the last 60 frames for FPS calculation
    private LinkedList<float> _pastFrameTimes = new LinkedList<float>();

@@ -160,9 +160,9 @@ public class AdminPanel : Panel
       serversTitleText.text = "SERVERS " + _serverOverviews.Count + "/" + _totalServersInNetwork;
    }
 
-   public void receiveServerLog (ulong serverNetworkId, string log) {
+   public void receiveServerLog (int targetServerPort, string log) {
       foreach (AdminPanelServerOverview ov in GetComponentsInChildren<AdminPanelServerOverview>()) {
-         if (ov.data != null && ov.data.serverNetworkId == serverNetworkId) {
+         if (ov.data != null && ov.data.port == targetServerPort) {
             ov.receiveLog(log);
          }
       }

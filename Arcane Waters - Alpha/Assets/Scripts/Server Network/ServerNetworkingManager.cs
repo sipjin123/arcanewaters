@@ -505,6 +505,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_UpdateAdminGameSettings);
    }
 
+   public void requestLogFromServer (int targetServerPort, int requesterUserId) {
+      server.InvokeServerRpc(server.MasterServer_RequestLogFromServer, targetServerPort, requesterUserId, server.networkedPort.Value);
+   }
+
    #region Private Variables
 
    // Players will only be assigned to the master server if all other servers have this many more players

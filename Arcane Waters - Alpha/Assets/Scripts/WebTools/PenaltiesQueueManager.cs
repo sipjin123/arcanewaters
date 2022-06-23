@@ -37,7 +37,7 @@ public class PenaltiesQueueManager : GenericGameManager
                bool isMuted = penalties.Any(x => x.IsMute());
                bool isBanned = penalties.Any(x => x.IsBan());
 
-               PenaltyInfo newPenalty = new PenaltyInfo(item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime);
+               PenaltyInfo newPenalty = new PenaltyInfo(item.sourceAccId, item.targetAccId, item.penaltyType, item.penaltyReason, item.penaltyTime);
 
                switch (item.penaltyType) {
                   case PenaltyInfo.ActionType.Mute:
@@ -101,10 +101,10 @@ public class PenaltiesQueueManager : GenericGameManager
                      }
                      break;
                   case PenaltyInfo.ActionType.Kick:
+                     // We don't need to store a kick penalty
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                         ServerNetworkingManager.self.applyPenaltyToPlayer(item.targetAccId, item.penaltyType, item.penaltyTime);
                      });
-                     DB_Main.savePenalty(newPenalty);
                      break;
                   case PenaltyInfo.ActionType.ForceSinglePlayer:
                   case PenaltyInfo.ActionType.LiftForceSinglePlayer:

@@ -178,6 +178,15 @@ public class ClientMessageManager : MonoBehaviour {
                PanelManager.self.noticeScreen.show(msg.customMessage);
             }
             return;
+         case ErrorMessage.Type.GuildCreationFailed:
+            if (!Util.isEmpty(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
+
+            if (GuildPanel.self != null && GuildPanel.self.guildCreatePanel != null) {
+               GuildPanel.self.guildCreatePanel.activate();
+            }
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:
@@ -422,6 +431,16 @@ public class ClientMessageManager : MonoBehaviour {
             AuctionPanel auctionPanel2 = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
             auctionPanel2.auctionInfoPanel.hide();
             auctionPanel2.displayAllAuctions();
+
+            // Show a confirmation panel
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            return;
+
+         case ConfirmMessage.Type.ModifiedAuction:
+            AuctionPanel auctionPanel3 = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
+            auctionPanel3.auctionInfoPanel.hide();
+            auctionPanel3.displayAllAuctions();
 
             // Show a confirmation panel
             PanelManager.self.noticeScreen.show(msg.customMessage);

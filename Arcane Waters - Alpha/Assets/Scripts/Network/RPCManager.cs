@@ -88,6 +88,58 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_CancelAuctionAdmin (int auctionId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         D.warning("Player is not admin.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         try {
+            D.debug($"Admin Auction Cancellation. Started. AuctionId: {auctionId}. AdminId: {_player.userId}");
+            AuctionItemData auction = DB_Main.getAuction(auctionId, false);
+            DateTime expiryDate = DateTime.FromBinary(auction.expiryDate);
+
+            if (expiryDate <= DateTime.UtcNow) {
+               sendError("This auction has ended!");
+               D.debug($"Admin Auction Cancellation. Failed. Reason: Auction has ended. AuctionId: {auction.auctionId}. AdminId: {_player.userId}. SellerId: {auction.sellerId}. MailId: {auction.mailId}.");
+
+               return;
+            }
+
+            // Return his gold to the previous highest bidder - if any
+            if (auction.highestBidUser > 0) {
+               DB_Main.addGold(auction.highestBidUser, auction.highestBidPrice);
+               D.debug($"Admin Auction Cancellation. Returned gold to the highest bidder. AuctionId: {auctionId}. AdminId: {_player.userId}. HighestBidderId: {auction.highestBidUser}. HighestBid: {auction.highestBidPrice}");
+            }
+
+            // Deliver the item to the seller and delete the auction
+            DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
+            D.debug($"Admin Auction Cancellation. Auction Items delivered to seller. AuctionId: {auction.auctionId}. AdminId: {_player.userId}. SellerId: {auction.sellerId}. MailId: {auction.mailId}.");
+
+            DB_Main.deleteAuction(auctionId);
+            D.debug($"Admin Auction Cancellation. Success. AuctionId: {auction.auctionId}. AdminId: {_player.userId}.");
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ModifiedAuction, _player, "The auction has been cancelled and the item delivered to the original seller by mail!");
+            });
+         }
+         catch (Exception ex) {
+            D.error($"Admin Auction Cancellation. Exception. AuctionId: {auctionId}. AdminId: {_player.userId}. Message: {ex.Message}. StackTrace: {ex.StackTrace}");
+            
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Error occurred while cancelling the auction!");
+            });
+         }
+      });
+   }
+
+   [Command]
    public void Cmd_CreateAuction (Item item, int startingBid, bool isBuyoutAllowed, int buyoutPrice, long expiryDateBinary) {
       DateTime expiryDate = DateTime.FromBinary(expiryDateBinary);
 
@@ -1404,6 +1456,24 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       SendChat(message, chatType, string.Empty);
+   }
+
+   [Command]
+   public void Cmd_RequestMutePlayer (string username, bool isUnmute) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserAccountInfo info = DB_Main.getUserAccountInfo(username);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (info == null) {
+               _player.Target_ReceiveNormalChat(string.Format("Could not find user {0}", username), ChatInfo.Type.Error);
+            } else {
+               if (isUnmute) {
+                  _player.Target_ReceiveUnmutedPlayer(info.userId, info.username);
+               } else {
+                  _player.Target_ReceiveMutedPlayer(info.userId, info.username);
+               }
+            }
+         });
+      });
    }
 
    [TargetRpc]
@@ -3520,6 +3590,7 @@ public class RPCManager : NetworkBehaviour
                if (totalQuestStatus.Count < totalQuestNodes) {
                   hasCompletedAllQuests = false;
                } else {
+                  QuestStatusInfo highestQuestNodeValue = totalQuestStatus.OrderByDescending(_ => _.questNodeId).ToList()[0];
                   // If any of the quest is in progress (dialogue current index less than total dialogues in a Quest Node)
                   foreach (QuestStatusInfo questStat in totalQuestStatus) {
                      QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
@@ -3528,7 +3599,12 @@ public class RPCManager : NetworkBehaviour
                      } else {
                         if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
                            D.adminLog("-->This quest is not complete yet {" + questStat.questNodeId + ":" + questNodeReference.questNodeTitle + "}", D.ADMIN_LOG_TYPE.Quest);
-                           if (friendshipLevel >= questNodeReference.friendshipLevelRequirement) {
+                           // Check if quest does not require other quest to be unlock first
+                           bool noQuestRequirement = questNodeReference.questNodeLevelRequirement < 0;
+                           
+                           // Check if quest progress meets the level requirement of a quest
+                           bool withinLevelRequirement = questNodeReference.questNodeLevelRequirement < highestQuestNodeValue.questNodeId;
+                           if (friendshipLevel >= questNodeReference.friendshipLevelRequirement && noQuestRequirement && withinLevelRequirement) {
                               incompleteQuestList.Add(questStat);
                            } else {
                               insufficientQuestList.Add(questStat);
@@ -3540,7 +3616,7 @@ public class RPCManager : NetworkBehaviour
                      }
                   }
 
-                  if (incompleteQuestList.Count > 0) {
+                  if (incompleteQuestList.Any()) {
                      hasCompletedAllQuests = false;
                   }
                }
@@ -3555,7 +3631,7 @@ public class RPCManager : NetworkBehaviour
                }
 
                if (incompleteQuestList.Count < 1) {
-                  if (insufficientQuestList.Count > 1) {
+                  if (insufficientQuestList.Any()) {
                      D.adminLog("Player has not completed all quests but does not meet the friendship level, remaining:{" + insufficientQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
                      Target_ToggleInsufficientQuestNotice(_player.connectionToClient, npcId, true);
                   } else {
@@ -3879,6 +3955,7 @@ public class RPCManager : NetworkBehaviour
                      //D.adminLog("Skip because status is less than nodes", D.ADMIN_LOG_TYPE.Quest);
                   }
                } else {
+                  QuestStatusInfo highestQuestNodeValue = databaseQuestStatus.OrderByDescending(_ => _.questNodeId).ToList()[0];
                   foreach (QuestStatusInfo questStatus in databaseQuestStatus) {
                      // TODO: Use this if using index based search for quests status instead of id
                      //QuestDataNode questDataNodeFetch = questData.questDataNodes[questStatus.questNodeId];
@@ -3886,21 +3963,29 @@ public class RPCManager : NetworkBehaviour
                      if (questDataNodeFetch != null) {
                         // If progressed dialogue is less than the end point dialogue
                         if (questStatus.questDialogueId < questDataNodeFetch.questDialogueNodes.Length) {
-                           // If friendship level meets, add to npc list
-                           if (friendshipLevel >= questDataNodeFetch.friendshipLevelRequirement) {
+                           // Check if quest does not require other quest to be unlock first
+                           bool noQuestRequirement = questDataNodeFetch.questNodeLevelRequirement < 0;
+                           
+                           // Check if quest progress meets the level requirement of a quest
+                           bool withinLevelRequirement = questDataNodeFetch.questNodeLevelRequirement < highestQuestNodeValue.questNodeId;
+                           
+                           // If friendship level and other quest requirements are satisfied, we add npc to list
+                           if (friendshipLevel >= questDataNodeFetch.friendshipLevelRequirement && noQuestRequirement && withinLevelRequirement) {
                               if (!npcIdList.Contains(npcData.npcId)) {
                                  // Enable Logs if there are quest process related issues
                                  //D.debug("Adding Npc {" + npcData.npcId + "} here because quest is not finished");
                                  npcIdList.Add(npcData.npcId);
                               }
-                           } else {
-                              if (!lockedNpcIdList.Contains(npcData.npcId)) {
-                                 //D.debug("Adding InvalidNpc {"+ npcData.npcId + "} here because friendship level is not enough");
-                                 lockedNpcIdList.Add(npcData.npcId);
+
+                              if (lockedNpcIdList.Contains(npcData.npcId)) {
+                                 lockedNpcIdList.Remove(npcData.npcId);
                               }
-                              if (npcIdList.Contains(npcData.npcId)) {
-                                 //D.debug("Removing {" + npcData.npcId + "} from list because friendship level is not enough!");
-                                 npcIdList.Remove(npcData.npcId);
+                           } else {
+                              if (!npcIdList.Contains(npcData.npcId)) {
+                                 if (!lockedNpcIdList.Contains(npcData.npcId)) {
+                                    //D.debug("Adding InvalidNpc {"+ npcData.npcId + "} here because friendship level is not enough");
+                                    lockedNpcIdList.Add(npcData.npcId);
+                                 }
                               }
                            }
                         }
@@ -3932,6 +4017,7 @@ public class RPCManager : NetworkBehaviour
       foreach (int npcId in npcIds) {
          NPC npcEntity = NPCManager.self.getNPC(npcId);
          npcEntity.questNotice.SetActive(true);
+         npcEntity.insufficientQuestNotice.SetActive(false);
       }
    }
 
@@ -3940,6 +4026,7 @@ public class RPCManager : NetworkBehaviour
       foreach (int npcId in npcIds) {
          NPC npcEntity = NPCManager.self.getNPC(npcId);
          npcEntity.insufficientQuestNotice.SetActive(true);
+         npcEntity.questNotice.SetActive(false);
       }
    }
 
@@ -5359,6 +5446,11 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveGuildAllianceInvite (NetworkConnection connection, int inviterUserId, GuildInfo guildInfo, GuildInfo guildAllyInfo) {
+      // Ignore invite if do not disturb flag is enabled
+      if(Global.doNotDisturbEnabled){
+         return;
+      }
+      
       if (Global.ignoreGuildAllianceInvites) {
          Cmd_RejectGuildAlliance(inviterUserId, _player.userId);
          return;
@@ -5556,30 +5648,55 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_CreateGuild (string guildName, string iconBorder, string iconBackground, string iconSigil,
       string iconBackPalettes, string iconSigilPalettes) {
       if (_player.guildId > 0) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You are already in a guild.");
+         ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, "You are already in a guild.");
          return;
       }
 
       if (!GuildManager.self.isGuildNameValid(guildName, out string errorMessage)) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, errorMessage);
+         ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, errorMessage);
          return;
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the player can afford creating a new guild
+         int playerGold = DB_Main.getGold(_player.userId);
+
+         D.debug($"Guild Creation. Process started. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");
+
+         if (playerGold < GuildManager.getGuildCreationCost()) {
+            D.debug($"Guild Creation Failed. Reason: Insufficient Gold. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");  
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, "You don't have enough gold!");
+            });
+            return;
+         }
+
+         // Take the gold from the player
+         if (!DB_Main.addGold(_player.userId, -GuildManager.getGuildCreationCost())) {
+            D.debug($"Guild Creationg Failed. Reason: DB failed to update the gold for the player. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, "You can't create a new guild at the moment.");
+            });
+            return;
+         }
+
          // Try to create the guild in the database
-         GuildInfo guildInfo = new GuildInfo(guildName, iconBorder, iconBackground, iconSigil,
-            iconBackPalettes, iconSigilPalettes);
+         GuildInfo guildInfo = new GuildInfo(guildName, iconBorder, iconBackground, iconSigil, iconBackPalettes, iconSigilPalettes);
          int guildId = DB_Main.createGuild(guildInfo);
          UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
 
          // Assign the guild to the player
          if (guildId > 0) {
+            D.debug($"Guild Creation OK. Guild created. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}. GuildId: {guildId}.");
+
             DB_Main.assignGuild(_player.userId, guildId);
             DB_Main.assignRankGuild(_player.userId, 0);
 
             // Create basic ranks and assign "Guild Leader" position to player
             DB_Main.createRankGuild(GuildRankInfo.getDefaultOfficer(guildId));
             DB_Main.createRankGuild(GuildRankInfo.getDefaultMember(guildId));
+
+            D.debug($"Guild Creation OK. Guild correctly assigned to the player. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}. GuildId: {guildId}.");
 
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -5603,9 +5720,11 @@ public class RPCManager : NetworkBehaviour
             });
 
          } else {
+            D.debug($"Guild Creation Failed. Guild couldn't be created. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}. GuildId: {guildId}.");
+
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That guild name has been taken.");
+               ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, "That guild name has been taken.");
             });
          }
       });
@@ -6878,7 +6997,8 @@ public class RPCManager : NetworkBehaviour
       // Warp player to other area and clean up panel only if player is currently online
       if (targetPlayerToKick) {
          // If the player is in a voyage area, warp him to the starting town
-         if (VoyageManager.isAnyLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isPvpArenaArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey)) {
+         if (VoyageManager.isAnyLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isPvpArenaArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey) ||
+            VoyageManager.isPOIArea(targetPlayerToKick.areaKey)) {
             D.debug("This player {" + _player.userId + " " + _player.entityName + "} Has been kicked from Group, returning to Town");
             targetPlayerToKick.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          }
@@ -8124,6 +8244,11 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceivePvpInvite (NetworkConnection connection, int inviterUserId, string inviterName) {
+      // Ignore PVP invite if do not disturb flag is enabled
+      if (Global.doNotDisturbEnabled) {
+         return;
+      }
+      
       PvpInviteScreen.self.activate(inviterName);
       PvpInviteScreen.self.acceptButton.onClick.AddListener(() => {
          Global.player.rpc.Cmd_AcceptPvpInvite(inviterUserId);
@@ -11441,7 +11566,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveUserSearchResults (NetworkConnection connection, UserSearchResultCollection resultCollection) {
       // Handle steam search results differently
       if (resultCollection.searchInfo.filter == UserSearchInfo.FilteringMode.SteamId) {
-         PanelManager.self.linkIfNotShowing(Panel.Type.FriendList);
+         PanelManager.self.showPanel(Panel.Type.FriendList);
          FriendListPanel.self.showSearchResults(resultCollection);
          return;
       }

@@ -38,9 +38,15 @@ public class OptionsManager : GenericGameManager {
    // Player Prefs key for soul bindings warning
    public const string PREF_SHOW_SOUL_BINDING_WARNINGS = "CHAT_SHOW_SOUL_BINDING_WARNINGS";
 
-   // PLayer Prefs key for the Camera Shake Effect
+   // Player Prefs key for the Camera Shake Effect
    public const string PREF_ENABLE_CAMERA_SHAKE = "ENABLE_CAMERA_SHAKE";
 
+   // Player Prefs key for slow show text effect
+   public const string PREF_ENABLE_SLOW_TEXT = "ENABLE_SLOW_TEXT";
+   
+   // Player Prefs key for do not disturb status
+   public const string PREF_DO_NOT_DISTURB = "ENABLE_DO_NOT_DISTURB";
+   
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 
@@ -82,6 +88,9 @@ public class OptionsManager : GenericGameManager {
       Global.showHealText = PlayerPrefs.GetInt(SHOW_HEAL_TEXT, 0) == 1;
       Global.isCameraShakeEffectEnabled = PlayerPrefs.GetInt(PREF_ENABLE_CAMERA_SHAKE, 1) == 1;
       Global.autoFarm = PlayerPrefs.GetInt(PREF_AUTO_FARM, 0) == 1 ? true : false;
+      Global.slowTextEnabled = PlayerPrefs.GetInt(PREF_ENABLE_SLOW_TEXT, 1) == 1 ? true : false;
+      Global.doNotDisturbEnabled = PlayerPrefs.GetInt(PREF_DO_NOT_DISTURB, 0) == 1 ? true : false;
+
    }
 
    private void Start () {
