@@ -2464,7 +2464,7 @@ public class AdminManager : NetworkBehaviour
       string[] list = parameters.Split(' ');
       try {
          string idVal = list[0];
-         string userName = list[1];
+         string userName = list.Length > 1 ? list[1] : "";
          if (idVal.Length > 0) {
             Cmd_ChangeSprite(1, idVal, userName);
          } else {

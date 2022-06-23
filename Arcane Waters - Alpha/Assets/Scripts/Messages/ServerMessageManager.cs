@@ -313,6 +313,24 @@ public class ServerMessageManager : MonoBehaviour
             D.debug("User " + selectedUserId + " had a removed perk: " + removedPerk.perkId + ", their perk points have been reset.");
          }
 
+         // Make sure that the users who used their perks in character creation gets their perks back on reset
+         List<Perk> existingPerks = DB_Main.getPerkPointsForUser(selectedUserId);
+         int unassignedPoints = 0;
+         int assignedPoints = 0;
+         foreach (Perk perk in existingPerks) {
+            if (perk.perkId == 0) {
+               unassignedPoints += perk.points;
+            } else {
+               assignedPoints += perk.points;
+            }
+         }
+         int totalPerks = unassignedPoints + assignedPoints;
+         if (totalPerks < 3) {
+            int perksToAdd = 3 - totalPerks;
+            D.debug("User " + selectedUserId + " had insufficient default perk counts:{" + totalPerks + "}, missing:{" + perksToAdd + "} perks, their perk points have been reset to:{" + (totalPerks + perksToAdd) + "}.");
+            DB_Main.resetPerkPointsAll(selectedUserId, totalPerks + perksToAdd);
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Filter users sharing the same character spot
