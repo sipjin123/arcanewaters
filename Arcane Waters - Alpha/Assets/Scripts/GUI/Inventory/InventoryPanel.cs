@@ -84,6 +84,10 @@ public class InventoryPanel : Panel
       NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE, 0, Panel.Type.Inventory);
    }
 
+   public void preloadPanel () {
+      loadBlockerSmall.SetActive(true);
+   }
+
    public void clearPanel () {
       // Clear out any current items
       itemCellsContainer.DestroyChildren();

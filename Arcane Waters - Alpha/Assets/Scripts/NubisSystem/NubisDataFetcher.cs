@@ -417,16 +417,6 @@ namespace NubisDataHandling
          int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
          string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
 
-         InventoryBundle inventoryBundle = null;
-
-         // Request the inventory from Nubis
-         string inventoryBundleString = await NubisClient.callDirect<string>("getUserInventoryPage",
-            userId,
-            categoryFilter.ToArray(),
-            pageIndex,
-            itemsPerPage,
-            itemDurabilityFilter);
-
          // Request the jobs from Nubis
          string jobsBundleString = await NubisClient.call<string>(nameof(DB_Main.getJobXPString), userId);
          Jobs jobsData = new Jobs();
@@ -446,7 +436,33 @@ namespace NubisDataHandling
                }
             }
          }
-         
+
+         // Handle preloading here
+         if (panelType == Panel.Type.Inventory) {
+            // Get the inventory panel
+            InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+            // Make sure the inventory panel is showing
+            if (!inventoryPanel.isShowing()) {
+               PanelManager.self.showPanel(Panel.Type.Inventory);
+
+               // When inventory panel is opened, we should always start at the first page
+               pageIndex = 0;
+            }
+            inventoryPanel.clearPanel();
+            inventoryPanel.preloadPanel();
+         }
+
+         InventoryBundle inventoryBundle = null;
+
+         // Request the inventory from Nubis
+         string inventoryBundleString = await NubisClient.callDirect<string>("getUserInventoryPage",
+            userId,
+            categoryFilter.ToArray(),
+            pageIndex,
+            itemsPerPage,
+            itemDurabilityFilter);
+
          try {
             inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
          } catch {

@@ -86,6 +86,12 @@ public class ArmorManager : EquipmentManager {
          // Update our Material
          armorLayer.recolor(palettes);
       }
+
+      if (_body != null && armorLayer != null) {
+         if (_body.spriteOverrideId.Length > 0 && _body.spriteOverrideType > 0) {
+            armorLayer.gameObject.SetActive(false);
+         }
+      }
    }
 
    [TargetRpc]
