@@ -1301,27 +1301,40 @@ public class BattleManager : MonoBehaviour {
       if (teamThatWon == Battle.TeamType.Attackers && defeatedBattlers[0].getBattlerData().enemyType != Enemy.Type.PlayerBattler) {
          // Only Spawn one lootbag per combat win
          int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
-         if (defeatedBattlers[0].player is Enemy) {
-            // Filter spawn nodes
-            List<Transform> filteredNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
-            foreach (Battler winningBattler in winningBattlers) {
-               Transform spawnNode = filteredNodeTarget.Find(_ => (Vector2) _.position == (Vector2) winningBattler.transform.position);
-               if (spawnNode != null) {
-                  filteredNodeTarget.Remove(spawnNode);
+
+         int totalSpawnedLoots = 0;
+         for (int i = 0; i < defeatedBattlers.Count; i++) {
+            // Increase the chance of loot spawn if there are more than one enemy in the party
+            if (totalSpawnedLoots > 0) {
+               // 6 enemies 60% chance, 5 enemies 50% chance, etc
+               int chanceRandomizer = Random.Range(0, 10);
+               if (chanceRandomizer > defeatedBattlers.Count) {
+                  continue;
                }
             }
+            if (defeatedBattlers[0].player is Enemy) {
+               // Filter spawn nodes
+               List<Transform> filteredNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
+               foreach (Battler winningBattler in winningBattlers) {
+                  Transform spawnNode = filteredNodeTarget.Find(_ => (Vector2) _.position == (Vector2) winningBattler.transform.position);
+                  if (spawnNode != null) {
+                     filteredNodeTarget.Remove(spawnNode);
+                  }
+               }
 
-            // Spawn Chest
-            Enemy enemy = (Enemy) defeatedBattlers[0].player;
-            List<Transform> spawnNodeTarget = enemy.lootSpawnPositions.ToList();
-            Vector3 targetSpawnPos = filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position;
+               // Spawn Chest
+               Enemy enemy = (Enemy) defeatedBattlers[0].player;
+               List<Transform> spawnNodeTarget = enemy.lootSpawnPositions.ToList();
+               Vector3 targetSpawnPos = filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position;
 
-            // Offset spawn position of the loot spawn for boss monsters, due to their huge corpse sprite
-            if (enemy.isBossType) {
-               targetSpawnPos += new Vector3(0, .95f, 0);
+               // Offset spawn position of the loot spawn for boss monsters, due to their huge corpse sprite
+               if (enemy.isBossType) {
+                  targetSpawnPos += new Vector3(0, .95f, 0);
+               }
+
+               StartCoroutine(CO_SpawnChest(winningBattlers[0].player, targetSpawnPos, winningBattlers[0].player.instanceId, battlerEnemyID));
+               totalSpawnedLoots++;
             }
-
-            StartCoroutine(CO_SpawnChest(winningBattlers[0].player, targetSpawnPos, winningBattlers[0].player.instanceId, battlerEnemyID));
          }
       }
 

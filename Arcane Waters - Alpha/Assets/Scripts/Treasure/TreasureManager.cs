@@ -121,9 +121,20 @@ public class TreasureManager : MonoBehaviour {
       List<PlayerShipEntity> instancePlayerEntities = instance.getPlayerShipEntities();
       int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
       List<int> validUserIds = new List<int>();
+      
+      // Bypass restrictions and allow all users who damaged the enemy to have chest rewards
+      bool rewardAllDamagingUsers = true;
+      if (rewardAllDamagingUsers) {
+         foreach (uint attackerId in attackers) {
+            NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+            if (entity != null) {
+               validUserIds.Add(entity.userId);
+            }
+         }
+      }
 
       // If this is a voyage, reward entire voyage party
-      if ((playerVoyageGroupId > 0 && !instance.isPvP) || instance.isPvP) {
+      if (((playerVoyageGroupId > 0 || rewardAllDamagingUsers) && !instance.isPvP) || instance.isPvP) {
          // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
          foreach (uint attacker in attackers) {
             NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker);
