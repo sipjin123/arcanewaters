@@ -3498,6 +3498,7 @@ public class RPCManager : NetworkBehaviour
          bool deliveredItems = false;
 
          // Gather the item list to deduct from the preview node
+         QuestDialogueNode previousDialogueData = questDataNode.questDialogueNodes[newDialogueId];
          QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[newDialogueId];
          if (questDialogue.itemRequirements != null) {
             foreach (Item item in questDialogue.itemRequirements) {
@@ -3522,6 +3523,17 @@ public class RPCManager : NetworkBehaviour
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
+            bool wasRewardedFriendship = false;
+            if (previousDialogueData != null) {
+               if (previousDialogueData.friendshipRewardPts > 0) {
+                  D.adminLog("Success reward:{" + previousDialogueData.friendshipRewardPts + "} for dialogue:{" + newDialogueId + ":" + previousDialogueData.playerDialogue + "}", D.ADMIN_LOG_TYPE.NpcFriendship);
+                  DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + previousDialogueData.friendshipRewardPts);
+                  wasRewardedFriendship = true;
+               }
+            } else {
+               D.debug("Missing quest node:{" + newDialogueId + "}");
+            }
 
             // Deduct the items from the user id from the database
             if (itemsToDeduct.Count > 0) {
@@ -3554,6 +3566,14 @@ public class RPCManager : NetworkBehaviour
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (wasRewardedFriendship && previousDialogueData != null) {
+                  NPCData npcData = NPCManager.self.getNPCData(npcId);
+                  string npcName = "Npc";
+                  if (npcData != null) {
+                     npcName = npcData.name;
+                  }
+                  _player.Target_ReceiveNormalChat("You have gained " + previousDialogueData.friendshipRewardPts + " friendship pts with " + npcName, ChatInfo.Type.System);
+               }
                Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, friendshipLevel, true, true, itemStock.ToArray(), newJobXP);
                if (deliveredItems) {
                   AchievementManager.registerUserAchievement(_player, ActionType.QuestDelivery);
@@ -3571,7 +3591,13 @@ public class RPCManager : NetworkBehaviour
 
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
-            DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + questDialogue.friendshipRewardPts);
+
+            bool wasRewardedFriendship = false;
+            if (questDialogue != null && questDialogue.friendshipRewardPts > 0) {
+               DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + questDialogue.friendshipRewardPts);
+               wasRewardedFriendship = true;
+               D.adminLog("Success reward End:{" + questDialogue.friendshipRewardPts + "} for dialogue:{" + dialogueId + ":" + questDialogue.playerDialogue + "}", D.ADMIN_LOG_TYPE.NpcFriendship);
+            }
 
             // Get the quest progress status of the user for this npc
             List<QuestStatusInfo> totalQuestStatus = DB_Main.getQuestStatuses(npcId, _player.userId);
@@ -3658,6 +3684,15 @@ public class RPCManager : NetworkBehaviour
                // Give ability reward to player
                if (questDialogue.abilityIdReward > 0) {
                   giveAbilityToPlayer(_player.userId, new int[1] { questDialogue.abilityIdReward });
+               }
+
+               if (questDialogue != null && wasRewardedFriendship) {
+                  NPCData npcData = NPCManager.self.getNPCData(npcId);
+                  string npcName = "Npc";
+                  if (npcData != null) {
+                     npcName = npcData.name;
+                  }
+                  _player.Target_ReceiveNormalChat("You have gained " + questDialogue.friendshipRewardPts + " friendship pts with " + npcName, ChatInfo.Type.System);
                }
 
                // Give gold reward to player
