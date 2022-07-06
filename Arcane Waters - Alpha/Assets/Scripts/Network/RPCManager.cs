@@ -11324,17 +11324,23 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> itemList = DB_Main.getCraftingIngredients(_player.userId, new List<CraftingIngredients.Type> { CraftingIngredients.Type.Wood });
          if (itemList.Count > 0) {
-            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, supplyValue);
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               outpost.initialMaterials += supplyValue;
-               outpost.Rpc_ReceiveInitialMaterials(outpost.initialMaterials, supplyValue);
-               string message = "Outpost Received " + supplyValue + " Wood";
-               outpost.Rpc_FloatingMessage(message);
-               if (outpost.initialMaterials >= Outpost.MATERIAL_REQUIREMENT) {
-                  outpost.StartCoroutine(outpost.CO_ActivateAfter(0f));
-                  outpost.Rpc_FloatingMessage("Outpost Complete!");
-               }
-            });
+            if (outpost.initialMaterials < Outpost.MATERIAL_REQUIREMENT) {
+               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, Item.Category.CraftingIngredients, (int) CraftingIngredients.Type.Wood, supplyValue);
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  outpost.initialMaterials += supplyValue;
+                  outpost.Rpc_ReceiveInitialMaterials(outpost.initialMaterials, supplyValue);
+                  string message = "Outpost Received " + supplyValue + " Wood";
+                  outpost.Rpc_FloatingMessage(message);
+                  if (outpost.initialMaterials >= Outpost.MATERIAL_REQUIREMENT) {
+                     outpost.StartCoroutine(outpost.CO_ActivateAfter(0f));
+                     outpost.Rpc_FloatingMessage("Outpost Complete!");
+                  }
+               });
+            } else {
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  outpost.Rpc_FloatingMessage("Outpost has been completed!");
+               });
+            }
          } else {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                outpost.Target_ReceiveFailMessage(_player.connectionToClient, "Not enough Wood!");
