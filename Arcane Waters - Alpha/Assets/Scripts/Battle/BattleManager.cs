@@ -306,12 +306,13 @@ public class BattleManager : MonoBehaviour {
       }
 
       if (NetworkTime.time - lastBattleCountTime > 600) {
-         D.debug("Total missing battle references are: {" + battlesToClear.Count + "}");
+         if (battlesToClear.Count > 0) {
+            D.debug("Total missing battle references are: {" + battlesToClear.Count + "}");
+         }
          lastBattleCountTime = NetworkTime.time;
-         // TODO: Enable this if we wish to clear the ended battles
-         /*foreach (int battleIdToClear in battlesToClear) {
+         foreach (int battleIdToClear in battlesToClear) {
             _battles.Remove(battleIdToClear);
-         }*/
+         }
       }
    }
 

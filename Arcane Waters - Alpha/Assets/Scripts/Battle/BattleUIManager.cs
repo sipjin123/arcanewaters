@@ -148,7 +148,8 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (abilityButton.abilityType == abilityType) {
+         if (abilityButton.abilityType == abilityType && abilityButton.abilityIndex >= 0) {
+            D.debug("Should enable Ability Button-A: {" + abilityButton.abilityIndex + "}:{" + abilityButton.cooldownImage.enabled + "}");
             if (!abilityButton.cooldownImage.enabled) {
                abilityButton.enableButton();
             } else {
@@ -236,7 +237,7 @@ public class BattleUIManager : MonoBehaviour {
             }
          } else {
             D.debug("Invalid button click using hotkey! {" + (selectedButton.isEnabled ? "" : "Button disabled") + "}" +
-               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "") + "} {" + selectedButton.lastDisableTrigger + "}");
+               "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null battler selected!" : "ValidBattler") + "} {" + selectedButton.lastDisableTrigger + "}");
             selectedButton.invalidButtonClick();
          }
       }
@@ -389,6 +390,10 @@ public class BattleUIManager : MonoBehaviour {
                   }
                });
 
+               // Reset all cooldowns on battle initialization
+               if (abilityButton.abilityIndex >= 0 && !abilityButton.isInvalidAbility && abilityButton.onCooldown) {
+                  abilityButton.startCooldown(0.1f);
+               }
             } else {
                Debug.LogWarning("Undefined ability Type: " + abilityButton.abilityIndex);
             }

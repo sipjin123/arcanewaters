@@ -203,6 +203,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    public void enableButton () {
       if (isInvalidAbility) {
+         D.debug("Skip enable button! Invalid ability: " + abilityIndex);
          return;
       }
 

@@ -20,7 +20,7 @@ public class AbilityManager : MonoBehaviour
    // Water Bullet = 18
    // Fire Slash = 24
    // Water Slash = 39
-   public static int[] STARTING_ABILITIES = { 9, 91, 39, 24 };
+   public static int[] STARTING_ABILITIES = { 9, 91, 39, 24, 102};
 
    // The id of the punch ability
    public static int PUNCH_ID = 66;
@@ -32,7 +32,7 @@ public class AbilityManager : MonoBehaviour
    public static int SHOOT_ID = 91;
 
    // The id of the rum ability
-   public static int RUM_ID = 88;
+   public static int RUM_ID = 102;
 
    // The id of the healing rum ability
    public static int HEALING_RUM_ID = 89;
