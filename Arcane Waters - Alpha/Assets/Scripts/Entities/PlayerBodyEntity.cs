@@ -528,6 +528,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       playerBattleCollider.combatInitCollider.enabled = true;
    }
 
+   public void grantPlayerCombatAvailability () {
+      playerBattleCollider.combatInitCollider.enabled = true;
+   }
+
+   public void grantPlayerMovementAvailability () {
+      isWithinEnemyRadius = false;
+   }
+
    public void OnPointerEnter (PointerEventData pointerEventData) {
       showEntityName();
 
@@ -688,6 +696,63 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
       }
       Target_ReceiveAmbientSfx(newFmodKey);
+   }
+
+   [TargetRpc]
+   public void Target_ValidateBattle (NetworkConnection connection, int battleId) {
+      StartCoroutine(CO_ValidateBattle(battleId));
+   }
+
+   private IEnumerator CO_ValidateBattle (int battleId) {
+      double startTime = NetworkTime.time;
+      float maxWaitTime = 15;
+
+      yield return new WaitForSeconds(1);
+      D.debug("Validating Battle:{" + battleId + "}");
+
+      // Wait for battle reference to sync with client, restrict wait time to prevent forever loading
+      while ((NetworkTime.time - startTime) < maxWaitTime && BattleManager.self.getBattle(battleId) == null) {
+         yield return 0;
+      }
+
+      bool hasNullBattleReference = BattleManager.self.getBattle(battleId) == null;
+      bool hasLapsedWaitingTime = NetworkTime.time - startTime > maxWaitTime;
+      if (hasLapsedWaitingTime && hasNullBattleReference) {
+         D.debug("Error here! Unable to find battle id:{" + battleId + "}, time lapsed exceeded!");
+      }
+      if (!hasNullBattleReference) {
+         Battle battleRef = BattleManager.self.getBattle(battleId);
+         if (battleRef != null) {
+            int liveAttackBattlers = 0;
+            int liveDefendBattlers = 0;
+            List<Battler> attackerTeam = battleRef.getTeam(Battle.TeamType.Attackers);
+            List<Battler> defenderTeam = battleRef.getTeam(Battle.TeamType.Defenders);
+            foreach (Battler attacker in attackerTeam) {
+               if (attacker.isDead()) {
+                  continue;
+               } else {
+                  liveAttackBattlers++;
+               }
+            }
+            foreach (Battler defender in defenderTeam) {
+               if (defender.isDead()) {
+                  continue;
+               } else {
+                  liveDefendBattlers++;
+               }
+            }
+
+            bool isBattleValid = liveDefendBattlers > 0 && liveAttackBattlers > 0;
+            if (isBattleValid) {
+               D.debug("Join Battle is Valid!");
+            } else {
+               D.editorLog("Join Battle is Invalid! All participants are dead! Reset Player Now", Color.yellow);
+               rpc.Cmd_AbortBattle(battleId);
+            }
+         } else {
+            D.debug("Error here! Battle:{" + battleId + "} reference was severed!");
+         }
+      }
    }
 
    [TargetRpc]

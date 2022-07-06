@@ -252,7 +252,7 @@ public class BattleManager : MonoBehaviour {
          // If this was a Player, we can release the server claim now, so they can relog into any server
          if (battler.userId > 0) {
             ServerNetworkingManager.self.releasePlayerClaim(battler.userId);
-            battler.player.rpc.Target_ResetMoveDisable(battler.player.connectionToClient, battler.battleId.ToString());
+            battler.player.rpc.Target_ResetMoveDisable(battler.player.connectionToClient, battler.battleId.ToString(), 0);
          }
 
          // Destroy the Battler from the Network
@@ -277,6 +277,10 @@ public class BattleManager : MonoBehaviour {
 
    public void storeBattler (Battler battler) {
       _battlers[battler.userId] = battler;
+   }
+
+   public void unregisterBattler (int userId) {
+      _battlers[userId] = null;
    }
 
    protected void tickBattles () {

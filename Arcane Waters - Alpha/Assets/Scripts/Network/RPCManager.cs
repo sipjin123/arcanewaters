@@ -8800,12 +8800,14 @@ public class RPCManager : NetworkBehaviour
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
          D.warning("Player object is not a Player Body, so can't start a Battle: " + _player);
+         Target_ResetMoveDisable(_player.connectionToClient, "Player Type is not Valid", 1);
          return;
       }
 
       // Make sure we're not already in a Battle
       if (BattleManager.self.isInBattle(_player.userId)) {
          D.warning("Can't start new Battle for player that's already in a Battle: " + _player.userId);
+         Target_ResetMoveDisable(_player.connectionToClient, "PlayerAlreadyInBattle", 1);
          return;
       }
 
@@ -8820,7 +8822,7 @@ public class RPCManager : NetworkBehaviour
       if (enemy.isDefeated) {
          // Reset player movement restriction if the battle engagement is invalid
          D.debug("Error here! {" + _player.userId + "} is Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
-         Target_ResetMoveDisable(_player.connectionToClient, "NA");
+         Target_ResetMoveDisable(_player.connectionToClient, "NA", 0);
          return;
       }
 
@@ -8958,7 +8960,7 @@ public class RPCManager : NetworkBehaviour
          D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
 
          // Reset player movement restriction if the battle engagement is invalid
-         Target_ResetMoveDisable(_player.connectionToClient, "NA");
+         Target_ResetMoveDisable(_player.connectionToClient, "NA", 0);
       } else {
          // If the Battle is full, we can't proceed
          if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -8983,6 +8985,70 @@ public class RPCManager : NetworkBehaviour
          // Send Battle Bg data
          int bgXmlID = battle.battleBoard.xmlID;
          Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID, battle.isShipBattle);
+         _player.Target_ReceiveNormalChat("Entering Battle!", ChatInfo.Type.System);
+         localBattler.Target_ValidateBattle(_player.connectionToClient, battle.battleId);
+      }
+   }
+
+   [Command]
+   public void Cmd_AbortBattle (int battleId) {
+      _player.battleId = 0;
+      BattleManager.self.unregisterBattler(_player.userId);
+      Battle battleRef = BattleManager.self.getBattle(battleId);
+      if (battleRef != null) {
+         if (battleRef.enemyReference != null) {
+            if (!battleRef.enemyReference.isDead()) {
+               int defenderCount = 0;
+               int attackerCount = 0;
+               foreach (Battler defender in battleRef.getDefenders()) {
+                  if (defender != null) {
+                     if (!defender.isDead() && defender.userId != _player.userId) {
+                        defenderCount++;
+                     }
+                  }
+               }
+               foreach (Battler attacker in battleRef.getAttackers()) {
+                  if (attacker != null) {
+                     if (!attacker.isDead() && attacker.userId != _player.userId) {
+                        attackerCount++;
+                     }
+                  }
+               }
+               if (defenderCount < 1 || attackerCount < 1) {
+                  D.editorLog("Resetting battle id of enemy: " + battleRef.enemyReference.battleId, Color.magenta);
+                  battleRef.enemyReference.battleId = 0;
+                  battleRef.enemyReference.groupId = -1;
+               }
+            } else {
+               D.debug("Enemy Battler:{" + battleRef.enemyReference.enemyType + "} is already dead! Releasing Player from combat");
+            }
+         } else {
+            D.debug("Missing Battler reference for battle:{" + battleId + "}");
+         }
+      } else {
+         D.debug("Battle:{" + battleId + "} no longer exists!");
+      }
+      Target_AbortBattle(_player.connectionToClient, battleId);
+   }
+
+   [TargetRpc]
+   public void Target_AbortBattle (NetworkConnection connection, int battleId) {
+      D.debug("Aborting Invalid Battle:{" + battleId + "}");
+      Invoke(nameof(InvokedAbortBattle), .5f);
+   }
+
+   private void InvokedAbortBattle () {
+      float pixelFadeEffectDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeOutDuration() * 2;
+
+      // The allowable duration for the player to move after invalid battle trigger before allowing it to engage in new battle
+      float allowablePlayerMovement = 2;
+      if (_player is PlayerBodyEntity) {
+         PlayerBodyEntity playerRef = (PlayerBodyEntity) _player;
+         playerRef.Invoke(nameof(playerRef.grantPlayerMovementAvailability), pixelFadeEffectDuration);
+         playerRef.Invoke(nameof(playerRef.grantPlayerCombatAvailability), pixelFadeEffectDuration + allowablePlayerMovement);
+      }
+      if (CameraManager.isShowingBattle()) {
+         CameraManager.disableBattleDisplay();
       }
    }
 
@@ -9325,20 +9391,20 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle, bool isShipBattle) {
-      D.adminLog("Player is starting new battle, IsLeagueArea:{" + VoyageManager.isAnyLeagueArea(_player.areaKey) + "} IsPvpArena :{" + VoyageManager.isPvpArenaArea(_player.areaKey)
-         + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + "} IsPOI:{" + VoyageManager.isPOIArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
+      D.adminLog("Player is starting new battle, IsLeagueArea:{" + GroupInstanceManager.isAnyLeagueArea(_player.areaKey) + "} IsPvpArena :{" + GroupInstanceManager.isPvpArenaArea(_player.areaKey)
+         + "} IsTreasureSite:{" + GroupInstanceManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + "} IsPOI:{" + GroupInstanceManager.isPOIArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInGroupInstance() + "}"
          + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}", D.ADMIN_LOG_TYPE.Combat);
 
-      if ((VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) || VoyageManager.isPOIArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
+      if (GroupInstanceManager.isAnyGroupSpecificArea(_player.areaKey) && !canPlayerStayInGroupInstance()) {
          string reason = "";
-         if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+         if (GroupInstanceManager.isTreasureSiteArea(_player.areaKey)) {
             reason += "This is not a treasure area\n";
          }
-         if (!canPlayerStayInVoyage()) {
-            reason += "Player cant stay in the voyage\n";
+         if (!canPlayerStayInGroupInstance()) {
+            reason += "Player cant stay in the group instance\n";
          }
 
-         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town" + " Reason: {" + reason + "}");
+         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid group instance conditions, returning to town" + " Reason: {" + reason + "}");
 
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
@@ -9397,7 +9463,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ResetMoveDisable (NetworkConnection connection, string battleId) {
+   public void Target_ResetMoveDisable (NetworkConnection connection, string battleId, float additiveDelay) {
       if (Global.player == null) {
          D.debug("Player is missing! Battle ID: " + battleId);
          return;
@@ -9406,7 +9472,7 @@ public class RPCManager : NetworkBehaviour
       if (Global.player is PlayerBodyEntity) {
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          float pixelFadeEffectDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeOutDuration() * 2;
-         playerBody.Invoke(nameof(playerBody.resetCombatAvailability), pixelFadeEffectDuration);
+         playerBody.Invoke(nameof(playerBody.resetCombatAvailability), pixelFadeEffectDuration + additiveDelay);
       } else {
          D.debug("Failed to restore player movement! Battle ID: " + battleId);
       }
