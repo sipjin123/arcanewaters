@@ -12305,17 +12305,18 @@ public class DB_Main : DB_MainStub
       return auction;
    }
 
-   public static new void addBidderOnAuction (int auctionId, int userId) {
+   public static new void addBidderOnAuction (int auctionId, int userId, int bidAmount) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO auction_bidders (auctionId, usrId) VALUES (@auctionId, @usrId) " +
-            "ON DUPLICATE KEY UPDATE auctionId = values(auctionId), usrId = values(usrId)", conn)) {
+            "INSERT INTO auction_bidders (auctionId, usrId, bidAmount) VALUES (@auctionId, @usrId, @bidAmount) " +
+            "ON DUPLICATE KEY UPDATE auctionId = values(auctionId), usrId = values(usrId), bidAmount = values(bidAmount)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@auctionId", auctionId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@bidAmount", bidAmount);
             DebugQuery(cmd);
 
             // Execute the command
@@ -12324,6 +12325,33 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new List<AuctionManager.BidderData> getBidders (int auctionId) {
+      List<AuctionManager.BidderData> bidders = new List<AuctionManager.BidderData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrId, bidAmount FROM auction_bidders WHERE auctionId = @auctionId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  bidders.Add(new AuctionManager.BidderData {
+                     userId = DataUtil.getInt(reader, "usrId"),
+                     bidAmount = DataUtil.getInt(reader, "bidAmount")
+                  });
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return bidders;
    }
 
    #endregion

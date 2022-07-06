@@ -76,8 +76,17 @@ public class RPCManager : NetworkBehaviour
             DB_Main.addGold(auction.highestBidUser, auction.highestBidPrice);
          }
 
+         // Notify the bidders
+         List<AuctionManager.BidderData> bidders = DB_Main.getBidders(auction.auctionId);
+         D.debug($"Auction Cancellation. Notifying Bidders. AuctionId: {auctionId}. AdminId: {_player.userId}. Bidders Count: {bidders.Count}");
+
+         foreach (AuctionManager.BidderData bidder in bidders) {
+            D.debug($"Auction Cancellation. Notifying Bidder. AuctionId: {auctionId}. AdminId: {_player.userId}. BidderId: {bidder.userId}");
+            createSystemMailWithNoAttachments(bidder.userId, "Auction Results", $"The auction for {auction.itemName} was cancelled. The gold you bid has been returned to you", MailManager.AUCTION_SYSTEM_USERNAME);
+         }
+
          // Deliver the item to the seller and delete the auction
-         DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
+         DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId, $"You have successfully cancelled the auction for {auction.itemName}. Find your item in the attachments.", MailManager.AUCTION_SYSTEM_USERNAME);
          DB_Main.deleteAuction(auctionId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -117,8 +126,17 @@ public class RPCManager : NetworkBehaviour
                D.debug($"Admin Auction Cancellation. Returned gold to the highest bidder. AuctionId: {auctionId}. AdminId: {_player.userId}. HighestBidderId: {auction.highestBidUser}. HighestBid: {auction.highestBidPrice}");
             }
 
+            // Notify the bidders
+            List<AuctionManager.BidderData> bidders = DB_Main.getBidders(auction.auctionId);
+            D.debug($"Admin Auction Cancellation. Notifying Bidders. AuctionId: {auctionId}. AdminId: {_player.userId}. Bidders Count: {bidders.Count}");
+
+            foreach (AuctionManager.BidderData bidder in bidders) {
+               D.debug($"Admin Auction Cancellation. Notifying Bidder. AuctionId: {auctionId}. AdminId: {_player.userId}. BidderId: {bidder}");
+               createSystemMailWithNoAttachments(bidder.userId, "Auction Results", $"The auction for '{auction.itemName}' was cancelled. The gold you bid has been returned to you", MailManager.AUCTION_SYSTEM_USERNAME);
+            }
+
             // Deliver the item to the seller and delete the auction
-            DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
+            DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId, $"You have successfully cancelled the auction for '{auction.itemName}'. Find your item in the attachments.", MailManager.AUCTION_SYSTEM_USERNAME);
             D.debug($"Admin Auction Cancellation. Auction Items delivered to seller. AuctionId: {auction.auctionId}. AdminId: {_player.userId}. SellerId: {auction.sellerId}. MailId: {auction.mailId}.");
 
             DB_Main.deleteAuction(auctionId);
@@ -268,7 +286,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Add the user to the list of bidders for this auction
-         DB_Main.addBidderOnAuction(auctionId, _player.userId);
+         DB_Main.addBidderOnAuction(auctionId, _player.userId, bidAmount);
 
          string resultMessage = "";
          if (auction.isBuyoutAllowed && bidAmount >= auction.buyoutPrice) {
