@@ -10,6 +10,9 @@ using System;
 public class MerchantScreen : Panel {
    #region Public Variables
 
+   // Reference to Shopkeeper NPC name
+   public TMP_Text shopKeeperName;
+   
    // The prefab we use for creating crop rows
    public MerchantCropRow cropRowPrefab;
 

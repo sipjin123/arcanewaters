@@ -33,7 +33,7 @@ public class ContextMenuPanel : MonoBehaviour
 
    #endregion
 
-   public void show(string title) {
+   public void show (string title) {
       show(title, MouseUtils.mousePosition);
    }
 
@@ -139,31 +139,31 @@ public class ContextMenuPanel : MonoBehaviour
       }
 
       int targetGuildId = targetEntity.guildId;
-      int targetVoyageGroupId = targetEntity.voyageGroupId;
-      processDefaultMenuForUser(targetEntity, targetUserId, userName, targetGuildId, targetVoyageGroupId, isInSameGroup);
+      int targetGroupId = targetEntity.groupId;
+      processDefaultMenuForUser(targetEntity, targetUserId, userName, targetGuildId, targetGroupId, isInSameGroup);
    }
 
-   public void processDefaultMenuForUser (NetEntity targetEntity, int targetUserId, string userName, int targetGuildId, int targetVoyageGroupId, bool isInSameGroup = false, bool isInSameGuild = false) {
+   public void processDefaultMenuForUser (NetEntity targetEntity, int targetUserId, string userName, int targetGuildId, int targetGroupId, bool isInSameGroup = false, bool isInSameGuild = false) {
       clearButtons();
       if (Global.player.userId != targetUserId) {
-         if (VoyageGroupManager.isInGroup(Global.player)) {
+         if (GroupManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
-            if ((targetEntity == null && !isInSameGroup) || (targetEntity != null && targetVoyageGroupId != Global.player.voyageGroupId)) {
-               addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
+            if ((targetEntity == null && !isInSameGroup) || (targetEntity != null && targetGroupId != Global.player.groupId)) {
+               addButton("Group Invite", () => GroupManager.self.inviteUserToGroup(userName));
             }
             // If clicked user is already in the group and the player is group leader then allow kicking group members. Only make the button interactable if the player can be kicked from the group.
-            else if (isInSameGroup && VoyageGroupPanel.self.isGroupLeader(Global.player.userId)) {
+            else if (isInSameGroup && GroupPanel.self.isGroupLeader(Global.player.userId)) {
                if ((targetEntity != null && !targetEntity.hasAttackers()) || targetEntity == null) {
-                  addButton("Kick player", () => VoyageGroupPanel.self.OnKickPlayerButtonClickedOn(targetUserId));
+                  addButton("Kick player", () => GroupPanel.self.OnKickPlayerButtonClickedOn(targetUserId));
                }
             }
          } else {
             // If we are not in a group, always allow to invite someone
-            addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
+            addButton("Group Invite", () => GroupManager.self.inviteUserToGroup(userName));
          }
 
          if (targetEntity != null) {
-            if (Global.player.guildId > 0 && targetGuildId > 0 && Global.player.guildRankPriority <= 1 
+            if (Global.player.guildId > 0 && targetGuildId > 0 && Global.player.guildRankPriority <= 1
                && Global.player.guildId != targetGuildId && !Global.player.guildAllies.Contains(targetGuildId)) {
                addButton("Form Guild Alliance", () => Global.player.rpc.Cmd_AddGuildAlly(targetUserId, Global.player.guildId, targetGuildId));
             } else {
@@ -191,6 +191,12 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Practice Duel", () => initializePVP(targetUserId, userName));
          }
 
+         if (Global.player is PlayerBodyEntity && targetEntity is PlayerBodyEntity) {
+            if (Global.player.getPlayerBodyEntity().canTrade(targetEntity.getPlayerBodyEntity())) {
+               addButton("Trade", () => requestTrade(targetUserId));
+            }
+         }
+
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity, isInSameGuild)) {
             addButton("Guild Invite", () => {
@@ -216,11 +222,11 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Ban 5 min", () => Global.player.admin.requestBanPlayerWithConfirmation(userName, 5 * 60, ""));
          }
       } else {
-         if (!VoyageGroupManager.isInGroup(Global.player)) {
-            addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
+         if (!GroupManager.isInGroup(Global.player)) {
+            addButton("Create Group", () => GroupManager.self.requestPrivateGroupCreation());
          } else {
             // If the player is in a group and clicks their own avatar, allow them to leave the group. Only make the button interactable if the player can leave the group.
-            addButton("Leave Group", () => VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
+            addButton("Leave Group", () => GroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
          }
 
          addButton("Copy Location", () => {
@@ -245,6 +251,15 @@ public class ContextMenuPanel : MonoBehaviour
    private void initializePVP (int userId, string userName) {
       ChatManager.self.addChat("Practice duel invite sent to " + userName, ChatInfo.Type.System);
       Global.player.rpc.Cmd_InviteToPvp(userId);
+   }
+
+   private void requestTrade (int userId) {
+      if (EntityManager.self.tryGetEntityNotNull(userId, out PlayerBodyEntity entity)) {
+         if (Global.player != null && Global.player is PlayerBodyEntity && Global.player.getPlayerBodyEntity().canTrade(entity)) {
+            ChatManager.self.addChat("Trade request sent to " + EntityManager.self.tryGetEntityName(userId, "someone"), ChatInfo.Type.System);
+            Global.player.rpc.Cmd_RequestTrade(userId);
+         }
+      }
    }
 
    #region Private Variables

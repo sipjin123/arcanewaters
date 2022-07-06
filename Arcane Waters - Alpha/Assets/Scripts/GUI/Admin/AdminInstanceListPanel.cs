@@ -99,14 +99,18 @@ public class AdminInstanceListPanel : Panel
       }
    }
 
-   public void onVoyageInstanceRowPressed (Voyage voyage) {
-      if (voyage != null && voyage.voyageId > 0 && voyage.instanceId > 0) {
-         adminVoyageInfoPanel.updatePanelWithVoyage(voyage);
+   public void onInstanceRowPressed (GroupInstance groupInstance) {
+      bool isVoyageArea =
+         GroupInstanceManager.isAnyLeagueArea(groupInstance.areaKey) ||
+         GroupInstanceManager.isTreasureSiteArea(groupInstance.areaKey);
+
+      if (groupInstance != null && groupInstance.groupInstanceId > 0 && groupInstance.instanceId > 0 && isVoyageArea) {
+         adminVoyageInfoPanel.updatePanelWithVoyage(groupInstance);
       }
    }
 
-   public void warpToVoyage (Voyage voyage) {
-      Global.player.rpc.Cmd_WarpAdminToVoyageInstanceAsGhost(voyage.voyageId, voyage.areaKey);
+   public void warpToVoyage (GroupInstance groupInstance) {
+      Global.player.rpc.Cmd_WarpAdminToVoyageInstanceAsGhost(groupInstance.groupInstanceId, groupInstance.areaKey);
       PanelManager.self.hideCurrentPanel();
    }
 
@@ -153,8 +157,8 @@ public class AdminInstanceListPanel : Panel
       toggleIcons(leagueIndexAsc, leagueIndexDesc);
       _rows.Sort((a, b) => {
          return leagueIndexAsc.activeSelf
-         ? a.instance.voyage.leagueIndex.CompareTo(b.instance.voyage.leagueIndex)
-         : b.instance.voyage.leagueIndex.CompareTo(a.instance.voyage.leagueIndex);
+         ? a.instance.groupInstance.leagueIndex.CompareTo(b.instance.groupInstance.leagueIndex)
+         : b.instance.groupInstance.leagueIndex.CompareTo(a.instance.groupInstance.leagueIndex);
       });
       orderRows();
    }

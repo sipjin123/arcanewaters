@@ -61,7 +61,8 @@ public class D : MonoBehaviour {
       EnemyLandSpawn = 48,
       CharacterSlots = 49,
       ShipPurchase = 50,
-      NpcFriendship = 51
+      NpcFriendship = 51,
+      BattleMissingSelection = 52,
    }
 
    // Any log files older than this will be deleted

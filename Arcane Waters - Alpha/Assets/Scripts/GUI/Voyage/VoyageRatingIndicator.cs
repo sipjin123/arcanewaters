@@ -85,7 +85,7 @@ public class VoyageRatingIndicator : MonoBehaviour
    }
 
    private void voyageRatingIndicatorVisibilityCheck () {
-      bool isPlayerInVoyage = Global.player != null && (VoyageManager.isAnyLeagueArea(Global.player.areaKey) || VoyageManager.isTreasureSiteArea(Global.player.areaKey));
+      bool isPlayerInVoyage = Global.player != null && (GroupInstanceManager.isAnyLeagueArea(Global.player.areaKey) || GroupInstanceManager.isTreasureSiteArea(Global.player.areaKey));
       this.gameObject.SetActive(isPlayerInVoyage);
    }
 

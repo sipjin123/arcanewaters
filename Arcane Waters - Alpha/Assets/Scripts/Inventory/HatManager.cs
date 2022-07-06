@@ -121,7 +121,7 @@ public class HatManager : EquipmentManager {
       // Set the Sync Vars so they get sent to the clients
       this.equipmentDataId = hatData.sqlId;
       this.hatType = hatData.hatType;
-      this.palettes = hatPalettes == null ? hatData.palettes : hatPalettes;
+      this.palettes = hatPalettes == null ? PaletteSwapManager.extractPalettes(hatData.defaultPalettes) : hatPalettes;
 
       if (!tryGetConnectionToClient(out NetworkConnection connection)) {
          D.debug("Connection to client was null!");

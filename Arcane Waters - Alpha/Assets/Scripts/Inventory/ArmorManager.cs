@@ -62,7 +62,9 @@ public class ArmorManager : EquipmentManager {
       Gender.Type gender = getGender();
 
       if (armorType == 0) {
-         armorLayer.gameObject.SetActive(false);
+         if (armorLayer.getRenderer() != null) {
+            armorLayer.getRenderer().enabled = false;
+         }
 
          // Sync up all our animations
          if (_body != null) {
@@ -70,7 +72,9 @@ public class ArmorManager : EquipmentManager {
          }
       } else {
          // Set the correct sheet for our gender and armor type
-         armorLayer.gameObject.SetActive(true);
+         if (armorLayer.getRenderer() != null) {
+            armorLayer.getRenderer().enabled = true;
+         }
 
          // Wait for the coroutine for texture swap to finish before triggering restart animation
          armorLayer.textureSwappedEvent.AddListener(() => {
@@ -89,7 +93,9 @@ public class ArmorManager : EquipmentManager {
 
       if (_body != null && armorLayer != null) {
          if (_body.spriteOverrideId.Length > 0 && _body.spriteOverrideType > 0) {
-            armorLayer.gameObject.SetActive(false);
+            if (armorLayer.getRenderer() != null) {
+               armorLayer.getRenderer().enabled = false;
+            }
          }
       }
    }

@@ -47,7 +47,7 @@ public class NecklaceStatData : EquipmentStatData {
          itemDescription = data.equipmentDescription,
          category = Item.Category.Necklace,
          iconPath = data.equipmentIconPath,
-         paletteNames = data.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(data.defaultPalettes),
          data = serializeNecklaceStatData(data)
       };
       return newNecklace;
@@ -82,7 +82,7 @@ public class NecklaceStatData : EquipmentStatData {
    public static NecklaceStatData getDefaultData () {
       return new NecklaceStatData {
          necklaceType = 0,
-         palettes = ""
+         //palettes = ""
       };
    }
 }

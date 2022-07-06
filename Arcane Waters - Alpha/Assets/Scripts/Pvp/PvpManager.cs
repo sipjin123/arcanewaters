@@ -160,7 +160,7 @@ public class PvpManager : MonoBehaviour {
    [Server]
    public void joinBestPvpGameOrCreateNew (NetEntity player) {
       D.adminLog("PVP: Join best game or create new game for pvp", D.ADMIN_LOG_TYPE.Pvp_Instance);
-      Voyage bestGameInstance = getBestJoinableGameInstance();
+      GroupInstance bestGameInstance = getBestJoinableGameInstance();
 
       // If there are no active games, create a game
       if (bestGameInstance == null) {
@@ -168,25 +168,25 @@ public class PvpManager : MonoBehaviour {
 
       // If there are active games, join the one with the highest number of players, that isn't in session
       } else {
-         ServerNetworkingManager.self.joinPvpGame(bestGameInstance.voyageId, player.userId, player.entityName, PvpTeamType.None);
+         ServerNetworkingManager.self.joinPvpGame(bestGameInstance.groupInstanceId, player.userId, player.entityName, PvpTeamType.None);
       }
    }
 
    [Server]
-   public void joinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
-      Voyage voyage;
-      if (!VoyageManager.self.tryGetVoyage(voyageId, out voyage)) {
+   public void joinPvpGame (int groupInstanceId, int userId, string userName, PvpTeamType team) {
+      GroupInstance groupInstance;
+      if (!GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out groupInstance)) {
          ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
          return;
       }
 
-      PvpGame pvpGame = getGameWithInstance(voyage.instanceId);
+      PvpGame pvpGame = getGameWithInstance(groupInstance.instanceId);
       if (pvpGame == null) {
          ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
          return;
       }
 
-      addPlayerToGame(voyage.instanceId, userId, userName, team);
+      addPlayerToGame(groupInstance.instanceId, userId, userName, team);
    }
 
    [Server]
@@ -205,11 +205,11 @@ public class PvpManager : MonoBehaviour {
       if (ServerNetworkingManager.self.server.isMasterServer()) {
 
          // Create a pvp instance for each available arena map
-         List<string> pvpArenaMaps = VoyageManager.self.getPvpArenaAreaKeys();
+         List<string> pvpArenaMaps = GroupInstanceManager.self.getPvpArenaAreaKeys();
          foreach (string areaKey in pvpArenaMaps) {
             Map areaData = AreaManager.self.getMapInfo(areaKey);
 
-            Voyage parameters = new Voyage {
+            GroupInstance parameters = new GroupInstance {
                areaKey = areaKey,
                isPvP = true,
                isLeague = false,
@@ -217,7 +217,7 @@ public class PvpManager : MonoBehaviour {
                difficulty = 2
             };
 
-            VoyageManager.self.requestVoyageInstanceCreation(parameters);
+            GroupInstanceManager.self.requestGroupInstanceCreation(parameters);
          }
       }
    }
@@ -232,7 +232,7 @@ public class PvpManager : MonoBehaviour {
 
       // Count the number of open pvp instances in all servers
       int openGameCount = 0;
-      foreach (Voyage pvpInstance in VoyageManager.self.getAllPvpInstances()) {
+      foreach (GroupInstance pvpInstance in GroupInstanceManager.self.getAllPvpInstances()) {
          if (PvpGame.canGameBeJoined(pvpInstance)) {
             openGameCount++;
          }
@@ -240,7 +240,7 @@ public class PvpManager : MonoBehaviour {
 
       // If there are missing games, create one
       if (openGameCount < OPEN_GAME_INSTANCES_COUNT) {
-         List<string> pvpArenaAreaKeys = VoyageManager.self.getPvpArenaAreaKeys();
+         List<string> pvpArenaAreaKeys = GroupInstanceManager.self.getPvpArenaAreaKeys();
 
          if (pvpArenaAreaKeys.Count == 0) {
             D.error("Cannot create pvp arena instances! There are no pvp arena maps available!");
@@ -256,7 +256,7 @@ public class PvpManager : MonoBehaviour {
          Map areaData = AreaManager.self.getMapInfo(areaKey);
 
          D.adminLog("Create new game for pvp if Needed {" + areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
-         Voyage parameters = new Voyage {
+         GroupInstance parameters = new GroupInstance {
             areaKey = areaKey,
             isPvP = true,
             isLeague = false,
@@ -264,7 +264,7 @@ public class PvpManager : MonoBehaviour {
             difficulty = 2
          };
 
-         VoyageManager.self.requestVoyageInstanceCreation(parameters);
+         GroupInstanceManager.self.requestGroupInstanceCreation(parameters);
       }
    }
 
@@ -272,7 +272,7 @@ public class PvpManager : MonoBehaviour {
    public void createNewGameForPvpInstance (Instance instance) {
       GameObject newGameObject = Instantiate(new GameObject("Pvp Game " + instance.id), transform);
       PvpGame newGame = newGameObject.AddComponent<PvpGame>();
-      newGame.init(instance.voyageId, instance.id, instance.areaKey);
+      newGame.init(instance.groupInstanceId, instance.id, instance.areaKey);
       _activeGames[instance.id] = newGame;
       if (WorldMapManager.isWorldMapArea(instance.areaKey.ToLower())) {
          D.adminLog("Create new game for pvp {" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
@@ -282,7 +282,7 @@ public class PvpManager : MonoBehaviour {
          instanceId = instance.id,
          pvpState = PvpGame.State.PreGame,
          lastAnnouncementTime = DateTime.UtcNow,
-         pvpId = instance.voyageId
+         pvpId = instance.groupInstanceId
       });
    }
 
@@ -290,24 +290,24 @@ public class PvpManager : MonoBehaviour {
    private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
       D.adminLog("PVP: Create new game and join", D.ADMIN_LOG_TYPE.Pvp_Instance);
 
-      // Create a random voyage instance biome
-      Voyage parameters = new Voyage {
+      // Create a random group instance biome
+      GroupInstance parameters = new GroupInstance {
          isPvP = true,
          isLeague = false,
          biome = (Biome.Type) UnityEngine.Random.Range(1, 6),
          difficulty = 2
       };
 
-      VoyageManager.self.requestVoyageInstanceCreation(parameters);
+      GroupInstanceManager.self.requestGroupInstanceCreation(parameters);
 
-      // The voyage instance creation always takes at least two frames
+      // The group instance creation always takes at least two frames
       yield return null;
       yield return null;
 
-      // Wait until the voyage and game have been created
-      Voyage voyage = null;
+      // Wait until the group instance and game have been created
+      GroupInstance groupInstance = null;
       double instanceCreationStartTime = NetworkTime.time;
-      while (voyage == null) {
+      while (groupInstance == null) {
          // Check if the creation has timed out
          double elapsedCreationTime = NetworkTime.time - instanceCreationStartTime;
          if (elapsedCreationTime >= INSTANCE_CREATION_TIMEOUT) {
@@ -317,31 +317,31 @@ public class PvpManager : MonoBehaviour {
             yield break;
          }
 
-         voyage = getBestJoinableGameInstance();
+         groupInstance = getBestJoinableGameInstance();
          yield return null;
       }
 
       // Make the player join the game
       if (player != null) {
-         ServerNetworkingManager.self.joinPvpGame(voyage.voyageId, player.userId, player.entityName, PvpTeamType.None);
+         ServerNetworkingManager.self.joinPvpGame(groupInstance.groupInstanceId, player.userId, player.entityName, PvpTeamType.None);
       }
    }
 
-   private Voyage getBestJoinableGameInstance () {
+   private GroupInstance getBestJoinableGameInstance () {
       // We will find the game with the highest number of players, that hasn't yet started
-      Voyage bestGameInstance = null;
+      GroupInstance bestGameInstance = null;
       int mostPlayers = 0;
 
-      List<Voyage> voyages = VoyageManager.self.getAllPvpInstances();
+      List<GroupInstance> groupInstances = GroupInstanceManager.self.getAllPvpInstances();
 
       #if UNITY_EDITOR
 
-      if (voyages == null) {
+      if (groupInstances == null) {
          return bestGameInstance;
       }
 
       // Try searching for the chosen map
-      bestGameInstance = voyages.Find(_ => _.areaKey == currentMap || _.areaName == currentMap);
+      bestGameInstance = groupInstances.Find(_ => _.areaKey == currentMap || _.areaName == currentMap);
       
       if (bestGameInstance != null) {
          if (bestGameInstance.pvpGameState == PvpGame.State.InGame || bestGameInstance.pvpGameState == PvpGame.State.PreGame) {
@@ -351,7 +351,7 @@ public class PvpManager : MonoBehaviour {
 
       #endif
 
-      foreach (Voyage pvpInstance in voyages) {
+      foreach (GroupInstance pvpInstance in groupInstances) {
          // Ignore games that are in post-game / invalid
          if (pvpInstance.pvpGameState == PvpGame.State.None || pvpInstance.pvpGameState == PvpGame.State.PostGame) {
             continue;

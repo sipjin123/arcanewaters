@@ -27,8 +27,8 @@ public class AdminVoyageInfoPanel : SubPanel
 
    #endregion
 
-   public void updatePanelWithVoyage (Voyage voyage) {
-      _voyage = voyage;
+   public void updatePanelWithVoyage (GroupInstance groupInstance) {
+      _groupInstance = groupInstance;
 
       show();
 
@@ -38,11 +38,11 @@ public class AdminVoyageInfoPanel : SubPanel
 
       // Instantiate the cell
       VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
-      cell.setCellForVoyage(voyage, () => onWarpToVoyageButtonPressed());
+      cell.setCellForVoyage(groupInstance, () => onWarpToVoyageButtonPressed());
 
       // Ask the server the list of users present in the instance
       setLoadBlocker(true);
-      Global.player.rpc.Cmd_RequestUserListForAdminVoyageInfoPanelFromServer(voyage.voyageId, voyage.instanceId);
+      Global.player.rpc.Cmd_RequestUserListForAdminVoyageInfoPanelFromServer(groupInstance.groupInstanceId, groupInstance.instanceId);
    }
 
    public void updatePanelWithUserList (List<UserInfo> userInfoList) {
@@ -59,7 +59,7 @@ public class AdminVoyageInfoPanel : SubPanel
 
    public void onWarpToVoyageButtonPressed () {
       hide();
-      AdminInstanceListPanel.self.warpToVoyage(_voyage);
+      AdminInstanceListPanel.self.warpToVoyage(_groupInstance);
    }
 
    public void setLoadBlocker (bool isOn) {
@@ -68,8 +68,8 @@ public class AdminVoyageInfoPanel : SubPanel
 
    #region Private Variables
 
-   // The voyage being displayed by the panel
-   private Voyage _voyage = null;
+   // The group instance (part of the voyage) being displayed by the panel
+   private GroupInstance _groupInstance = null;
 
    #endregion
 }

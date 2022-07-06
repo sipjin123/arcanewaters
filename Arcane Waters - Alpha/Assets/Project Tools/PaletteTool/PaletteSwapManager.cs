@@ -84,7 +84,7 @@ public class PaletteSwapManager : GenericGameManager {
          return "";
       }
 
-      string[] paletteNames = palettes.Trim().Replace(" ", "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+      string[] paletteNames = palettes.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
 
       string paletteDisplayNames = string.Join(", ", paletteNames.Select(name => {
          // We try to get the display name, if the palette with this name doesn't exist, then we return the same string provided

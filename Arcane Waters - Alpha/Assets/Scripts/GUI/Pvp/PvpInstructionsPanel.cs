@@ -65,6 +65,20 @@ public class PvpInstructionsPanel : MonoBehaviour, IPointerClickHandler {
       show();
    }
 
+   private void Update () {
+      if (!isShowing) {
+         return;
+      }
+
+      if (Global.player != null) {
+         string areaKey = Global.player.areaKey;
+         if (!GroupInstanceManager.isPvpArenaArea(areaKey)) {
+            hide();
+            return;
+         }
+      }
+   }
+
    public void show () {
       panelCanvasGroup.alpha = 1.0f;
       panelCanvasGroup.interactable = true;

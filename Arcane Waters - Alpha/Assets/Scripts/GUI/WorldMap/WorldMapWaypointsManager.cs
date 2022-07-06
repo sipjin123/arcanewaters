@@ -75,17 +75,22 @@ public class WorldMapWaypointsManager : MonoBehaviour
    public void createWaypoint (WorldMapSpot spot) {
       if (!_waypointSpots.Contains(spot)) {
          _waypointSpots.Add(spot);
+         _waypointSpotsQueue.Add(spot);
       }
-
-      _waypointSpotsQueue.Add(spot);
    }
 
    public void destroyWaypoint (WorldMapSpot spot) {
+      if (spot == null) {
+         D.debug($"Waypoint Removal Failed. Reason: Spot was null.");
+         return;
+      }
+
       // Deletes the logical waypoint
       _waypointSpots.Remove(spot);
 
       WorldMapWaypoint waypoint = _waypoints.Find(_ => _.spot == spot);
       if (waypoint == null) {
+         D.debug($"Waypoint Removal Failed. Reason: Waypoint not found. Spot: {spot.serialize()}");
          return;
       }
 

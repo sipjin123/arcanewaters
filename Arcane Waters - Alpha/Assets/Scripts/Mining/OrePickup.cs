@@ -23,14 +23,14 @@ public class OrePickup : MonoBehaviour {
    // The user who interacted this ore
    public int ownerId;
 
-   // The voyage group that owns this ore
-   public int voyageGroupId;
+   // The group that owns this ore
+   public int groupId;
 
    #endregion
 
-   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, Sprite sprite) {
+   public void initData (int ownerId, int groupId, int oreEffectId, OreNode oreNode, Sprite sprite) {
       this.ownerId = ownerId;
-      this.voyageGroupId = voyageGroupId;
+      this.groupId = groupId;
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
       spriteRender.sprite = sprite;
@@ -56,11 +56,11 @@ public class OrePickup : MonoBehaviour {
 
    private void OnTriggerEnter2D (Collider2D collision) {
       if (collision.GetComponent<PlayerBodyEntity>() != null && collision.GetComponent<PlayerBodyEntity>() == Global.player) {
-         if (voyageGroupId < 1 && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
-            triggerWarningMessage("Invalid Voyage Group!");
+         if (groupId < 1 && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
+            triggerWarningMessage("Invalid Group!");
             return;
          }
-         if (collision.GetComponent<PlayerBodyEntity>().voyageGroupId != voyageGroupId && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
+         if (collision.GetComponent<PlayerBodyEntity>().groupId != groupId && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
             triggerWarningMessage("This does not belong to you!");
             return;
          }
@@ -73,7 +73,7 @@ public class OrePickup : MonoBehaviour {
          // Sound effect triggered for collecting the ores
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_PICKUP, transform);
 
-         Global.player.rpc.Cmd_PickupOre(oreNode.id, oreEffectId, ownerId, voyageGroupId);
+         Global.player.rpc.Cmd_PickupOre(oreNode.id, oreEffectId, ownerId, groupId);
          GetComponent<BoxCollider2D>().enabled = false;
          gameObject.SetActive(false);
       }

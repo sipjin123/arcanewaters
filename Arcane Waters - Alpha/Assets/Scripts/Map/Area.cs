@@ -464,8 +464,11 @@ public class Area : MonoBehaviour
 
          string ownerName = "Unknown";
          if (customMapManager is CustomGuildMapManager || customMapManager is CustomGuildHouseManager) {
-            if (Global.player != null) {
-               ownerName = Global.player.guildName;
+            int guildId = CustomMapManager.getGuildId(areaKey);
+            if (Global.player != null && (guildId <= 0 || guildId == Global.player.guildId)) {
+               return $"Your {customMapManager.typeDisplayName}";
+            } else if (GuildManager.self.tryGetGuildName(guildId, out string guildName)) {
+               ownerName = guildName;
             }
          } else if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
             // Check if it is someone else's farm, prepend the name if so
@@ -517,11 +520,11 @@ public class Area : MonoBehaviour
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.Interior;
-      } else if (VoyageManager.isPvpArenaArea(areaKey)) {
+      } else if (GroupInstanceManager.isPvpArenaArea(areaKey)) {
          return SoundManager.Type.Sea_PvP;
-      } else if (VoyageManager.isLeagueArea(areaKey)) {
+      } else if (GroupInstanceManager.isLeagueArea(areaKey)) {
          return SoundManager.Type.Sea_League;
-      } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+      } else if (GroupInstanceManager.isLeagueSeaBossArea(areaKey)) {
          return SoundManager.Type.Sea_Lava;
       } else if (AreaManager.self.isSeaArea(areaKey)) {
          switch (biome) {
@@ -610,7 +613,7 @@ public class Area : MonoBehaviour
       }
 
       // Some pvp arenas have a playable area that is smaller than the total area size, so we have to calculate it with the 'arena size'
-      if (VoyageManager.isPvpArenaArea(areaKey)) {
+      if (GroupInstanceManager.isPvpArenaArea(areaKey)) {
          PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
          int tileWidth = (int) AreaManager.getWidthForPvpArenaSize(arenaSize);
          tileSize = new Vector2Int(tileWidth, tileWidth);
@@ -764,7 +767,7 @@ public class Area : MonoBehaviour
       _graph.collision.use2D = true;
       _graph.collision.Initialize(_graph.transform, 1.0f);
 
-      if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+      if (GroupInstanceManager.isLeagueSeaBossArea(areaKey)) {
          // In sea boss areas, expand the unwalkable area around land so that the boss doesn't overlap it
          _graph.collision.type = ColliderType.Sphere;
          _graph.collision.diameter = 6f;

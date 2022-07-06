@@ -32,8 +32,8 @@ public class ScreenLogger : GenericGameManager {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
-
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Performance);
+      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.BattleMissingSelection);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.CharacterSlots);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.AreaClearing);
       D.debug("Screen Logger v5.0.6 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");

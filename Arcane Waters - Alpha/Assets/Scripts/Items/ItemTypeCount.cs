@@ -18,7 +18,7 @@ public struct ItemTypeCount
    #endregion
 
    public bool sameTypeAs (ItemTypeCount other) {
-      return category == other.category && itemTypeId == other.itemTypeId; ;
+      return category == other.category && itemTypeId == other.itemTypeId;
    }
 
    #region Private Variables

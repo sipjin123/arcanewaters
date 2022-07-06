@@ -27,7 +27,7 @@ public class RedirectionManager : GenericGameManager
    }
 
    [Server]
-   public int redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey, int targetInstanceId = -1, int targetServerPort = -1) {
+   public int redirectUserToBestServer (int userId, string userName, int groupInstanceId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey, int targetInstanceId = -1, int targetServerPort = -1) {
       // Only the master server has reliable info to perform this operation
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
          D.error($"Server {ServerNetworkingManager.self.server.networkedPort.Value} is trying to determine the best server to redirect a user. Only the master server can perform this operation.");
@@ -42,7 +42,7 @@ public class RedirectionManager : GenericGameManager
       }
 
       // Find the best available server
-      NetworkedServer bestServer = findBestServerForConnectingUser(userId, userName, voyageId, destinationAreaKey, isSinglePlayer, currentServerPort, currentAddress);
+      NetworkedServer bestServer = findBestServerForConnectingUser(userId, userName, groupInstanceId, destinationAreaKey, isSinglePlayer, currentServerPort, currentAddress);
 
       // If a port was specified during redirection, get that server
       if (targetServerPort > 0) {
@@ -92,7 +92,7 @@ public class RedirectionManager : GenericGameManager
    }
 
    [Server]
-   public NetworkedServer findBestServerForConnectingUser (int userId, string userName, int voyageId, string destinationAreaKey, bool isSinglePlayer, int currentServerPort, string currentAddress) {
+   public NetworkedServer findBestServerForConnectingUser (int userId, string userName, int groupInstanceId, string destinationAreaKey, bool isSinglePlayer, int currentServerPort, string currentAddress) {
       // If this player is claimed by a server, we have to return to that server
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (server.claimedUserIds.ContainsKey(userId)) {
@@ -100,19 +100,19 @@ public class RedirectionManager : GenericGameManager
          }
       }
 
-      bool isLeagueArea = VoyageManager.isAnyLeagueArea(destinationAreaKey);
-      bool isPvpArenaArea = VoyageManager.isPvpArenaArea(destinationAreaKey);
-      bool isTreasureSiteArea = VoyageManager.isTreasureSiteArea(destinationAreaKey);
-      bool isPOIArea = VoyageManager.isPOIArea(destinationAreaKey);
+      bool isLeagueArea = GroupInstanceManager.isAnyLeagueArea(destinationAreaKey);
+      bool isPvpArenaArea = GroupInstanceManager.isPvpArenaArea(destinationAreaKey);
+      bool isTreasureSiteArea = GroupInstanceManager.isTreasureSiteArea(destinationAreaKey);
+      bool isPOIArea = GroupInstanceManager.isPOIArea(destinationAreaKey);
 
-      // If the player is in a voyage group and warping to a group-specific area, get the unique server hosting it
-      if (voyageId > 0 && (isLeagueArea || isPvpArenaArea || isTreasureSiteArea || isPOIArea)) {
-         if (!ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer server)) {
-            D.error("Couldn't find the server hosting the voyage: {" + voyageId + "}");
-            D.adminLog("From [" + currentServerPort + "] FAIL: Failed to get Voyage/PVP: {" + server.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + voyageId + "} " +
+      // If the player is in a group and warping to a group-specific area, get the unique server hosting it
+      if (groupInstanceId > 0 && (isLeagueArea || isPvpArenaArea || isTreasureSiteArea || isPOIArea)) {
+         if (!ServerNetworkingManager.self.tryGetServerHostingGroupInstance(groupInstanceId, out NetworkedServer server)) {
+            D.error("Couldn't find the server hosting the voyage: {" + groupInstanceId + "}");
+            D.adminLog("From [" + currentServerPort + "] FAIL: Failed to get Voyage/PVP: {" + server.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + groupInstanceId + "} " +
                "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
          } else {
-            D.adminLog("From [" + currentServerPort + "] Found the best server {" + server.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + voyageId + "} " +
+            D.adminLog("From [" + currentServerPort + "] Found the best server {" + server.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + groupInstanceId + "} " +
                "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
          }
          return server;
@@ -136,7 +136,7 @@ public class RedirectionManager : GenericGameManager
                   }
                }
 
-               D.adminLog(message + " [" + currentServerPort + "] to [" + server.networkedPort.Value + "] Player {" + userId + ":" + userName + ":" + voyageId + "} " +
+               D.adminLog(message + " [" + currentServerPort + "] to [" + server.networkedPort.Value + "] Player {" + userId + ":" + userName + ":" + groupInstanceId + "} " +
                   "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
 
                return server;
@@ -150,7 +150,7 @@ public class RedirectionManager : GenericGameManager
       if (bestServer == null) {
          D.error("Couldn't find a good server to connect to, server count: " + ServerNetworkingManager.self.servers.Count);
       } else {
-         if (!bestServer.areaToInstanceCount.ContainsKey(destinationAreaKey)) {
+         if (bestServer.getInstanceCountForArea(destinationAreaKey) <= 0) {
             if (WorldMapManager.isWorldMapArea(destinationAreaKey)) {
                D.adminLog("Redirecting: Server [" + bestServer.networkedPort.Value.ToString() + "] registered Queued Network Area {" + destinationAreaKey + "}", D.ADMIN_LOG_TYPE.AreaClearing);
                bestServer.areaBeingGenerated.Add(destinationAreaKey, NetworkTime.time);
@@ -160,7 +160,7 @@ public class RedirectionManager : GenericGameManager
          }
       }
 
-      D.adminLog("From [" + currentServerPort + "] Searched for Server with least player {" + bestServer.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + voyageId + "} " +
+      D.adminLog("From [" + currentServerPort + "] Searched for Server with least player {" + bestServer.networkedPort.Value + "} for player {" + userId + ":" + userName + ":" + groupInstanceId + "} " +
          "area:{" + destinationAreaKey + "}" + "isPvp:{" + isPvpArenaArea + "} " + "isLeague:{" + isLeagueArea + "} " + "isTreasure:{" + isTreasureSiteArea + "}", D.ADMIN_LOG_TYPE.Redirecting);
       return bestServer;
    }
@@ -173,7 +173,7 @@ public class RedirectionManager : GenericGameManager
       }
 
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         server.recalculateOpenAreas();
+         server.recalculatePlayerCountPerArea();
       }
    }
 

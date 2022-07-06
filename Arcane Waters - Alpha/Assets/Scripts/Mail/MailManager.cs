@@ -29,6 +29,9 @@ public class MailManager : GenericGameManager {
    // The subject used to send system mails
    public static string SYSTEM_USERNAME = "Arcane Waters";
 
+   // The subject used to send Auction System mails
+   public static string AUCTION_SYSTEM_USERNAME = "Auction House";
+
    // Self
    public static MailManager self;
 
@@ -71,9 +74,12 @@ public class MailManager : GenericGameManager {
       return Math.Max(0, MAIL_SENDING_COST);
    }
 
-   public static void sendSystemMail (int recipientUserId, string subject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
-      // Use the player to send a system mail
-      RPCManager.createSystemMail(recipientUserId, subject, message, attachedItemsIds, attachedItemsCount);
+   public static void sendSystemMail (int recipientUserId, string subject, string message, int[] attachedItemsIds, int[] attachedItemsCount, string senderNameOverride) {
+      RPCManager.createSystemMail(recipientUserId, subject, message, attachedItemsIds, attachedItemsCount, senderNameOverride);
+   }
+
+   public static void sendSystemMailWithNoAttachments (int recipientUserId, string subject, string message, string senderNameOverride) {
+      RPCManager.createSystemMailWithNoAttachments(recipientUserId, subject, message, senderNameOverride);
    }
 
    #region Private Variables

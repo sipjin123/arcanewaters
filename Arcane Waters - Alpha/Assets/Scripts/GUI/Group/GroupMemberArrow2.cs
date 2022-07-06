@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class VoyageMemberArrows : ArrowIndicator {
+public class GroupMemberArrow2 : ArrowIndicator {
    #region Public Variables
 
    // The text displays what the arrow is pointing at

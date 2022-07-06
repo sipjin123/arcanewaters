@@ -20,8 +20,8 @@ public class InstanceOverview
    // The max player count allowed in this instance
    public int maxPlayerCount = 0;
 
-   // Voyage info, if this instance has it
-   public Voyage voyage;
+   // Group instance info, if this instance has it
+   public GroupInstance groupInstance;
 
    // Difficulty rating of this instance
    public int difficulty;

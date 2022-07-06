@@ -61,7 +61,7 @@ public class ChatManager : GenericGameManager
    private void Start () {
       // Add the various chat commands that we're going to allow
       _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReport, parameterNames: new List<string>() { "bugInformation" }));
-      _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
+      _commandData.Add(new CommandData("/invite", "Invites a user to your group", GroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
       _commandData.Add(new CommandData("/global", "Send a message to all users", sendGlobalMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer privileges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
@@ -405,7 +405,7 @@ public class ChatManager : GenericGameManager
          return;
       }
 
-      if (chatType == ChatInfo.Type.Group && !VoyageGroupManager.isInGroup(Global.player)) {
+      if (chatType == ChatInfo.Type.Group && !GroupManager.isInGroup(Global.player)) {
          this.addChat("You are not currently in a group!", ChatInfo.Type.Error);
          return;
       }
@@ -1061,8 +1061,7 @@ public class ChatManager : GenericGameManager
 
       addChat(message, ChatInfo.Type.PendingFriendRequestsNotification);
 
-      // Sound effect
-      SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.FRIEND_REQUEST, SoundEffectManager.AMB_SW_PARAM, 1);
+      SoundEffectManager.self.playFriendRequest(true);
    }
 
    public void addUnreadMailNotification () {

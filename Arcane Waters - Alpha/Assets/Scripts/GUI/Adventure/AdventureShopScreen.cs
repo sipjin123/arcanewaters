@@ -11,6 +11,9 @@ public class AdventureShopScreen : Panel
 {
    #region Public Variables
 
+   // Reference to Shopkeeper NPC name
+   public TMP_Text shopKeeperName;
+   
    // The prefab we use for creating rows
    public AdventureItemRow rowPrefab;
 

@@ -59,7 +59,7 @@ public class NetEntity : NetworkBehaviour
    public bool isInvisible;
 
    // The Name of this entity
-   [SyncVar]
+   [SyncVar(hook = nameof(onEntityNameChanged))]
    public string entityName;
 
    // Our current health
@@ -192,9 +192,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int battleId;
 
-   // The ID of the Voyage Group this user is currently in, if any
+   // The ID of the group this user is currently in, if any
    [SyncVar]
-   public int voyageGroupId = -1;
+   public int groupId = -1;
 
    // Gets set to true when the entity is invisible and untouchable
    [SyncVar]
@@ -238,7 +238,7 @@ public class NetEntity : NetworkBehaviour
    public SyncList<int> guildAllies = new SyncList<int>();
 
    // The guild name this user belongs to
-   [SyncVar]
+   [SyncVar(hook = nameof(onGuildNameChanged))]
    public string guildName;
 
    // The guild permissions that this user holds
@@ -493,6 +493,12 @@ public class NetEntity : NetworkBehaviour
       if (isPlayerEntity()) {
          nameText.text = this.entityName;
 
+         if (!string.IsNullOrWhiteSpace(entityName)) {
+            EntityManager.self.cacheEntityName(userId, entityName);
+         }
+
+         GuildManager.self.cacheGuildName(guildId, guildName);
+
          if (Global.player == getPlayerBodyEntity() && getPlayerBodyEntity() != null) {
             getPlayerBodyEntity().recolorNameText();
          }
@@ -501,6 +507,16 @@ public class NetEntity : NetworkBehaviour
             ClientManager.self.setDemoSuffixInVersionText(isDemoUser);
          }
       }
+   }
+
+   private void onEntityNameChanged (string oldName, string newName) {
+      if (!string.IsNullOrWhiteSpace(entityName)) {
+         EntityManager.self.cacheEntityName(userId, entityName);
+      }
+   }
+
+   private void onGuildNameChanged (string oldName, string newName) {
+      GuildManager.self.cacheGuildName(guildId, guildName);
    }
 
    private void isDemoChanged (bool oldVal, bool newVal) {
@@ -525,7 +541,7 @@ public class NetEntity : NetworkBehaviour
          yield return null;
       }
 
-      // Process weather simulation for voyage area
+      // Process weather simulation
       Area area = AreaManager.self.getArea(areaKey);
       WeatherManager.self.loadWeatherForArea(area);
    }
@@ -706,18 +722,18 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveOpenWorldStatus (PvpGameMode pvpMode, bool isOn, bool isInTown) {
-      VoyageStatusPanel.self.refreshPvpStatDisplay();
-      VoyageStatusPanel.self.setUserPvpMode(pvpMode);
-      VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
+      InstanceStatusPanel.self.refreshPvpStatDisplay();
+      InstanceStatusPanel.self.setUserPvpMode(pvpMode);
+      InstanceStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
 
       if (WorldMapManager.isWorldMapArea(areaKey)) {
          // Since the status of the pvp activity is not change able in open world, just display the icon
-         VoyageStatusPanel.self.enablePvpStatDisplay(false);
-         VoyageStatusPanel.self.togglePvpButtons(false);
+         InstanceStatusPanel.self.enablePvpStatDisplay(false);
+         InstanceStatusPanel.self.togglePvpButtons(false);
       } else if (AreaManager.self.isTownArea(areaKey)) {
          // Allow the drop down of pvp status in town areas so it can be toggled on and off
-         VoyageStatusPanel.self.enablePvpStatDisplay(true);
-         VoyageStatusPanel.self.togglePvpButtons(true);
+         InstanceStatusPanel.self.enablePvpStatDisplay(true);
+         InstanceStatusPanel.self.togglePvpButtons(true);
       }
    }
 
@@ -1505,7 +1521,7 @@ public class NetEntity : NetworkBehaviour
                   if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
                      // If guilds are allied to each other, they are not enemies
                      return false;
-                  } else if (otherEntity.voyageGroupId > 0 && otherEntity.voyageGroupId == voyageGroupId) {
+                  } else if (otherEntity.groupId > 0 && otherEntity.groupId == groupId) {
                      return false;
                   } else {
                      // If no alliance is formed, they are enemies
@@ -1516,7 +1532,7 @@ public class NetEntity : NetworkBehaviour
                   return false;
                }
             } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
-               return otherEntity.voyageGroupId != voyageGroupId;
+               return otherEntity.groupId != groupId;
             }
          }
       }
@@ -1536,14 +1552,14 @@ public class NetEntity : NetworkBehaviour
          return true;
       }
 
-      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.isInGroup(otherEntity)) {
-         // In PvE voyage instances, players from other groups are not enemies
+      if (GroupManager.isInGroup(this) && GroupManager.isInGroup(otherEntity)) {
+         // In PvE group instances, players from other groups are not enemies
          Instance instance = getInstance();
          if (instance != null && !instance.isPvP) {
             return false;
          }
 
-         if (this.voyageGroupId == otherEntity.voyageGroupId) {
+         if (this.groupId == otherEntity.groupId) {
             return false;
          } else {
             return true;
@@ -1591,7 +1607,7 @@ public class NetEntity : NetworkBehaviour
                if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId)) {
                   // If guilds are allied to each other, they are not enemies
                   return true;
-               } else if (voyageGroupId > 0 && otherEntity.voyageGroupId == voyageGroupId) {
+               } else if (groupId > 0 && otherEntity.groupId == groupId) {
                   return true;
                } else {
                   // If no alliance is formed, they are enemies
@@ -1602,12 +1618,12 @@ public class NetEntity : NetworkBehaviour
                return true;
             }
          } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
-            return otherEntity.voyageGroupId == voyageGroupId;
+            return otherEntity.groupId == groupId;
          }
       }
 
-      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.isInGroup(otherEntity)) {
-         if (this.voyageGroupId == otherEntity.voyageGroupId) {
+      if (GroupManager.isInGroup(this) && GroupManager.isInGroup(otherEntity)) {
+         if (this.groupId == otherEntity.groupId) {
             return true;
          } else {
             return false;
@@ -2043,8 +2059,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGroupInvitationNotification (NetworkConnection conn, int voyageGroupId, string inviterName) {
-      VoyageGroupManager.self.receiveGroupInvitation(voyageGroupId, inviterName);
+   public void Target_ReceiveGroupInvitationNotification (NetworkConnection conn, int groupId, string inviterName) {
+      GroupManager.self.receiveGroupInvitation(groupId, inviterName);
    }
 
    [TargetRpc]
@@ -2194,8 +2210,8 @@ public class NetEntity : NetworkBehaviour
       }
 
       // If the user is currently in ghost mode, disable it
-      if (isGhost && tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
+      if (isGhost && tryGetGroup(out Group groupInfo)) {
+         GroupManager.self.removeUserFromGroup(groupInfo, userId);
       }
 
       CustomMapManager mapManager;
@@ -2221,6 +2237,9 @@ public class NetEntity : NetworkBehaviour
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Guild leader must select a map layout.");
          return;
       }
+
+      // Reset open-world visit streak
+      resetWorldAreaVisitStreak();
 
       areaTarget = CustomGuildMapManager.getGuildSpecificAreaKey(guildId);
 
@@ -2258,12 +2277,12 @@ public class NetEntity : NetworkBehaviour
       }
 
       // If the user is currently in ghost mode, disable it
-      if (isGhost && tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
+      if (isGhost && tryGetGroup(out Group groupInfo)) {
+         GroupManager.self.removeUserFromGroup(groupInfo, userId);
       }
 
       D.debug($"Returning player {entityName} to town: Go Home Command!");
-      if (VoyageManager.isWorldMapArea(areaKey)) {
+      if (GroupInstanceManager.isWorldMapArea(areaKey)) {
          spawnInBiomeHomeTown();
       } else {
          spawnInBiomeHomeTown(Biome.Type.Forest);
@@ -2278,6 +2297,9 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInBiomeHomeTown (Biome.Type biome) {
+      // Reset open-world visit streak
+      resetWorldAreaVisitStreak();
+
       // Go to background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          bool isBiomeUnlocked = false;
@@ -2419,6 +2441,9 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void visitUserToPrivateLocation (int requesterUserId, int visitedUserId, UserLocationBundle targetLocation) {
+      // Reset open-world visit streak
+      resetWorldAreaVisitStreak();
+
       // If our player is in the same instance than the target, simply teleport
       if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
          D.adminLog("visitUserToLocation: Failed to warp to area {" + targetLocation.areaKey + "}, move instead", D.ADMIN_LOG_TYPE.Visit);
@@ -2439,6 +2464,9 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void visitUserToLocation (int requesterUserId, UserLocationBundle targetLocation) {
+      // Reset open-world visit streak
+      resetWorldAreaVisitStreak();
+
       // If our player is in the same instance than the target, simply teleport
       if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
          D.adminLog("visitUserToLocation: Failed to warp to area {" + targetLocation.areaKey + "}, move instead", D.ADMIN_LOG_TYPE.Visit);
@@ -2458,9 +2486,9 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection, int instanceId, int serverPort) {
-      // Only admins can warp to voyage areas without indicating the voyageId
-      if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea) || VoyageManager.isPOIArea(newArea))) {
-         VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
+      // Only admins can warp to group specific areas without indicating the groupInstanceId
+      if (isAdmin() && (GroupInstanceManager.isAnyLeagueArea(newArea) || GroupInstanceManager.isTreasureSiteArea(newArea) || GroupInstanceManager.isPOIArea(newArea))) {
+         GroupInstanceManager.self.forceAdminWarpToGroupSpecificAreas(this, newArea);
          return;
       }
 
@@ -2469,22 +2497,22 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void spawnInNewMap (int voyageId, string newArea, Direction newFacingDirection) {
-      spawnInNewMap(voyageId, newArea, "", newFacingDirection);
+   public void spawnInNewMap (int groupInstanceId, string newArea, Direction newFacingDirection) {
+      spawnInNewMap(groupInstanceId, newArea, "", newFacingDirection);
    }
 
    [Server]
-   public void spawnInNewMap (int voyageId, string newArea, string spawn, Direction newFacingDirection) {
+   public void spawnInNewMap (int groupInstanceId, string newArea, string spawn, Direction newFacingDirection) {
       // Get the spawn position for the given spawn
       Vector2 spawnLocalPosition = spawn == ""
             ? SpawnManager.self.getDefaultLocalPosition(newArea, true)
             : SpawnManager.self.getLocalPosition(newArea, spawn, true);
 
-      findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection, -1, -1);
+      findBestServerAndWarp(newArea, spawnLocalPosition, groupInstanceId, newFacingDirection, -1, -1);
    }
 
    [Server]
-   public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int voyageId, Direction newFacingDirection, int instanceId, int serverPort) {
+   public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int groupInstanceId, Direction newFacingDirection, int instanceId, int serverPort) {
       if (this.isAboutToWarpOnServer) {
          D.log($"The player {netId} is already being warped. Cannot warp again to {newArea}");
          return;
@@ -2499,8 +2527,8 @@ public class NetEntity : NetworkBehaviour
       NetworkConnection connectionToClient = this.connectionToClient;
 
       if (isPlayerShip()) {
-         if (VoyageManager.isAnyLeagueArea(areaKey)) {
-            if (VoyageManager.isAnyLeagueArea(newArea) || (isInGroup() && !isDead())) {
+         if (GroupInstanceManager.isAnyLeagueArea(areaKey)) {
+            if (GroupInstanceManager.isAnyLeagueArea(newArea) || (isInGroup() && !isDead())) {
                // While the user is in a league or part of a group, the hp is persistent
                ((PlayerShipEntity) this).storeCurrentShipHealthAndFood();
             } else {
@@ -2527,8 +2555,8 @@ public class NetEntity : NetworkBehaviour
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // If the current area is a treasure site, we must unregister this user from being inside
-            if (VoyageManager.isTreasureSiteArea(areaKey)) {
-               VoyageManager.self.unregisterUserFromTreasureSite(userId, instanceId);
+            if (GroupInstanceManager.isTreasureSiteArea(areaKey)) {
+               GroupInstanceManager.self.unregisterUserFromTreasureSite(userId, instanceId);
             }
 
             // Remove the player from the current instance
@@ -2537,12 +2565,25 @@ public class NetEntity : NetworkBehaviour
             if (CustomMapManager.isUserSpecificAreaKey(areaKey) || CustomMapManager.isUserSpecificAreaKey(newArea)) {
                D.adminLog("D) Redirecting now! for Visit user {" + userId + "}{" + entityName + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
             }
-            D.adminLog("NetEntity! Redirecting now! for user {" + userId + "}{" + entityName + "} Voyage ID: {" + voyageId + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Redirecting);
+            D.adminLog("NetEntity! Redirecting now! for user {" + userId + "}{" + entityName + "} Group Instance ID: {" + groupInstanceId + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Redirecting);
 
             // Redirect the player to the best server
-            MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject, instanceId, serverPort));
+            MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, groupInstanceId, isSinglePlayer, newArea, areaKey, entityObject, instanceId, serverPort));
          });
       });
+   }
+
+   [Server]
+   public void resetWorldAreaVisitStreak () {
+      // Reset the streak if there is any
+      if (worldAreaVisitStreak > 0) {
+         // Lets schedule it in the background and move on
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.resetWorldAreaVisitStreak(userId);
+         });
+
+         worldAreaVisitStreak = 0;
+      }
    }
 
    protected IEnumerator CO_SetAreaParent () {
@@ -2592,8 +2633,8 @@ public class NetEntity : NetworkBehaviour
          // Show the Area name
          string displayname = "";
 
-         if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
-            displayname = "League " + Voyage.getLeagueAreaName(getInstance().leagueIndex);
+         if (GroupInstanceManager.isAnyLeagueArea(this.areaKey)) {
+            displayname = "League " + GroupInstance.getLeagueAreaName(getInstance().leagueIndex);
          } else {
             displayname = Area.getName(this.areaKey);
             D.adminLog("User {" + entityName + " " + userId + "} Is Now in Area: {" + areaKey + "}!", D.ADMIN_LOG_TYPE.Visit);
@@ -2606,18 +2647,18 @@ public class NetEntity : NetworkBehaviour
          TutorialManager3.self.onUserSpawns(this.userId);
 
          // Trigger the tutorial
-         if (VoyageManager.isLeagueArea(this.areaKey) || VoyageManager.isLeagueSeaBossArea(this.areaKey)) {
+         if (GroupInstanceManager.isLeagueArea(this.areaKey) || GroupInstanceManager.isLeagueSeaBossArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInLeagueNotLobby);
-         } else if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
+         } else if (GroupInstanceManager.isAnyLeagueArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
          }
          TutorialManager3.self.tryCompletingStepByLocation();
 
          // Update the instance status panel
-         VoyageStatusPanel.self.onUserSpawn();
+         InstanceStatusPanel.self.onUserSpawn();
 
          // Setup the pvp structure status panel
-         if (VoyageManager.isPvpArenaArea(area.areaKey)) {
+         if (GroupInstanceManager.isPvpArenaArea(area.areaKey)) {
             PvpStructureStatusPanel.self.onPlayerJoinedPvpGame();
             PvpStatPanel.self.onPlayerJoinedPvpGame();
          }
@@ -2627,7 +2668,7 @@ public class NetEntity : NetworkBehaviour
          float timeSinceRedirectMessage = (float) NetworkTime.time - ClientMessageManager.lastRedirectMessageTime;
          D.debug("[Timing] Client: from receiving redirection message to loading in area: " + areaKey + " took " + timeSinceRedirectMessage.ToString("F2") + "seconds.");
 
-         // Check instance biome and play voyage sfx based on the biome
+         // Check instance biome and play sfx based on the biome
          while (InstanceManager.self.getInstance(instanceId) == null) {
             yield return 0;
          }
@@ -2900,8 +2941,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
-      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetGuildId, targetVoyageGroupId, isSameGroup, isSameGuild);
+   public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
+      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetGuildId, targetGroupId, isSameGroup, isSameGuild);
    }
 
    public Vector3 getProjectedPosition (float afterSeconds) {
@@ -2955,13 +2996,13 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool isInGroup () {
-      return VoyageGroupManager.isInGroup(this);
+      return GroupManager.isInGroup(this);
    }
 
    [Server]
-   public bool tryGetGroup (out VoyageGroupInfo groupInfo) {
+   public bool tryGetGroup (out Group groupInfo) {
       groupInfo = default;
-      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo g)) {
+      if (GroupManager.isInGroup(this) && GroupManager.self.tryGetGroupById(groupId, out Group g)) {
          groupInfo = g;
          return true;
       } else {
@@ -2970,10 +3011,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public bool tryGetVoyage (out Voyage voyage) {
-      voyage = default;
-      if (VoyageGroupManager.isInGroup(this) && VoyageManager.self.tryGetVoyageForGroup(this.voyageGroupId, out Voyage v)) {
-         voyage = v;
+   public bool tryGetGroupInstance (out GroupInstance groupInstance) {
+      groupInstance = default;
+      if (GroupManager.isInGroup(this) && GroupInstanceManager.self.tryGetGroupInstanceForGroup(this.groupId, out GroupInstance gI)) {
+         groupInstance = gI;
          return true;
       } else {
          return false;

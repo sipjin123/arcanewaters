@@ -30,7 +30,7 @@ public class ArmorStatData : EquipmentStatData
          itemDescription = armorData.equipmentDescription,
          category = Item.Category.Armor,
          iconPath = armorData.equipmentIconPath,
-         paletteNames = armorData.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(armorData.defaultPalettes),
          data = serializeArmorStatData(armorData)
       };
       return newArmor;
@@ -65,7 +65,7 @@ public class ArmorStatData : EquipmentStatData
    public static ArmorStatData getDefaultData () {
       return new ArmorStatData {
          armorType = 0,
-         palettes = ""
+         //palettes = ""
       };
    }
 }

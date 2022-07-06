@@ -54,8 +54,8 @@ public class OreManager : MonoBehaviour
       // Note which instance the ore node is in
       oreNode.instanceId = instance.id;
 
-      // Assign the voyage id
-      oreNode.voyageId = instance.voyageId;
+      // Assign the group instance id
+      oreNode.groupInstanceId = instance.groupInstanceId;
 
       // Keep track of the ore nodes that we've created
       registerOreNode(oreNode.id, oreNode);

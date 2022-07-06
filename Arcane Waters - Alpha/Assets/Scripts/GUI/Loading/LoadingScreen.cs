@@ -9,6 +9,7 @@ using DG.Tweening;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using TMPro;
 
 public class LoadingScreen : FullScreenSeparatePanel
 {
@@ -34,6 +35,12 @@ public class LoadingScreen : FullScreenSeparatePanel
 
    // The error notice text
    public Text errorSectionNotice;
+
+   // The instance text
+   public TextMeshProUGUI instanceMessage;
+
+   // The area name field
+   public Text areaNameField;
    
    #endregion
 
@@ -55,6 +62,8 @@ public class LoadingScreen : FullScreenSeparatePanel
          mainCanvasGroup.interactable = true;
          elementsCanvasGroup.alpha = 0f;
          loadingFinishedMessage.enabled = false;
+         instanceMessage.enabled = false;
+         areaNameField.enabled = false;
          errorSection.SetActive(false);
 
          // Disable input
@@ -200,6 +209,13 @@ public class LoadingScreen : FullScreenSeparatePanel
 
    public void setAlpha (float f) {
       mainCanvasGroup.alpha = f;
+   }
+
+   public void setInstanceText (string areaName, string instanceInfoText) {
+      instanceMessage.enabled = true;
+      areaNameField.enabled = true;
+      instanceMessage.SetText(instanceInfoText);
+      areaNameField.text = areaName;
    }
 
    #region Private Variables

@@ -43,7 +43,7 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
    public void Update () {
       // Only active on clients
       if (_treasureSite == null || !_treasureSite.isClient || Global.player == null ||
-         !VoyageGroupManager.isInGroup(Global.player)) {
+         !GroupManager.isInGroup(Global.player)) {
          return;
       }
 
@@ -69,7 +69,7 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
       _circleMaterial.SetFloat("_Radius", _treasureSite.getCaptureRadius() * radiusMultiplier);
 
       // Set the color
-      if (_treasureSite.isOwnedByGroup(Global.player.voyageGroupId) &&
+      if (_treasureSite.isOwnedByGroup(Global.player.groupId) &&
          _treasureSite.status != TreasureSite.Status.Blocked) {
          _circleMaterial.SetColor("_Color",
             new Color(capturingColor.r, capturingColor.g, capturingColor.b, alphaMultiplier));
@@ -80,7 +80,7 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
 
       // Set the rotation speed
       float rotationSpeed;
-      if (_treasureSite.isOwnedByGroup(Global.player.voyageGroupId)) {
+      if (_treasureSite.isOwnedByGroup(Global.player.groupId)) {
          rotationSpeed = ROTATION_SPEED;
       } else {
          rotationSpeed = -ROTATION_SPEED;

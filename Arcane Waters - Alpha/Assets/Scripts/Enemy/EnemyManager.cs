@@ -30,7 +30,7 @@ public class EnemyManager : MonoBehaviour {
       public bool isPositionRandomized;
       public bool useWorldPosition;
       public int guildId;
-      public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+      public GroupInstance.Difficulty difficulty = GroupInstance.Difficulty.None;
       public bool isOpenWorldSpawn;
       public float respawnTime;
    }
@@ -172,7 +172,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Hard, spawnsPerLayer, mostCompatibleLayer, deepWaterTiles, respawnTime));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, GroupInstance.Difficulty.Hard, spawnsPerLayer, mostCompatibleLayer, deepWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Hard difficulty");
             }
@@ -188,7 +188,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Medium, spawnsPerLayer, mostCompatibleLayer, midWaterTiles, respawnTime));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, GroupInstance.Difficulty.Medium, spawnsPerLayer, mostCompatibleLayer, midWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Medium difficulty");
             }
@@ -204,7 +204,7 @@ public class EnemyManager : MonoBehaviour {
             }
 
             if (mostCompatibleLayer != null) {
-               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Easy, spawnsPerLayer, mostCompatibleLayer, shallowWaterTiles, respawnTime));
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, GroupInstance.Difficulty.Easy, spawnsPerLayer, mostCompatibleLayer, shallowWaterTiles, respawnTime));
             } else {
                D.debug("No compatible layer for Easy difficulty");
             }
@@ -217,7 +217,7 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_OpenWorldSpawnByDifficulty (Instance instance, Area areaTarget, Voyage.Difficulty difficulty, int spawnsPerLayer, TilemapLayer layer, List<Vector3Int> availableTiles, float respawnTime) {
+   private IEnumerator CO_OpenWorldSpawnByDifficulty (Instance instance, Area areaTarget, GroupInstance.Difficulty difficulty, int spawnsPerLayer, TilemapLayer layer, List<Vector3Int> availableTiles, float respawnTime) {
       yield return new WaitForSeconds(.1f);
       int maxAttempts = 30;
       int successfulSpawns = 0;
@@ -409,15 +409,15 @@ public class EnemyManager : MonoBehaviour {
          if (randomEnemyTypeVal < spawnShipChance) {
             for (int i = 0; i < spawnsPerSpot; i++) {
                spawnedEntities++;
-               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty, false);
+               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (GroupInstance.Difficulty) instance.difficulty, false);
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
                spawnedEntities++;
                if (mapInfo.spawnsSeaMonsters) {
-                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId, (Voyage.Difficulty) instance.difficulty, false);
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false, guildId, (GroupInstance.Difficulty) instance.difficulty, false);
                } else {
-                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (Voyage.Difficulty) instance.difficulty, false);
+                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false, (GroupInstance.Difficulty) instance.difficulty, false);
                }
             }
          }
@@ -432,12 +432,12 @@ public class EnemyManager : MonoBehaviour {
          "CPU:{" + currentCpuUsage + "} Ram:{" + currentRamUsage + "}", D.ADMIN_LOG_TYPE.Performance);
    }
 
-   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
+   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, GroupInstance.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
       Ship.Type shipType = Ship.Type.Type_1;
       int shipXmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
 
       SeaMonsterEntityData seaEnemyData = null;
-      if (difficulty == Voyage.Difficulty.None) {
+      if (difficulty == GroupInstance.Difficulty.None) {
          shipType = randomizeShipType(instance.biome);
          seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int) shipType);
       } else {
@@ -490,7 +490,7 @@ public class EnemyManager : MonoBehaviour {
          }
       }
 
-      if (instance.isVoyage) {
+      if (instance.isGroupInstance) {
          VoyageBiomeShipSettings shipBiomeData = voyageBiomeList.Find(_ => _.biomeType == instance.biome);
          if (shipBiomeData != null) {
             if (shipBiomeData.voyageDifficultyCurve.keys.Length >= 2) {
@@ -599,11 +599,11 @@ public class EnemyManager : MonoBehaviour {
          respawnData.difficulty, respawnData.isOpenWorldSpawn, respawnData.respawnTime);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, GroupInstance.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTimer = -1) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
 
-      if (difficulty == Voyage.Difficulty.None) {
+      if (difficulty == GroupInstance.Difficulty.None) {
          switch (instance.biome) {
             case Biome.Type.Forest:
             case Biome.Type.Pine:
@@ -673,16 +673,16 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private SeaMonsterEntityData randomizeShipByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+   private SeaMonsterEntityData randomizeShipByDifficulty (GroupInstance.Difficulty difficulty, Biome.Type biomeType) {
       // Instance difficulties reach up to 6 max while tier difficulties only reach 3 types only, normalize data here
       int difficultyValue = (int) difficulty;
-      Voyage.Difficulty normalizeDifficulty = difficulty;
+      GroupInstance.Difficulty normalizeDifficulty = difficulty;
       if (difficultyValue <= 2) {
-         normalizeDifficulty = Voyage.Difficulty.Easy;
+         normalizeDifficulty = GroupInstance.Difficulty.Easy;
       } else if (difficultyValue <= 4) {
-         normalizeDifficulty = Voyage.Difficulty.Medium;
+         normalizeDifficulty = GroupInstance.Difficulty.Medium;
       } else {
-         normalizeDifficulty = Voyage.Difficulty.Hard;
+         normalizeDifficulty = GroupInstance.Difficulty.Hard;
       }
 
       List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(
@@ -702,16 +702,16 @@ public class EnemyManager : MonoBehaviour {
       return null;
    }
 
-   private SeaMonsterEntityData randomizeMonsterByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+   private SeaMonsterEntityData randomizeMonsterByDifficulty (GroupInstance.Difficulty difficulty, Biome.Type biomeType) {
       // Instance difficulties reach up to 6 max while tier difficulties only reach 3 types only, normalize data here
       int difficultyValue = (int) difficulty;
-      Voyage.Difficulty normalizeDifficulty = difficulty;
+      GroupInstance.Difficulty normalizeDifficulty = difficulty;
       if (difficultyValue <= 2) {
-         normalizeDifficulty = Voyage.Difficulty.Easy;
+         normalizeDifficulty = GroupInstance.Difficulty.Easy;
       } else if (difficultyValue <= 4) {
-         normalizeDifficulty = Voyage.Difficulty.Medium;
+         normalizeDifficulty = GroupInstance.Difficulty.Medium;
       } else {
-         normalizeDifficulty = Voyage.Difficulty.Hard;
+         normalizeDifficulty = GroupInstance.Difficulty.Hard;
       }
 
       List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(

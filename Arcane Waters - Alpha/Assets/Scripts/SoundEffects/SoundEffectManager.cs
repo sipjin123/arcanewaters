@@ -179,6 +179,8 @@ public class SoundEffectManager : GenericGameManager
 
    public const string FOOD_CRUNCH = "event:/SFX/Player/Interactions/Non_Diegetic/Food_Crunch";
 
+   public const string LEVERS = "event:/SFX/Player/Interactions/Diegetic/Levers";
+
    #endregion
 
    #region NPC
@@ -292,6 +294,18 @@ public class SoundEffectManager : GenericGameManager
 
       playFmodSfx(hurtPath, position);
    }
+
+   #region Friend Requests
+
+   public void playFriendRequest (bool isReceived) {
+      FMOD.Studio.EventInstance eventInstance = createEventInstance(FRIEND_REQUEST);
+      eventInstance.setParameterByName(AMB_SW_PARAM, isReceived ? 1 :0);
+      eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(AudioListenerManager.self.getActiveFmodListener().gameObject.transform.position));
+      eventInstance.start();
+      eventInstance.release();
+   }
+
+   #endregion
 
    public void playOneShotWithParam (string path, string parameterName, int parameterValue, Vector3 position = default) {
       FMOD.Studio.EventInstance eventInstance = createEventInstance(path);
@@ -423,7 +437,7 @@ public class SoundEffectManager : GenericGameManager
          return AmbType.Waterfall_Cave;
       }
 
-      if (VoyageManager.isTreasureSiteArea(areaKey)) {
+      if (GroupInstanceManager.isTreasureSiteArea(areaKey)) {
          return AmbType.Treasure_Site;
       }
 
@@ -472,11 +486,11 @@ public class SoundEffectManager : GenericGameManager
       bool isSea = AreaManager.self.isSeaArea(areaKey);
 
       if (isSea) {
-         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
+         if (GroupInstanceManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
             return BgType.Sea_PvP;
-         } else if (VoyageManager.isLeagueArea(areaKey)) {
+         } else if (GroupInstanceManager.isLeagueArea(areaKey)) {
             return BgType.Sea_League;
-         } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+         } else if (GroupInstanceManager.isLeagueSeaBossArea(areaKey)) {
             return BgType.Sea_Lava; // Temp
          }
       }

@@ -107,9 +107,9 @@ public class ServerMessageManager : MonoBehaviour
          NetworkedServer masterServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
 
          if (logInUserMessage.isSteamLogin) {
-            // If the app id is the playtest id then alter the user name
-            if (logInUserMessage.steamAppId == SteamStatics.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
-               logInUserMessage.accountName = logInUserMessage.accountName + "@playtest";
+            // If the app id is the playtest id then make it act like a demo
+            if (logInUserMessage.steamAppId == SteamStatics.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest") && !logInUserMessage.accountName.Contains("@demo")) {
+               logInUserMessage.accountName = logInUserMessage.accountName + "@demo";
             }
             if ((logInUserMessage.steamAppId == SteamStatics.GAME_APPID || Application.isEditor) && !logInUserMessage.accountName.Contains("@steam")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
@@ -424,7 +424,8 @@ public class ServerMessageManager : MonoBehaviour
                foreach (Item armorItem in armorItemList) {
                   ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorItem.itemTypeId);
                   if (armorData != null) {
-                     armorPalettes[paletteIndex] = armorData.palettes;
+                     //armorPalettes[paletteIndex] = armorData.palettes;
+                     armorPalettes[paletteIndex] = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
                   } else {
                      if (armorItem.itemTypeId > 0) {
                         D.debug("Cant process armor type: {" + armorItem.itemTypeId + "}");

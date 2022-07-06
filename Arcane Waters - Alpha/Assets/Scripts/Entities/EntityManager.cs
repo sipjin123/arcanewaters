@@ -20,9 +20,6 @@ public class EntityManager : MonoBehaviour
 
    public void storeEntity (NetEntity entity) {
       _entities[entity.userId] = entity;
-      if (NetworkClient.active) {
-         cacheEntityName(entity.userId, entity.entityName);
-      }
    }
 
    public void removeEntity (NetEntity entity) {
@@ -43,6 +40,29 @@ public class EntityManager : MonoBehaviour
       return _entities.TryGetValue(userId, out entity);
    }
 
+   public bool tryGetEntityNotNull (int userId, out NetEntity entity) {
+      if (_entities.TryGetValue(userId, out entity)) {
+         if (entity == null) {
+            return false;
+         }
+         return true;
+      }
+      return false;
+   }
+
+   public bool tryGetEntityNotNull<T> (int userId, out T entity) where T : NetEntity {
+      if (_entities.TryGetValue(userId, out NetEntity en)) {
+         if (en == null || !(en is T)) {
+            entity = null;
+            return false;
+         }
+         entity = en as T;
+         return true;
+      }
+      entity = null;
+      return false;
+   }
+
    public NetEntity getEntityByNetId (uint userNetId) {
       NetEntity searchedEntity = _entities.Values.ToList().Find(_ => _.netId == userNetId);
       return searchedEntity;
@@ -57,7 +77,7 @@ public class EntityManager : MonoBehaviour
       return _entities.Count;
    }
 
-   public NetEntity getEntityWithName (string name) {      
+   public NetEntity getEntityWithName (string name) {
       foreach (NetEntity entity in _entities.Values) {
          if (name.Equals(entity.entityName, System.StringComparison.InvariantCultureIgnoreCase)) {
             return entity;
@@ -67,13 +87,13 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
-   public List<NetEntity> getEntitiesWithVoyageId (int voyageId) {
-      return _entities.Values.Where(_ => _.voyageGroupId == voyageId).ToList();
+   public List<NetEntity> getEntitiesWithGroupId (int groupId) {
+      return _entities.Values.Where(_ => _.groupId == groupId).ToList();
    }
 
    public NetEntity getEntityWithAccId (int accId) {
       foreach (NetEntity entity in _entities.Values) {
-         if(entity.accountId == accId) {
+         if (entity.accountId == accId) {
             return entity;
          }
       }
@@ -88,6 +108,15 @@ public class EntityManager : MonoBehaviour
 
    [Client]
    public bool tryGetEntityName (int userId, out string name) => _entityNames.TryGetValue(userId, out name);
+
+   [Client]
+   public string tryGetEntityName (int userId, string fallBackname) {
+      if (tryGetEntityName(userId, out string name)) {
+         return name;
+      }
+
+      return fallBackname;
+   }
 
    public bool canUserBypassWarpRestrictions (int userId) {
       return _warpBypassingUsers.Contains(userId);

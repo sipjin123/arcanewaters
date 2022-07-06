@@ -7,7 +7,7 @@ using ProceduralMap;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class GroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
    #region Public Variables
 
@@ -41,7 +41,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The party stat indicators
    public GameObject highestDamageIndicator, highestTankIndicator, highestHealIndicator, highestBuffIndicator;
 
-   // Indicates that this user is the voyage leader
+   // Indicates that this user is the group leader
    public GameObject teamLeaderIndicator;
 
    // The total stat dealt
@@ -65,7 +65,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       InvokeRepeating(nameof(updatePortrait), Random.Range(0f, 2f), 3f);
    }
 
-   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo) {
+   public void setCellForGroupMember (GroupMemberCellInfo cellInfo) {
       _userId = cellInfo.userId;
       teamLeaderIndicator.SetActive(false);
 
@@ -101,7 +101,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    }
 
    public void Update () {
-      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageGroupManager.isInGroup(Global.player)) {
+      if (Global.player == null || !Global.player.isLocalPlayer || !GroupManager.isInGroup(Global.player)) {
          return;
       }
 
@@ -144,7 +144,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       // Try to find the entity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
 
-      bool enableLeaderIcon = _userId == VoyageGroupPanel.self.voyageLeader && VoyageGroupPanel.self.voyageLeader > 0;
+      bool enableLeaderIcon = _userId == GroupPanel.self.groupLeader && GroupPanel.self.groupLeader > 0;
       teamLeaderIndicator.SetActive(enableLeaderIcon);
 
       if (entity == null) {

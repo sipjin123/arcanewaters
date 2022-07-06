@@ -22,6 +22,9 @@ public class MailInfo
    // The sender ID
    public int senderUserId;
 
+   // The owner ID. Identifier of the user who owned the attached items
+   public int ownerUserId;
+
    // The name of the sender
    public string senderUserName;
 
@@ -48,6 +51,9 @@ public class MailInfo
 
    // Can recipient reply to mail
    public bool canReply;
+
+   // Sender Name override
+   public string senderNameOverride;
    
    #endregion
 
@@ -58,6 +64,7 @@ public class MailInfo
    public MailInfo (MySqlDataReader dataReader, bool isForList) {
       this.mailId = DataUtil.getInt(dataReader, "mailId");
       this.recipientUserId = DataUtil.getInt(dataReader, "recipientUsrId");
+      this.ownerUserId = DataUtil.getInt(dataReader, "ownerUsrId");
       this.senderUserId = DataUtil.getInt(dataReader, "senderUsrId");
       this.senderUserName = DataUtil.getString(dataReader, "usrName");
       this.receptionDate = DataUtil.getDateTime(dataReader, "receptionDate").ToBinary();
@@ -66,21 +73,27 @@ public class MailInfo
       this.autoDelete = DataUtil.getBoolean(dataReader, "autoDelete");
       this.sendBack = DataUtil.getBoolean(dataReader, "sendBack");
       this.canReply = DataUtil.getBoolean(dataReader, "canReply");
+      this.senderNameOverride = DataUtil.getString(dataReader, "senderNameOverride");
 
       if (isForList) {
          this.attachedItemsCount = DataUtil.getInt(dataReader, "attachedItemCount");
       } else {
          this.message = DataUtil.getString(dataReader, "message");
       }
+
+      if (this.ownerUserId == 0) {
+         this.ownerUserId = this.senderUserId;
+      }
    }
 
 #endif
 
-   public MailInfo (int mailId, int recipientUserId, int senderUserId, DateTime receptionDate, bool isRead,
-      string mailSubject, string message, bool autoDelete, bool sendBack, bool canReply) {
+   public MailInfo (int mailId, int recipientUserId, int senderUserId, int ownerUserId, DateTime receptionDate, bool isRead,
+      string mailSubject, string message, bool autoDelete, bool sendBack, bool canReply, string senderNameOverride = "") {
       this.mailId = mailId;
       this.recipientUserId = recipientUserId;
       this.senderUserId = senderUserId;
+      this.ownerUserId = ownerUserId;
       this.receptionDate = receptionDate.ToBinary();
       this.isRead = isRead;
       this.mailSubject = mailSubject;
@@ -88,6 +101,11 @@ public class MailInfo
       this.autoDelete = autoDelete;
       this.sendBack = sendBack;
       this.canReply = canReply;
+      this.senderNameOverride = senderNameOverride;
+
+      if (ownerUserId == 0) {
+         this.ownerUserId = this.senderUserId;
+      }
    }
 
    public override bool Equals (object rhs) {

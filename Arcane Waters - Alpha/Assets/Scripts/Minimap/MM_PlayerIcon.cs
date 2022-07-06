@@ -38,7 +38,7 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
          float mapActiveAreaWidth = (Minimap.self.realAreaSize != Vector2Int.zero) ? Minimap.self.realAreaSize.x : minimapSpriteWidth;
 
          // Some pvp arenas have a playable area that is smaller than the total area size, so we have to calculate it with the 'arena size'
-         if (VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         if (GroupInstanceManager.isPvpArenaArea(Global.player.areaKey)) {
             PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(Global.player.areaKey);
             mapActiveAreaWidth = AreaManager.getWidthForPvpArenaSize(arenaSize);
          }
@@ -51,7 +51,7 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
          float minimapTranslationScale = (mapActiveAreaWidth - 64.0f) / 64.0f;
 
          // For pvp arenas, we never want to have minimap translation
-         if (VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         if (GroupInstanceManager.isPvpArenaArea(Global.player.areaKey)) {
             // Unless this PVP arena is actually an open-world map, then we absolutely do want minimap translation
             if (!WorldMapManager.isWorldMapArea(Global.player.areaKey)) {
                minimapTranslationScale = 0.0f;

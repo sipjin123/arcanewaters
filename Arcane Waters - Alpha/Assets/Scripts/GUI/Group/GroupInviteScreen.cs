@@ -5,7 +5,7 @@ using TMPro;
 using Mirror;
 using System.Text;
 
-public class VoyageInviteScreen : FullScreenSeparatePanel
+public class GroupInviteScreen : FullScreenSeparatePanel
 {
    #region Public Variables
 

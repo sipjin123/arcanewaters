@@ -131,7 +131,7 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static void deliverAuction (int auctionId, int mailId, int recipientUserId) {
+   public static void deliverAuction (int auctionId, int mailId, int recipientUserId, string mailMessageOverride, string mailSenderNameOverride) {
 
    }
 
@@ -151,8 +151,12 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static void addBidderOnAuction (int auctionId, int userId) {
+   public static void addBidderOnAuction (int auctionId, int userId, int bidAmount) {
 
+   }
+
+   public static List<AuctionManager.BidderData> getBidders (int auctionId) {
+      return new List<AuctionManager.BidderData>();
    }
 
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
@@ -626,12 +630,16 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void setLiveMapVersion (MapVersion version) {
-
+   public static PublishedVersionChange setLiveMapVersion (MapVersion version) {
+      return new PublishedVersionChange();
    }
 
    protected static void insertMapChangeComment (int mapId, int mapVersion, int userId, string comment) {
 
+   }
+
+   public static List<MapChangeComment> getVersionChangeComments (int mapId, int mapVersion) {
+      return new List<MapChangeComment>();
    }
 
    protected static void noteMapVersionPublish (int mapId) {
@@ -895,11 +903,11 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static void deleteCrop (int cropId, int userId, string areaKey) {
+   public static void setWeaponId (int userId, int newWeaponId) {
 
    }
 
-   public static void setWeaponId (int userId, int newWeaponId) {
+   public static void deleteCrop (int cropId, int userId, string areaKey) {
 
    }
 
@@ -923,6 +931,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static void setTrinketId (int userId, int newId) {
 
+   }
+
+   public static bool tradeItemsIfValid (int userId1, List<Item> items1, int gold1, int userId2, List<Item> items2, int gold2) {
+      return false;
    }
 
    public static bool hasItem (int userId, int itemId, int itemCategory) {
@@ -1874,6 +1886,18 @@ public class DB_MainStub : MonoBehaviour
 
    public static IEnumerable<RewardCode> getUnusedRewardCodes (string steamId, string consumerId) {
       return Array.Empty<RewardCode>();
+   }
+
+   #endregion
+
+   #region Wishlist
+
+   public static bool notePlayerWishlist (string steamId, string appId) {
+      return false;
+   }
+
+   public static bool hasPlayerWishlisted (string steamId) {
+      return false;
    }
 
    #endregion

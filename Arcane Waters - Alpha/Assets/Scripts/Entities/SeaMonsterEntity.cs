@@ -219,7 +219,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             difficulty = instance.difficulty;
          }
 
-         float reloadModifier = 1 + (((float) difficulty - 1) / (Voyage.getMaxDifficulty() - 1));
+         float reloadModifier = 1 + (((float) difficulty - 1) / (GroupInstance.getMaxDifficulty() - 1));
          reloadDelay = seaMonsterData.reloadDelay / (difficulty > 0 ? reloadModifier : 1);
          reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
          maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * difficulty * AdminGameSettingsManager.self.settings.seaMaxHealth);
@@ -302,7 +302,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Custom behaviors
       if (monsterType == Type.Horror) {
-         InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (Voyage.getMaxDifficulty() / difficulty));
+         InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (GroupInstance.getMaxDifficulty() / difficulty));
       }
    }
 

@@ -119,7 +119,7 @@ public class TreasureManager : MonoBehaviour {
       chest.allowedUserIds.Add(userId);
 
       List<PlayerShipEntity> instancePlayerEntities = instance.getPlayerShipEntities();
-      int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+      int playerGroupId = instancePlayerEntities.Find(_ => _.userId == userId).groupId;
       List<int> validUserIds = new List<int>();
       
       // Bypass restrictions and allow all users who damaged the enemy to have chest rewards
@@ -133,12 +133,12 @@ public class TreasureManager : MonoBehaviour {
          }
       }
 
-      // If this is a voyage, reward entire voyage party
-      if (((playerVoyageGroupId > 0 || rewardAllDamagingUsers) && !instance.isPvP) || instance.isPvP) {
-         // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
+      // If this is a group instance, reward entire group
+      if (((playerGroupId > 0 || rewardAllDamagingUsers) && !instance.isPvP) || instance.isPvP) {
+         // If there are players in the instance that share the same group id with the player, then add them to the allowed list of user interaction
          foreach (uint attacker in attackers) {
             NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker);
-            if (entity != null && playerVoyageGroupId == entity.voyageGroupId) {
+            if (entity != null && playerGroupId == entity.groupId) {
                if (!validUserIds.Contains(entity.userId)) {
                   validUserIds.Add(entity.userId);
                }
@@ -224,12 +224,12 @@ public class TreasureManager : MonoBehaviour {
       chest.allowedUserIds.Add(userId);
 
       List<PlayerBodyEntity> instancePlayerEntities = instance.getPlayerBodyEntities();
-      int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+      int playerGroupId = instancePlayerEntities.Find(_ => _.userId == userId).groupId;
 
-      // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
-      if (playerVoyageGroupId > 0) {
+      // If there are players in the instance that share the same group id with the player, then add them to the allowed list of user interaction
+      if (playerGroupId > 0) {
          foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {
-            if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
+            if (playerEntity.userId != userId && playerEntity.groupId == playerGroupId) {
                chest.allowedUserIds.Add(playerEntity.userId);
             }
          }
@@ -240,7 +240,7 @@ public class TreasureManager : MonoBehaviour {
 
       // Check if any players in the instance that got an extra loot drop
       foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {
-         if (playerEntity.voyageGroupId == playerVoyageGroupId) {
+         if (playerEntity.groupId == playerGroupId) {
 
             int bonusChests = 0;
             if (PerkManager.self.perkActivationRoll(playerEntity.userId, Perk.Category.ItemDropChances)) {

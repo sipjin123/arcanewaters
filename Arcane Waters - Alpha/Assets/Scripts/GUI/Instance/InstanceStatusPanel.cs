@@ -7,7 +7,7 @@ using System;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class VoyageStatusPanel : ClientMonoBehaviour
+public class InstanceStatusPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
@@ -47,7 +47,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The player count in pvp text
    public TextMeshProUGUI playerCountPvpText;
 
-   // The time since the voyage started
+   // The time since the instance was created
    public TextMeshProUGUI timeText;
 
    // The treasure site count text
@@ -62,8 +62,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The lobby label
    public TextMeshProUGUI lobbyText;
 
-   // The id of the current voyage for pvp instances
-   public TextMeshProUGUI voyageIdText;
+   // The id of the current group instance for pvp instances
+   public TextMeshProUGUI groupInstanceIdText;
 
    // The ping
    public TextMeshProUGUI pingText;
@@ -125,7 +125,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    public bool isPvpActive;
 
    // Self
-   public static VoyageStatusPanel self;
+   public static InstanceStatusPanel self;
 
    #endregion
 
@@ -205,7 +205,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       // If the player is not in a group, there is no need to update the rest
-      if (!VoyageGroupManager.isInGroup(Global.player)) {
+      if (!GroupManager.isInGroup(Global.player)) {
          return;
       }
 
@@ -218,21 +218,21 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
       string aliveEnemiesCount = (instance.aliveNPCEnemiesCount == -1) ? "0" : instance.aliveNPCEnemiesCount.ToString();
       aliveEnemiesCountText.text = aliveEnemiesCount + "/" + (instance.getTotalNPCEnemyCount()).ToString();
-      lobbyText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
+      lobbyText.text = GroupInstance.getLeagueAreaName(instance.leagueIndex);
 
       // If the panel is collapsed, there is no need to update the rest
       if (!collapsingContainer.activeSelf) {
          return;
       }
 
-      // Update the voyage status
+      // Update the instance status
       //mapNameText.text = Area.getName(instance.areaKey);
       pvpPveText.text = instance.isPvP ? "PvP" : "PvE";
       pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
       playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
       timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
-      leagueIndexText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
-      voyageIdText.text = instance.voyageId.ToString();
+      leagueIndexText.text = GroupInstance.getLeagueAreaName(instance.leagueIndex);
+      groupInstanceIdText.text = instance.groupInstanceId.ToString();
    }
 
    public void refreshPvpStatDisplay () {
@@ -350,20 +350,20 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       // Show different relevant statuses depending on the area type
-      if (VoyageGroupManager.isInGroup(Global.player)) {
-         if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
+      if (GroupManager.isInGroup(Global.player)) {
+         if (instance.isLeague && GroupInstanceManager.isLobbyArea(instance.areaKey)) {
             pvpStatuses.Hide();
             leagueStatuses.Hide();
             townStatuses.Hide();
             treasureSiteStatuses.Hide();
             lobbyStatuses.Show();
-         } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
+         } else if (instance.isLeague && !GroupInstanceManager.isLobbyArea(instance.areaKey)) {
             pvpStatuses.Hide();
             lobbyStatuses.Hide();
             townStatuses.Hide();
             treasureSiteStatuses.Hide();
             leagueStatuses.Show();
-         } else if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
+         } else if (GroupInstanceManager.isTreasureSiteArea(instance.areaKey)) {
             pvpStatuses.Hide();
             lobbyStatuses.Hide();
             townStatuses.Hide();

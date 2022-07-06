@@ -218,7 +218,7 @@ public class WorldMapPanel : Panel
          return;
       }
 
-      if (!skipPvpCheck && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+      if (!skipPvpCheck && GroupInstanceManager.isPvpArenaArea(Global.player.areaKey)) {
          string message = "Are you sure you want to leave your current Pvp Game?";
          if (WorldMapManager.isWorldMapArea(Global.player.areaKey)) {
             message = "Are you sure you want to leave the open seas?";

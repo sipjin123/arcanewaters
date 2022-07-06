@@ -29,18 +29,18 @@ public class ReturnToCurrentVoyagePanel : Panel
       self = this;
    }
 
-   public void updatePanelWithCurrentVoyage (Voyage voyage) {
+   public void updatePanelWithCurrentVoyage (GroupInstance groupInstance) {
       // Clear out any old info
       mapCellContainer.DestroyChildren();
       VoyageTriggerPopup.self.disableAllPanels();
 
       // Instantiate the cell
-      if (voyage.isPvP) {
+      if (groupInstance.isPvP) {
          PvpArenaCell cell = Instantiate(pvpArenaCellPrefab, mapCellContainer.transform, false);
-         cell.setCellForPvpArena(voyage, () => warpToCurrentVoyageMap());
+         cell.setCellForPvpArena(groupInstance, () => warpToCurrentVoyageMap());
       } else {
          VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
-         cell.setCellForVoyage(voyage, () => warpToCurrentVoyageMap());
+         cell.setCellForVoyage(groupInstance, () => warpToCurrentVoyageMap());
       }
    }
 
@@ -50,7 +50,7 @@ public class ReturnToCurrentVoyagePanel : Panel
    }
 
    public void onLeaveVoyageButtonPressed () {
-      VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn();
+      GroupPanel.self.OnLeaveGroupButtonClickedOn();
    }
 
    #region Private Variables

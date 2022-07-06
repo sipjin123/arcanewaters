@@ -55,7 +55,7 @@ public class WeaponStatData : EquipmentStatData
          category = Item.Category.Weapon,
          iconPath = weaponData.equipmentIconPath,
          actionTypeValue = weaponData.actionTypeValue,
-         paletteNames = weaponData.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(weaponData.defaultPalettes),
          data = serializeWeaponStatData(weaponData)
       };
       return newWeapon;
@@ -100,7 +100,7 @@ public class WeaponStatData : EquipmentStatData
    public static WeaponStatData getDefaultData () {
       return new WeaponStatData { 
          weaponType = 0,
-         palettes = "",
+         //palettes = "",
          actionType = Weapon.ActionType.None,
       };
    }

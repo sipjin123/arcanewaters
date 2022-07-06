@@ -197,8 +197,13 @@ namespace MapCreationTool
                pdd.restructureCustomFields();
                foreach (var kv in pdd.dataFields)
                   listener.dataFieldChanged(new DataField { k = kv.name, v = kv.defaultValue });
-               foreach (var kv in pdd.selectDataFields)
+               foreach (var kv in pdd.selectDataFields) {
+                  if (kv.options.Length == 0) {
+                     D.warning("Select field has no options: " + pdd.name + " " + kv.name + " " + p.name);
+                     continue;
+                  }
                   listener.dataFieldChanged(new DataField { k = kv.name, v = kv.options[kv.defaultOption].value });
+               }
 
                Dictionary<string, string> defaultData = Tools.getDefaultData(pref);
                if (defaultData != null) {

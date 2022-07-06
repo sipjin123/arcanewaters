@@ -30,6 +30,7 @@ public class CustomItemCollection : MailInfo
       // Everything else can just be set to whatever
       recipientUserId = 0;
       senderUserId = 0;
+      ownerUserId = 0;
       senderUserName = "Used by CustomItemCollection.cs";
       receptionDate = 0;
       isRead = false;

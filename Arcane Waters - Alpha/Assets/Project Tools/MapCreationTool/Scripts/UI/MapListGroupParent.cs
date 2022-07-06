@@ -266,7 +266,6 @@ namespace MapCreationTool
                   UI.mapList.open();
                }
             });
-
          });
 
          UI.loadingPanel.display("Publishing Map Group", task);

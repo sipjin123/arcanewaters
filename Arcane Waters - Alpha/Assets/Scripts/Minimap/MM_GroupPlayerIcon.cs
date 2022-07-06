@@ -18,8 +18,8 @@ public class MM_GroupPlayerIcon : MM_Icon {
    }
 
    private void Update () {
-      if (Global.player == null || player == null || Global.player.voyageGroupId == -1 || player.voyageGroupId == -1 
-         || Global.player.voyageGroupId != player.voyageGroupId || Global.player.areaKey != player.areaKey) {
+      if (Global.player == null || player == null || Global.player.groupId == -1 || player.groupId == -1 
+         || Global.player.groupId != player.groupId || Global.player.areaKey != player.areaKey) {
          gameObject.SetActive(false);
          Destroy(this.gameObject);
          return;

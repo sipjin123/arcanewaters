@@ -6,7 +6,7 @@ using Mirror;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class VoyageGroupMemberArrow : MonoBehaviour
+public class GroupMemberArrow : MonoBehaviour
 {
    #region Public Variables
 
@@ -39,7 +39,7 @@ public class VoyageGroupMemberArrow : MonoBehaviour
    public void Update () {
       hideArrows();
 
-      if (Global.player == null || !VoyageGroupManager.isInGroup(Global.player) || _mainCamera == null) {
+      if (Global.player == null || !GroupManager.isInGroup(Global.player) || _mainCamera == null) {
          return;
       }
 
@@ -95,7 +95,7 @@ public class VoyageGroupMemberArrow : MonoBehaviour
       }
    }
 
-   public void setTarget (VoyageGroupMemberCell cell, int userId, string userName) {
+   public void setTarget (GroupMemberCell cell, int userId, string userName) {
       _cell = cell;
       _targetUserId = userId;
       foreach (TextMeshPro label in arrowLabels) {
@@ -143,7 +143,7 @@ public class VoyageGroupMemberArrow : MonoBehaviour
    private int _targetUserId = -1;
 
    // The associated group member cell
-   private VoyageGroupMemberCell _cell = null;
+   private GroupMemberCell _cell = null;
 
    // A cached reference to the main camera
    private Camera _mainCamera = null;

@@ -9,7 +9,7 @@ public class TreasureSiteLeague : TreasureSite
 {
    #region Public Variables
 
-   // The index of the voyage instance in the league series, where this treasure site is located
+   // The index of the instance in the league series, where this treasure site is located
    [SyncVar]
    public int leagueIndex = 0;
 
@@ -61,12 +61,12 @@ public class TreasureSiteLeague : TreasureSite
    public override void OnTriggerExit2D (Collider2D other) {
    }
 
-   public override bool isOwnedByGroup (int voyageGroupId) {
+   public override bool isOwnedByGroup (int groupId) {
       return true;
    }
 
    public override bool isActive () {
-      return Voyage.isLastLeagueMap(leagueIndex);
+      return GroupInstance.isLastVoyageMap(leagueIndex);
    }
 
    #region Private Variables

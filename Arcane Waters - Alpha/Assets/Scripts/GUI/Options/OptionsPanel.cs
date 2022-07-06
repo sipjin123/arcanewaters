@@ -8,6 +8,9 @@ using System;
 using static UnityEngine.UI.Dropdown;
 using System.Text;
 using System.Linq;
+using TMPro;
+using Steamworks;
+using Steam;
 
 public class OptionsPanel : Panel
 {
@@ -18,7 +21,7 @@ public class OptionsPanel : Panel
    public Text zoneText;
 
    // The size of the chat
-   public Text chatSizeText;
+   public TMP_Text chatSizeText;
 
    // The chat size slider
    public Slider chatSizeSlider;
@@ -36,13 +39,13 @@ public class OptionsPanel : Panel
    public Slider minimapScaleSlider;
 
    // The label of the gui scale in percentage
-   public Text guiScaleLabel;
+   public TMP_Text guiScaleLabel;
 
    // The label of the minimap scale in percentage
-   public Text minimapScaleLabel;
+   public TMP_Text minimapScaleLabel;
 
    // The available resolutions dropdown
-   public Dropdown resolutionsDropdown;
+   public TMP_Dropdown resolutionsDropdown;
 
    // The vsync toggle
    public Toggle vsyncToggle;
@@ -64,7 +67,7 @@ public class OptionsPanel : Panel
 
    // Ignores guild alliance invites
    public Toggle ignoreGuildAllianceInviteToggle;
-   
+
    // Reference to show heal text toggle
    public Toggle showHealTextToggle;
 
@@ -88,12 +91,12 @@ public class OptionsPanel : Panel
 
    // A toggle controlling whether to enable slow text effect
    public Toggle slowTextEffectToggle;
-   
+
    // A toggle controlling whether to enable the camera shake effect
    public Toggle doNotDisturbToggle;
-   
+
    // The screen mode toggle
-   public Dropdown screenModeDropdown;
+   public TMP_Dropdown screenModeDropdown;
 
    // Bool to track if all players should continuously display their guild icon
    public static bool onlyShowGuildIconsOnMouseover = false;
@@ -111,17 +114,17 @@ public class OptionsPanel : Panel
    public GameObject versionGameObject;
 
    // Version Number text field
-   public Text versionNumberText;
+   public TMP_Text versionNumberText;
 
    // The objects that only appears when a user is logged in
    public GameObject[] loggedInObjects;
 
    // The objects that only appears when a user is NOT logged in
    public GameObject[] notLoggedInObjects;
-   
+
    // The objects that only appears when a user selected a character
    public GameObject[] hasCharacterObjects;
-   
+
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
 
@@ -134,14 +137,11 @@ public class OptionsPanel : Panel
    // A reference to the game object containing the server log accessing buttons
    public GameObject serverLogRow;
 
-   // Spaces out the right-column 'other settings' buttons when the server log row is disabled
-   public GameObject logRowSeparator;
-
    // A list of accepted fullscreen modes (windowed, borderless windowed, fullscreen)
    public List<FullScreenMode> fullScreenModes = new List<FullScreenMode>();
 
    // The label that displays the total amount of active players
-   public Text activePlayersCountLabel;
+   public TMP_Text activePlayersCountLabel;
 
    // Admin tooltip to display active players
    public ToolTipComponent activePlayersAdminTooltip;
@@ -150,16 +150,22 @@ public class OptionsPanel : Panel
    public GameObject demoUserText = null;
 
    // Reference to invite link of Arcane Waters Discord game-talk channel
-   public const string DISCORD_URL_INVITE = "https://discord.gg/arcanewaters"; 
-   
+   public const string DISCORD_URL_INVITE = "https://discord.gg/arcanewaters";
+
    // Reference to Discord confirmation window title
    public const string DISCORD_CONFIRM_TITLE = "Opening Discord?";
-   
+
    // Reference to Discord confirmation window description
    public const string DISCORD_CONFIRMATION_DESC = "You are about to open Arcane Waters Discord Channel. Are you sure?";
 
    // Reference to the Wishlist Button
    public Button wishlistButton;
+
+   // Reference to tab active state
+   public GameObject[] activeTab;
+
+   // Reference to tab content panel
+   public GameObject[] contentPanels;
 
    #endregion
 
@@ -306,7 +312,7 @@ public class OptionsPanel : Panel
          PlayerPrefs.SetInt(OptionsManager.PREF_ENABLE_CAMERA_SHAKE, value ? 1 : 0);
          Global.isCameraShakeEffectEnabled = value;
       });
-      
+
       bool slowTextEnable = PlayerPrefs.GetInt(OptionsManager.PREF_ENABLE_SLOW_TEXT, 1) == 1 ? true : false;
       slowTextEffectToggle.isOn = slowTextEnable;
       Global.slowTextEnabled = slowTextEnable;
@@ -315,7 +321,7 @@ public class OptionsPanel : Panel
          PlayerPrefs.SetInt(OptionsManager.PREF_ENABLE_SLOW_TEXT, value ? 1 : 0);
          Global.slowTextEnabled = value;
       });
-      
+
       bool doNotDisturbEnable = PlayerPrefs.GetInt(OptionsManager.PREF_DO_NOT_DISTURB, 0) == 1 ? true : false;
       doNotDisturbToggle.isOn = doNotDisturbEnable;
       Global.doNotDisturbEnabled = doNotDisturbEnable;
@@ -337,6 +343,26 @@ public class OptionsPanel : Panel
       requestPlayersCount();
 
       activePlayersAdminTooltip.message = "";
+   }
+
+   public void OnEnable () {
+      // Enable first tab when option is enabled
+      onTabClicked(0);
+   }
+
+   public void onTabClicked (int index) {
+      // We must disable any active tab before enable active state of selected tab 
+      foreach (var tab in activeTab) {
+         tab.SetActive(false);
+      }
+
+      // We must disable any active panel before enabling panel of active tab
+      foreach (var panel in contentPanels) {
+         panel.SetActive(false);
+      }
+
+      activeTab[index].SetActive(true);
+      contentPanels[index].SetActive(true);
    }
 
    public void showAllGuildIcons (bool showGuildIcons) {
@@ -387,15 +413,15 @@ public class OptionsPanel : Panel
    }
 
    private void initializeFullScreenSettings () {
-      List<OptionData> screenModeOptions = new List<OptionData>();
+      List<TMP_Dropdown.OptionData> screenModeOptions = new List<TMP_Dropdown.OptionData>();
 
       // Initialize override options
       initializeFullScreenModesList();
 
       // Initialize display options
-      screenModeOptions.Add(new OptionData { text = "Fullscreen" });
-      screenModeOptions.Add(new OptionData { text = "Borderless" });
-      screenModeOptions.Add(new OptionData { text = "Windowed" });
+      screenModeOptions.Add(new TMP_Dropdown.OptionData { text = "Fullscreen" });
+      screenModeOptions.Add(new TMP_Dropdown.OptionData { text = "Borderless" });
+      screenModeOptions.Add(new TMP_Dropdown.OptionData { text = "Windowed" });
 
       screenModeDropdown.options = screenModeOptions;
    }
@@ -436,12 +462,12 @@ public class OptionsPanel : Panel
    private void initializeResolutionsDropdown () {
       initializeResolutionsList();
 
-      List<OptionData> options = new List<OptionData>();
+      List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
       int currentResolution = -1;
 
       for (int i = 0; i < _supportedResolutions.Count; i++) {
          Resolution res = _supportedResolutions[i];
-         OptionData o = new OptionData($"{res.width} x {res.height} ({res.refreshRate})");
+         TMP_Dropdown.OptionData o = new TMP_Dropdown.OptionData($"{res.width} x {res.height} ({res.refreshRate})");
          options.Add(o);
 
          if (res.width == ScreenSettingsManager.width && res.height == ScreenSettingsManager.height) {
@@ -536,7 +562,6 @@ public class OptionsPanel : Panel
 
       bool isAdmin = Global.isLoggedInAsAdmin();
       serverLogRow.SetActive(isAdmin);
-      logRowSeparator.SetActive(!isAdmin);
       if (isAdmin) {
          Global.player.admin.Cmd_GetServerLogString();
       }
@@ -548,7 +573,7 @@ public class OptionsPanel : Panel
       requestPlayersCount();
 
       ScreenSettingsManager.self.refreshMouseLockState();
-      
+
       activePlayersAdminTooltip.gameObject.SetActive(isAdmin);
 
       toggleWishlistButton();
@@ -570,7 +595,9 @@ public class OptionsPanel : Panel
       _lastShownTime = Time.time;
 
       // Update the Zone info
-      zoneText.text = "Zone " + instanceNumber + " of " + totalInstances;
+      if (zoneText) {
+         zoneText.text = "Zone " + instanceNumber + " of " + totalInstances;
+      }
 
       // Set our music and volume sliders
       musicSlider.value = SoundManager.musicVolume / 1f;
@@ -649,8 +676,8 @@ public class OptionsPanel : Panel
          return;
       }
 
-      // Hide the voyage group invite panel, if opened
-      VoyageGroupManager.self.refuseGroupInvitation();
+      // Hide the group invite panel, if opened
+      GroupManager.self.refuseGroupInvitation();
 
       // Stop weather simulation
       WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
@@ -720,8 +747,8 @@ public class OptionsPanel : Panel
          return;
       }
 
-      // Hide the voyage group invite panel, if opened
-      VoyageGroupManager.self.refuseGroupInvitation();
+      // Hide the group invite panel, if opened
+      GroupManager.self.refuseGroupInvitation();
 
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();
@@ -743,7 +770,7 @@ public class OptionsPanel : Panel
       }
    }
 
-   public void onPlayersCountReceived (int playersCount, string [] playersNames) {
+   public void onPlayersCountReceived (int playersCount, string[] playersNames) {
       activePlayersCountLabel.text = "Active Players: " + playersCount.ToString();
       activePlayersAdminTooltip.message = string.Join("\n", playersNames);
    }
@@ -755,8 +782,11 @@ public class OptionsPanel : Panel
          return;
       }
 
-      D.debug("Sending request to open the wishlist page to the server.");
-      Global.player.rpc.Cmd_RequestWishlist(Global.player.steamId);
+      D.debug("Wishlist Request Received. Opening Overlay.");
+      SteamFriends.ActivateGameOverlayToStore(new AppId_t(uint.Parse(SteamStatics.GAME_APPID)), EOverlayToStoreFlag.k_EOverlayToStoreFlag_None);
+
+      D.debug("Wishlist Request Received. Sent to Server.");
+      Global.player.rpc.Cmd_NotePlayerWishlist(SteamUtils.GetAppID().ToString());
    }
 
    public void onDiscordButtonPress () {

@@ -115,15 +115,15 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public long creationDate;
 
-   // Gets set to true when the instance holds a voyage area
+   // Gets set to true when the instance is a group instance (created for a specific group)
    [SyncVar]
-   public bool isVoyage = false;
+   public bool isGroupInstance = false;
 
-   // Gets set to true when the instance holds a voyage area that is part of a league (series of voyage maps)
+   // Gets set to true when the instance holds a league area that is part of a voyage (series of league maps)
    [SyncVar]
    public bool isLeague = false;
 
-   // The index of this voyage instance in the league series
+   // The index of this league instance in the voyage
    [SyncVar]
    public int leagueIndex = 0;
 
@@ -131,24 +131,24 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int leagueRandomSeed = -1;
 
-   // The area key where users are warped to when exiting a league
-   public string leagueExitAreaKey = "";
+   // The area key where users are warped to when exiting a voyage
+   public string voyageExitAreaKey = "";
 
-   // The spawn key where users are warped to when exiting a league
-   public string leagueExitSpawnKey = "";
+   // The spawn key where users are warped to when exiting a voyage
+   public string voyageExitSpawnKey = "";
 
    // The facing direction when exiting a league
-   public Direction leagueExitFacingDirection = Direction.South;
+   public Direction voyageExitFacingDirection = Direction.South;
 
-   // The unique identifier of the voyage
+   // The id of the group instance, unique in all the server network
    [SyncVar]
-   public int voyageId = 0;
+   public int groupInstanceId = 0;
 
-   // Gets set to true when the voyage instance is player vs player
+   // Gets set to true when the group instance is player vs player
    [SyncVar]
    public bool isPvP = false;
 
-   // The voyage difficulty
+   // The instance difficulty
    [SyncVar]
    public int difficulty = 1;
 
@@ -203,7 +203,7 @@ public class Instance : NetworkBehaviour
       InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
 
       // Routinely count the number of enemies that are still alive
-      if (voyageId > 0) {
+      if (groupInstanceId > 0) {
          InvokeRepeating(nameof(countAliveEnemies), 0f, 1f);
       } else {
          if (this.areaKey.ToLower().Contains("tutorial")) {
@@ -216,9 +216,7 @@ public class Instance : NetworkBehaviour
       }
 
       // Update this instance in the server network
-      if (NetworkServer.active && voyageId > 0) {
-         InvokeRepeating(nameof(updateInServerNetwork), UnityEngine.Random.Range(0f, 1f), 1f);
-      }
+      InvokeRepeating(nameof(updateInServerNetwork), UnityEngine.Random.Range(0f, 1f), 1f);
    }
 
    [Server]
@@ -227,7 +225,11 @@ public class Instance : NetworkBehaviour
          return;
       }
 
-      ServerNetworkingManager.self.server.updateVoyageInstance(this);
+      ServerNetworkingManager.self.server.updateInstance(getBasicInstanceOverview());
+
+      if (groupInstanceId > 0) {
+         ServerNetworkingManager.self.server.updateGroupInstance(this);
+      }
    }
 
    public int getPlayerCount () {
@@ -329,8 +331,8 @@ public class Instance : NetworkBehaviour
          return 1;
       }
 
-      if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
-         return Voyage.MAX_PLAYERS_PER_INSTANCE;
+      if (GroupInstanceManager.isAnyLeagueArea(areaKey) || GroupInstanceManager.isPvpArenaArea(areaKey) || GroupInstanceManager.isTreasureSiteArea(areaKey)) {
+         return GroupInstance.MAX_PLAYERS_PER_INSTANCE;
       }
 
       // Check if we've specified a max player count on the command line
@@ -353,22 +355,22 @@ public class Instance : NetworkBehaviour
          return;
       }
 
-      // Voyage instances always exist for at least their starting 'open' duration
-      if (isVoyage && !isLeague && !VoyageManager.isPOIArea(areaKey)) {
+      // Certain group instances always exist for at least their starting 'open' duration
+      if (isGroupInstance && !isLeague && !GroupInstanceManager.isPOIArea(areaKey)) {
          TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(creationDate));
-         if (timeSinceStart.TotalSeconds < Voyage.INSTANCE_OPEN_DURATION) {
+         if (timeSinceStart.TotalSeconds < GroupInstance.INSTANCE_OPEN_DURATION) {
             return;
          }
       }
 
-      // Sea voyage and treasure site instances exist as long as there is a group linked to them
-      if ((VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))
-         && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
+      // League and treasure site instances exist as long as there is a group linked to them
+      if ((GroupInstanceManager.isAnyLeagueArea(areaKey) || GroupInstanceManager.isPvpArenaArea(areaKey) || GroupInstanceManager.isTreasureSiteArea(areaKey))
+         && GroupManager.self.isAtLeastOneGroupInGroupInstance(groupInstanceId)) {
          return;
       }
 
       // POI instances exist as long as the POI site (group of POI instances) exists
-      if (VoyageManager.isPOIArea(areaKey) && POISiteManager.self.doesPOISiteExistForInstance(voyageId)) {
+      if (GroupInstanceManager.isPOIArea(areaKey) && POISiteManager.self.doesPOISiteExistForInstance(groupInstanceId)) {
          return;
       }
        
@@ -1261,6 +1263,19 @@ public class Instance : NetworkBehaviour
             }
          }
       }
+   }
+
+   [Server]
+   public BasicInstanceOverview getBasicInstanceOverview () {
+      BasicInstanceOverview instanceOverview = new BasicInstanceOverview();
+      instanceOverview.instanceId = id;
+      instanceOverview.playerCount = getPlayerCount();
+      instanceOverview.maxPlayerCount = getMaxPlayers();
+      instanceOverview.areaKey = areaKey;
+      instanceOverview.isSinglePlayer = isSinglePlayer;
+      instanceOverview.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+
+      return instanceOverview;
    }
 
    #region Private Variables

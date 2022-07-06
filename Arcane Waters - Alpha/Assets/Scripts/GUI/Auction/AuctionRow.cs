@@ -68,7 +68,11 @@ public class AuctionRow : MonoBehaviour
       } else {
          itemName.text = auction.itemName;
       }
-      itemSellerName.text = $"by {auction.sellerName}";
+      
+      // Made decision to do not show the seller name      
+      // itemSellerName.text = $"by {auction.sellerName}";
+      itemSellerName.text = "";
+      
       bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice) + "/";
       if (auction.isBuyoutAllowed) {
          if (auction.buyoutPrice > 9999999) {

@@ -32,17 +32,17 @@ public class OreMineEffect : MonoBehaviour {
    // Set to true if ore is a bonus ore
    public bool isBonusOre;
 
-   // The voyage group that owns this ore
-   public int voyageGroupId;
+   // The group that owns this ore
+   public int groupId;
 
    // Refrence to the shadow
    public Transform shadow;
 
    #endregion
 
-   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, float randomSpeed, bool isBonus) {
+   public void initData (int ownerId, int groupId, int oreEffectId, OreNode oreNode, float randomSpeed, bool isBonus) {
       this.ownerId = ownerId;
-      this.voyageGroupId = voyageGroupId;
+      this.groupId = groupId;
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
       isBonusOre = isBonus;
@@ -69,7 +69,7 @@ public class OreMineEffect : MonoBehaviour {
             Instantiate(PrefabsManager.self.sparkleBurstPrefab, spawnedObj.transform);
          }
 
-         orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite);
+         orePickup.initData(ownerId, groupId, oreEffectId, oreNode, spriteRender.sprite);
 
          oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 

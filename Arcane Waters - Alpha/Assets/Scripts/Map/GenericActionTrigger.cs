@@ -44,8 +44,8 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    // The list of actions that can be defined and triggered
    public static Dictionary<string, Action<NetEntity>> actions = new Dictionary<string, Action<NetEntity>> {
       { "Voyage Panel", showVoyagePanel },
-      { WARP_TO_LEAGUE_ACTION, warpToLeague },
-      { "Exit League", exitLeague }
+      { WARP_TO_LEAGUE_ACTION, warpToVoyage },
+      { "Exit League", exitVoyage }
    };
 
    // The type of interaction that is needed to trigger the action
@@ -75,15 +75,15 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    #endregion
 
    private static void showVoyagePanel (NetEntity entity) {
-      VoyageManager.self.showVoyagePanel(entity);
+      GroupInstanceManager.self.showVoyagePanel(entity);
    }
 
-   private static void warpToLeague (NetEntity entity) {
-      VoyageManager.self.warpToLeague(entity);
+   private static void warpToVoyage (NetEntity entity) {
+      GroupInstanceManager.self.warpToVoyage(entity);
    }
 
-   private static void exitLeague (NetEntity entity) {
-      VoyageManager.self.returnToTownFromLeague(entity);
+   private static void exitVoyage (NetEntity entity) {
+      GroupInstanceManager.self.returnToTownFromVoyage(entity);
    }
 
    private void Awake () {

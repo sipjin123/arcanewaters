@@ -1291,9 +1291,9 @@ public class BattleManager : MonoBehaviour {
                }
             }
          } else {
-            // Set the enemy entity voyage group id to -1 so they can engage in battle again
+            // Set the enemy entity group id to -1 so they can engage in battle again
             if (battler != null && battler.player != null) {
-               battler.player.voyageGroupId = -1;
+               battler.player.groupId = -1;
             }
          }
       }
@@ -1407,7 +1407,7 @@ public class BattleManager : MonoBehaviour {
 
                   // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
                   if (battler.player != null) {
-                     if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
+                     if (battler.player.isInGroup() && GroupInstanceManager.isTreasureSiteArea(battler.player.areaKey)) {
                         // When dying in a voyage treasure site, respawn at its entrance
                         Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(battler.player.areaKey);
                         battler.player.transform.localPosition = spawnLocalPosition;

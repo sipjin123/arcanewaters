@@ -157,6 +157,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("change_port", "Changes the server port", requestPortChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "port" }));
       cm.addCommand(new CommandData("set_lag_monitor", "Enables/disables the lag monitor", requestSetLagMonitor, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
       cm.addCommand(new CommandData("set_input_debugger", "Enables/disables the input debugger", requestSetInputDebugger, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
+      cm.addCommand(new CommandData("set_crop_debugger", "Enables/disables the crop debugger", requestSetCropDebugger, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "value" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -251,6 +252,20 @@ public class AdminManager : NetworkBehaviour
       } else if (parameters == "0" || parameters == "false") {
          InputDebugger.setEnabled(false);
          D.debug("Disabled input debugging.");
+      }
+   }
+
+   private void requestSetCropDebugger (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      if (parameters == "1" || parameters == "true") {
+         Crop.setCropDebugging(true);
+         D.debug("Enabled crop debugging.");
+      } else if (parameters == "0" || parameters == "false") {
+         Crop.setCropDebugging(false);
+         D.debug("Disabled crop debugging.");
       }
    }
 
@@ -833,8 +848,8 @@ public class AdminManager : NetworkBehaviour
                continue;
             }
 
-            // Do not eliminate other members in the voyage
-            if ((_player.voyageGroupId > 0 || targetEntity.voyageGroupId > 0) && (_player.voyageGroupId == targetEntity.voyageGroupId)) {
+            // Do not eliminate other group members
+            if ((_player.groupId > 0 || targetEntity.groupId > 0) && (_player.groupId == targetEntity.groupId)) {
                continue;
             }
 
@@ -1096,17 +1111,17 @@ public class AdminManager : NetworkBehaviour
             case "voyages":
                Instance instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
-               foreach (Voyage voyage in VoyageManager.self.getAllVoyages()) {
-                  message += "-> Voyages: {" + voyage.voyageId + ":" + voyage.areaKey + ":" + voyage.playerCount + ":" + voyage.leagueIndex + "}\n";
+               foreach (GroupInstance groupInstance in GroupInstanceManager.self.getAllGroupInstances()) {
+                  message += "-> Group Instances: {" + groupInstance.groupInstanceId + ":" + groupInstance.areaKey + ":" + groupInstance.playerCount + ":" + groupInstance.leagueIndex + "}\n";
                }
                break;
             case "voyage_groups":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
                foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-                  foreach (KeyValuePair<int, VoyageGroupInfo> serverGroup in server.voyageGroups) {
-                     message += "-> VoyageGrp: {" + server.networkedPort + "}{" + serverGroup.Key + ":" +
-                        serverGroup.Value.voyageId + ":" + serverGroup.Value.groupId
+                  foreach (KeyValuePair<int, Group> serverGroup in server.groups) {
+                     message += "-> Groups: {" + server.networkedPort + "}{" + serverGroup.Key + ":" +
+                        serverGroup.Value.groupInstanceId + ":" + serverGroup.Value.groupId
                         + ":" + serverGroup.Value.members.Count + "}\n";
                   }
                }
@@ -1115,7 +1130,7 @@ public class AdminManager : NetworkBehaviour
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
                foreach (Instance inst in InstanceManager.self.getAllInstances()) {
-                  message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.voyageId + "}\n";
+                  message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.groupInstanceId + "}\n";
                }
 
                ServerNetworkingManager.self.logRequest(message);
@@ -1145,7 +1160,7 @@ public class AdminManager : NetworkBehaviour
             case "user":
             case "info":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
-               message += "->>> User: {" + _player.entityName + ":" + _player.userId + ":" + _player.voyageGroupId + "} is in Instance: {" + (instInfo == null ? "NULL" :
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + ":" + _player.groupId + "} is in Instance: {" + (instInfo == null ? "NULL" :
                   (instInfo.id + " A:" + instInfo.areaKey + " B:" + instInfo.biome + " D:" + instInfo.difficulty + " S:" + instInfo.isPvP + " C:" + instInfo.entityCount)) + "} " +
                   "Server {" + ServerNetworkingManager.self.server.networkedPort.Value + "}";
                ServerNetworkingManager.self.logRequest(message);
@@ -1289,10 +1304,10 @@ public class AdminManager : NetworkBehaviour
          try {
             difficultyDevel = int.Parse(list[0]);
          } catch {
-            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Voyage ID" + " : " + parameters);
+            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid difficulty level" + " : " + parameters);
          }
 
-         _player.voyageGroupId = difficultyDevel;
+         _player.groupId = difficultyDevel;
          Instance playersInstance = InstanceManager.self.getInstance(_player.instanceId);
          if (playersInstance) {
             playersInstance.difficulty = difficultyDevel;
@@ -1595,7 +1610,7 @@ public class AdminManager : NetworkBehaviour
       _player.Target_ForceJoin(autoAttack, attackDelay);
       if (autoAttack) {
          // Get the group the player belongs to
-         List<int> groupMembers = _player.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
+         List<int> groupMembers = _player.tryGetGroup(out Group groupInfo) ? groupInfo.members : new List<int>();
 
          foreach (int memberId in groupMembers) {
             NetEntity entity = EntityManager.self.getEntity(memberId);
@@ -1661,19 +1676,19 @@ public class AdminManager : NetworkBehaviour
       string[] list = parameters.Split(' ');
 
       if (list.Length > 0) {
-         int voyageId = -1;
+         int groupInstanceId = -1;
          try {
-            voyageId = int.Parse(list[0]);
+            groupInstanceId = int.Parse(list[0]);
          } catch {
             _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Voyage ID" + " : " + parameters);
          }
 
-         _player.voyageGroupId = voyageId;
+         _player.groupId = groupInstanceId;
          Instance playersInstance = InstanceManager.self.getInstance(_player.instanceId);
          if (playersInstance) {
             D.debug("Total Ores in instance is" + " : " + playersInstance.getOreEntities().Count);
             foreach (NetworkBehaviour temp in playersInstance.getOreEntities()) {
-               ((OreNode) temp).voyageId = voyageId;
+               ((OreNode) temp).groupInstanceId = groupInstanceId;
             }
          }
       }
@@ -2637,7 +2652,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      Cmd_PlayerGo(targetPlayerName);
+      Cmd_PlayerGo(targetPlayerName, false);
    }
 
    protected void requestWarp (string parameters) {
@@ -3213,14 +3228,14 @@ public class AdminManager : NetworkBehaviour
       }
 
       if (!string.IsNullOrEmpty(areaKey)) {
-         // Get the list of voyage sea maps
-         List<string> voyageSeaMaps = VoyageManager.self.getVoyageAreaKeys();
+         // Get the list of group-specific sea maps
+         List<string> groupSeaMaps = GroupInstanceManager.self.getVoyageAreaKeys();
 
          // Get the valid area key closest to the given key
-         areaKey = getClosestAreaKey(voyageSeaMaps, areaKey);
+         areaKey = getClosestAreaKey(groupSeaMaps, areaKey);
       }
 
-      Voyage parameters = new Voyage {
+      GroupInstance parameters = new GroupInstance {
          areaKey = areaKey,
          isPvP = isPvP,
          isLeague = false,
@@ -3228,7 +3243,7 @@ public class AdminManager : NetworkBehaviour
          difficulty = difficulty
       };
 
-      VoyageManager.self.requestVoyageInstanceCreation(parameters);
+      GroupInstanceManager.self.requestGroupInstanceCreation(parameters);
    }
 
    [Command]
@@ -3356,12 +3371,13 @@ public class AdminManager : NetworkBehaviour
 
             UserLocationBundle location = new UserLocationBundle();
             location.userId = _player.userId;
+            location.userName = _player.entityName;
             location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
             location.areaKey = _player.areaKey;
             location.instanceId = _player.instanceId;
             location.localPositionX = _player.transform.localPosition.x;
             location.localPositionY = _player.transform.localPosition.y;
-            location.voyageGroupId = _player.voyageGroupId;
+            location.groupId = _player.groupId;
             if (ulong.TryParse(_player.steamId, out ulong steamId)) {
                location.steamId = steamId;
             }
@@ -3373,7 +3389,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
-   protected void Cmd_PlayerGo (string targetPlayerName) {
+   protected void Cmd_PlayerGo (string targetPlayerName, bool hasConfirmed) {
       if (!_player.isAdmin()) {
          return;
       }
@@ -3401,9 +3417,25 @@ public class AdminManager : NetworkBehaviour
             }
 
             // Redirect to the master server to find the location of the target user
-            ServerNetworkingManager.self.findUserLocationForAdminGoTo(_player.userId, targetUserInfo.userId);
+            ServerNetworkingManager.self.findUserLocationForAdminGoTo(_player.userId, targetUserInfo.userId, hasConfirmed);
          });
       });
+   }
+
+   [Server]
+   public void returnUserLocationForAdminGoTo (int adminUserId, bool hasConfirmed, UserLocationBundle location) {
+      // Check if the target user is in a group instance, in a different group than the admin
+      if (!hasConfirmed && GroupInstanceManager.isAnyGroupSpecificArea(location.areaKey) && _player.isInGroup() && _player.groupId != location.groupId) {
+         // Ask the admin to confirm the warp
+         Target_ConfirmPlayerGo(location.userName);
+      } else {
+         forceWarpToLocation(adminUserId, location);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ConfirmPlayerGo (string targetUserName) {
+      PanelManager.self.showConfirmationPanel($"The destination is a group instance. You might be removed from your current group to be able to join. Are you sure?", () => Cmd_PlayerGo(targetUserName, true));
    }
 
    [Server]
@@ -3415,30 +3447,30 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Handle warping to an instance that is specific to a group
-      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey) || VoyageManager.isPvpArenaArea(targetLocation.areaKey) || VoyageManager.isPOIArea(targetLocation.areaKey)) {
-         if (!VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage targetVoyage)) {
-            ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: could not find the target voyage.");
+      if (GroupInstanceManager.isAnyGroupSpecificArea(targetLocation.areaKey)) {
+         if (!GroupInstanceManager.self.tryGetGroupInstanceForGroup(targetLocation.groupId, out GroupInstance targetGroupInstance)) {
+            ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: could not find the target group instance.");
             return;
          }
 
          if (_player.isAdmin()) {
             // If our user is an admin, we can warp anywhere
-            VoyageGroupManager.self.forceAdminJoinVoyage(_player, targetVoyage.voyageId);
+            GroupManager.self.forceAdminJoinGroupInstance(_player, targetGroupInstance.groupInstanceId);
 
             // For treasure sites, the admin must be registered in the treasure site object that warps to the instance
-            if (VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
-               ServerNetworkingManager.self.registerUserInTreasureSite(_player.userId, targetVoyage.voyageId, targetLocation.instanceId);
+            if (GroupInstanceManager.isTreasureSiteArea(targetLocation.areaKey)) {
+               ServerNetworkingManager.self.registerUserInTreasureSite(_player.userId, targetGroupInstance.groupInstanceId, targetLocation.instanceId);
             }
          } else {
             // Non admins can only warp or be warped to instances that they have access to, through their current group
-            if (!_player.tryGetGroup(out VoyageGroupInfo ourGroup) || ourGroup.voyageId != targetVoyage.voyageId) {
+            if (!_player.tryGetGroup(out Group ourGroup) || ourGroup.groupInstanceId != targetGroupInstance.groupInstanceId) {
                ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: the user does not have access to the target instance.");
                return;
             }
          }
 
          // Warp to the specific instance
-         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), targetVoyage.voyageId, Direction.South, -1, -1);
+         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), targetGroupInstance.groupInstanceId, Direction.South, -1, -1);
          return;
       }
 
@@ -3970,24 +4002,32 @@ public class AdminManager : NetworkBehaviour
       return wasItemCreated;
    }
 
-   public void getRemoteServerLogString (ulong serverNetworkId) {
-      _waitingServerLogs[serverNetworkId] = new List<byte>();
-      Cmd_GetRemoteServerLogString(serverNetworkId);
+   public void getRemoteServerLogString (int targetServerPort) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      _waitingServerLogs[targetServerPort] = new List<byte>();
+      Cmd_GetRemoteServerLogString(targetServerPort);
    }
 
    [Command]
-   public void Cmd_GetRemoteServerLogString (ulong serverNetworkId) {
-      ServerNetworkingManager.self.server.requestServerLog(this, serverNetworkId);
+   public void Cmd_GetRemoteServerLogString (int targetServerPort) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      ServerNetworkingManager.self.requestLogFromServer(targetServerPort, _player.userId);
    }
 
    [TargetRpc]
-   public void Target_ReceivePartialRemoteServerLogBytes (byte[] serverLogData, ulong serverNetworkId, bool last) {
-      if (_waitingServerLogs.TryGetValue(serverNetworkId, out List<byte> byteList)) {
+   public void Target_ReceivePartialRemoteServerLogBytes (byte[] serverLogData, int targetServerPort, bool last) {
+      if (_waitingServerLogs.TryGetValue(targetServerPort, out List<byte> byteList)) {
          byteList.AddRange(serverLogData);
          if (last) {
             // It's the last piece of the log, we can now turn it into a string and send it off
             if (AdminPanel.self != null) {
-               AdminPanel.self.receiveServerLog(serverNetworkId, Encoding.ASCII.GetString(byteList.ToArray()));
+               AdminPanel.self.receiveServerLog(targetServerPort, Encoding.ASCII.GetString(byteList.ToArray()));
             }
          }
       }
@@ -3995,14 +4035,11 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    public void Cmd_GetServerLogString () {
-      // Transform into a byte array to avoid the 'buffer is too small' error
-      byte[] data = Encoding.ASCII.GetBytes(D.getLogString());
-
-      // Remove the beginning of the log if it is too large
-      int maxServerLogSize = D.MAX_SERVER_LOG_CHUNK_SIZE * D.MAX_SERVER_LOG_CHUNK_COUNT;
-      if (data.Length > maxServerLogSize) {
-         data = data.RangeSubset(data.Length - maxServerLogSize, maxServerLogSize);
+      if (!_player.isAdmin()) {
+         return;
       }
+
+      byte[] data = D.getLogForSendingToClient();
 
       Target_ClearServerLogBytes(connectionToClient);
 
@@ -4358,6 +4395,8 @@ public class AdminManager : NetworkBehaviour
          if (ChatManager.self != null) {
             ChatManager.self.changePlayerNameInChat(userId, oldName, newName);
          }
+
+         EntityManager.self.cacheEntityName(userId, newName);
       }
    }
 
@@ -4384,7 +4423,7 @@ public class AdminManager : NetworkBehaviour
          }
 
          // Send the code to the player via mail
-         MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>());
+         MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>(), string.Empty);
          D.debug($"New reward code generated and sent to player {steamId}.");
 
          // This part will not be present in the final version. It's here just for testing purposes
@@ -4409,7 +4448,7 @@ public class AdminManager : NetworkBehaviour
    private string _lastAutoCompletedInput = "";
 
    // The server logs we are waiting for
-   private Dictionary<ulong, List<byte>> _waitingServerLogs = new Dictionary<ulong, List<byte>>();
+   private Dictionary<int, List<byte>> _waitingServerLogs = new Dictionary<int, List<byte>>();
 
    #endregion
 }

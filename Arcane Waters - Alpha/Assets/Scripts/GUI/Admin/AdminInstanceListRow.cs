@@ -41,7 +41,7 @@ public class AdminInstanceListRow : MonoBehaviour
    // The instance biome
    public TextMeshProUGUI biomeText;
 
-   // The voyage data
+   // The instance data
    [HideInInspector]
    public InstanceOverview instance;
 
@@ -51,17 +51,17 @@ public class AdminInstanceListRow : MonoBehaviour
       this.instance = instance;
       idText.text = instance.id.ToString();
       portText.text = instance.port.ToString();
-      areaText.text = instance.area + (string.IsNullOrWhiteSpace(instance.voyage.areaName) ? "" : " (" + instance.voyage.areaName + ")");
-      if (instance.voyage.isLeague) {
-         leagueIndexText.text = "L" + instance.voyage.leagueIndex.ToString();
-      } else if (VoyageManager.isPOIArea(instance.area)) {
+      areaText.text = instance.area + (string.IsNullOrWhiteSpace(instance.groupInstance.areaName) ? "" : " (" + instance.groupInstance.areaName + ")");
+      if (instance.groupInstance.isLeague) {
+         leagueIndexText.text = "L" + instance.groupInstance.leagueIndex.ToString();
+      } else if (GroupInstanceManager.isPOIArea(instance.area)) {
          leagueIndexText.text = "POI";
       } else {
          leagueIndexText.text = "-";
       }
-      difficultyText.text = Voyage.getDifficultyEnum(instance.difficulty).ToString() + " (" + instance.difficulty + ")";
+      difficultyText.text = GroupInstance.getDifficultyEnum(instance.difficulty).ToString() + " (" + instance.difficulty + ")";
       playerCountText.text = instance.pCount.ToString() + "/" + instance.maxPlayerCount.ToString();
-      if (instance.voyage == null || instance.voyage.voyageId <= 0) {
+      if (instance.groupInstance == null || instance.groupInstance.groupInstanceId <= 0) {
          enemiesCountText.text = instance.totalEnemyCount.ToString();
       } else {
          enemiesCountText.text = (instance.aliveEnemyCount < 0 ? "0" : instance.aliveEnemyCount.ToString()) + "/" + instance.totalEnemyCount;
@@ -72,7 +72,7 @@ public class AdminInstanceListRow : MonoBehaviour
    }
 
    public void onRowPressed () {
-      PanelManager.self.get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList).onVoyageInstanceRowPressed(instance.voyage);
+      PanelManager.self.get<AdminInstanceListPanel>(Panel.Type.AdminInstanceList).onInstanceRowPressed(instance.groupInstance);
    }
 
    #region Private Variables

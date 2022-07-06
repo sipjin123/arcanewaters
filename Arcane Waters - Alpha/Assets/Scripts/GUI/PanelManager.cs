@@ -7,7 +7,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class PanelManager : GenericGameManager {
+public class PanelManager : GenericGameManager
+{
    #region Public Variables
 
    // The stack of panels we want to manage (generally optional panels that can be discarded at any time)
@@ -18,7 +19,8 @@ public class PanelManager : GenericGameManager {
    public NoticeScreen noticeScreen;
    public TradeConfirmScreen tradeConfirmScreen;
    public ItemSelectionScreen itemSelectionScreen;
-   public VoyageInviteScreen voyageInviteScreen;
+   public CountSelectionScreen countSelectionScreen;
+   public GroupInviteScreen groupInviteScreen;
    public LoadingScreen loadingScreen;
    public CountdownScreen countdownScreen;
    public ContextMenuPanel contextMenuPanel;
@@ -138,7 +140,7 @@ public class PanelManager : GenericGameManager {
          if (Global.isLoggedInAsAdmin()) {
             AdminPanel.self.show();
          }
-      } 
+      }
 
       // Handle escape button only when character screen is active
       else if (CharacterScreen.self.isShowing() && KeyUtils.GetKeyUp(Key.Escape)) {
@@ -149,6 +151,9 @@ public class PanelManager : GenericGameManager {
             hideCurrentPanel();
          }
       }
+
+      // Show trade screen when needed
+      get<PlayerTradeScreen>(Panel.Type.PlayerTrade).startShowingIfNeeded();
 
       if (InputManager.self.inputMaster?.Pvp.Stat.WasReleasedThisFrame() == true) {
          BottomBar.self.disablePvpStatPanel();
@@ -172,6 +177,8 @@ public class PanelManager : GenericGameManager {
          PerksPanel.self.hide();
       } else if (itemSelectionScreen.isShowing()) {
          itemSelectionScreen.hide();
+      } else if (countSelectionScreen.isShowing()) {
+         countSelectionScreen.cancelButton.onClick?.Invoke();
       } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
          AuctionPanel.self.auctionInfoPanel.hide();
       } else if (get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
@@ -277,7 +284,8 @@ public class PanelManager : GenericGameManager {
 
       tradeConfirmScreen.hide();
       itemSelectionScreen.hide();
-      VoyageGroupManager.self.hideVoyageGroupInvitation();
+      countSelectionScreen.hide();
+      GroupManager.self.hideGroupInvitation();
       MapCustomization.CustomizationUI.ensureHidden();
 
       if (CharacterCreationPanel.self.isShowing()) {

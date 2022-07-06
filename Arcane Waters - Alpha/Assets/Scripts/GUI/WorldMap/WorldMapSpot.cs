@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class WorldMapSpot
@@ -73,6 +74,10 @@ public class WorldMapSpot
 
       // Player
       Player = 5
+   }
+
+   public string serialize () {
+      return JsonUtility.ToJson(this);
    }
 
    #endregion

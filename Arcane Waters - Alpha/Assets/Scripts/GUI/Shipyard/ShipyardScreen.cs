@@ -10,6 +10,9 @@ using MapCreationTool;
 public class ShipyardScreen : Panel {
    #region Public Variables
 
+   // Reference to Shopkeeper NPC name
+   public TMP_Text shopKeeperName;
+   
    // The prefab we use for creating rows
    public ShipyardRow rowPrefab;
 
@@ -43,6 +46,7 @@ public class ShipyardScreen : Panel {
       base.Awake();
 
       self = this;
+      _defaultTexColor = greetingText.color;
    }
 
    public void refreshPanel () {
@@ -84,8 +88,17 @@ public class ShipyardScreen : Panel {
 
       try {
          // Start typing out our intro text
-         AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
+         if (Global.slowTextEnabled) {
+            // If slow text flag is enabled use auto typer slow text reveal
+            AutoTyper.slowlyRevealText(this.greetingText, _greetingText);
+         } else {
+            // Show dialogue instantly
+            this.greetingText.text = _greetingText;
+            this.greetingText.color = _defaultTexColor;
+         }
+
       } catch {
+         this.greetingText.text = _greetingText;
          D.editorLog("Issue with auto typer", Color.red);
       }
 
@@ -134,6 +147,9 @@ public class ShipyardScreen : Panel {
 
    // Keeps track of what our starting text is
    protected string _greetingText = "";
+   
+   // Store default color of panel greeting text
+   private Color _defaultTexColor;
 
    #endregion
 }

@@ -55,9 +55,9 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public Area.SpecialType mapSpecialType;
 
-   // The voyage id
+   // The group instance id
    [SyncVar]
-   public int voyageId = -1;
+   public int groupInstanceId = -1;
 
    // The duration to wait before refreshing this node
    [SyncVar]

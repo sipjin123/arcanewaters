@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class VoyageGroupIconsManager : MonoBehaviour {
+public class GroupIconsManager : MonoBehaviour {
    #region Public Variables
 
    #endregion
@@ -32,10 +32,10 @@ public class VoyageGroupIconsManager : MonoBehaviour {
          return;
       }
 
-      if (Global.player.voyageGroupId != -1 && Global.player.transform.parent != null) {
+      if (Global.player.groupId != -1 && Global.player.transform.parent != null) {
          NetEntity[] players = Global.player.transform.parent.GetComponentsInChildren<NetEntity>();
          foreach (NetEntity player in players) {
-            if (player.voyageGroupId == Global.player.voyageGroupId && player.areaKey == Global.player.areaKey && player != Global.player) {
+            if (player.groupId == Global.player.groupId && player.areaKey == Global.player.areaKey && player != Global.player) {
                if (!_groupIcons.Find(x => x.player == player)) {
                   MM_GroupPlayerIcon icon = Instantiate(Minimap.self.groupPlayerIconPrefab, Minimap.self.iconContainer.transform);
                   icon.player = player;
@@ -49,7 +49,7 @@ public class VoyageGroupIconsManager : MonoBehaviour {
 
    #region Private Variables
 
-   // Currently used icons to represent players in voyage group (town only)
+   // Currently used icons to represent players in group (town only)
    private List<MM_GroupPlayerIcon> _groupIcons = new List<MM_GroupPlayerIcon>();
 
    #endregion

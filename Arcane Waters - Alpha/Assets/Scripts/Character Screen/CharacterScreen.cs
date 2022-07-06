@@ -160,7 +160,7 @@ public class CharacterScreen : GenericGameManager {
 
          HatStatData hatData = EquipmentXMLManager.self.getHatData(_hatArray[i].itemTypeId);
          if (hatData != null) {
-            _hatArray[i].paletteNames = hatData.palettes;
+            _hatArray[i].paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
          }
       }
       if (_hatArray.Length == 0) {

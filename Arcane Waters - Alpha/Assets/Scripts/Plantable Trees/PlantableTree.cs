@@ -166,7 +166,7 @@ public class PlantableTree : MonoBehaviour
          setTreeSprite(data, _treeDefinition, currentTimestamp);
       }
 
-      waterNeededIcon.SetActive(_treeDefinition.needsWatering(data, currentTimestamp));
+      waterNeededIcon.SetActive(_treeDefinition.needsWatering(data, currentTimestamp) && isPlayerHoldingWaterCan());
       interactionNeededIcon.SetActive(false);
       //interactionNeededIcon.SetActive(_treeDefinition.canTetherUntether(data, currentTimestamp));
 
@@ -176,6 +176,17 @@ public class PlantableTree : MonoBehaviour
             getSpriteNonTransparentHeight(spriteRenderer.sprite),
             waterNeededIcon.transform.localPosition.z);
       }
+   }
+   
+   private bool isPlayerHoldingWaterCan () {
+      // Get player instance and check if action type is watering crop
+      if (Global.player != null && Global.player is BodyEntity) {
+         BodyEntity playerBody = (BodyEntity) Global.player;
+
+         return (playerBody.weaponManager.actionType == Weapon.ActionType.WaterCrop);
+      }
+
+      return false;
    }
 
    private float getSpriteNonTransparentHeight (Sprite sprite) {

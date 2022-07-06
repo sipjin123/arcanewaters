@@ -254,8 +254,8 @@ public class MyNetworkManager : NetworkManager
       // Create the initial map that everyone starts in
       MapManager.self.createLiveMap(Area.STARTING_TOWN);
 
-      // Start the voyage maps and voyage groups management
-      VoyageManager.self.startVoyageManagement();
+      // Start the group instances management
+      GroupInstanceManager.self.startGroupInstanceManagement();
 
       // Start the pvp games management
       PvpManager.self.startPvpManagement();
@@ -313,8 +313,6 @@ public class MyNetworkManager : NetworkManager
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();
 
-      //SoundEffectManager.self.initializeDataCache();
-
       XmlVersionManagerServer.self.initializeServerData();
       TreasureDropsDataManager.self.initializeServerDataCache();
       NPCQuestManager.self.initializeServerDataCache();
@@ -361,6 +359,9 @@ public class MyNetworkManager : NetworkManager
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
       }
+
+      // Cache player's perks in the server
+      PerkManager.self.storePerkPointsForUser(authenticatedUserId);
 
       // Look up the info in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -443,13 +444,13 @@ public class MyNetworkManager : NetworkManager
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Get the current voyage info the user is part of, if any
-            int voyageId = VoyageGroupManager.self.tryGetGroupByUser(authenticatedUserId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
+            // Get the current group info the user is part of, if any
+            int groupInstanceId = GroupManager.self.tryGetGroupByUser(authenticatedUserId, out Group groupInfo) ? groupInfo.groupInstanceId : -1;
 
             // If the user is not assigned to this server, we must ask the master server where to redirect him
             if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(authenticatedUserId)) {
                D.debug($"OnServerAddPlayer The user {userInfo.username} is not assigned to this server - Redirecting.");
-               StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, "", -1, -1));
+               StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, groupInstanceId, userObjects.isSinglePlayer, previousAreaKey, "", -1, -1));
                return;
             }
             D.adminLog($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.", D.ADMIN_LOG_TYPE.InstanceProcess);
@@ -472,7 +473,7 @@ public class MyNetworkManager : NetworkManager
                         DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, groupInstanceId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
                         });
                      });
 
@@ -503,7 +504,7 @@ public class MyNetworkManager : NetworkManager
                   DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                     StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, groupInstanceId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
                   });
                });
 
@@ -514,20 +515,20 @@ public class MyNetworkManager : NetworkManager
             if (userInfo.isDemoUser() && !userInfo.isAdmin()) {
                // Don't restrict biomes for PVP maps
                bool isPvp = false;
-               if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
-                  if (voyage.isPvP) {
+               if (GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
+                  if (groupInstance.isPvP) {
                      isPvp = true;
                   }
                }
 
                if (!isPvp) {
-                  Biome.Type targetType = InstanceManager.getBiomeForInstance(baseMapAreaKey, voyageId);
+                  Biome.Type targetType = InstanceManager.getBiomeForInstance(baseMapAreaKey, groupInstanceId);
                   if (!AdminGameSettingsManager.self.isBiomeLegalForDemoUser(targetType)) {
                      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                         DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, groupInstanceId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
                            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, conn.connectionId, "Area is restricted for demo accounts!");
                         });
                      });
@@ -585,7 +586,7 @@ public class MyNetworkManager : NetworkManager
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             } else {
                // If we don't have the requested area, we need to create it now
-               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey, InstanceManager.getBiomeForInstance(previousAreaKey, voyageId));
+               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey, InstanceManager.getBiomeForInstance(previousAreaKey, groupInstanceId));
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             }
 
@@ -604,8 +605,8 @@ public class MyNetworkManager : NetworkManager
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
             player.adminFlag = userInfo.adminFlag;
-            player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
-            player.isGhost = voyageGroupInfo != null ? voyageGroupInfo.isGhost : false;
+            player.groupId = groupInfo != null ? groupInfo.groupId : -1;
+            player.isGhost = groupInfo != null ? groupInfo.isGhost : false;
 
             if (ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(player.userId)) {
                // If user has a declared instance to visit, add instance id by fetching from server assigned user ids
@@ -613,13 +614,13 @@ public class MyNetworkManager : NetworkManager
                if (serverInfo != null && serverInfo.instanceId > 0) {
                   player.instanceId = serverInfo.instanceId;
                   D.adminLog("Adding user {" + player.entityName + ":" + player.userId + "} to instance {" + serverInfo.instanceId + "} to VISIT! ", D.ADMIN_LOG_TYPE.Visit);
-                  InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
+                  InstanceManager.self.addPlayerToInstance(player, previousAreaKey, groupInstanceId, serverInfo.instanceId);
                } else {
-                  InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
+                  InstanceManager.self.addPlayerToInstance(player, previousAreaKey, groupInstanceId);
                }
             } else {
                // Proceed to default player instance registry
-               InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
+               InstanceManager.self.addPlayerToInstance(player, previousAreaKey, groupInstanceId);
             }
 
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
@@ -666,8 +667,6 @@ public class MyNetworkManager : NetworkManager
                   } else {
                      D.debug("This user {" + player.userId + "} found a battle that has ended!");
                   }
-               } else {
-                  D.debug("This user {" + player.userId + "} found a corrupted active battle!");
                }
             }
 
@@ -705,9 +704,10 @@ public class MyNetworkManager : NetworkManager
             player.rpc.sendItemShortcutList();
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();
-            player.rpc.sendVoyageGroupMembersInfo();
+            player.rpc.sendGroupMembersInfo();
             player.rpc.setAdminBattleParameters();
             player.rpc.sendItemTypeSoulbindInfo();
+            player.rpc.sendInstanceInfo(instance);
             if (userOwnerInfo != null) {
                player.rpc.sendPlayerName(userOwnerInfo.userId, userOwnerInfo.username);
             }
@@ -732,8 +732,8 @@ public class MyNetworkManager : NetworkManager
             player.Target_ReceiveOpenWorldStatus(pvpGameMode, isPvpEnabled, isInTown);
             player.enablePvp = isPvpEnabled;
 
-            // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
-            if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey)) {
+            // In sea group instances, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
+            if (instance.isGroupInstance && AreaManager.self.isSeaArea(player.areaKey)) {
                if (Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {
                   player.hasEnteredPvP = true;
                }
@@ -918,9 +918,9 @@ public class MyNetworkManager : NetworkManager
       }
    }
 
-   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, int targetInstanceId, int targetServerPort) {
+   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int groupInstanceId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, int targetInstanceId, int targetServerPort) {
       // Ask the master server where to redirect this user
-      RpcResponse<int> bestServerPort = ServerNetworkingManager.self.redirectUserToBestServer(userId, userName, voyageId, isSinglePlayer, destinationAreaKey, conn.address, currentAreaKey, targetInstanceId, targetServerPort);
+      RpcResponse<int> bestServerPort = ServerNetworkingManager.self.redirectUserToBestServer(userId, userName, groupInstanceId, isSinglePlayer, destinationAreaKey, conn.address, currentAreaKey, targetInstanceId, targetServerPort);
       while (!bestServerPort.IsDone) {
          yield return null;
       }
@@ -937,8 +937,9 @@ public class MyNetworkManager : NetworkManager
       ServerNetworkingManager.self.server.connectedAccountIds.Remove(accountId);
 
       // Wait for the update of connected accounts to be serialized and sent to other servers
-      yield return null;
-      yield return null;
+      while (ServerNetworkingManager.self.server.connectedAccountIds.ContainsKey(accountId)) {
+         yield return null;
+      }
 
       // Send the Redirect message to the client
       conn.Send(redirectMessage);
@@ -949,8 +950,8 @@ public class MyNetworkManager : NetworkManager
       disconnectClient(conn, DisconnectionReason.Redirection, true);
    }
 
-   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, GameObject entityToDestroy, int instanceId, int serverPort) {
-      yield return CO_RedirectUser(conn, accountId, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentAreaKey, instanceId, serverPort);
+   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int groupInstanceId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, GameObject entityToDestroy, int instanceId, int serverPort) {
+      yield return CO_RedirectUser(conn, accountId, userId, userName, groupInstanceId, isSinglePlayer, destinationAreaKey, currentAreaKey, instanceId, serverPort);
 
       // Destroy the old Player object
       NetworkServer.DestroyPlayerForConnection(conn);

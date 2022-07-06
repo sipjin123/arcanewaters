@@ -53,8 +53,8 @@ public class OptionsManager : GenericGameManager {
    // The reference to the UI Minimap Transform
    public RectTransform minimapTransform;
 
-   // The voyage status panel layout group
-   public VerticalLayoutGroup voyageStatusLayoutGroup;
+   // The instance status panel layout group
+   public VerticalLayoutGroup instanceStatusLayoutGroup;
 
    // The GUI scale
    public static float GUIScale { get; private set; }
@@ -115,11 +115,11 @@ public class OptionsManager : GenericGameManager {
 
    private void applyMinimapScale () {
       float scale = minimapScale / 100.0f;
-      voyageStatusLayoutGroup.padding = new RectOffset(
-         voyageStatusLayoutGroup.padding.left, 
-         voyageStatusLayoutGroup.padding.right, 
+      instanceStatusLayoutGroup.padding = new RectOffset(
+         instanceStatusLayoutGroup.padding.left, 
+         instanceStatusLayoutGroup.padding.right, 
          Mathf.CeilToInt(minimapTransform.sizeDelta.y * scale), 
-         voyageStatusLayoutGroup.padding.bottom);
+         instanceStatusLayoutGroup.padding.bottom);
       minimapTransform.localScale = Vector3.one * scale;
    }
 

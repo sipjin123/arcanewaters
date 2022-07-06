@@ -17,6 +17,12 @@ public class AuctionManager : MonoBehaviour
    // The cost for starting an auction (fraction)
    public static int AUCTION_COST_FRACTION = 30;
 
+   // The user bidding data
+   public class BidderData {
+      public int userId;
+      public int bidAmount;
+   }
+
    #endregion
 
    void Awake () {
@@ -50,11 +56,39 @@ public class AuctionManager : MonoBehaviour
          // Deliver the item by setting the recipient in the associated mail
          foreach (AuctionItemData auction in auctions) {
             if (auction.highestBidUser > 0) {
-               DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.highestBidUser);
+               // Send the item to the winner. This mail is a system mail, thus the sender name can be overriden
+               DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.highestBidUser,
+                  $"Congratulations! You won the auction for {auction.itemName}. You paid {auction.highestBidPrice} gold.",
+                  MailManager.AUCTION_SYSTEM_USERNAME);
+
+               // Give the gold to the seller and report that the auction was successfully finished with a sell
                DB_Main.addGold(auction.sellerId, auction.highestBidPrice);
+               MailManager.sendSystemMailWithNoAttachments(auction.sellerId,
+                  "Auction Results",
+                  $"You have successfully sold your {auction.itemName}! You received {auction.highestBidPrice} gold.",
+                  MailManager.AUCTION_SYSTEM_USERNAME);
+
+               // Notify the other bidders
+               List<AuctionManager.BidderData> bidderUserIds = DB_Main.getBidders(auction.auctionId);
+
+               foreach (AuctionManager.BidderData bidderData in bidderUserIds) {
+                  // The winner has already been notified
+                  if (bidderData.userId != auction.highestBidUser) {
+                     MailManager.sendSystemMailWithNoAttachments(bidderData.userId,
+                        "Auction Results",
+                        $"Sorry, You were outbid in the auction for {auction.itemName}! The gold you bid has been returned to you.",
+                        MailManager.AUCTION_SYSTEM_USERNAME);
+
+                     // Refund the bidders their bids
+                     DB_Main.addGold(bidderData.userId, bidderData.bidAmount);
+                  }
+               }
+
             } else {
                // If no one bid, return the item to the seller
-               DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
+               DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId, 
+                  $"Returning your item.  Your {auction.itemName} had no bids and did not sell for your asking price.", 
+                  MailManager.AUCTION_SYSTEM_USERNAME);
             }
          }
 

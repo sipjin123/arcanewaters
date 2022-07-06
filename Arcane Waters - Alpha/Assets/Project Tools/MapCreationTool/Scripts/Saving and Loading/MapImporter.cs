@@ -409,7 +409,7 @@ namespace MapCreationTool
                   area.openWorldSpawnBlockers.Add(openWorldBlocker);
                } else if (original.TryGetComponent(out PvpShopEntity _)) {
                   PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
-                  if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey) && !VoyageManager.isPvpArenaArea(area.areaKey)) {
+                  if (area.isSea && GroupInstanceManager.isAnyLeagueArea(area.areaKey) && !GroupInstanceManager.isPvpArenaArea(area.areaKey)) {
                      shopEntity.enableShop(false);
                   }
                   shopEntity.isSeaShop = area.isSea;

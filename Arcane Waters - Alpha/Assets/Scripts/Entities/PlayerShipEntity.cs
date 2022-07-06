@@ -263,7 +263,7 @@ public class PlayerShipEntity : ShipEntity
 
       if (isServer) {
          List<Powerup> userPowerups = new List<Powerup>();
-         if (VoyageManager.isWorldMapArea(areaKey)) {
+         if (GroupInstanceManager.isWorldMapArea(areaKey)) {
             userPowerups = new List<Powerup>();
          } else {
             userPowerups = PowerupManager.self.getPowerupsForUser(userId);
@@ -283,7 +283,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          // Set ship type to default for pvp arenas since all ships should be the same and upgraded via shop
-         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
+         if (GroupInstanceManager.isPvpArenaArea(areaKey) && !WorldMapManager.isWorldMapArea(areaKey)) {
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
@@ -443,8 +443,8 @@ public class PlayerShipEntity : ShipEntity
       // Recolor the ship flag if needed
       if (isClient) {
          Instance instance = getInstance();
-         if (VoyageGroupManager.isInGroup(this) && instance != null && instance.isVoyage) {
-            if (VoyageManager.isPvpArenaArea(areaKey)) {
+         if (GroupManager.isInGroup(this) && instance != null && instance.isGroupInstance) {
+            if (GroupInstanceManager.isPvpArenaArea(areaKey)) {
                setFlag(Flag.Pvp);
             } else {
                // In PvE instances, we always set the group flag color
@@ -500,9 +500,9 @@ public class PlayerShipEntity : ShipEntity
 
                NetEntity casterEntity = EntityManager.self.getEntityByNetId(healData.casterId);
                if (casterEntity != null && casterEntity is ShipEntity) {
-                  if (VoyageGroupManager.self.tryGetGroupById(casterEntity.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
-                     voyageGroup.addHealStatsForUser(casterEntity.userId, healValue);
-                     ((ShipEntity) casterEntity).totalHeals = voyageGroup.getTotalHeals(casterEntity.userId);
+                  if (GroupManager.self.tryGetGroupById(casterEntity.groupId, out Group groupInfo)) {
+                     groupInfo.addHealStatsForUser(casterEntity.userId, healValue);
+                     ((ShipEntity) casterEntity).totalHeals = groupInfo.getTotalHeals(casterEntity.userId);
                   }
                }
                Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false, this.netId);
@@ -1411,7 +1411,7 @@ public class PlayerShipEntity : ShipEntity
    private void onBeingDestroyedServer () {
       // Stop heal vfx for allies
       if (!Util.isBatch()) {
-         CheckHealingAllies(EntityManager.self.getEntitiesWithVoyageId(voyageGroupId), Attack.Type.Heal);
+         CheckHealingAllies(EntityManager.self.getEntitiesWithGroupId(groupId), Attack.Type.Heal);
       }
 
       // If the player is in a pvp game, remove them from the game
@@ -1530,9 +1530,9 @@ public class PlayerShipEntity : ShipEntity
       trinketType = trinket.itemTypeId;
       necklaceType = necklace.itemTypeId;
 
-      hatColors = hat != null ? hat.paletteNames : hatData.palettes;
-      weaponColors = weapon != null ? weapon.paletteNames : weaponData.palettes;
-      armorColors = armor != null ? armor.paletteNames : armorData.palettes;
+      hatColors = hat != null ? hat.paletteNames : PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
+      weaponColors = weapon != null ? weapon.paletteNames : PaletteSwapManager.extractPalettes(weaponData.defaultPalettes);
+      armorColors = armor != null ? armor.paletteNames : PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
 
       weaponCount = weapon != null ? weapon.count : 1;
    }
@@ -1778,10 +1778,10 @@ public class PlayerShipEntity : ShipEntity
    }
 
    public override bool isAdversaryInPveInstance (NetEntity otherEntity) {
-      // Check if the entities are in different voyage groups and in a PvE instance
+      // Check if the entities are in different groups and in a PvE instance
       Instance instance = getInstance();
       if (instance != null && !instance.isPvP && otherEntity is PlayerShipEntity
-         && this.voyageGroupId != otherEntity.voyageGroupId) {
+         && this.groupId != otherEntity.groupId) {
          return true;
       } else {
          return false;
@@ -1811,10 +1811,10 @@ public class PlayerShipEntity : ShipEntity
             spritesContainer.GetComponent<RecoloredSprite>().recolor("");
             break;
          case Flag.White:
-            spritesContainer.GetComponent<RecoloredSprite>().recolor(VoyageGroupManager.WHITE_FLAG_PALETTE);
+            spritesContainer.GetComponent<RecoloredSprite>().recolor(GroupManager.WHITE_FLAG_PALETTE);
             break;
          case Flag.Group:
-            string flagPalette = VoyageGroupManager.getShipFlagPalette(voyageGroupId);
+            string flagPalette = GroupManager.getShipFlagPalette(groupId);
             spritesContainer.GetComponent<RecoloredSprite>().recolor(flagPalette);
             break;
          case Flag.Pvp:
@@ -1822,7 +1822,7 @@ public class PlayerShipEntity : ShipEntity
             spritesContainer.GetComponent<RecoloredSprite>().recolor(shipPalette);
 
             // Return without updating _currentFlag if we don't have a pvp team, so it will be updated when we get one
-            if (shipPalette == VoyageGroupManager.WHITE_FLAG_PALETTE) {
+            if (shipPalette == GroupManager.WHITE_FLAG_PALETTE) {
                return;
             }
 
@@ -1921,7 +1921,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       float spawnInvulnerabilityDuration = 0;
-      if (VoyageManager.isAnyLeagueArea(areaKey)) {
+      if (GroupInstanceManager.isAnyLeagueArea(areaKey) || GroupInstanceManager.isWorldMapArea(areaKey)) {
          spawnInvulnerabilityDuration = SPAWN_INVULNERABILITY_DURATION;
       }
 
@@ -1967,7 +1967,7 @@ public class PlayerShipEntity : ShipEntity
 
    [Command]
    private void Cmd_RequestRespawn () {
-      if (VoyageManager.isWorldMapArea(areaKey)) {
+      if (GroupInstanceManager.isWorldMapArea(areaKey)) {
          this.spawnInBiomeHomeTown();
       } else {
          this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
@@ -2185,7 +2185,7 @@ public class PlayerShipEntity : ShipEntity
       PvpGame game = PvpManager.self.getGameWithPlayer(this);
       if (game != null) {
          spawnPosition = game.getSpawnPositionForUser(this);
-      } else if (tryGetVoyage(out Voyage voyage) && voyage.isLeague) {
+      } else if (tryGetGroupInstance(out GroupInstance groupInstance) && groupInstance.isLeague) {
          spawnPosition = SpawnManager.self.getDefaultLocalPosition(areaKey);
       }
 

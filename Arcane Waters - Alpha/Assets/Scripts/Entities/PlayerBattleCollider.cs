@@ -31,7 +31,7 @@ public class PlayerBattleCollider : MonoBehaviour {
          if (combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
             if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated && !playerBody.isBouncingOnWeb()) {
-               if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
+               if (playerBody.groupId == enemy.groupId || enemy.groupId == -1) {
                   D.adminLog("Engaging combat:: EnemyType: {" + enemy.enemyType + "}" + " NetID: {" + enemy.netId + "}", D.ADMIN_LOG_TYPE.Combat);
                   combatInitCollider.enabled = false;
                   playerBody.isWithinEnemyRadius = true;
@@ -44,7 +44,7 @@ public class PlayerBattleCollider : MonoBehaviour {
                      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
                      GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
                      messageCanvas.transform.position = pos;
-                     messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different voyage group";
+                     messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different group";
                   }
                }
             }

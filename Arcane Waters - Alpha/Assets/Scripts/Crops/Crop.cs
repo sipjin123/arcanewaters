@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using TMPro;
+using System.Linq;
 
 public class Crop : ClientMonoBehaviour {
    #region Public Variables
@@ -60,6 +62,18 @@ public class Crop : ClientMonoBehaviour {
    // The key of the area that this crop is in
    public string areaKey;
 
+   // Whether crop debugging is enabled or disabled
+   private static bool debuggingEnabled = false;
+
+   // A reference to the button that will toggle the debug information for this crop
+   public GameObject debugButton;
+
+   // A reference to the canvas showing debug information for this crop
+   public GameObject debugCanvas;
+
+   // References to the text on the debug canvas
+   public TextMeshProUGUI cropTypeText, cropNumText, userIdText, growthLevelText, timeUntilWaterableText, areaKeyText;
+
    #endregion
 
    protected override void Awake () {
@@ -67,6 +81,8 @@ public class Crop : ClientMonoBehaviour {
 
       // Look up components
       anim = GetComponent<SimpleAnimation>();
+      debugButton.SetActive(debuggingEnabled);
+      debugCanvas.SetActive(false);
    }
 
    public void hideCrop () {
@@ -100,6 +116,7 @@ public class Crop : ClientMonoBehaviour {
 
       // Update our water level display
       updateWaterLevelDisplay();
+      updateDebugCanvas();
    }
 
    public override bool Equals (object rhs) {
@@ -206,6 +223,46 @@ public class Crop : ClientMonoBehaviour {
    public CropInfo getCropInfo () {
       CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, creationTime, lastWaterTimestamp, (int)waterInterval, growthLevel, areaKey);
       return cropInfo;
+   }
+
+   public void toggleDebugCanvas () {
+      debugCanvas.SetActive(!debugCanvas.activeSelf);
+   }
+
+   private void setDebugButton () {
+      debugButton.SetActive(debuggingEnabled);
+   }
+
+   private void updateDebugCanvas () {
+      if (!debugCanvas.activeInHierarchy) {
+         return;
+      }
+
+      cropTypeText.text = cropType.ToString();
+      cropNumText.text = "CropNum: " + cropNumber.ToString();
+      userIdText.text = "UserId: " + userId.ToString();
+      growthLevelText.text = "Growth: " + growthLevel.ToString();
+
+      float timeUntilWaterable = Mathf.Clamp(waterInterval - getTimeSinceWatered(), 0.0f, float.MaxValue);
+      timeUntilWaterableText.text = "Waterable in: " + timeUntilWaterable.ToString("F2");
+      areaKeyText.text = areaKey;
+   }
+
+   public static void setCropDebugging (bool value) {
+      if (debuggingEnabled == value) {
+         return;
+      }
+
+      debuggingEnabled = value;
+
+      List<Crop> crops = FindObjectsOfType<Crop>().ToList();
+      foreach (Crop crop in crops) {
+         crop.setDebugButton();
+
+         if (!value) {
+            crop.debugCanvas.SetActive(false);
+         }
+      }
    }
 
    #region Private Variables

@@ -29,6 +29,9 @@ public class Global
    // A reference to the player currency for display only
    public static int lastUserGold, lastUserGems;
 
+   // Cached last item counts of user
+   public static Dictionary<int, int> lastUserItemCounts = new Dictionary<int, int>();
+
    // Gets set to true while we're redirecting a player to a new server
    public static bool isRedirecting = false;
 
@@ -140,7 +143,7 @@ public class Global
 
    // Flag if player can receive invites for other players
    public static bool doNotDisturbEnabled = false;
-   
+
    // Flag if slow text option is enabled
    public static bool slowTextEnabled = false;
 
@@ -203,6 +206,12 @@ public class Global
 
    public static bool isLoggedInAsAdmin () {
       return (player && player.isAdmin());
+   }
+
+   public static void cacheUserItemCounts (List<Item> items) {
+      foreach (Item item in items) {
+         lastUserItemCounts[item.id] = item.count;
+      }
    }
 
    #region Private Variables

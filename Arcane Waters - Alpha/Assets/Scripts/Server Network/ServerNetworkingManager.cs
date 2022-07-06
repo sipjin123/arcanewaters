@@ -11,6 +11,7 @@ using MLAPI;
 using System.Linq;
 using MLAPI.Messaging;
 using System;
+using System.Text;
 
 public class ServerNetworkingManager : MonoBehaviour
 {
@@ -36,13 +37,14 @@ public class ServerNetworkingManager : MonoBehaviour
 
    private void Start () {
       // This is where we register any classes that we want to serialize between the Server processes
-      RegisterSerializableClass<VoyageGroupInfo>();
-      RegisterSerializableClass<Voyage>();
+      RegisterSerializableClass<Group>();
+      RegisterSerializableClass<GroupInstance>();
       RegisterSerializableClass<UserLocationBundle>();
       RegisterSerializableClass<AssignedUserInfo>();
       RegisterSerializableClass<PenaltyInfo>();
       RegisterSerializableClass<ServerOverview>();
       RegisterSerializableClass<InstanceOverview>();
+      RegisterSerializableClass<BasicInstanceOverview>();
 
       // Log the number of connected players
       if (Util.isAutoTest()) {
@@ -209,12 +211,12 @@ public class ServerNetworkingManager : MonoBehaviour
       return bestServers;
    }
 
-   public bool tryGetServerHostingVoyage (int voyageId, out NetworkedServer hostingServer) {
+   public bool tryGetServerHostingGroupInstance (int groupInstanceId, out NetworkedServer hostingServer) {
       hostingServer = null;
 
-      // Search the voyage in all the servers we know about
+      // Search the instance in all the servers we know about
       foreach (NetworkedServer server in servers) {
-         if (server.voyages.TryGetValue(voyageId, out Voyage voyage)) {
+         if (server.groupInstances.TryGetValue(groupInstanceId, out GroupInstance groupInstance)) {
             hostingServer = server;
             return true;
          }
@@ -300,20 +302,20 @@ public class ServerNetworkingManager : MonoBehaviour
       }
    }
 
-   public RpcResponse<int> getNewVoyageGroupId () {
-      return server.InvokeServerRpc(server.MasterServer_GetNewVoyageGroupId);
+   public RpcResponse<int> getNewGroupId () {
+      return server.InvokeServerRpc(server.MasterServer_GetNewGroupId);
    }
 
-   public RpcResponse<int> getNewVoyageId () {
-      return server.InvokeServerRpc(server.MasterServer_GetNewVoyageId);
+   public RpcResponse<int> getNewGroupInstanceId () {
+      return server.InvokeServerRpc(server.MasterServer_GetNewGroupInstanceId);
    }
 
    public void findUserPrivateAreaToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
       server.InvokeServerRpc(server.MasterServer_FindUserPrivateAreaVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
    }
 
-   public void findUserLocationForAdminGoTo (int adminUserId, int userId) {
-      server.InvokeServerRpc(server.MasterServer_FindUserLocationForAdminGoTo, adminUserId, userId);
+   public void findUserLocationForAdminGoTo (int adminUserId, int userId, bool hasConfirmed) {
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationForAdminGoTo, adminUserId, userId, hasConfirmed);
    }
 
    public void findUserLocationForSteamFriendJoin (int userId, ulong steamFriendId) {
@@ -324,12 +326,12 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_FindUserLocationForFriendJoin, userId, friendUserId);
    }
 
-   public void getUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
-      server.InvokeServerRpc(server.MasterServer_GetUsersInInstanceForAdminVoyagePanel, voyageId, instanceId, callerUserId);
+   public void getUsersInInstanceForAdminVoyagePanel (int groupInstanceId, int instanceId, int callerUserId) {
+      server.InvokeServerRpc(server.MasterServer_GetUsersInInstanceForAdminVoyagePanel, groupInstanceId, instanceId, callerUserId);
    }
 
-   public void registerUserInTreasureSite (int userId, int voyageId, int treasureSiteInstanceId) {
-      server.InvokeServerRpc(server.MasterServer_RegisterUserInTreasureSite, userId, voyageId, treasureSiteInstanceId);
+   public void registerUserInTreasureSite (int userId, int groupInstanceId, int treasureSiteInstanceId) {
+      server.InvokeServerRpc(server.MasterServer_RegisterUserInTreasureSite, userId, groupInstanceId, treasureSiteInstanceId);
    }
 
    public void sendDirectChatMessage (ChatInfo chatInfo) {
@@ -337,12 +339,12 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text, chatInfo.sender, chatInfo.recipient);
    }
 
-   public void sendContextMenuRequest (int senderUserId, string senderUserName, int targetUserId, int inviterVoyageGroupId, int inviterGuildId) {
-      server.InvokeServerRpc(server.MasterServer_SendContextMenuRequest, senderUserId, senderUserName, server.networkedPort.Value, targetUserId, inviterVoyageGroupId, inviterGuildId);
+   public void sendContextMenuRequest (int senderUserId, string senderUserName, int targetUserId, int inviterGroupId, int inviterGuildId) {
+      server.InvokeServerRpc(server.MasterServer_SendContextMenuRequest, senderUserId, senderUserName, server.networkedPort.Value, targetUserId, inviterGroupId, inviterGuildId);
    }
 
-   public void returnContextMenuRequest (int senderUserId, string senderUserName, int originPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
-      server.InvokeServerRpc(server.MasterServer_ReturnContextMenuRequest, senderUserId, senderUserName, originPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId, isSameGroup, isSameGuild);
+   public void returnContextMenuRequest (int senderUserId, string senderUserName, int originPort, int targetUserId, string targetName, int targetGroupId, int targetGuildId, bool isSameGroup, bool isSameGuild) {
+      server.InvokeServerRpc(server.MasterServer_ReturnContextMenuRequest, senderUserId, senderUserName, originPort, targetUserId, targetName, targetGroupId, targetGuildId, isSameGroup, isSameGuild);
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
@@ -393,36 +395,36 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendGroupInvitationNotification, groupId, inviterUserId, inviterName, inviteeUserId);
    }
 
-   public void createVoyageInstanceInServer (int serverPort, int voyageId, Voyage parameters) {
-      server.InvokeServerRpc(server.MasterServer_CreateVoyageInstanceInServer, serverPort, voyageId, parameters);
+   public void createGroupInstanceInServer (int serverPort, int groupInstanceId, GroupInstance parameters) {
+      server.InvokeServerRpc(server.MasterServer_CreateGroupInstanceInServer, serverPort, groupInstanceId, parameters);
    }
 
-   public void requestVoyageInstanceCreation (Voyage parameters) {
-      server.InvokeServerRpc(server.MasterServer_RequestVoyageInstanceCreation, parameters);
+   public void requestGroupInstanceCreation (GroupInstance parameters) {
+      server.InvokeServerRpc(server.MasterServer_RequestGroupInstanceCreation, parameters);
    }
 
-   public void createPOIInstanceInServer (int serverPort, int voyageGroupId, string areaKey) {
-      server.InvokeServerRpc(server.MasterServer_CreatePOIInstanceInServer, serverPort, voyageGroupId, areaKey);
+   public void warpUserToPOIInstanceInServer (int serverPort, int groupId, int userId, string areaKey, string spawnKey, Direction facingDirection) {
+      server.InvokeServerRpc(server.MasterServer_WarpUserToPOIInstanceInServer, serverPort, groupId, userId, areaKey, spawnKey, facingDirection);
    }
 
-   public void sendVoyageGroupCompositionToMembers (int groupId) {
-      server.InvokeServerRpc(server.MasterServer_SendVoyageGroupCompositionToMembers, groupId);
+   public void sendGroupCompositionToMembers (int groupId) {
+      server.InvokeServerRpc(server.MasterServer_SendGroupCompositionToMembers, groupId);
    }
 
    public void sendMemberPartialUpdateToGroup (int groupId, int userId, string userName, int XP, string areaKey) {
       server.InvokeServerRpc(server.MasterServer_SendMemberPartialUpdateToGroup, groupId, userId, userName, XP, areaKey);
    }
 
-   public void joinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
-      server.InvokeServerRpc(server.MasterServer_JoinPvpGame, voyageId, userId, userName, team);
+   public void joinPvpGame (int groupInstanceId, int userId, string userName, PvpTeamType team) {
+      server.InvokeServerRpc(server.MasterServer_JoinPvpGame, groupInstanceId, userId, userName, team);
    }
 
    public void clearPowerupsForUser (int userId) {
       server.InvokeServerRpc(server.MasterServer_ClearPowerupsForUser, userId);
    }
 
-   public void warpUser (int userId, int voyageId, string areaKey, Direction newFacingDirection, string spawn = "") {
-      server.InvokeServerRpc(server.MasterServer_WarpUser, userId, voyageId, areaKey, newFacingDirection, spawn);
+   public void warpUser (int userId, int groupInstanceId, string areaKey, Direction newFacingDirection, string spawn = "") {
+      server.InvokeServerRpc(server.MasterServer_WarpUser, userId, groupInstanceId, areaKey, newFacingDirection, spawn);
    }
 
    public void logRequest (string message) {
@@ -437,8 +439,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_Log, this.server.networkedPort.Value, message);
    }
 
-   public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey, int targetInstanceId, int targetServerPort) {
-      return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey, targetInstanceId, targetServerPort);
+   public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int groupInstanceId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey, int targetInstanceId, int targetServerPort) {
+      return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, groupInstanceId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey, targetInstanceId, targetServerPort);
    }
 
    public void onUserConnectsToServer (int userId) {
@@ -469,8 +471,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_ChangeUserName, userId, oldName, newName);
    }
 
-   public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {
-      server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, voyageId, groupId, userId, userName);
+   public void recreateLeagueInstanceAndAddUserToGroup (int groupInstanceId, int groupId, int userId, string userName) {
+      server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, groupInstanceId, groupId, userId, userName);
    }
 
    public bool doesLocalServerHaveQueuedArea (string areaKey) {
@@ -507,6 +509,74 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void requestLogFromServer (int targetServerPort, int requesterUserId) {
       server.InvokeServerRpc(server.MasterServer_RequestLogFromServer, targetServerPort, requesterUserId, server.networkedPort.Value);
+   }
+
+   public List<BasicInstanceOverview> getAllInstancesInArea (string areaKey, bool ignoreSinglePlayer = false) {
+      List<BasicInstanceOverview> instanceList = new List<BasicInstanceOverview>();
+      foreach (NetworkedServer server in servers) {
+         foreach (BasicInstanceOverview instance in server.instances.Values) {
+            if (instance.areaKey == areaKey && !(instance.isSinglePlayer && ignoreSinglePlayer)) {
+               instanceList.Add(instance);
+            }
+         }
+      }
+      return instanceList;
+   }
+
+   public string getAllInstancesInfoText (Instance currentInstance) {
+      bool isSinglePlayer = currentInstance.isSinglePlayer;
+      bool isPrivate = currentInstance.getMaxPlayers() == 1;
+      bool isGroupInstance = GroupInstanceManager.isAnyGroupSpecificArea(currentInstance.areaKey);
+
+      // Get the list of instances in this area, in all servers
+      List<BasicInstanceOverview> instanceList;
+      if (isSinglePlayer || isPrivate || isGroupInstance) {
+         instanceList = new List<BasicInstanceOverview>();
+         instanceList.Add(currentInstance.getBasicInstanceOverview());
+      } else {
+         instanceList = getAllInstancesInArea(currentInstance.areaKey, true);
+      }
+
+      // Check if the current instance is not yet in the server network data (created this frame)
+      if (!instanceList.Exists(i => i.serverPort == this.server.networkedPort.Value && i.instanceId == currentInstance.id)) {
+         // Manually add it to the list
+         instanceList.Add(currentInstance.getBasicInstanceOverview());
+      }
+
+      instanceList = instanceList.OrderBy(i => i.serverPort).ThenBy(i => i.instanceId).ToList();
+
+      StringBuilder builder = new StringBuilder();
+
+      if (isSinglePlayer) {
+         builder.Append($"Single Player");
+         builder.Append($"\n\n");
+      } else if (isPrivate) {
+         builder.Append($"Private Instance");
+         builder.Append($"\n\n");
+      } else if (isGroupInstance) {
+         builder.Append($"Group Instance");
+         builder.Append($"\n\n");
+      }
+
+      int currentPort = -1;
+      foreach (BasicInstanceOverview instance in instanceList) {
+         if (instance.serverPort != currentPort) {
+            builder.Append($"Server #{instance.serverPort - Global.MASTER_SERVER_PORT}");
+            builder.Append($"\n");
+            currentPort = instance.serverPort;
+         }
+
+         if (instance.serverPort == this.server.networkedPort.Value && instance.instanceId == currentInstance.id) {
+            // Get the local latest info for the current instance
+            builder.Append($"<color=#FFBB33>>> Room {currentInstance.id} ({currentInstance.getPlayerCount()}/{currentInstance.getMaxPlayers()})</color>");
+            builder.Append($"\n");
+         } else {
+            builder.Append($"Room {instance.instanceId} ({instance.playerCount}/{instance.maxPlayerCount})");
+            builder.Append($"\n");
+         }
+      }
+
+      return builder.ToString();
    }
 
    #region Private Variables

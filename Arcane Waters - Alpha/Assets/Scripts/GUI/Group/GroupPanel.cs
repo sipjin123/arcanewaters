@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.InputSystem;
 using System.Linq;
 
-public class VoyageGroupPanel : ClientMonoBehaviour
+public class GroupPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
@@ -17,10 +17,10 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    public GameObject memberContainer;
 
    // The prefab we use for creating member cells
-   public VoyageGroupMemberCell memberCellPrefab;
+   public GroupMemberCell memberCellPrefab;
 
    // The prefab we use to instantiate group member arrows
-   public VoyageGroupMemberArrow groupMemberArrowPrefab;
+   public GroupMemberArrow groupMemberArrowPrefab;
 
    // When the mouse is over this defined zone, we consider that it hovers the panel
    public RectTransform panelHoveringZone;
@@ -28,17 +28,14 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The exit button
    public Button xButton;
 
-   // The user id of the group leader
-   public int groupLeader;
-
    // The prefab for the bottom of the group members column
    public GameObject columnBottomPrefab;
 
    // Self
-   public static VoyageGroupPanel self;
+   public static GroupPanel self;
 
    // List of arrow indicators
-   public List<VoyageMemberArrows> directionalArrowList;
+   public List<GroupMemberArrow2> directionalArrowList;
 
    // Distance before the indicator will be hidden, means its too near to the player already
    public const float CLAMP_HIDE_DISTANCE = 1.5f;
@@ -46,11 +43,11 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The maximum number of cells the panel can display, above which only the local player cell will be shown
    public static int MAX_MEMBER_CELLS = 6;
 
-   // Distance between voyage member arrow before colliding
+   // Distance between member arrow before colliding
    public const float ARROW_COLLISION_DISTANCE = .1f;
 
-   // The leader of the voyage group
-   public int voyageLeader;
+   // The user id of the group leader
+   public int groupLeader;
 
    #endregion
 
@@ -72,7 +69,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void Update () {
       // Hide the panel when there is no player or he doesn't belong to a group
-      if (!VoyageGroupManager.isInGroup(Global.player) || _memberCells.Count <= 0) {
+      if (!GroupManager.isInGroup(Global.player) || _memberCells.Count <= 0) {
          hide();
          return;
       }
@@ -82,32 +79,32 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    private void updateMemberCellDamage () {
-      foreach (VoyageMemberArrows arrowIndicator in directionalArrowList) {
+      foreach (GroupMemberArrow2 arrowIndicator in directionalArrowList) {
          arrowIndicator.gameObject.SetActive(false);
       }
 
       int i = 0;
-      Dictionary<string, VoyageMemberArrows> coordinateValue = new Dictionary<string, VoyageMemberArrows>();
+      Dictionary<string, GroupMemberArrow2> coordinateValue = new Dictionary<string, GroupMemberArrow2>();
 
       int highestDamagerId = -1;
       int highestTankedId = -1;
       int highestHealerId = -1;
       int highestBuffedId = -1;
       if (_memberCells.Count > 0) {
-         VoyageGroupMemberCell highestDamager = _memberCells.OrderByDescending(_ => _.totalDamage).ToList()[0];
+         GroupMemberCell highestDamager = _memberCells.OrderByDescending(_ => _.totalDamage).ToList()[0];
          highestDamagerId = highestDamager.getUserId();
 
-         VoyageGroupMemberCell highestTanker = _memberCells.OrderByDescending(_ => _.totalTanked).ToList()[0];
+         GroupMemberCell highestTanker = _memberCells.OrderByDescending(_ => _.totalTanked).ToList()[0];
          highestTankedId = highestTanker.getUserId();
 
-         VoyageGroupMemberCell highestHealed = _memberCells.OrderByDescending(_ => _.totalHealed).ToList()[0];
+         GroupMemberCell highestHealed = _memberCells.OrderByDescending(_ => _.totalHealed).ToList()[0];
          highestHealerId = highestHealed.getUserId();
 
-         VoyageGroupMemberCell highestBuffed = _memberCells.OrderByDescending(_ => _.totalBuffed).ToList()[0];
+         GroupMemberCell highestBuffed = _memberCells.OrderByDescending(_ => _.totalBuffed).ToList()[0];
          highestBuffedId = highestBuffed.getUserId();
       }
 
-      foreach (VoyageGroupMemberCell memberCell in _memberCells) {
+      foreach (GroupMemberCell memberCell in _memberCells) {
          NetEntity entity = EntityManager.self.getEntity(memberCell.getUserId());
          if (entity != null) {
             if (entity is PlayerShipEntity) {
@@ -142,30 +139,30 @@ public class VoyageGroupPanel : ClientMonoBehaviour
             }
 
             if (i < directionalArrowList.Count) {
-               VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
-               voyageMemArrow.setTarget(entity.gameObject);
-               voyageMemArrow.setTargetName(entity.entityName);
+               GroupMemberArrow2 memArrow = directionalArrowList[i];
+               memArrow.setTarget(entity.gameObject);
+               memArrow.setTargetName(entity.entityName);
                bool isOutsideScreen = Global.player == null ? false : Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE;
 
-               if (voyageMemArrow.isHorizontal) {
-                  string cleanupVal = voyageMemArrow.transform.localPosition.y.ToString("f1");
+               if (memArrow.isHorizontal) {
+                  string cleanupVal = memArrow.transform.localPosition.y.ToString("f1");
                   string topOffset = (float.Parse(cleanupVal) - ARROW_COLLISION_DISTANCE).ToString("f2");
                   string bottomOffset = (float.Parse(cleanupVal) + ARROW_COLLISION_DISTANCE).ToString("f2");
 
                   // If there is already an arrow existing within these coordinates, add this new users name to that arrow
                   if (coordinateValue.ContainsKey(cleanupVal) || coordinateValue.ContainsKey(topOffset) || coordinateValue.ContainsKey(bottomOffset)) {
-                     voyageMemArrow.isActive = false;
-                     voyageMemArrow.gameObject.SetActive(false);
+                     memArrow.isActive = false;
+                     memArrow.gameObject.SetActive(false);
                      coordinateValue[cleanupVal].addTargetName(entity.entityName);
                   } else {
-                     voyageMemArrow.isActive = true;
-                     voyageMemArrow.gameObject.SetActive(true);
-                     coordinateValue.Add(cleanupVal, voyageMemArrow);
+                     memArrow.isActive = true;
+                     memArrow.gameObject.SetActive(true);
+                     coordinateValue.Add(cleanupVal, memArrow);
                   }
                } else {
                   if (isOutsideScreen) {
-                     voyageMemArrow.gameObject.SetActive(true);
-                     voyageMemArrow.isActive = true;
+                     memArrow.gameObject.SetActive(true);
+                     memArrow.isActive = true;
                   }
                }
             }
@@ -174,23 +171,23 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
    }
 
-   public void updatePanelWithGroupMembers (VoyageGroupMemberCellInfo[] groupMembers, int voyageLeader) {
+   public void updatePanelWithGroupMembers (GroupMemberCellInfo[] groupMembers, int groupLeader) {
       // Clear out any old info
       memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
-      VoyageGroupManager.self.groupMemberArrowContainer.DestroyChildren();
+      GroupManager.self.groupMemberArrowContainer.DestroyChildren();
       _memberArrows.Clear();
 
-      this.voyageLeader = voyageLeader;
+      this.groupLeader = groupLeader;
       if (groupMembers.Length > MAX_MEMBER_CELLS) {
          // Large groups only display the local player portrait (temporary)
-         foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
+         foreach (GroupMemberCellInfo cellInfo in groupMembers) {
             if (cellInfo.userId == Global.player.userId) {
                instantiatePortraitAndArrow(cellInfo);
             }
          }
       } else {
-         foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
+         foreach (GroupMemberCellInfo cellInfo in groupMembers) {
             instantiatePortraitAndArrow(cellInfo);
          }
       }
@@ -198,16 +195,16 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
-   private void instantiatePortraitAndArrow (VoyageGroupMemberCellInfo cellInfo) {
+   private void instantiatePortraitAndArrow (GroupMemberCellInfo cellInfo) {
       // Instantiate the cell
-      VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
+      GroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
       cell.setCellForGroupMember(cellInfo);
       _memberCells.Add(cell);
    }
 
    public void updateCellTooltip (int userId, string userName, int XP, string areaKey) {
       // Search for the cell
-      foreach (VoyageGroupMemberCell cell in _memberCells) {
+      foreach (GroupMemberCell cell in _memberCells) {
          if (cell.getUserId() == userId) {
             cell.updateTooltip(userName, XP, areaKey);
          }
@@ -256,7 +253,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          }
       }
 
-      if (!Global.player.isGhost && (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isAnyLeagueArea(Global.player.areaKey) || VoyageManager.isPvpArenaArea(Global.player.areaKey))) {
+      if (!Global.player.isGhost && (GroupInstanceManager.isTreasureSiteArea(Global.player.areaKey) || GroupInstanceManager.isAnyLeagueArea(Global.player.areaKey) || GroupInstanceManager.isPvpArenaArea(Global.player.areaKey))) {
          // Outside of safe areas, start a leave countdown
          PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
          PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
@@ -294,7 +291,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return false;
       }
 
-      foreach (VoyageGroupMemberCell cell in _memberCells) {
+      foreach (GroupMemberCell cell in _memberCells) {
          if (cell.isMouseOver() && cell.getUserId() == memberUserId) {
             return true;
          }
@@ -308,7 +305,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return false;
       }
 
-      foreach (VoyageGroupMemberCell cell in _memberCells) {
+      foreach (GroupMemberCell cell in _memberCells) {
          if (cell.isMouseOver()) {
             return true;
          }
@@ -322,7 +319,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          canvasGroup.Show();
       }
 
-      foreach (VoyageGroupMemberArrow arrow in _memberArrows) {
+      foreach (GroupMemberArrow arrow in _memberArrows) {
          arrow.activate();
       }
    }
@@ -332,7 +329,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          canvasGroup.Hide();
       }
 
-      foreach (VoyageGroupMemberArrow arrow in _memberArrows) {
+      foreach (GroupMemberArrow arrow in _memberArrows) {
          arrow.deactivate();
       }
    }
@@ -350,10 +347,10 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    private float _countdown = 0;
 
    // The list of member cells
-   private List<VoyageGroupMemberCell> _memberCells = new List<VoyageGroupMemberCell>();
+   private List<GroupMemberCell> _memberCells = new List<GroupMemberCell>();
 
    // The list of group member arrows used to indicate the members location
-   private List<VoyageGroupMemberArrow> _memberArrows = new List<VoyageGroupMemberArrow>();
+   private List<GroupMemberArrow> _memberArrows = new List<GroupMemberArrow>();
 
    #endregion
 }

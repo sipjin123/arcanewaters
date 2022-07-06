@@ -27,10 +27,10 @@ public class VoyagePanel : Panel
    }
 
    public void displayVoyagesSelection () {
-      Global.player.rpc.Cmd_RequestVoyageListFromServer();
+      Global.player.rpc.Cmd_RequestGroupInstanceListFromServer();
    }
 
-   public void updatePanelWithVoyageList (List<Voyage> voyageList) {
+   public void updatePanelWithVoyageList (List<GroupInstance> voyageList) {
       // Clear out any old info
       mapCellsContainer.DestroyChildren();
 
@@ -38,7 +38,7 @@ public class VoyagePanel : Panel
       voyageList = voyageList.OrderByDescending(v => v.creationDate).ToList();
 
       // Instantiate the cells
-      foreach (Voyage voyage in voyageList) {
+      foreach (GroupInstance voyage in voyageList) {
          VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellsContainer.transform, false);
          cell.setCellForVoyage(voyage, () => selectVoyageMap(voyage));
       }
@@ -47,16 +47,16 @@ public class VoyagePanel : Panel
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenVoyagePanel);
    }
 
-   public void selectVoyageMap (Voyage voyage) {
-      PanelManager.self.showConfirmationPanel("Please confirm your destination: " + voyage.areaName + ".",
-         () => confirmJoinVoyage(voyage));
+   public void selectVoyageMap (GroupInstance groupInstance) {
+      PanelManager.self.showConfirmationPanel("Please confirm your destination: " + groupInstance.areaName + ".",
+         () => confirmJoinVoyage(groupInstance));
    }
 
-   public void confirmJoinVoyage (Voyage voyage) {
-      if (VoyageGroupManager.isInGroup(Global.player)) {
-         Global.player.rpc.Cmd_JoinVoyageWithGroup(voyage.voyageId);
+   public void confirmJoinVoyage (GroupInstance groupInstance) {
+      if (GroupManager.isInGroup(Global.player)) {
+         Global.player.rpc.Cmd_JoinVoyageWithGroup(groupInstance.groupInstanceId);
       } else {
-         Global.player.rpc.Cmd_JoinVoyageAlone(voyage.voyageId);
+         Global.player.rpc.Cmd_JoinVoyageAlone(groupInstance.groupInstanceId);
       }
 
       // Close the panel

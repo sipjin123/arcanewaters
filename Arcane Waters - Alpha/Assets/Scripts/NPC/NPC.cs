@@ -386,17 +386,20 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             case Panel.Type.Adventure:
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
                adventurePanel.shopId = shopId;
+               adventurePanel.shopKeeperName.text = _npcName;
                adventurePanel.headIconSprite = getHeadIconSprite();
                adventurePanel.refreshPanel();
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
+               shipyardPanel.shopKeeperName.text = _npcName;
                shipyardPanel.shopId = shopId;
                shipyardPanel.headIconSprite = getHeadIconSprite();
                shipyardPanel.refreshPanel();
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
+               merchantPanel.shopKeeperName.text = _npcName;
                merchantPanel.shopId = shopId;
                merchantPanel.headIconSprite = getHeadIconSprite();
                merchantPanel.refreshPanel();

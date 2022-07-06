@@ -22,7 +22,7 @@ public class SeaMonsterEntityData
 
    // The level of difficulty this unit is categorized as
    [XmlElement(Namespace = "DifficultyLevel")]
-   public Voyage.Difficulty difficultyLevel;
+   public GroupInstance.Difficulty difficultyLevel;
 
    // The biome this monster can spawn in
    public List<Biome.Type> biomes = new List<Biome.Type>();

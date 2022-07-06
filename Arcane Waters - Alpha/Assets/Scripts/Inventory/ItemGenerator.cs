@@ -7,32 +7,32 @@
          if (EquipmentXMLManager.self != null) {
             if (category == Item.Category.Weapon) {
                if (EquipmentXMLManager.self.getWeaponData(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getWeaponData(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getWeaponData(itemTypeId).defaultPalettes);
                }
             }
             if (category == Item.Category.Armor) {
                if (EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId).defaultPalettes);
                }
             }
             if (category == Item.Category.Hats) {
                if (EquipmentXMLManager.self.getHatData(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getHatData(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getHatData(itemTypeId).defaultPalettes);
                }
             }
             if (category == Item.Category.Ring) {
                if (EquipmentXMLManager.self.getRingData(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getRingData(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getRingData(itemTypeId).defaultPalettes);
                }
             }
             if (category == Item.Category.Necklace) {
                if (EquipmentXMLManager.self.getNecklaceData(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getNecklaceData(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getNecklaceData(itemTypeId).defaultPalettes);
                }
             }
             if (category == Item.Category.Trinket) {
                if (EquipmentXMLManager.self.getTrinketData(itemTypeId) != null) {
-                  itemTemplatePalette = EquipmentXMLManager.self.getTrinketData(itemTypeId).palettes;
+                  itemTemplatePalette = PaletteSwapManager.extractPalettes(EquipmentXMLManager.self.getTrinketData(itemTypeId).defaultPalettes);
                }
             }
          }

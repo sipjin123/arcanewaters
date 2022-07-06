@@ -47,7 +47,7 @@ public class RingStatData : EquipmentStatData {
          itemDescription = data.equipmentDescription,
          category = Item.Category.Ring,
          iconPath = data.equipmentIconPath,
-         paletteNames = data.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(data.defaultPalettes),
          data = serializeRingStatData(data)
       };
       return newRing;
@@ -82,7 +82,7 @@ public class RingStatData : EquipmentStatData {
    public static RingStatData getDefaultData () {
       return new RingStatData {
          ringType = 0,
-         palettes = ""
+         //palettes = ""
       };
    }
 }

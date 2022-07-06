@@ -20,8 +20,8 @@ public class PvpGame : MonoBehaviour
    // A state describing what stage of the game we are at
    public enum State { None = 0, PreGame = 1, InGame = 2, PostGame = 3 }
 
-   // The id of the voyage that this pvp game is in
-   public int voyageId;
+   // The id of the group instance that this pvp game is in
+   public int groupInstanceId;
 
    // The id of the instance that this pvp game is in
    public int instanceId;
@@ -55,8 +55,8 @@ public class PvpGame : MonoBehaviour
 
    #endregion
 
-   public void init (int voyageId, int instanceId, string areaKey) {
-      this.voyageId = voyageId;
+   public void init (int groupInstanceId, int instanceId, string areaKey) {
+      this.groupInstanceId = groupInstanceId;
       this.instanceId = instanceId;
       this.areaKey = areaKey;
       _gameState = State.PreGame;
@@ -127,9 +127,9 @@ public class PvpGame : MonoBehaviour
          return;
       }
 
-      // If the player is in a voyage group, remove them from it
-      if (VoyageGroupManager.self.tryGetGroupByUser(userId, out VoyageGroupInfo groupInfo)) {
-         VoyageGroupManager.self.removeUserFromGroup(groupInfo, userId);
+      // If the player is in a group, remove them from it
+      if (GroupManager.self.tryGetGroupByUser(userId, out Group groupInfo)) {
+         GroupManager.self.removeUserFromGroup(groupInfo, userId);
       }
 
       _usersInGame.Add(userId);
@@ -171,9 +171,9 @@ public class PvpGame : MonoBehaviour
    }
 
    private void addPlayerToPreGame (int userId, string userName) {
-      VoyageGroupManager.self.createGroup(userId, voyageId, true);
+      GroupManager.self.createGroup(userId, groupInstanceId, true);
       Direction newDirection = getTeamFacingDirection(PvpTeamType.None, areaKey);
-      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, newDirection);
+      ServerNetworkingManager.self.warpUser(userId, groupInstanceId, areaKey, newDirection);
       D.debug("Adding player to pre-game. Added player: {" + userName + "} Area:{" + areaKey + "} Facing:{" + newDirection + "}");
 
       // If there are now enough players to start the game, start the game after a delay
@@ -199,27 +199,27 @@ public class PvpGame : MonoBehaviour
       string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
       Direction facingDirection = getTeamFacingDirection(assignedTeam.teamType, areaKey);
 
-      // If the team only has us, create a new voyage group with this player
+      // If the team only has us, create a new group with this player
       if (assignedTeam.Count == 1) {
-         VoyageGroupInfo newGroup = null;
-         yield return VoyageGroupManager.self.CO_CreateGroup(userId, voyageId, true, result => newGroup = result);
+         Group newGroup = null;
+         yield return GroupManager.self.CO_CreateGroup(userId, groupInstanceId, true, result => newGroup = result);
 
-         // Store the team's voyage group id
-         _teamVoyageGroupIds[assignedTeam.teamType] = newGroup.groupId;
+         // Store the team's group id
+         _teamGroupIds[assignedTeam.teamType] = newGroup.groupId;
          D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + ", and created group. Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
 
-         // If the team isn't empty, add the player to the existing voyage group
+         // If the team isn't empty, add the player to the existing group
       } else {
-         if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[assignedTeam.teamType], out VoyageGroupInfo voyageGroup)) {
-            VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
+         if (GroupManager.self.tryGetGroupById(_teamGroupIds[assignedTeam.teamType], out Group groupInfo)) {
+            GroupManager.self.addUserToGroup(groupInfo, userId, userName);
             D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + "Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
          } else {
-            D.error("Couldn't find the voyage group for team: " + assignedTeam.teamType.ToString() + "Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
+            D.error("Couldn't find the group for team: " + assignedTeam.teamType.ToString() + "Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
             yield break;
          }
       }
 
-      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, facingDirection, teamSpawn);
+      ServerNetworkingManager.self.warpUser(userId, groupInstanceId, areaKey, facingDirection, teamSpawn);
    }
 
    private Direction getTeamFacingDirection (PvpTeamType teamType, string areaKey) {
@@ -243,7 +243,7 @@ public class PvpGame : MonoBehaviour
    }
 
    private IEnumerator CO_StartGame () {
-      // For players who are currently in the game, create voyage groups for their teams, and add them to the groups
+      // For players who are currently in the game, create groups for their teams, and add them to the groups
       _gameIsStarting = true;
 
       updateGameStatusMessage("The game will begin in " + GAME_START_DELAY + " seconds!");
@@ -306,22 +306,22 @@ public class PvpGame : MonoBehaviour
          GameStatsManager.self.registerUser(player.userId, player.entityName, player.pvpTeam);
 
          // Remove the user from its current group
-         if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
-            VoyageGroupManager.self.removeUserFromGroup(currentGroup, player);
+         if (player.tryGetGroup(out Group currentGroup)) {
+            GroupManager.self.removeUserFromGroup(currentGroup, player);
          }
 
-         // If a voyage group doesn't exist for the team, create it with this player
-         if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
-            VoyageGroupInfo newGroup = null;
-            yield return VoyageGroupManager.self.CO_CreateGroup(player.userId, voyageId, true, result => newGroup = result);
+         // If a group doesn't exist for the team, create it with this player
+         if (!_teamGroupIds.ContainsKey(team.teamType)) {
+            Group newGroup = null;
+            yield return GroupManager.self.CO_CreateGroup(player.userId, groupInstanceId, true, result => newGroup = result);
 
-            _teamVoyageGroupIds[team.teamType] = newGroup.groupId;
+            _teamGroupIds[team.teamType] = newGroup.groupId;
             D.debug("Player: " + player.entityName + " created group for team: " + team.teamType.ToString());
 
-            // If a voyage group does exist for the team, add the player to it
+            // If a group does exist for the team, add the player to it
          } else {
-            if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[team.teamType], out VoyageGroupInfo newGroup)) {
-               VoyageGroupManager.self.addUserToGroup(newGroup, player.userId, player.entityName);
+            if (GroupManager.self.tryGetGroupById(_teamGroupIds[team.teamType], out Group newGroup)) {
+               GroupManager.self.addUserToGroup(newGroup, player.userId, player.entityName);
                D.debug("Adding player: " + player.entityName + " to team: " + team.teamType.ToString());
             }
          }
@@ -420,26 +420,26 @@ public class PvpGame : MonoBehaviour
          GameStatsManager.self.registerUser(player.userId, player.entityName, bestTeam);
 
          // Remove the user from its current group
-         if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
-            VoyageGroupManager.self.removeUserFromGroup(currentGroup, player);
+         if (player.tryGetGroup(out Group currentGroup)) {
+            GroupManager.self.removeUserFromGroup(currentGroup, player);
          }
 
-         // If the team only has us, create a new voyage group with this player
+         // If the team only has us, create a new group with this player
          if (assignedTeam.Count == 1) {
-            VoyageGroupInfo newGroup = null;
-            yield return VoyageGroupManager.self.CO_CreateGroup(userId, voyageId, true, result => newGroup = result);
+            Group newGroup = null;
+            yield return GroupManager.self.CO_CreateGroup(userId, groupInstanceId, true, result => newGroup = result);
 
-            // Store the team's voyage group id
-            _teamVoyageGroupIds[bestTeam] = newGroup.groupId;
+            // Store the team's group id
+            _teamGroupIds[bestTeam] = newGroup.groupId;
             D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString() + ", and created group");
 
-            // If the team isn't empty, add the player to the existing voyage group
+            // If the team isn't empty, add the player to the existing group
          } else {
-            if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[bestTeam], out VoyageGroupInfo voyageGroup)) {
-               VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
+            if (GroupManager.self.tryGetGroupById(_teamGroupIds[bestTeam], out Group groupInfo)) {
+               GroupManager.self.addUserToGroup(groupInfo, userId, userName);
                D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString());
             } else {
-               D.error("Couldn't find the voyage group for team: " + bestTeam.ToString());
+               D.error("Couldn't find the group for team: " + bestTeam.ToString());
                yield break;
             }
          }
@@ -616,15 +616,15 @@ public class PvpGame : MonoBehaviour
          _teams[userTeam].Remove(player.userId);
       }
 
-      VoyageGroupInfo voyageGroup;
-      if (player.tryGetGroup(out voyageGroup)) {
-         // If the player was the only person in their team, remove their voyage group id from _teamVoyageGroupIds   
-         if (voyageGroup.members.Count == 1) {
-            _teamVoyageGroupIds.Remove(userTeam);
+      Group groupInfo;
+      if (player.tryGetGroup(out groupInfo)) {
+         // If the player was the only person in their team, remove their group id from _teamGroupIds   
+         if (groupInfo.members.Count == 1) {
+            _teamGroupIds.Remove(userTeam);
          }
 
-         // Remove the player from their voyage group
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
+         // Remove the player from their group
+         GroupManager.self.removeUserFromGroup(groupInfo, player.userId);
       }
 
       GameStats userStats = GameStatsManager.self.getStatsForUser(player.userId);
@@ -838,9 +838,9 @@ public class PvpGame : MonoBehaviour
       yield return new WaitForSeconds(10.0f);
 
       // Delete the team groups
-      foreach (int voyageGroupId in _teamVoyageGroupIds.Values) {
-         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroupInfo)) {
-            VoyageGroupManager.self.deleteGroup(voyageGroupInfo);
+      foreach (int groupId in _teamGroupIds.Values) {
+         if (GroupManager.self.tryGetGroupById(groupId, out Group groupInfo)) {
+            GroupManager.self.deleteGroup(groupInfo);
          }
       }
 
@@ -848,7 +848,8 @@ public class PvpGame : MonoBehaviour
          NetEntity player = EntityManager.self.getEntity(userId);
 
          if (player) {
-            player.spawnInBiomeHomeTown();
+            player.spawnInBiomeHomeTown(Biome.Type.Forest);
+            player.rpc.Target_SetPvpInstructionsPanelVisibility(player.connectionToClient, false);
          } else {
             Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, true);
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -881,7 +882,7 @@ public class PvpGame : MonoBehaviour
       int maxPlayerCount = AreaManager.self.getAreaMaxPlayerCount(areaKey);
 
       if (maxPlayerCount <= 0) {
-         maxPlayerCount = _numTeams * Voyage.MAX_PLAYERS_PER_GROUP_PVP;
+         maxPlayerCount = _numTeams * GroupInstance.MAX_PLAYERS_PER_GROUP_PVP;
       }
 
       return maxPlayerCount;
@@ -891,7 +892,7 @@ public class PvpGame : MonoBehaviour
       return _usersInGame.Count;
    }
 
-   public static bool canGameBeJoined (Voyage pvpArena) {
+   public static bool canGameBeJoined (GroupInstance pvpArena) {
       return pvpArena.pvpGameState != State.None && pvpArena.pvpGameState != State.PostGame && pvpArena.playerCount < pvpArena.pvpGameMaxPlayerCount;
    }
 
@@ -970,7 +971,7 @@ public class PvpGame : MonoBehaviour
          PvpTeamType teamType = (PvpTeamType) (i + 1);
          if (_teams.ContainsKey(teamType)) {
             int playersOnTeam = _teams[teamType].Count;
-            if (playersOnTeam < leastPlayers && playersOnTeam < Voyage.MAX_PLAYERS_PER_GROUP_PVP) {
+            if (playersOnTeam < leastPlayers && playersOnTeam < GroupInstance.MAX_PLAYERS_PER_GROUP_PVP) {
                bestTeam = teamType;
                leastPlayers = playersOnTeam;
             }
@@ -1259,8 +1260,8 @@ public class PvpGame : MonoBehaviour
    // A dictionary of all the teams in this pvp game
    private Dictionary<PvpTeamType, PvpTeam> _teams = new Dictionary<PvpTeamType, PvpTeam>();
 
-   // A dictionary of the voyage group ids for each team
-   private Dictionary<PvpTeamType, int> _teamVoyageGroupIds = new Dictionary<PvpTeamType, int>();
+   // A dictionary of the group ids for each team
+   private Dictionary<PvpTeamType, int> _teamGroupIds = new Dictionary<PvpTeamType, int>();
 
    // A dictionary of the faction types for each pvp team
    private Dictionary<PvpTeamType, Faction.Type> _teamFactions = new Dictionary<PvpTeamType, Faction.Type>();

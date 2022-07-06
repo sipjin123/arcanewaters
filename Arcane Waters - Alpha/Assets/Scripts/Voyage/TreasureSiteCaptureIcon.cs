@@ -14,10 +14,10 @@ public class TreasureSiteCaptureIcon : MonoBehaviour
    // The aura renderer
    public SpriteRenderer auraRenderer;
 
-   // The image used when the site is being captured by our voyage group
+   // The image used when the site is being captured by our group
    public Sprite allyImage;
 
-   // The aura image used when the site is being captured by our voyage group
+   // The aura image used when the site is being captured by our group
    public Sprite allyAuraImage;
 
    // The image used when the site is being captured by an enemy group
@@ -39,12 +39,12 @@ public class TreasureSiteCaptureIcon : MonoBehaviour
    public void Update () {
       // Only active on clients
       if (_treasureSite == null || !_treasureSite.isClient || Global.player == null ||
-         !VoyageGroupManager.isInGroup(Global.player)) {
+         !GroupManager.isInGroup(Global.player)) {
          return;
       }
 
       // Set the correct icon
-      if (_treasureSite.inRangeVoyageGroupId == Global.player.voyageGroupId) {
+      if (_treasureSite.inRangeGroupId == Global.player.groupId) {
          iconRenderer.sprite = allyImage;
          auraRenderer.sprite = allyAuraImage;
       } else {

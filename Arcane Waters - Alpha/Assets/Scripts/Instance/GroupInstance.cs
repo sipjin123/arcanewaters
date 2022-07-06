@@ -6,17 +6,14 @@ using Mirror;
 using System;
 
 /// <summary>
-/// Voyages are instances that are created for a specific group and that can only be accessed by that group. This is different from the 'voyage' feature as presented to players.
+/// Group instances are instances that are created for a specific group and that can only be accessed by that group.
 /// </summary>
 [Serializable]
-public class Voyage
+public class GroupInstance
 {
    #region Public Variables
 
-   // The number of voyage instances that must always be available to join
-   public static int OPEN_VOYAGE_INSTANCES = 3;
-
-   // The time interval since the voyage creation during which new groups can join
+   // The time interval since the group instance creation during which new groups can join
    public static float INSTANCE_OPEN_DURATION = 20 * 60;
 
    // The maximum number of players per instance
@@ -30,58 +27,58 @@ public class Voyage
    // The maximum number of players in a group for a pvp game
    public static int MAX_PLAYERS_PER_GROUP_PVP = 6;
 
-   // The total number of maps in a league (series of voyages maps)
-   public static int MAPS_PER_LEAGUE = 3;
+   // The total number of maps in a voyage (series of league maps)
+   public static int MAPS_PER_VOYAGE = 3;
 
-   // The maximum distance apart the group members can be when starting a league
-   public static int LEAGUE_START_MEMBERS_MAX_DISTANCE = 3;
+   // The maximum distance apart the group members can be when starting a voyage
+   public static int VOYAGE_START_MEMBERS_MAX_DISTANCE = 3;
 
-   // The radius around the league entrance where the exit spawn is searched
-   public static float LEAGUE_EXIT_SPAWN_SEARCH_RADIUS = 2f;
+   // The radius around the voyage entrance where the exit spawn is searched
+   public static float VOYAGE_EXIT_SPAWN_SEARCH_RADIUS = 2f;
 
-   // The voyage difficulty as enum, mostly used for the UI
+   // The group instance difficulty as enum
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
 
-   // The unique id of the voyage
-   public int voyageId;
+   // The id of the group instance, unique in all the server network
+   public int groupInstanceId;
 
-   // The id of the instance
+   // The id of the instance in the hosting server
    public int instanceId;
 
-   // The key of the area the voyage is set in
+   // The key of the area the instance is set in
    public string areaKey;
 
-   // The name of the area the voyage is set in
+   // The name of the area the instance is set in
    public string areaName;
 
-   // The voyage difficulty
+   // The group instance difficulty
    public int difficulty = 0;
 
-   // Gets set to true when the voyage is PvP - Otherwise, the voyage is PvE
+   // Gets set to true when the instance is PvP - Otherwise, the instance is PvE
    public bool isPvP = false;
 
-   // Gets set to true when the map is part of a league (series of connected voyages)
+   // Gets set to true when the map is part of a voyage (series of connected leagues)
    public bool isLeague = false;
 
-   // The index of this voyage in the league series
+   // The index of this league in the league series (voyage)
    public int leagueIndex = 0;
 
    // The random seed used to create the league map series
    public int leagueRandomSeed = -1;
 
-   // The area key where users are warped to when exiting a league
-   public string leagueExitAreaKey = "";
+   // The area key where users are warped to when exiting a voyage
+   public string voyageExitAreaKey = "";
 
-   // The spawn key where users are warped to when exiting a league
-   public string leagueExitSpawnKey = "";
+   // The spawn key where users are warped to when exiting a voyage
+   public string voyageExitSpawnKey = "";
 
-   // The facing direction when exiting a league
-   public Direction leagueExitFacingDirection = Direction.South;
+   // The facing direction when exiting a voyage
+   public Direction voyageExitFacingDirection = Direction.South;
 
-   // The creation time of the voyage instance
+   // The creation time of the instance
    public long creationDate;
 
-   // The total number of treasure sites in the map
+   // The total number of treasure sites in the instance
    public int treasureSiteCount = 0;
 
    // The number of captured treasure sites
@@ -93,13 +90,13 @@ public class Voyage
    // The total number of enemies in the instance
    public int totalNPCEnemyCount = 0;
 
-   // The number of groups in the voyage instance
+   // The number of groups in the instance
    public int groupCount = 0;
 
-   // The number of players in the voyage instance
+   // The number of players in the instance
    public int playerCount = 0;
 
-   // The biome of the area the voyage is set in
+   // The biome of the area the instance is set in
    public Biome.Type biome = Biome.Type.None;
 
    // The number of players in team A
@@ -116,12 +113,12 @@ public class Voyage
 
    #endregion
 
-   public Voyage () {
+   public GroupInstance () {
 
    }
 
-   public Voyage (int voyageId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, int totalNPCEnemyCount, int groupCount, int playerCount, int playerCountTeamA, int playerCountTeamB, int pvpGameMaxPlayerCount, PvpGame.State pvpGameState) {
-      this.voyageId = voyageId;
+   public GroupInstance (int groupInstanceId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string voyageExitAreaKey, string voyageExitSpawnKey, Direction voyageExitFacingDirection, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, int totalNPCEnemyCount, int groupCount, int playerCount, int playerCountTeamA, int playerCountTeamB, int pvpGameMaxPlayerCount, PvpGame.State pvpGameState) {
+      this.groupInstanceId = groupInstanceId;
       this.instanceId = instanceId;
       this.areaKey = areaKey;
       this.areaName = areaName;
@@ -131,9 +128,9 @@ public class Voyage
       this.isLeague = isLeague;
       this.leagueIndex = leagueIndex;
       this.leagueRandomSeed = leagueRandomSeed;
-      this.leagueExitAreaKey = leagueExitAreaKey;
-      this.leagueExitSpawnKey = leagueExitSpawnKey;
-      this.leagueExitFacingDirection = leagueExitFacingDirection;
+      this.voyageExitAreaKey = voyageExitAreaKey;
+      this.voyageExitSpawnKey = voyageExitSpawnKey;
+      this.voyageExitFacingDirection = voyageExitFacingDirection;
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;
@@ -163,8 +160,8 @@ public class Voyage
       return MAX_PLAYERS_PER_GROUP_HARD;
    }
 
-   public static int getMaxGroupSize (int voyageDifficulty) {
-      switch (getDifficultyEnum(voyageDifficulty)) {
+   public static int getMaxGroupSize (int groupInstanceDifficulty) {
+      switch (getDifficultyEnum(groupInstanceDifficulty)) {
          case Difficulty.Easy:
             return MAX_PLAYERS_PER_GROUP_EASY;
          case Difficulty.Medium:
@@ -176,9 +173,9 @@ public class Voyage
       }
    }
 
-   public static int getMaxGroupsPerInstance (int voyageDifficulty) {
+   public static int getMaxGroupsPerInstance (int groupInstanceDifficulty) {
       // Get the number of players per group
-      int groupSize = getMaxGroupSize(voyageDifficulty);
+      int groupSize = getMaxGroupSize(groupInstanceDifficulty);
 
       // Calculate the maximum number of groups
       int maxGroups = Mathf.FloorToInt(((float) MAX_PLAYERS_PER_INSTANCE) / groupSize);
@@ -186,16 +183,16 @@ public class Voyage
       return maxGroups;
    }
 
-   public static bool isLastLeagueMap (int leagueIndex) {
-      return leagueIndex >= MAPS_PER_LEAGUE - 1;
+   public static bool isLastVoyageMap (int leagueIndex) {
+      return leagueIndex >= MAPS_PER_VOYAGE - 1;
    }
 
-   public static bool isFirstLeagueMap (int leagueIndex) {
+   public static bool isFirstVoyageMap (int leagueIndex) {
       return leagueIndex == 0;
    }
 
    public static string getLeagueAreaName (int leagueIndex) {
-      return (leagueIndex + 1) + " of " + MAPS_PER_LEAGUE;
+      return (leagueIndex + 1) + " of " + MAPS_PER_VOYAGE;
    }
 
    #region Private Variables

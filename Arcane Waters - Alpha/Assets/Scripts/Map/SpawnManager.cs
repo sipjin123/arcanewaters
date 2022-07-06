@@ -86,7 +86,7 @@ public partial class SpawnManager : MonoBehaviour
             if (log) {
                D.editorLog("Random Position: {" + spawnData.localPosition.x + "} Map: {" + mapName + " : " + spawnName + "}", Color.yellow);
             }
-            return spawnData.localPosition + (spawn ? spawn.getRandomPositionOffset(VoyageManager.isPvpArenaArea(mapName) ? .25f : 0.5f) : Vector2.zero);
+            return spawnData.localPosition + (spawn ? spawn.getRandomPositionOffset(GroupInstanceManager.isPvpArenaArea(mapName) ? .25f : 0.5f) : Vector2.zero);
          }
          
          // Try using any valid spawn point for the area

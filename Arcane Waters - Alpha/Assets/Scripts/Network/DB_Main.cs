@@ -3438,22 +3438,46 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void setLiveMapVersion (MapVersion version) {
-      string cmdText = "UPDATE global.maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
+   public static new PublishedVersionChange setLiveMapVersion (MapVersion version) {
+      PublishedVersionChange change = new PublishedVersionChange { mapId = version.mapId };
+
       using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+      using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
-         cmd.Prepare();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
 
-         cmd.Parameters.AddWithValue("@mapId", version.mapId);
-         cmd.Parameters.AddWithValue("@version", version.version);
-         DebugQuery(cmd);
+         try {
+            cmd.Parameters.AddWithValue("@mapId", version.mapId);
+            cmd.Parameters.AddWithValue("@version", version.version);
 
-         // Execute the command
-         cmd.ExecuteNonQuery();
+            cmd.CommandText = "SELECT publishedVersion FROM global.maps_v2 WHERE id = @mapId;";
+            DebugQuery(cmd);
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               if (reader.Read()) {
+                  change.previousVersion = DataUtil.getInt(reader, "publishedVersion");
+               }
+            }
+
+            cmd.CommandText = "UPDATE global.maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+            change.currentVersion = version.version;
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
       }
 
       noteMapVersionPublish(version.mapId);
+
+      return change;
    }
 
    protected static new void noteMapVersionPublish (int mapId) {
@@ -3497,6 +3521,45 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new List<MapChangeComment> getVersionChangeComments (int mapId, int mapVersion) {
+      List<MapChangeComment> result = new List<MapChangeComment>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT accounts.accName, map_change_comments.userId as userId, maps_v2.displayname as mapName, map_change_comments.comment " +
+            "FROM global.map_change_comments " +
+            "JOIN global.maps_v2 ON map_change_comments.mapId = maps_v2.id LEFT JOIN global.accounts ON  map_change_comments.userId = accounts.accId " +
+            "WHERE map_change_comments.mapVersion = @mapVersion AND map_change_comments.mapId = @mapId;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mapId", mapId);
+            cmd.Parameters.AddWithValue("@mapVersion", mapVersion);
+            DebugQuery(cmd);
+
+            // Execute the command
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result.Add(new MapChangeComment {
+                     mapId = mapId,
+                     mapVersion = mapVersion,
+                     accName = DataUtil.getString(reader, "accName"),
+                     mapName = DataUtil.getString(reader, "mapName"),
+                     comment = DataUtil.getString(reader, "comment"),
+                     userId = DataUtil.getInt(reader, "userId")
+                  });
+               }
+            }
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
    }
 
    #endregion
@@ -3880,9 +3943,9 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "DELETE FROM perks WHERE usrId=@usrId AND perkId > 0; " + 
-            "INSERT INTO perks (usrId, perkId, perkPoints) " + 
-            "VALUES(@usrId, @perkId, @perkPoints) " + 
+            "DELETE FROM perks WHERE usrId=@usrId AND perkId > 0; " +
+            "INSERT INTO perks (usrId, perkId, perkPoints) " +
+            "VALUES(@usrId, @perkId, @perkPoints) " +
             "ON DUPLICATE KEY UPDATE perkPoints = @perkPoints;"
             , conn)) {
 
@@ -6401,6 +6464,145 @@ public class DB_Main : DB_MainStub
    }
 
    #endregion
+
+   public static new bool tradeItemsIfValid (int userId1, List<Item> items1, int gold1, int userId2, List<Item> items2, int gold2) {
+      // Concating int.MinValue handles cases where empty list of items is given,
+      // So it doesn't break SQL 'IN ()' check
+      string in1Check = "(" + string.Join(",", items1.Select(i => i.id).Concat(Enumerable.Repeat(int.MinValue, 1))) + ")";
+      string in2Check = "(" + string.Join(",", items2.Select(i => i.id).Concat(Enumerable.Repeat(int.MinValue, 1))) + ")";
+      string inBothCheck = "(" + string.Join(",", items1.Concat(items2).Select(i => i.id).Concat(Enumerable.Repeat(int.MinValue, 1))) + ")";
+
+      string whereItemsClause =
+         "WHERE itmId IN " + inBothCheck + // Get all items, relevant to this trade
+         " AND IFNULL(sbiBound, 0) = 0"; // This will prevent soulbound items from being selected
+
+      // Dictionary which will cache database items for us to check
+      Dictionary<(int userId, int itemId), int> existingItems = new Dictionary<(int userId, int itemId), int>();
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            // Select all the items we need to check from DB, ignoring soulbound items so the check fails in that case
+            cmd.CommandText = "SELECT itmId, usrId, itmCount FROM items LEFT JOIN soul_binding_items ON items.itmId = sbiItemId " + whereItemsClause;
+            cmd.Parameters.AddWithValue("@user1Id", userId1);
+            cmd.Parameters.AddWithValue("@user2Id", userId2);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  existingItems.Add((dataReader.GetInt32("usrId"), dataReader.GetInt32("itmId")), dataReader.GetInt32("itmCount"));
+               }
+            }
+
+            // Verify that the database contains all the requested items offered for trade
+            // Soulbound items didn't return - will fail check
+            // Not existing items didn't return - will fail check
+            // Different owner items will not be found, because dictionary is indexed by userId as well - will fail check
+            // Check for item counts as well
+            foreach (Item item in items1) {
+               if (!existingItems.TryGetValue((userId1, item.id), out int count)) {
+                  transaction.Rollback();
+                  return false;
+               }
+               if (count < item.count) {
+                  transaction.Rollback();
+                  return false;
+               }
+            }
+            foreach (Item item in items2) {
+               if (!existingItems.TryGetValue((userId2, item.id), out int count)) {
+                  transaction.Rollback();
+                  return false;
+               }
+               if (count < item.count) {
+                  transaction.Rollback();
+                  return false;
+               }
+            }
+
+            // Verify that both users have correct amount of gold
+            bool gold1Valid = false, gold2Valid = false;
+            cmd.CommandText =
+               "SELECT usrId, usrGold FROM users WHERE usrId = @user1Id OR usrId = @user2Id;";
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  if (dataReader.GetInt32("usrId") == userId1) {
+                     gold1Valid = dataReader.GetInt32("usrGold") >= gold1;
+                  } else if (dataReader.GetInt32("usrId") == userId2) {
+                     gold2Valid = dataReader.GetInt32("usrGold") >= gold2;
+                  }
+               }
+            }
+            if (!gold1Valid || !gold2Valid) {
+               transaction.Rollback();
+               return false;
+            }
+
+            // Now that we verified trade's integrity, transfer items
+            cmd.Parameters.AddWithValue("@goldDif1", gold2 - gold1);
+            cmd.Parameters.AddWithValue("@goldDif2", gold1 - gold2);
+            cmd.CommandText =
+               "UPDATE users SET usrGold = usrGold + @goldDif1 WHERE usrId = @user1Id;" +
+               "UPDATE users SET usrGold = usrGold + @goldDif2 WHERE usrId = @user2Id;";
+
+            cmd.CommandText += formTranferItemsQuery(items1, userId1, userId2, existingItems);
+            cmd.CommandText += formTranferItemsQuery(items2, userId2, userId1, existingItems);
+
+            cmd.ExecuteNonQuery();
+
+            transaction.Commit();
+            return true;
+         } catch (Exception e) {
+            try {
+               transaction.Rollback();
+               D.log("Transfer items: transaction rolled back successfully after error");
+            } catch { }
+            D.error("MySQL Error: " + e.ToString());
+            return false;
+         }
+      }
+   }
+
+   private static string formTranferItemsQuery (List<Item> items, int fromUserId, int toUserId, Dictionary<(int userId, int itemId), int> existingDBItems) {
+      string result = "";
+      foreach (Item i in items) {
+         result +=
+            // --------------------------------------------------
+            // Receiving user
+            // Find out what is the previous amount of this item
+            $"SELECT @prevCount := IFNULL((SELECT sum(itmCount) from items WHERE usrId={ toUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId }), 0);" +
+
+            // Create a duplicate item with target count + preexisting count
+            $"INSERT INTO items (usrId, itmCategory, itmType, itmCount, itmColor1, itmColor2, itmData, itmPalette1, itmPalette2, itmPalettes, durability) " +
+            $"SELECT { toUserId }, itmCategory, itmType, { i.count } + @prevCount, itmColor1, itmColor2, itmData, itmPalette1, itmPalette2, itmPalettes, durability " +
+            $"FROM items WHERE usrId={ fromUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId } LIMIT 1;" +
+
+            // Delete any previous instances of this item, because we added those counts to the new item
+            $"DELETE FROM items WHERE itmId < LAST_INSERT_ID() AND usrId={ toUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId };" +
+
+            // --------------------------------------------------
+            // Offering user
+            // Find out what is the previous amount of this item
+            $"SELECT @prevCount := IFNULL((SELECT sum(itmCount) from items WHERE usrId={ fromUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId }), 0);" +
+            $"SELECT @newCount := @prevCount - { i.count };" +
+
+            // Create a duplicate item with new count, if new count is more than 0
+            $"INSERT INTO items (usrId, itmCategory, itmType, itmCount, itmColor1, itmColor2, itmData, itmPalette1, itmPalette2, itmPalettes, durability) " +
+            $"SELECT { fromUserId }, itmCategory, itmType, @newCount, itmColor1, itmColor2, itmData, itmPalette1, itmPalette2, itmPalettes, durability " +
+            $"FROM items WHERE usrId={ fromUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId } AND @newCount > 0 LIMIT 1;" +
+
+            // Delete any previous instances of this item, because we added those counts to the new item
+            $"DELETE FROM items WHERE itmId < LAST_INSERT_ID() AND usrId={ fromUserId } AND itmCategory={ (int) i.category } AND itmType={ i.itemTypeId };";
+      }
+
+      return result;
+   }
 
    public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
@@ -11349,12 +11551,13 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message, autoDelete, sendBack, canReply) " +
-            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message, @autoDelete, @sendBack, @canReply)", conn)) {
+            "INSERT INTO mails(recipientUsrId, senderUsrId, ownerUsrId, receptionDate, isRead, mailSubject, message, autoDelete, sendBack, canReply, senderNameOverride) " +
+            "VALUES (@recipientUsrId, @senderUsrId, @ownerUsrId, @receptionDate, @isRead, @mailSubject, @message, @autoDelete, @sendBack, @canReply, @senderNameOverride)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@recipientUsrId", mailInfo.recipientUserId);
+            cmd.Parameters.AddWithValue("@ownerUsrId", mailInfo.ownerUserId);
             cmd.Parameters.AddWithValue("@senderUsrId", mailInfo.senderUserId);
             cmd.Parameters.AddWithValue("@receptionDate", DateTime.FromBinary(mailInfo.receptionDate));
             cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
@@ -11363,6 +11566,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@autoDelete", mailInfo.autoDelete);
             cmd.Parameters.AddWithValue("@sendBack", mailInfo.sendBack);
             cmd.Parameters.AddWithValue("@canReply", mailInfo.canReply);
+            cmd.Parameters.AddWithValue("@senderNameOverride", mailInfo.senderNameOverride);
             DebugQuery(cmd);
 
             // Execute the command
@@ -11992,18 +12196,24 @@ public class DB_Main : DB_MainStub
       return auctionList;
    }
 
-   public static new void deliverAuction (int auctionId, int mailId, int recipientUserId) {
+   public static new void deliverAuction (int auctionId, int mailId, int recipientUserId, string mailMessageOverride, string mailSenderNameOverride) {
       try {
+         mailMessageOverride = !Util.isEmpty(mailMessageOverride) ? mailMessageOverride : string.Empty;
+         mailSenderNameOverride = !Util.isEmpty(mailSenderNameOverride) ? mailSenderNameOverride : string.Empty;
+
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("", conn)) {
             conn.Open();
 
             // Set the recipient in the mail linked to the auction, that has the item as attachment
-            cmd.CommandText = "UPDATE mails SET recipientUsrId=@recipientUsrId, receptionDate=@receptionDate WHERE mailId=@mailId";
+            // Override message and senderName if required
+            cmd.CommandText = "UPDATE mails SET recipientUsrId=@recipientUsrId, receptionDate=@receptionDate, message=@message, senderNameOverride=@senderNameOverride WHERE mailId=@mailId";
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@mailId", mailId);
             cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
             cmd.Parameters.AddWithValue("@receptionDate", DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("@message", mailMessageOverride);
+            cmd.Parameters.AddWithValue("@senderNameOverride", mailSenderNameOverride);
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
@@ -13127,6 +13337,49 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Wishlist
+
+   public static new bool notePlayerWishlist(string steamId, string appId) {
+      bool result = false;
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("INSERT INTO steam_wishlists (swSteamId, swAppId) SELECT @steamId, @appId WHERE NOT EXISTS (SELECT * FROM steam_wishlists WHERE swSteamId=@steamId AND swAppId=@appId)", connection)) {
+               command.Parameters.AddWithValue("@steamId", steamId);
+               command.Parameters.AddWithValue("@appId", appId);
+               result = command.ExecuteNonQuery() > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   public static new bool hasPlayerWishlisted (string steamId) {
+      bool result = false;
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM steam_wishlists WHERE swSteamId = @steamId", connection)) {
+               command.Parameters.AddWithValue("@steamId", steamId);
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  result = reader.HasRows;
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   #endregion
+
    #region User History
 
    public static bool createUserHistoryEvent (UserHistoryEventInfo eventInfo) {
@@ -13509,7 +13762,8 @@ public class DB_Main : DB_MainStub
       return "SERVER=" + server + ";" +
           "DATABASE=" + (database == "" ? _database : database) + ";" +
           "UID=" + (uid == "" ? _uid : uid) + ";" +
-          "PASSWORD=" + (password == "" ? _password : password) + ";";
+          "PASSWORD=" + (password == "" ? _password : password) + ";" +
+          "ALLOW USER VARIABLES=True" + ";";
    }
 
    /*

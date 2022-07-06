@@ -11,7 +11,7 @@ public class PvpArenaCell : MonoBehaviour
 {
    #region Public Variables
 
-   // The voyage id
+   // The group instance id
    public Text idText;
 
    // The area name
@@ -48,20 +48,20 @@ public class PvpArenaCell : MonoBehaviour
    public Color canBeJoinedTextColor;
    public Color cannotBeJoinedTextColor;
 
-   // The voyage data
+   // The instance data
    [HideInInspector]
-   public Voyage voyage;
+   public GroupInstance pvpArena;
 
    #endregion
 
-   public void setCellForPvpArena (Voyage pvpArena) {
+   public void setCellForPvpArena (GroupInstance pvpArena) {
       setCellForPvpArena(pvpArena, null);
       disablePointerEvents();
    }
 
-   public void setCellForPvpArena (Voyage pvpArena, UnityAction action) {
-      this.voyage = pvpArena;
-      idText.text = pvpArena.voyageId.ToString();
+   public void setCellForPvpArena (GroupInstance pvpArena, UnityAction action) {
+      this.pvpArena = pvpArena;
+      idText.text = pvpArena.groupInstanceId.ToString();
       areaText.text = pvpArena.areaName;
       playerCount.text = pvpArena.playerCount.ToString() + "/" + pvpArena.pvpGameMaxPlayerCount.ToString();
       timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(pvpArena.creationDate)).ToString(@"mm\:ss");

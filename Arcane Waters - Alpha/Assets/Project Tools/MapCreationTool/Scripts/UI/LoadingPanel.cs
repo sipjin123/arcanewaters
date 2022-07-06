@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +27,11 @@ namespace MapCreationTool
       public void display (string title, UnityThreading.Task displayWhileTask) {
          display(title);
 
-         displayWhileTask.TaskEnded += (handler) => UnityThreadHelper.UnityDispatcher.Dispatch(() => hide());
+         _targetUnityTasks.Add((title, displayWhileTask));
+
+         displayWhileTask.TaskEnded += (handler) => UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            hide();
+         });
       }
 
       public void display (string title, Task displayWhileTask) {
@@ -42,6 +48,12 @@ namespace MapCreationTool
       }
 
       protected override void hide () {
+         _targetUnityTasks.RemoveAll(t => t.task == null || t.task.HasEnded);
+         if (_targetUnityTasks.Count > 0) {
+            display(_targetUnityTasks.First().name);
+            return;
+         }
+
          base.hide();
 
          // Return to the default behaviour of pausing while in background
@@ -57,5 +69,8 @@ namespace MapCreationTool
 
       // Task, for which we are showing loading panel
       private Task targetTask = null;
+
+      // Unity threading tasks we are displaying the loading screen for
+      private List<(string name, UnityThreading.Task task)> _targetUnityTasks = new List<(string name, UnityThreading.Task task)>();
    }
 }

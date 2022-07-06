@@ -31,7 +31,7 @@ public class HatStatData : EquipmentStatData
          itemDescription = hatStatData.equipmentDescription,
          category = Item.Category.Hats,
          iconPath = hatStatData.equipmentIconPath,
-         paletteNames = hatStatData.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(hatStatData.defaultPalettes),
          data = serializeHatStatData(hatStatData)
       };
       return newHat;
@@ -66,7 +66,7 @@ public class HatStatData : EquipmentStatData
    public static HatStatData getDefaultData () {
       return new HatStatData {
          hatType = 0,
-         palettes = ""
+         //palettes = ""
       };
    }
 }

@@ -18,7 +18,7 @@ public class OpenWorldSpawnBlocker : MonoBehaviour, IMapEditorDataReceiver {
    public Transform leftMarker, rightMarker, topMarker, bottomMarker;
 
    // The multiplier size from map editor into main world scale
-   public const float REAL_WORLD_SCALER = 16;
+   public const float REAL_WORLD_SCALER = 0.16f;
 
    #endregion
 

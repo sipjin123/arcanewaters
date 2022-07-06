@@ -12,6 +12,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 {
    #region Public Variables
 
+   // The maximum amount of items the player can include in trade, excluding gold
+   public const int MAX_TRADE_ITEMS = 18;
+
    // The farming trigger component used for detecting crops
    public FarmingTrigger farmingTrigger;
 
@@ -146,6 +149,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Stores information about the sitting behaviour
    public SittingInfo sittingInfo;
 
+   // The player we are trading with
+   [SyncVar]
+   public int tradeTargetUserId;
+
+   // The current state of trade process we are in
+   [SyncVar]
+   public TradeState tradeState;
+
+   // The items we are offering in trade
+   public SyncDictionary<int, Item> offeredTradeItems = new SyncDictionary<int, Item>();
+
+   // The gold we are offering in trade
+   [SyncVar]
+   public int offeredGoldTrade = 0;
+
    #endregion
 
    protected override void Awake () {
@@ -195,6 +213,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          PanelManager.self.showPowerupPanel();
          Cmd_CheckAmbientSfx();
+
+         // Refresh the inventory panel
+         if (isLocalPlayer) {
+            PanelManager.self.hideAllPanels();
+         }
       }
 
       // Check if an npc is above the player
@@ -207,7 +230,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isServer) {
          // When we enter a new scene, update powerups on the client
-         if (VoyageManager.isTreasureSiteArea(areaKey) || areaKey.Contains(Area.TUTORIAL_AREA)) {
+         if (GroupInstanceManager.isTreasureSiteArea(areaKey) || areaKey.Contains(Area.TUTORIAL_AREA)) {
             rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
             processGearBuffs();
          } else {
@@ -1348,6 +1371,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          _bodyLayer.toggleClipmask(chairType == ChairClickable.ChairType.Stool ? stoolSittingClipmask : defaultSittingClipmask, show);
       }
    }
+
+   #region Player Trade
+
+   public bool canTrade (PlayerBodyEntity targetEntity) {
+      return
+         targetEntity != null &&
+         !targetEntity.isInBattle() &&
+         instanceId == targetEntity.instanceId &&
+         (tradeState == TradeState.None || tradeTargetUserId == targetEntity.userId) &&
+         (targetEntity.tradeState == TradeState.None || targetEntity.tradeTargetUserId == userId);
+   }
+
+   [Server]
+   public void clearTradeState () {
+      tradeState = TradeState.None;
+      tradeTargetUserId = 0;
+      offeredTradeItems.Clear();
+      offeredGoldTrade = 0;
+   }
+
+   #endregion
 
    #region Composite Animations
 

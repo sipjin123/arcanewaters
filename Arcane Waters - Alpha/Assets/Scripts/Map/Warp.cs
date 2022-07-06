@@ -123,75 +123,75 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       D.adminLog("Warping player: " + player.userId + " : To area: " + areaTarget + " : Spawn Target: " + spawnTarget + " Delay: " + delay, D.ADMIN_LOG_TYPE.Warp);
       yield return new WaitForSeconds(delay);
 
-      if (VoyageManager.isPOIArea(areaTarget)) {
+      if (GroupInstanceManager.isPOIArea(areaTarget)) {
          POISiteManager.self.warpUserToPOIArea(player, areaTarget, spawnTarget, newFacingDirection);
       }
       // Any warp inside a treasure site area is considered an exit towards the sea voyage area
-      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+      else if (GroupManager.isInGroup(player) && GroupInstanceManager.isTreasureSiteArea(player.areaKey)) {
          D.adminLog("Successfully warp process", D.ADMIN_LOG_TYPE.Warp);
 
          // Try to find the treasure site entrance (spawn) where the user is registered
-         int voyageId = player.getInstance().voyageId;
+         int groupInstanceId = player.getInstance().groupInstanceId;
 
-         // If the voyage instance cannot be found, warp the player to the starting town
-         if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
-            D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
-            D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea voyage after treasure site, returning to Town");
+         // If the group instance cannot be found, warp the player to the starting town
+         if (!InstanceManager.self.tryGetGroupInstance(groupInstanceId, out Instance seaGroupInstance)) {
+            D.error(string.Format("Could not find the sea group instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+            D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea group instance after treasure site, returning to Town");
 
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
 
          string spawnTarget = "";
-         foreach (TreasureSite treasureSiteRef in seaVoyageInstance.treasureSites) {
+         foreach (TreasureSite treasureSiteRef in seaGroupInstance.treasureSites) {
             if (treasureSiteRef.playerListInSite.Contains(player.userId)) {
                spawnTarget = treasureSiteRef.spawnTarget;
                break;
             }
          }
 
-         player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
+         player.spawnInNewMap(groupInstanceId, seaGroupInstance.areaKey, spawnTarget, newFacingDirection);
       }
       // Check if the destination is a treasure site
-      else if (VoyageGroupManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
+      else if (GroupManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
          TreasureSite treasureSite = getTreasureSite(player.instanceId);
 
          // Register this user as being inside the treasure site
          treasureSite.playerListInSite.Add(player.userId);
 
-         int voyageId = player.getInstance().voyageId;
-         player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
+         int groupInstanceId = player.getInstance().groupInstanceId;
+         player.spawnInNewMap(groupInstanceId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
       }
-      // Any warp inside a league voyage map is considered an exit towards the next map
-      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isAnyLeagueArea(player.areaKey)) {
+      // Any warp inside a league map is considered an exit towards the next voyage map
+      else if (GroupManager.isInGroup(player) && GroupInstanceManager.isAnyLeagueArea(player.areaKey)) {
          Instance instance = InstanceManager.self.getInstance(player.instanceId);
 
-         // If the instance is not a voyage, warp the player to the starting town
-         if (instance == null || instance.voyageId <= 0) {
-            D.error(string.Format("An instance in a league area is not a voyage. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
-            D.debug("This player {" + player.userId + " " + player.entityName + "} is accessing instance that is not a voyage, returning to Town");
+         // If the instance is not a group instance, warp the player to the starting town
+         if (instance == null || instance.groupInstanceId <= 0) {
+            D.error(string.Format("An instance in a league area is not a group instance. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
+            D.debug("This player {" + player.userId + " " + player.entityName + "} is accessing instance that is not a group instance, returning to Town");
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
 
-         if (Voyage.isLastLeagueMap(instance.leagueIndex)) {
-            // At the end of a league, warp to the town in the next biome
+         if (GroupInstance.isLastVoyageMap(instance.leagueIndex)) {
+            // At the end of a voyage, warp to the town in the next biome
             player.spawnInBiomeHomeTown(Biome.getNextBiome(instance.biome));
          } else {
-            if (!player.tryGetVoyage(out Voyage voyage)) {
-               D.error("Error when retrieving the voyage during warp to next league instance.");
-               player.rpc.sendError("Error when warping between league maps. Could not find the voyage.");
-               D.debug("This player {" + player.userId + " " + player.entityName + "} could not find Voyage during warp to league, returning to Town");
+            if (!player.tryGetGroupInstance(out GroupInstance groupInstance)) {
+               D.error("Error when retrieving the group instance during warp to next league instance.");
+               player.rpc.sendError("Error when warping between league maps. Could not find the group instance.");
+               D.debug("This player {" + player.userId + " " + player.entityName + "} could not find group instance during warp to league, returning to Town");
                player.spawnInNewMap(Area.STARTING_TOWN);
                yield break;
             }
 
-            // If the group is already assigned to another voyage map, the next instance has already been created and we simply warp the player to it
-            if (voyage.voyageId != instance.voyageId) {
-               player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+            // If the group is already assigned to another group instance, the next instance has already been created and we simply warp the player to it
+            if (groupInstance.groupInstanceId != instance.groupInstanceId) {
+               player.spawnInNewMap(groupInstance.groupInstanceId, groupInstance.areaKey, Direction.South);
             } else {
                // Create the next league map and warp the player to it
-               VoyageManager.self.createLeagueInstanceAndWarpPlayer(player, instance.leagueIndex + 1, instance.biome, instance.leagueRandomSeed, "", voyage.leagueExitAreaKey, voyage.leagueExitSpawnKey, voyage.leagueExitFacingDirection);
+               GroupInstanceManager.self.createLeagueInstanceAndWarpPlayer(player, instance.leagueIndex + 1, instance.biome, instance.leagueRandomSeed, "", groupInstance.voyageExitAreaKey, groupInstance.voyageExitSpawnKey, groupInstance.voyageExitFacingDirection);
             }
          }
       } else {
@@ -448,13 +448,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       // Inside a treasure site, all warps are considered an exit and are always active
-      if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+      if (GroupManager.isInGroup(player) && GroupInstanceManager.isTreasureSiteArea(player.areaKey)) {
          return true;
       }
 
       // Check if a treasure site is controlling the warp in this instance
       if (_treasureSites.TryGetValue(player.instanceId, out TreasureSite site)) {
-         if (site != null && site.isActive() && VoyageGroupManager.isInGroup(player) && site.isCaptured() && site.isOwnedByGroup(player.voyageGroupId)) {
+         if (site != null && site.isActive() && GroupManager.isInGroup(player) && site.isCaptured() && site.isOwnedByGroup(player.groupId)) {
             return true;
          }
       }

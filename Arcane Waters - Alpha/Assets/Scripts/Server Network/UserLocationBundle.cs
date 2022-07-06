@@ -12,6 +12,9 @@ public class UserLocationBundle
    // The user id
    public int userId;
 
+   // The user name
+   public string userName;
+
    // The steam id of the user
    public ulong steamId;
 
@@ -29,7 +32,7 @@ public class UserLocationBundle
    public float localPositionY;
 
    // The group the user belongs to
-   public int voyageGroupId;
+   public int groupId;
 
    #endregion
 

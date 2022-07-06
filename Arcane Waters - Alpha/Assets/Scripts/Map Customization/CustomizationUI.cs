@@ -82,7 +82,7 @@ namespace MapCustomization
             }
          }
 
-         if (KeyUtils.GetKeyDown(Key.Delete)) {
+         if (KeyUtils.GetKeyDown(Key.Delete) || KeyUtils.GetKeyDown(Key.Backspace)) {
             manager.keyDeleteAt(pointerPos);
          }
       }

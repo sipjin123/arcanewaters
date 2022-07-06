@@ -22,7 +22,7 @@ public class InstanceManager : MonoBehaviour
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId, int instanceToVisit = -1) {
+   public Instance addPlayerToInstance (NetEntity player, string areaKey, int groupInstanceId, int instanceToVisit = -1) {
       Instance instance = null;
 
       // Fetch the instance declared by server if there is any
@@ -38,35 +38,35 @@ public class InstanceManager : MonoBehaviour
       }
 
       // If the player is warping to a world map instance, search for it
-      if (VoyageManager.isWorldMapArea(areaKey) && WorldMapManager.isWorldMapArea(areaKey)) {
+      if (GroupInstanceManager.isWorldMapArea(areaKey) && WorldMapManager.isWorldMapArea(areaKey)) {
          Instance existingInstance = getWorldMapOpenInstance(areaKey);
          if (existingInstance != null) {
             instance = existingInstance;
          }
       }
 
-      // If the player is warping to a voyage instance, search for it
-      if (voyageId != -1) {
-         if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
-            if (!tryGetVoyageInstance(voyageId, out instance)) {
-               D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
+      // If the player is warping to a group instance, search for it
+      if (groupInstanceId != -1) {
+         if (GroupInstanceManager.isAnyLeagueArea(areaKey) || GroupInstanceManager.isPvpArenaArea(areaKey)) {
+            if (!tryGetGroupInstance(groupInstanceId, out instance)) {
+               D.error("Could not find the group instance with id " + groupInstanceId + " in area " + areaKey);
             }
 
-            // TODO: Generate a new voyage for user here
-            int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
-            if (voyageInstanceId > 0) {
-               Instance inst = getInstance(voyageInstanceId);
+            // TODO: Generate a new group instance for user here
+            int pvpInstanceId = GroupInstanceManager.self.getPvpInstanceId(areaKey);
+            if (pvpInstanceId > 0) {
+               Instance inst = getInstance(pvpInstanceId);
                if (inst != null) {
                   instance = inst;
                } else {
-                  D.debug("Failed to get voyage instance: " + voyageInstanceId);
+                  D.debug("Failed to get pvp instance: " + pvpInstanceId);
                }
             }
-         } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
+         } else if (GroupInstanceManager.isTreasureSiteArea(areaKey)) {
             // Search for the parent sea instance
-            if (tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
+            if (tryGetGroupInstance(groupInstanceId, out Instance seaGroupInstance)) {
                // Search for the treasure site entrance the player is registered in
-               foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+               foreach (TreasureSite treasureSite in seaGroupInstance.treasureSites) {
                   if (treasureSite.playerListInSite.Contains(player.userId)) {
                      // Check if the treasure site instance has already been created
                      if (treasureSite.destinationInstanceId > 0) {
@@ -77,48 +77,52 @@ public class InstanceManager : MonoBehaviour
                            D.adminLog("TreasureSite instance being fetched here, " +
                               "TreasureSite: {" + treasureSite.areaKey + "} {" + treasureSite.instanceId + "} {" + treasureSite.destinationInstanceId + "} " +
                               "PrevArea: {" + areaKey + " } {" + player.areaKey + "}  {" + player.instanceId + "}" +
-                              "Instance: {" + instance.id + "}{" + instance.areaKey + "}{" + instance.voyageId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
+                              "Instance: {" + instance.id + "}{" + instance.areaKey + "}{" + instance.groupInstanceId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
 
                            if (areaKey != instance.areaKey) {
                               D.adminLog("Created New Instance for POI, area keys did not match for " +
                                  "InstanceId:{" + instance.id + "} InstanceArea:{" + instance.areaKey + "} TargetArea:{" + areaKey + "}", D.ADMIN_LOG_TYPE.POI_WARP);
 
                               // If the treasure site instance doesn't exist yet, create it
-                              instance = createNewInstance(areaKey, false, voyageId, seaVoyageInstance.leagueExitAreaKey, seaVoyageInstance.leagueExitSpawnKey, seaVoyageInstance.leagueExitFacingDirection);
+                              instance = createNewInstance(areaKey, false, groupInstanceId, seaGroupInstance.voyageExitAreaKey, seaGroupInstance.voyageExitSpawnKey, seaGroupInstance.voyageExitFacingDirection);
                               treasureSite.destinationInstanceId = instance.id;
                            }
                         }
                      } else {
                         D.adminLog("Created New Instance for Non-Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         // If the treasure site instance doesn't exist yet, create it
-                        instance = createNewInstance(areaKey, false, voyageId, seaVoyageInstance.leagueExitAreaKey, seaVoyageInstance.leagueExitSpawnKey, seaVoyageInstance.leagueExitFacingDirection);
+                        instance = createNewInstance(areaKey, false, groupInstanceId, seaGroupInstance.voyageExitAreaKey, seaGroupInstance.voyageExitSpawnKey, seaGroupInstance.voyageExitFacingDirection);
                         treasureSite.destinationInstanceId = instance.id;
                      }
                      break;
                   }
                }
 
-               // If the user is not registered in a treasure site entrance, try to find an existing instance with the same voyageId
+               // If the user is not registered in a treasure site entrance, try to find an existing instance with the same id
                if (instance == null) {
-                  tryGetTreasureSiteInstance(voyageId, areaKey, out instance);
+                  tryGetTreasureSiteInstance(groupInstanceId, areaKey, out instance);
                }
 
                // If all else fails, create a new instance (useful for /admin warp commands)
                if (instance == null) {
-                  instance = createNewInstance(areaKey, false, voyageId, "", "", Direction.South);
-                  D.adminLog("Created New Instance for Voyage", D.ADMIN_LOG_TYPE.InstanceProcess);
+                  instance = createNewInstance(areaKey, false, groupInstanceId, "", "", Direction.South);
+                  D.adminLog("Created New Instance for treasure site", D.ADMIN_LOG_TYPE.InstanceProcess);
                }
             }
-         } else if (VoyageManager.isPOIArea(areaKey)) {
-            if (!POISiteManager.self.tryGetInstanceForGroup(player.voyageGroupId, areaKey, out instance)) {
-               D.warning($"Could not determine the POI instance for player {player.userId}, area {areaKey}");
+         } else if (GroupInstanceManager.isPOIArea(areaKey)) {
+            if (!POISiteManager.self.tryGetInstanceForGroup(player.groupId, areaKey, out instance)) {
+               if (player.isAdmin() && tryGetGroupInstance(groupInstanceId, out instance)) {
+                  // If the user is admin and the target group instance instance exists, let him spawn even if the group is not linked to a POI site (useful for admin warp and goto commands)
+               } else {
+                  D.warning($"Could not determine the POI instance for player {player.userId}, area {areaKey}");
+               }
             }
          }
       } else {
-         if (VoyageManager.isPvpArenaArea(areaKey)) {
-            int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
-            if (voyageInstanceId > 0) {
-               Instance inst = getInstance(voyageInstanceId);
+         if (GroupInstanceManager.isPvpArenaArea(areaKey)) {
+            int pvpInstanceId = GroupInstanceManager.self.getPvpInstanceId(areaKey);
+            if (pvpInstanceId > 0) {
+               Instance inst = getInstance(pvpInstanceId);
                if (inst != null) {
                   instance = inst;
                }
@@ -319,21 +323,21 @@ public class InstanceManager : MonoBehaviour
       return _instances.Values.ToList();
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageIdOverride = -1) {
-      return createNewInstance(areaKey, isSinglePlayer, voyageIdOverride, "", "", Direction.South);
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int groupInstanceIdOverride = -1) {
+      return createNewInstance(areaKey, isSinglePlayer, groupInstanceIdOverride, "", "", Direction.South);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection) {
-      int difficulty = getDifficultyForInstance(voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, voyageId, difficulty, leagueExitAreaKey, leagueExitSpawnKey, leagueExitFacingDirection);
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int groupInstanceId, string voyageExitAreaKey, string voyageExitSpawnKey, Direction voyageExitFacingDirection) {
+      int difficulty = getDifficultyForInstance(groupInstanceId);
+      return createNewInstance(areaKey, isSinglePlayer, groupInstanceId, difficulty, voyageExitAreaKey, voyageExitSpawnKey, voyageExitFacingDirection);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, int difficulty, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection) {
-      Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, -1, leagueExitAreaKey, leagueExitSpawnKey, leagueExitFacingDirection, difficulty, biome);
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int groupInstanceId, int difficulty, string voyageExitAreaKey, string voyageExitSpawnKey, Direction voyageExitFacingDirection) {
+      Biome.Type biome = getBiomeForInstance(areaKey, groupInstanceId);
+      return createNewInstance(areaKey, isSinglePlayer, false, groupInstanceId, false, false, 0, -1, voyageExitAreaKey, voyageExitSpawnKey, voyageExitFacingDirection, difficulty, biome);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection, int difficulty, Biome.Type biome) {
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isGroupInstance, int groupInstanceId, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string voyageExitAreaKey, string voyageExitSpawnKey, Direction voyageExitFacingDirection, int difficulty, Biome.Type biome) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -342,14 +346,14 @@ public class InstanceManager : MonoBehaviour
       instance.serverPort = MyNetworkManager.self.Port;
       instance.mapSeed = UnityEngine.Random.Range(0, 1000000);
       instance.creationDate = DateTime.UtcNow.ToBinary();
-      instance.isVoyage = isVoyage;
+      instance.isGroupInstance = isGroupInstance;
       instance.isLeague = isLeague;
       instance.leagueIndex = leagueIndex;
       instance.leagueRandomSeed = leagueRandomSeed;
-      instance.leagueExitAreaKey = leagueExitAreaKey;
-      instance.leagueExitSpawnKey = leagueExitSpawnKey;
-      instance.leagueExitFacingDirection = leagueExitFacingDirection;
-      instance.voyageId = voyageId;
+      instance.voyageExitAreaKey = voyageExitAreaKey;
+      instance.voyageExitSpawnKey = voyageExitSpawnKey;
+      instance.voyageExitFacingDirection = voyageExitFacingDirection;
+      instance.groupInstanceId = groupInstanceId;
       instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;
       instance.difficulty = difficulty;
@@ -371,10 +375,12 @@ public class InstanceManager : MonoBehaviour
       // Keep track of it
       _instances.Add(instance.id, instance);
 
-      // Update the instance count in the server network
+      // Immediately make the new instance info accessible to other servers
       if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
-         D.adminLog("Registering Instance {" + ServerNetworkingManager.self.server.networkedPort.Value + "} for area {" + areaKey + "}", D.ADMIN_LOG_TYPE.InstanceProcess);
-         ServerNetworkingManager.self.server.areaToInstanceCount[areaKey] = getInstanceCount(areaKey);
+         ServerNetworkingManager.self.server.updateInstance(instance.getBasicInstanceOverview());
+         if (groupInstanceId > 0) {
+            ServerNetworkingManager.self.server.updateGroupInstance(instance);
+         }
       }
 
       // Spawn the network object on the Clients
@@ -502,35 +508,35 @@ public class InstanceManager : MonoBehaviour
       return areaArray;
    }
 
-   public List<Instance> getVoyageInstances () {
-      List<Instance> voyages = new List<Instance>();
+   public List<Instance> getGroupInstances () {
+      List<Instance> groupInstances = new List<Instance>();
 
       foreach (Instance instance in _instances.Values) {
-         if (instance.isVoyage) {
-            voyages.Add(instance);
+         if (instance.isGroupInstance) {
+            groupInstances.Add(instance);
          }
       }
 
-      return voyages;
+      return groupInstances;
    }
 
    public List<Instance> getTreasureSiteInstancesLinkedToVoyages () {
-      List<Instance> voyages = new List<Instance>();
+      List<Instance> treasureSiteInstances = new List<Instance>();
 
       foreach (Instance instance in _instances.Values) {
-         if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0) {
-            voyages.Add(instance);
+         if (GroupInstanceManager.isTreasureSiteArea(instance.areaKey) && instance.groupInstanceId > 0) {
+            treasureSiteInstances.Add(instance);
          }
       }
 
-      return voyages;
+      return treasureSiteInstances;
    }
 
-   public bool tryGetVoyageInstance (int voyageId, out Instance instance) {
+   public bool tryGetGroupInstance (int groupInstanceId, out Instance instance) {
       instance = null;
 
       foreach (Instance i in _instances.Values) {
-         if (i.isVoyage && i.voyageId == voyageId) {
+         if (i.isGroupInstance && i.groupInstanceId == groupInstanceId) {
             instance = i;
             return true;
          }
@@ -539,11 +545,11 @@ public class InstanceManager : MonoBehaviour
       return false;
    }
 
-   public bool tryGetTreasureSiteInstance (int voyageId, string areaKey, out Instance instance) {
+   public bool tryGetTreasureSiteInstance (int groupInstanceId, string areaKey, out Instance instance) {
       instance = null;
 
       foreach (Instance i in _instances.Values) {
-         if (VoyageManager.isTreasureSiteArea(i.areaKey) && i.voyageId == voyageId && string.Equals(i.areaKey, areaKey)) {
+         if (GroupInstanceManager.isTreasureSiteArea(i.areaKey) && i.groupInstanceId == groupInstanceId && string.Equals(i.areaKey, areaKey)) {
             instance = i;
             return true;
          }
@@ -552,30 +558,30 @@ public class InstanceManager : MonoBehaviour
       return false;
    }
 
-   public static Biome.Type getBiomeForInstance (string areaKey, int voyageId) {
-      // Voyages can have a biome different than the default for the area
-      if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
-         if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
-            return voyage.biome;
+   public static Biome.Type getBiomeForInstance (string areaKey, int groupInstanceId) {
+      // Group instances can have a biome different than the default for the area
+      if (GroupInstanceManager.isAnyLeagueArea(areaKey) || GroupInstanceManager.isPvpArenaArea(areaKey) || GroupInstanceManager.isTreasureSiteArea(areaKey)) {
+         if (GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
+            return groupInstance.biome;
          }
       }
 
       return AreaManager.self.getDefaultBiome(areaKey);
    }
 
-   public static int getDifficultyForInstance (int voyageId) {
-      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
-         return voyage.difficulty;
+   public static int getDifficultyForInstance (int groupInstanceId) {
+      if (GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
+         return groupInstance.difficulty;
       }
 
       return 1;
    }
 
-   public int getInstanceCount (string areaKey) {
+   public int getInstanceCount (string areaKey, bool ignoreSinglePlayerInstances = false) {
       int count = 0;
 
       foreach (Instance instance in _instances.Values) {
-         if (instance.areaKey == areaKey) {
+         if (instance.areaKey == areaKey && !(instance.isSinglePlayer && ignoreSinglePlayerInstances)) {
             count++;
          }
       }
@@ -668,11 +674,11 @@ public class InstanceManager : MonoBehaviour
       }
       _instances.Remove(instance.id);
 
-      // Remove the instance from the server network if it is a voyage
-      ServerNetworkingManager.self.server.removeVoyageInstance(instance);
+      // Remove the instance from the server network if it is a group instance
+      ServerNetworkingManager.self.server.removeGroupInstance(instance);
 
-      // Update the instance count in the server network
-      ServerNetworkingManager.self.server.areaToInstanceCount[instance.areaKey] = getInstanceCount(instance.areaKey);
+      // Remove the instance from the server network
+      ServerNetworkingManager.self.server.removeInstance(instance);
 
       // Then destroy the instance
       NetworkServer.Destroy(instance.gameObject);
@@ -695,9 +701,6 @@ public class InstanceManager : MonoBehaviour
                }
                if (netServerReference.playerCountPerArea.ContainsKey(areaKey)) {
                   netServerReference.playerCountPerArea.Remove(areaKey);
-               }
-               if (netServerReference.areaToInstanceCount.ContainsKey(areaKey)) {
-                  netServerReference.areaToInstanceCount.Remove(areaKey);
                }
             }
          }
@@ -750,8 +753,8 @@ public class InstanceManager : MonoBehaviour
    public List<InstanceOverview> createOverviewForAllInstances () {
       List<InstanceOverview> allInstances = new List<InstanceOverview>();
       foreach (Instance instance in _instances.Values) {
-         if (!VoyageManager.self.tryGetVoyage(instance.voyageId, out Voyage voyage, true)) {
-            voyage = new Voyage();
+         if (!GroupInstanceManager.self.tryGetGroupInstance(instance.groupInstanceId, out GroupInstance groupInstance, true)) {
+            groupInstance = new GroupInstance();
          }
          allInstances.Add(new InstanceOverview {
             id = instance.id,
@@ -759,7 +762,7 @@ public class InstanceManager : MonoBehaviour
             area = instance.areaKey,
             pCount = getPlayerCountInInstance(instance.id),
             maxPlayerCount = instance.getMaxPlayers(),
-            voyage = voyage,
+            groupInstance = groupInstance,
             difficulty = instance.difficulty,
             aliveEnemyCount = instance.aliveNPCEnemiesCount,
             totalEnemyCount = instance.getTotalNPCEnemyCount(),

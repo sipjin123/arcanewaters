@@ -29,8 +29,7 @@ public class RPCManager : NetworkBehaviour
    public static event Action<Item> itemDataReceived;
 
    // Item class for queue
-   public class ItemQueue
-   {
+   public class ItemQueue {
       public int userId;
       public Item item;
       public bool wasPurchasedOnTheGemStore;
@@ -128,10 +127,9 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ModifiedAuction, _player, "The auction has been cancelled and the item delivered to the original seller by mail!");
             });
-         }
-         catch (Exception ex) {
+         } catch (Exception ex) {
             D.error($"Admin Auction Cancellation. Exception. AuctionId: {auctionId}. AdminId: {_player.userId}. Message: {ex.Message}. StackTrace: {ex.StackTrace}");
-            
+
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Error occurred while cancelling the auction!");
             });
@@ -194,8 +192,21 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
+         // Get the System User
+         List<UserInfo> users = DB_Main.getUsersForAccount(MailManager.SYSTEM_ACCOUNT_ID);
+
+         if (users == null || users.Count < 1) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               D.debug($"Auction creation. Failed. Reason: Couldn't reference the System User. PlayerId: {_player.userId}, Item: {item.id}, StartingBid: {startingBid}, IsBuyoutAllowed: {isBuyoutAllowed}, BuyoutPrice: {buyoutPrice}, ExpireDate: {expiryDate}");
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Couldn't put the item up for auction.");
+            });
+            return;
+         }
+
+         UserInfo systemUser = users.First();
+
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
-         int mailId = createMailCommon(-1, _player.userId, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false, false);
+         int mailId = createMailCommon(-1, systemUser.userId, _player.userId, "Auction Results", "", new int[] { item.id }, new int[] { item.count }, false, false, false);
          if (mailId < 0) {
             return;
          }
@@ -941,7 +952,7 @@ public class RPCManager : NetworkBehaviour
 
    private IEnumerator CO_RecalibrateSpriteBody () {
       // This coroutine recalibrates the sprite renderer of the player body so outlines will render properly after combat
-      List<NetEntity> entityGroup = EntityManager.self.getEntitiesWithVoyageId(_player.voyageGroupId);
+      List<NetEntity> entityGroup = EntityManager.self.getEntitiesWithGroupId(_player.groupId);
       if (entityGroup.Count > 0) {
          foreach (NetEntity entity in entityGroup) {
             if (entity is PlayerBodyEntity) {
@@ -1001,7 +1012,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Register chest id player pref data and set as true, except in treasure site areas since they can be visited again in voyages
-      if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {
+      if (!GroupInstanceManager.isTreasureSiteArea(chest.areaKey)) {
          PlayerPrefs.SetInt(TreasureChest.PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + _player.areaKey + "_" + chest.chestSpawnId, 1);
       }
 
@@ -1106,6 +1117,12 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.showPanel(panel.type);
       }
 
+      // Cache names
+      foreach (FriendshipInfo info in friendshipInfo) {
+         EntityManager.self.cacheEntityName(info.friendUserId, info.friendName);
+         GuildManager.self.cacheGuildName(info.friendGuildId, info.friendGuildName);
+      }
+
       // Pass the data to the panel
       panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendInstanceIdsList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount, isSteamFriendsTab);
    }
@@ -1206,15 +1223,15 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageInstanceList (NetworkConnection connection, Voyage[] voyageArray) {
-      List<Voyage> voyageList = new List<Voyage>(voyageArray);
+   public void Target_ReceiveGroupInstanceList (NetworkConnection connection, GroupInstance[] groupInstanceArray) {
+      List<GroupInstance> groupInstanceList = new List<GroupInstance>(groupInstanceArray);
 
       // Make sure the panel is showing
       PanelManager.self.showPanel(Panel.Type.Voyage);
 
       // Pass the data to the panel
       VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
-      panel.updatePanelWithVoyageList(voyageList);
+      panel.updatePanelWithVoyageList(groupInstanceList);
    }
 
    [TargetRpc]
@@ -1227,19 +1244,19 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
+   public void Target_ReceiveCurrentGroupInstance (NetworkConnection connection, GroupInstance groupInstance) {
       // Make sure the panel is showing
       PanelManager.self.showPanel(Panel.Type.ReturnToCurrentVoyagePanel);
 
       // Pass the data to the panel
       ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
-      panel.updatePanelWithCurrentVoyage(voyage);
+      panel.updatePanelWithCurrentVoyage(groupInstance);
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, VoyageGroupMemberCellInfo[] groupMembers, int voyageLeader) {
+   public void Target_ReceiveGroupMembers (NetworkConnection connection, GroupMemberCellInfo[] groupMembers, int groupLeader) {
       // Get the panel
-      VoyageGroupPanel panel = VoyageGroupPanel.self;
+      GroupPanel panel = GroupPanel.self;
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -1247,13 +1264,13 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Update the panel info
-      panel.updatePanelWithGroupMembers(groupMembers, voyageLeader);
+      panel.updatePanelWithGroupMembers(groupMembers, groupLeader);
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupMemberPartialUpdate (NetworkConnection connection, int userId, string userName, int XP, string areaKey) {
+   public void Target_ReceiveGroupMemberPartialUpdate (NetworkConnection connection, int userId, string userName, int XP, string areaKey) {
       // Get the panel
-      VoyageGroupPanel panel = VoyageGroupPanel.self;
+      GroupPanel panel = GroupPanel.self;
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -1303,9 +1320,9 @@ public class RPCManager : NetworkBehaviour
       int random = Random.Range(min, max + 1);
       string message = _player.entityName + " has rolled " + random + " (" + min + " - " + max + ")";
 
-      if (_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+      if (_player.tryGetGroup(out Group groupInfo)) {
          // Send the result to all group members
-         foreach (int userId in voyageGroup.members) {
+         foreach (int userId in groupInfo.members) {
             ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, userId, message);
          }
       } else {
@@ -1395,11 +1412,11 @@ public class RPCManager : NetworkBehaviour
             });
          });
       } else if (chatType == ChatInfo.Type.Group) {
-         if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         if (!_player.tryGetGroup(out Group groupInfo)) {
             return;
          }
 
-         foreach (int userId in voyageGroup.members) {
+         foreach (int userId in groupInfo.members) {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
       } else if (chatType == ChatInfo.Type.Guild) {
@@ -1670,7 +1687,9 @@ public class RPCManager : NetworkBehaviour
                      sender: userName,
                      receiver: friend.friendName);
 
-                  ServerNetworkingManager.self.sendSpecialChatMessage(friendUserInfo.userId, chatInfo);
+                  if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
+                     ServerNetworkingManager.self.sendSpecialChatMessage(friendUserInfo.userId, chatInfo);
+                  }
                   //D.debug($"Player {userName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
                });
             });
@@ -3627,7 +3646,7 @@ public class RPCManager : NetworkBehaviour
                            D.adminLog("-->This quest is not complete yet {" + questStat.questNodeId + ":" + questNodeReference.questNodeTitle + "}", D.ADMIN_LOG_TYPE.Quest);
                            // Check if quest does not require other quest to be unlock first
                            bool noQuestRequirement = questNodeReference.questNodeLevelRequirement < 0;
-                           
+
                            // Check if quest progress meets the level requirement of a quest
                            bool withinLevelRequirement = questNodeReference.questNodeLevelRequirement < highestQuestNodeValue.questNodeId;
                            if (friendshipLevel >= questNodeReference.friendshipLevelRequirement && noQuestRequirement && withinLevelRequirement) {
@@ -4000,10 +4019,10 @@ public class RPCManager : NetworkBehaviour
                         if (questStatus.questDialogueId < questDataNodeFetch.questDialogueNodes.Length) {
                            // Check if quest does not require other quest to be unlock first
                            bool noQuestRequirement = questDataNodeFetch.questNodeLevelRequirement < 0;
-                           
+
                            // Check if quest progress meets the level requirement of a quest
                            bool withinLevelRequirement = questDataNodeFetch.questNodeLevelRequirement < highestQuestNodeValue.questNodeId;
-                           
+
                            // If friendship level and other quest requirements are satisfied, we add npc to list
                            if (friendshipLevel >= questDataNodeFetch.friendshipLevelRequirement && noQuestRequirement && withinLevelRequirement) {
                               if (!npcIdList.Contains(npcData.npcId)) {
@@ -4383,6 +4402,8 @@ public class RPCManager : NetworkBehaviour
       Cmd_CheckRewardCodes();
    }
 
+   #region Mail
+
    [Command]
    public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete, bool canReply) {
       if (_player == null) {
@@ -4454,7 +4475,7 @@ public class RPCManager : NetworkBehaviour
          mailSubject = BadWordManager.ReplaceAll(mailSubject);
 
          // Create the mail
-         int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack, canReply);
+         int mailId = createMailCommon(recipientUserInfo.userId, _player.userId, _player.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack, canReply);
 
          if (mailId >= 0) {
             // Make sure that we charge the player only if the message went through
@@ -4479,11 +4500,11 @@ public class RPCManager : NetworkBehaviour
 
    // This function must be called from the background thread!
    [Server]
-   private int createMailCommon (int recipientUserId, int senderId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack, bool canReply) {
+   private int createMailCommon (int recipientUserId, int senderId, int ownerId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack, bool canReply) {
       // Check soul binding
       foreach (int itemId in attachedItemsIds) {
          // Get the item
-         Item item = DB_Main.getItem(senderId, itemId);
+         Item item = DB_Main.getItem(ownerId, itemId);
 
          if (item == null) {
             continue;
@@ -4496,13 +4517,13 @@ public class RPCManager : NetworkBehaviour
 
       // Verify that the number of attached items is below the maximum
       if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
-         D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", senderId, recipientUserId, attachedItemsIds.Length));
+         D.error(string.Format($"Mail Creation Failed. Reason: Too many attachments. SenderId: {senderId}, OwnerId: {ownerId}, RecipientId: {recipientUserId}, Attachments Count: {attachedItemsIds.Length}"));
          return -1;
       }
 
       // Verify the validity of the attached items
       for (int i = 0; i < attachedItemsIds.Length; i++) {
-         Item item = DB_Main.getItem(senderId, attachedItemsIds[i]);
+         Item item = DB_Main.getItem(ownerId, attachedItemsIds[i]);
 
          if (item == null) {
             sendError("An item is not present in your inventory!");
@@ -4515,7 +4536,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Verify that the item is not equipped
-         UserInfo userInfo = DB_Main.getUserInfoById(senderId);
+         UserInfo userInfo = DB_Main.getUserInfoById(ownerId);
 
          if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
             sendError("You cannot select an equipped item!");
@@ -4523,14 +4544,12 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      MailInfo mail = null;
-
       // Create the mail
-      mail = new MailInfo(-1, recipientUserId, senderId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack, canReply);
+      MailInfo mail = new MailInfo(-1, recipientUserId, senderId, ownerId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack, canReply);
       mail.mailId = DB_Main.createMail(mail);
 
       if (mail.mailId == -1) {
-         D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", senderId, recipientUserId));
+         D.error(string.Format($"Mail Creation Failed. Reason: Couldn't create Mail in DB. SenderId: {senderId}, OwnerId: {ownerId}, RecipientUserId: {recipientUserId}."));
          sendError("An error occurred when creating a mail!");
          return -1;
       }
@@ -4538,23 +4557,23 @@ public class RPCManager : NetworkBehaviour
       // Attach the items
       for (int i = 0; i < attachedItemsIds.Length; i++) {
          // Retrieve the item from the player's inventory
-         Item item = DB_Main.getItem(senderId, attachedItemsIds[i]);
+         Item item = DB_Main.getItem(ownerId, attachedItemsIds[i]);
 
          // Check if the item was correctly retrieved
          if (item == null) {
-            D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, senderId));
+            D.warning(string.Format($"Mail Creation Failed. Reason: Couldn't retrieve an attachment. SenderId: {senderId}, OwnerId: {ownerId}, RecipientUserId: {recipientUserId}, MailId: {mail.mailId}, Attachment Item Id: {i}"));
             continue;
          }
 
          // Transfer the item from the user inventory to the mail
-         DB_Main.transferItem(item, senderId, -mail.mailId, attachedItemsCount[i]);
+         DB_Main.transferItem(item, ownerId, -mail.mailId, attachedItemsCount[i]);
       }
 
       return mail.mailId;
    }
 
    [Server]
-   public static void createSystemMail (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+   public static void createSystemMail (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, string senderNameOverride) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Try to retrieve the recipient info
@@ -4588,8 +4607,11 @@ public class RPCManager : NetworkBehaviour
 
          MailInfo mail = null;
 
+         // Set the Sender username
+         string trueSenderNameOverride = Util.isEmpty(senderNameOverride) ? MailManager.SYSTEM_USERNAME : senderNameOverride;
+
          // Create the mail
-         mail = new MailInfo(-1, recipientUserId, systemUser.userId, DateTime.UtcNow, false, mailSubject, message, false, false, false);
+         mail = new MailInfo(-1, recipientUserId, systemUser.userId, systemUser.userId, DateTime.UtcNow, false, mailSubject, message, false, false, false, trueSenderNameOverride);
          mail.mailId = DB_Main.createMail(mail);
 
          if (mail.mailId == -1) {
@@ -4614,6 +4636,11 @@ public class RPCManager : NetworkBehaviour
 
          D.debug($"New system mail '{mailSubject}' sent to player {recipientUserId}.");
       });
+   }
+
+   [Server]
+   public static void createSystemMailWithNoAttachments (int recipientUserId, string mailSubject, string message, string senderNameOverride) {
+      createSystemMail(recipientUserId, mailSubject, message, Array.Empty<int>(), Array.Empty<int>(), senderNameOverride);
    }
 
    [Command]
@@ -4693,6 +4720,20 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Server]
+   public void BKG_DeleteMail (int mailId) {
+      // Delete the mail
+      DB_Main.deleteMail(mailId);
+
+      // Get the attached items
+      List<Item> attachedItems = DB_Main.getItems(-mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
+
+      // Delete the attached items
+      foreach (Item item in attachedItems) {
+         DB_Main.deleteItem(-mailId, item.id);
+      }
+   }
+
    [Command]
    public void Cmd_DeleteMail (int mailId) {
       if (_player == null) {
@@ -4702,17 +4743,8 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Delete the mail
-         DB_Main.deleteMail(mailId);
-
-         // Get the attached items
-         List<Item> attachedItems = DB_Main.getItems(-mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
-
-         // Delete the attached items
-         foreach (Item item in attachedItems) {
-            DB_Main.deleteItem(-mailId, item.id);
-         }
+         // Deletes mail and attachments
+         BKG_DeleteMail(mailId);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -4763,7 +4795,7 @@ public class RPCManager : NetworkBehaviour
                      string mailSubject = fullSentMail.mailSubject + " [RE]";
                      string dormantUserName = DB_Main.getUserName(fullSentMail.recipientUserId);
                      string message = "The player '" + dormantUserName + "' didn't read your mail. The mail was sent back to you along with the included attachments. Original Message: <" + fullSentMail.message + ">";
-                     MailInfo sendBackMail = new MailInfo(-1, _player.userId, fullSentMail.recipientUserId, DateTime.UtcNow, false, mailSubject, message, false, false, false);
+                     MailInfo sendBackMail = new MailInfo(-1, _player.userId, _player.userId, fullSentMail.recipientUserId, DateTime.UtcNow, false, mailSubject, message, false, false, false);
                      sendBackMail.mailId = DB_Main.createMail(sendBackMail);
 
                      if (sendBackMail.mailId == -1) {
@@ -4796,11 +4828,10 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (MailInfo droppedMail in droppedMails) {
-               Cmd_DeleteMail(droppedMail.mailId);
-            }
-         });
+         foreach (MailInfo droppedMail in droppedMails) {
+            // Deletes mail and attachments
+            BKG_DeleteMail(droppedMail.mailId);
+         }
       });
    }
 
@@ -4911,6 +4942,8 @@ public class RPCManager : NetworkBehaviour
          });
       });
    }
+
+   #endregion
 
    [Command]
    public void Cmd_RequestPvpShopData (int shopId, int itemCategoryType) {
@@ -5430,14 +5463,14 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_AddGuildAlly (int invitedUserId, int guildId, int allyGuildId) {
       // Prevent spamming invitations
-      if (VoyageGroupManager.self.isGuildAllianceInvitationSpam(guildId, allyGuildId)) {
-         string message = "You must wait " + VoyageGroupManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting this guild again!";
+      if (GroupManager.self.isGuildAllianceInvitationSpam(guildId, allyGuildId)) {
+         string message = "You must wait " + GroupManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting this guild again!";
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
          _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
          return;
       }
 
-      VoyageGroupManager.self.logGuildAllianceInvitation(guildId, allyGuildId);
+      GroupManager.self.logGuildAllianceInvitation(guildId, allyGuildId);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
          GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyGuildId);
@@ -5485,10 +5518,10 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveGuildAllianceInvite (NetworkConnection connection, int inviterUserId, GuildInfo guildInfo, GuildInfo guildAllyInfo) {
       // Ignore invite if do not disturb flag is enabled
-      if(Global.doNotDisturbEnabled){
+      if (Global.doNotDisturbEnabled) {
          return;
       }
-      
+
       if (Global.ignoreGuildAllianceInvites) {
          Cmd_RejectGuildAlliance(inviterUserId, _player.userId);
          return;
@@ -5702,7 +5735,7 @@ public class RPCManager : NetworkBehaviour
          D.debug($"Guild Creation. Process started. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");
 
          if (playerGold < GuildManager.getGuildCreationCost()) {
-            D.debug($"Guild Creation Failed. Reason: Insufficient Gold. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");  
+            D.debug($"Guild Creation Failed. Reason: Insufficient Gold. PlayerId: {_player.userId}. PlayerGold: {playerGold}. GuildName: {guildName}.");
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendError(ErrorMessage.Type.GuildCreationFailed, _player, "You don't have enough gold!");
             });
@@ -6420,8 +6453,7 @@ public class RPCManager : NetworkBehaviour
          // resultItem.paletteNames = "";
 
          // Get the crafting requirement data
-         CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
-               resultItem.category, resultItem.itemTypeId);
+         CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(resultItem.category, resultItem.itemTypeId);
 
          // Verify if the crafting data exists
          if (craftingRequirements == null) {
@@ -6551,24 +6583,24 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestVoyageListFromServer () {
+   public void Cmd_RequestGroupInstanceListFromServer () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      // If the user has already joined a voyage map, display a panel with the current map
-      if (_player.tryGetVoyage(out Voyage voyage)) {
-         Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
+      // If the user has already joined a group instance, display a panel with the current map
+      if (_player.tryGetGroupInstance(out GroupInstance groupInstance)) {
+         Target_ReceiveCurrentGroupInstance(_player.connectionToClient, groupInstance);
          return;
       }
 
       // Send the list to the client
-      Target_ReceiveVoyageInstanceList(_player.connectionToClient, VoyageManager.self.getAllOpenVoyageInstances().ToArray());
+      Target_ReceiveGroupInstanceList(_player.connectionToClient, GroupInstanceManager.self.getAllOpenGroupInstances().ToArray());
    }
 
    [Command]
-   public void Cmd_RequestUserListForAdminVoyageInfoPanelFromServer (int voyageId, int instanceId) {
+   public void Cmd_RequestUserListForAdminVoyageInfoPanelFromServer (int groupInstanceId, int instanceId) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -6579,7 +6611,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Ask the list of users in the instance to the server network
-      ServerNetworkingManager.self.getUsersInInstanceForAdminVoyagePanel(voyageId, instanceId, _player.userId);
+      ServerNetworkingManager.self.getUsersInInstanceForAdminVoyagePanel(groupInstanceId, instanceId, _player.userId);
    }
 
    [Server]
@@ -6604,7 +6636,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_WarpAdminToVoyageInstanceAsGhost (int voyageId, string areaKey) {
+   public void Cmd_WarpAdminToVoyageInstanceAsGhost (int groupInstanceId, string areaKey) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -6615,117 +6647,117 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Check the validity of the request
-      if (!VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
-         sendError("This voyage is not available anymore!");
+      if (!GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
+         sendError("This group instance is not available anymore!");
          return;
       }
 
       // Always place the admin in a new group
-      if (VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
+      if (GroupManager.self.tryGetGroupById(_player.groupId, out Group groupInfo)) {
+         GroupManager.self.removeUserFromGroup(groupInfo, _player);
       }
-      VoyageGroupManager.self.createGroup(_player.userId, voyageId, true, true);
+      GroupManager.self.createGroup(_player.userId, groupInstanceId, true, true);
 
-      // Warp the admin to the voyage map
-      _player.spawnInNewMap(voyageId, areaKey, Direction.South);
+      // Warp the admin to the group instance
+      _player.spawnInNewMap(groupInstanceId, areaKey, Direction.South);
    }
 
    [Command]
-   public void Cmd_JoinVoyageAlone (int voyageId) {
+   public void Cmd_JoinVoyageAlone (int groupInstanceId) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
       // Check the validity of the request
-      if (!VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+      if (!GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
          sendError("This voyage is not available anymore!");
          return;
       }
 
-      if (VoyageGroupManager.isInGroup(_player)) {
+      if (GroupManager.isInGroup(_player)) {
          sendError("You must leave your group to join another voyage map!");
          return;
       }
 
       // Find the oldest incomplete quickmatch group in the given area
-      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getBestGroupForQuickmatch(voyageId);
+      Group groupInfo = GroupManager.self.getBestGroupForQuickmatch(groupInstanceId);
 
       // If no group is available, create a new one if possible
-      if (voyageGroup == null) {
-         // Check that the voyage is open for new groups
-         if (!VoyageManager.isVoyageOpenToNewGroups(voyage)) {
+      if (groupInfo == null) {
+         // Check that the group instance is open for new groups
+         if (!GroupInstanceManager.isGroupInstanceOpenToNewGroups(groupInstance)) {
             sendError("This voyage cannot be joined anymore!");
             return;
          }
 
-         VoyageGroupManager.self.createGroup(_player.userId, voyageId, false);
+         GroupManager.self.createGroup(_player.userId, groupInstanceId, false);
       } else {
          // Add the user to the group
-         VoyageGroupManager.self.addUserToGroup(voyageGroup, _player.userId, _player.entityName);
+         GroupManager.self.addUserToGroup(groupInfo, _player.userId, _player.entityName);
       }
 
-      // Warp the player to the voyage map immediately
-      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+      // Warp the player to the group instance immediately
+      _player.spawnInNewMap(groupInstance.groupInstanceId, groupInstance.areaKey, Direction.South);
    }
 
    [Command]
-   public void Cmd_JoinVoyageWithGroup (int voyageId) {
+   public void Cmd_JoinVoyageWithGroup (int groupInstanceId) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
       // Retrieve the voyage data
-      if (!VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+      if (!GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
          sendError("This voyage is not available anymore!");
          return;
       }
 
       // Verify the validity of the request
-      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         sendError("Error when retrieving the voyage group!");
+      if (!_player.tryGetGroup(out Group groupInfo)) {
+         sendError("Error when retrieving the group!");
          return;
       }
 
-      if (voyageGroup.members.Count > Voyage.getMaxGroupSize(voyage.difficulty)) {
-         sendError("The maximum group size for this map difficulty is " + Voyage.getMaxGroupSize(voyage.difficulty) + "!");
+      if (groupInfo.members.Count > GroupInstance.getMaxGroupSize(groupInstance.difficulty)) {
+         sendError("The maximum group size for this map difficulty is " + GroupInstance.getMaxGroupSize(groupInstance.difficulty) + "!");
          return;
       }
 
-      if (voyageGroup.voyageId > 0) {
-         sendError("You must leave your group to join another voyage map!");
+      if (groupInfo.groupInstanceId > 0) {
+         sendError("You must leave your group to join another voyage!");
          return;
       }
 
-      if (!VoyageManager.isVoyageOpenToNewGroups(voyage)) {
+      if (!GroupInstanceManager.isGroupInstanceOpenToNewGroups(groupInstance)) {
          sendError("This voyage is full and cannot be joined anymore!");
          return;
       }
 
-      // Set the voyage id in the group
-      voyageGroup.voyageId = voyageId;
-      VoyageGroupManager.self.updateGroup(voyageGroup);
+      // Set the group instance id in the group
+      groupInfo.groupInstanceId = groupInstanceId;
+      GroupManager.self.updateGroup(groupInfo);
 
-      // Warp the player to the voyage map immediately
-      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+      // Warp the player to the group instance immediately
+      _player.spawnInNewMap(groupInstance.groupInstanceId, groupInstance.areaKey, Direction.South);
    }
 
    [Command]
-   public void Cmd_CreatePrivateVoyageGroup () {
+   public void Cmd_CreatePrivateGroup () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
       // Verify that the user is not already in a group
-      if (VoyageGroupManager.isInGroup(_player)) {
+      if (GroupManager.isInGroup(_player)) {
          sendError("You must leave your current group before creating another!");
          return;
       }
 
       // Create a new private group and add the user to it
-      VoyageGroupManager.self.createGroup(_player.userId, -1, true);
+      GroupManager.self.createGroup(_player.userId, -1, true);
    }
 
    [Command]
@@ -6735,24 +6767,24 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         sendError("An error occurred when searching for the voyage group.");
+      if (!_player.tryGetGroup(out Group groupInfo)) {
+         sendError("An error occurred when searching for the group.");
          return;
       }
 
       // Retrieve the voyage data
-      if (!VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage, true)) {
-         D.error(string.Format("Could not find the voyage for user {0}.", _player.userId));
+      if (!GroupInstanceManager.self.tryGetGroupInstance(groupInfo.groupInstanceId, out GroupInstance groupInstance, true)) {
+         D.error(string.Format("Could not find the group instance for user {0}.", _player.userId));
          sendError("An error occurred when searching for the voyage.");
          return;
       }
 
       // Warp to the voyage area
-      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+      _player.spawnInNewMap(groupInstance.groupInstanceId, groupInstance.areaKey, Direction.South);
    }
 
    [Command]
-   public void Cmd_WarpToLeague () {
+   public void Cmd_WarpToVoyage () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -6762,38 +6794,38 @@ public class RPCManager : NetworkBehaviour
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
 
       // Get a spawn close to the player and define it as the exit spawn
-      Spawn exitSpawn = SpawnManager.self.getFirstSpawnAround(_player.areaKey, _player.transform.localPosition, Voyage.LEAGUE_EXIT_SPAWN_SEARCH_RADIUS);
+      Spawn exitSpawn = SpawnManager.self.getFirstSpawnAround(_player.areaKey, _player.transform.localPosition, GroupInstance.VOYAGE_EXIT_SPAWN_SEARCH_RADIUS);
       if (exitSpawn == null) {
          D.error($"Could not find an exit spawn next to the voyage entrance in area {_player.areaKey}");
       }
 
       // Check if the player is in a group, linked to a non-league instance
-      if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && _player.tryGetVoyage(out Voyage v) && !v.isLeague) {
+      if (_player.tryGetGroup(out Group groupInfo) && _player.tryGetGroupInstance(out GroupInstance gI) && !gI.isLeague) {
          // Remove the user from his group
-         VoyageGroupManager.self.removeUserFromGroup(groupInfo, _player);
+         GroupManager.self.removeUserFromGroup(groupInfo, _player);
       }
 
-      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+      if (!_player.isInGroup()) {
          // Create a new league with the same biome than the player's current instance
          if (exitSpawn == null) {
-            VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
+            GroupInstanceManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
          } else {
-            VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
+            GroupInstanceManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
          }
          return;
       }
 
       // Check if the user has already joined a voyage
-      if (_player.tryGetVoyage(out Voyage voyage) && voyage.isLeague) {
+      if (_player.tryGetGroupInstance(out GroupInstance groupInstance) && groupInstance.isLeague) {
          Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately", false);
 
          // Display a panel with the current voyage map details
-         Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
+         Target_ReceiveCurrentGroupInstance(_player.connectionToClient, groupInstance);
       } else {
          // When entering a league with a group, all the group members must be nearby
          List<string> missingMembersNames = new List<string>();
          List<int> missingMembersUserIds = new List<int>();
-         foreach (int memberUserId in voyageGroup.members) {
+         foreach (int memberUserId in groupInfo.members) {
             // Try to find the entity
             NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
             if (memberEntity == null) {
@@ -6829,9 +6861,9 @@ public class RPCManager : NetworkBehaviour
 
                // Create the first league map and warp the player to it
                if (exitSpawn == null) {
-                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
+                  GroupInstanceManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
                } else {
-                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
+                  GroupInstanceManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
                }
             });
          });
@@ -6839,7 +6871,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_ReturnToTownFromLeague () {
+   public void Cmd_ReturnToTownFromVoyage () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -6849,22 +6881,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestExitCompletedLeague () {
+   public void Cmd_RequestExitCompletedVoyage () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
       if (!_player.isInGroup()) {
-         sendError("Could not find the voyage group");
+         sendError("Could not find the group");
          return;
       }
 
       Instance instance = _player.getInstance();
 
-      // The instance must be a voyage
-      if (instance.voyageId <= 0) {
-         D.error($"User {_player.userId} is attempting to exit a non-voyage instance");
+      // The instance must be a group instance
+      if (instance.groupInstanceId <= 0) {
+         D.error($"User {_player.userId} is attempting to exit a non-group instance");
          return;
       }
 
@@ -6882,24 +6914,24 @@ public class RPCManager : NetworkBehaviour
       // Clear player powerups when exiting voyage
       PowerupManager.self.clearPowerupsForUser(_player.userId);
 
-      if (string.IsNullOrEmpty(instance.leagueExitAreaKey)) {
+      if (string.IsNullOrEmpty(instance.voyageExitAreaKey)) {
          _player.spawnInBiomeHomeTown();
-      } else if (string.IsNullOrEmpty(instance.leagueExitSpawnKey)) {
-         D.error($"The voyage exit spawn was not defined for area {instance.leagueExitAreaKey}. Check that there is a spawn next to the voyage entrance in that map.");
-         _player.spawnInNewMap(instance.leagueExitAreaKey);
+      } else if (string.IsNullOrEmpty(instance.voyageExitSpawnKey)) {
+         D.error($"The voyage exit spawn was not defined for area {instance.voyageExitAreaKey}. Check that there is a spawn next to the voyage entrance in that map.");
+         _player.spawnInNewMap(instance.voyageExitAreaKey);
       } else {
-         _player.spawnInNewMap(instance.leagueExitAreaKey, instance.leagueExitSpawnKey, instance.leagueExitFacingDirection);
+         _player.spawnInNewMap(instance.voyageExitAreaKey, instance.voyageExitSpawnKey, instance.voyageExitFacingDirection);
       }
    }
 
    [Command]
-   public void Cmd_SendVoyageGroupInvitationToUser (string inviteeName) {
+   public void Cmd_SendGroupInvitationToUser (string inviteeName) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      VoyageGroupManager.self.inviteUserToGroup(_player, inviteeName);
+      GroupManager.self.inviteUserToGroup(_player, inviteeName);
    }
 
    [Command]
@@ -6954,17 +6986,17 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Verify the validity of the request
-      if (!VoyageGroupManager.self.tryGetGroupById(destinationGroupId, out VoyageGroupInfo destinationGroup)) {
+      if (!GroupManager.self.tryGetGroupById(destinationGroupId, out Group destinationGroup)) {
          sendError("The group does not exist!");
          return;
       }
 
-      if (VoyageGroupManager.isGroupFull(destinationGroup)) {
+      if (GroupManager.isGroupFull(destinationGroup)) {
          sendError("The group is full!");
          return;
       }
 
-      if (_player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
+      if (_player.tryGetGroup(out Group currentGroup)) {
          if (currentGroup.groupId == destinationGroup.groupId) {
             // If the user already belongs to the destination group, do nothing
             return;
@@ -6974,15 +7006,15 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      // Check if the group is linked to a league that has already started
-      if (destinationGroup.voyageId > 0 && VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage destinationVoyage) && destinationVoyage.isLeague) {
-         int aliveNPCEnemyCount = destinationVoyage.aliveNPCEnemyCount;
-         int playerCount = destinationVoyage.playerCount;
+      // Check if the group is linked to a voyage that has already started
+      if (destinationGroup.groupInstanceId > 0 && GroupInstanceManager.self.tryGetGroupInstance(destinationGroup.groupInstanceId, out GroupInstance destinationGroupInstance) && destinationGroupInstance.isLeague) {
+         int aliveNPCEnemyCount = destinationGroupInstance.aliveNPCEnemyCount;
+         int playerCount = destinationGroupInstance.playerCount;
          bool hasTreasureSite = false;
 
          // Find the treasure site (if any) and add the npc enemies and players it contains
-         if (VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage treasureSite, true)) {
-            if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
+         if (GroupInstanceManager.self.tryGetGroupInstance(destinationGroup.groupInstanceId, out GroupInstance treasureSite, true)) {
+            if (GroupInstanceManager.isTreasureSiteArea(treasureSite.areaKey)) {
                hasTreasureSite = true;
             }
             aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
@@ -6992,17 +7024,17 @@ public class RPCManager : NetworkBehaviour
          if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
             // When the current instance has been cleared of enemies, more members can join
             // Note that if there is an active treasure site, it will always be recreated to prevent inviting players only to open the chest
-            VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
+            GroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
          } else if (playerCount <= 0) {
             // When the current instance has enemies left, but no players, we can recreate it and allow more members to join
-            VoyageManager.self.recreateLeagueInstanceAndAddUserToGroup(destinationGroup.groupId, _player.userId, _player.entityName);
+            GroupInstanceManager.self.recreateLeagueInstanceAndAddUserToGroup(destinationGroup.groupId, _player.userId, _player.entityName);
          } else {
             sendError("Cannot join the group while group members are close to danger!");
             return;
          }
       } else {
          // Add the user to the group
-         VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
+         GroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
       }
    }
 
@@ -7017,7 +7049,7 @@ public class RPCManager : NetworkBehaviour
       NetEntity targetPlayerToKick = EntityManager.self.getEntity(playerToKick);
 
       // If the player performing kick operation is not in a group, do nothing
-      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+      if (!_player.tryGetGroup(out Group groupInfo)) {
          return;
       }
 
@@ -7027,22 +7059,21 @@ public class RPCManager : NetworkBehaviour
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Failure to kick!");
             return;
          }
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, targetPlayerToKick);
+         GroupManager.self.removeUserFromGroup(groupInfo, targetPlayerToKick);
       } else {
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToKick);
+         GroupManager.self.removeUserFromGroup(groupInfo, playerToKick);
       }
 
       // Warp player to other area and clean up panel only if player is currently online
       if (targetPlayerToKick) {
-         // If the player is in a voyage area, warp him to the starting town
-         if (VoyageManager.isAnyLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isPvpArenaArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey) ||
-            VoyageManager.isPOIArea(targetPlayerToKick.areaKey)) {
+         // If the player is in a group-specific area, warp him to the starting town
+         if (GroupInstanceManager.isAnyGroupSpecificArea(targetPlayerToKick.areaKey)) {
             D.debug("This player {" + _player.userId + " " + _player.entityName + "} Has been kicked from Group, returning to Town");
             targetPlayerToKick.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          }
 
          // Clean up panel on client
-         Target_CleanUpVoyagePanelOnKick(targetPlayerToKick.connectionToClient);
+         Target_CleanUpGroupPanelOnKick(targetPlayerToKick.connectionToClient);
       }
    }
 
@@ -7054,16 +7085,16 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the player is not in a group, do nothing
-      if (!playerToRemove.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+      if (!playerToRemove.tryGetGroup(out Group groupInfo)) {
          return;
       }
 
-      VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
+      GroupManager.self.removeUserFromGroup(groupInfo, playerToRemove);
 
       if (!WorldMapManager.isWorldMapArea(playerToRemove.areaKey)) {
-         // If the player is in a voyage area or is in ghost mode, warp him to the closest town
-         if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || VoyageManager.isPOIArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
-            if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
+         // If the player is in a group-specific area or is in ghost mode, warp him to the closest town
+         if (GroupInstanceManager.isAnyGroupSpecificArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
+            if (GroupInstanceManager.isPvpArenaArea(playerToRemove.areaKey)) {
                playerToRemove.spawnInBiomeHomeTown(Biome.Type.Forest);
             } else {
                playerToRemove.spawnInBiomeHomeTown();
@@ -7073,35 +7104,35 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   private void Target_CleanUpVoyagePanelOnKick (NetworkConnection conn) {
-      VoyageGroupPanel.self.cleanUpPanelOnKick();
+   private void Target_CleanUpGroupPanelOnKick (NetworkConnection conn) {
+      GroupPanel.self.cleanUpPanelOnKick();
    }
 
    [Server]
-   public void sendVoyageGroupMembersInfo () {
-      if (!VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+   public void sendGroupMembersInfo () {
+      if (!GroupManager.self.tryGetGroupById(_player.groupId, out Group groupInfo)) {
          return;
       }
 
       // Copy the group members to avoid concurrent modifications errors in the background thread
-      List<int> groupMemberList = new List<int>(voyageGroup.members);
+      List<int> groupMemberList = new List<int>(groupInfo.members);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read in DB the group members info needed to display their portrait
-         List<VoyageGroupMemberCellInfo> groupMembersInfo = VoyageGroupManager.self.getGroupMembersInfo(groupMemberList);
+         List<GroupMemberCellInfo> groupMembersInfo = GroupManager.self.getGroupMembersInfo(groupMemberList);
 
          if (groupMembersInfo == null) {
-            D.debug("Error here! Group member info is missing for voyage group" + " : " + voyageGroup.voyageId + " : " + voyageGroup.creationDate);
+            D.debug("Error here! Group member info is missing for group" + " : " + groupInfo.groupInstanceId + " : " + groupInfo.creationDate);
          } else {
             // Back to the Unity thread
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray(), voyageGroup.voyageCreator);
+               Target_ReceiveGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray(), groupInfo.groupCreator);
 
                // Also send updated info of this user to the other group members
-               foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {
+               foreach (GroupMemberCellInfo cellInfo in groupMembersInfo) {
                   if (cellInfo.userId == _player.userId) {
-                     ServerNetworkingManager.self.sendMemberPartialUpdateToGroup(_player.voyageGroupId, cellInfo.userId, cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
+                     ServerNetworkingManager.self.sendMemberPartialUpdateToGroup(_player.groupId, cellInfo.userId, cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
                   }
                }
             });
@@ -7110,7 +7141,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ServerOnly]
-   private bool canPlayerStayInVoyage (bool logReason = false) {
+   private bool canPlayerStayInGroupInstance (bool logReason = false) {
       // TODO: Setup a better solution for allowing users to bypass warping back to town
       // If player cant bypass restirctions, return them to town due to insufficient conditions being met
       if (EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
@@ -7119,13 +7150,17 @@ public class RPCManager : NetworkBehaviour
          return true;
       }
 
-      if (!VoyageManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.isWorldMapArea(_player.areaKey)) {
-         if (VoyageManager.isPOIArea(_player.areaKey)) {
+      if (!GroupInstanceManager.isWorldMapArea(_player.areaKey) && !WorldMapManager.isWorldMapArea(_player.areaKey)) {
+         if (GroupInstanceManager.isPOIArea(_player.areaKey)) {
             // In POI areas, search for the POISite that contains the valid instances for the group
-            if (POISiteManager.self.tryGetInstanceForGroup(_player.voyageGroupId, _player.areaKey, out Instance instance)) {
+            if (POISiteManager.self.tryGetInstanceForGroup(_player.groupId, _player.areaKey, out Instance instance)) {
                if (instance == _player.getInstance()) {
                   return true;
                }
+            } else if (_player.isAdmin() && _player.tryGetGroupInstance(out GroupInstance gI) && gI.instanceId == _player.instanceId) {
+               // If the user is admin and the target group instance exists, let him spawn even if the group is not linked to a POI site (useful for admin warp and goto commands)
+               D.adminLog($"Allowing admin {_player.userId} to spawn in POI instance area {_player.areaKey}", D.ADMIN_LOG_TYPE.Warp);
+               return true;
             }
 
             if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
@@ -7134,30 +7169,30 @@ public class RPCManager : NetworkBehaviour
             }
          }
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
-         if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         if (!_player.tryGetGroup(out Group groupInfo)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
-               "Player cant stay in voyage because of warp restriction, No Voyage group found {" + _player.voyageGroupId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
-            _player.voyageGroupId = -1;
+               "Player cant stay in group instance because of warp restriction, No group found {" + _player.groupId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
+            _player.groupId = -1;
 
             // If player cant bypass restrictions, return them to town due to insufficient conditions being met
             if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
-               D.adminLog("Returning player to town: Voyage Group does not Exist!", D.ADMIN_LOG_TYPE.Warp);
+               D.adminLog("Returning player to town: Group does not Exist!", D.ADMIN_LOG_TYPE.Warp);
                return false;
             }
          }
 
-         // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
-         if (voyageGroup.voyageId <= 0 || !_player.tryGetVoyage(out Voyage voyage) || _player.getInstance().voyageId != voyageGroup.voyageId) {
-            if (voyageGroup.voyageId <= 0) {
-               D.adminLog("Returning player to town: Voyage id is Invalid!", D.ADMIN_LOG_TYPE.Warp);
+         // If the group instance is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
+         if (groupInfo.groupInstanceId <= 0 || !_player.tryGetGroupInstance(out GroupInstance groupInstance) || _player.getInstance().groupInstanceId != groupInfo.groupInstanceId) {
+            if (groupInfo.groupInstanceId <= 0) {
+               D.adminLog("Returning player to town: group instance id is Invalid!", D.ADMIN_LOG_TYPE.Warp);
                D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
-                  "Player cant stay in voyage because of warp restriction, Voyage Id is 0!", D.ADMIN_LOG_TYPE.Warp_To_Town);
+                  "Player cant stay in group instance because of warp restriction, group instance Id is 0!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             }
-            if (_player.getInstance().voyageId != voyageGroup.voyageId) {
-               D.adminLog("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}", D.ADMIN_LOG_TYPE.Warp);
+            if (_player.getInstance().groupInstanceId != groupInfo.groupInstanceId) {
+               D.adminLog("Returning player to town: Player group instance Id is incompatible with group: {" + _player.getInstance().groupInstanceId + "} : {" + groupInfo.groupInstanceId + "}", D.ADMIN_LOG_TYPE.Warp);
                D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
-                  "Player cant stay in voyage because of warp restriction, " +
-                  "Instance Voyage does not match Group Voyage {" + _player.getInstance().voyageId + "}{" + _player.voyageGroupId + "}{" + voyageGroup.voyageId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
+                  "Player cant stay in group instance because of warp restriction, " +
+                  "Group Instance does not match Group {" + _player.getInstance().groupInstanceId + "}{" + _player.groupId + "}{" + groupInfo.groupInstanceId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             }
 
             // If player cant bypass restirctions, return them to town due to insufficient conditions being met
@@ -7192,15 +7227,7 @@ public class RPCManager : NetworkBehaviour
             });
          }
 
-         // Reset the streak if there is any
-         if (_player.worldAreaVisitStreak > 0) {
-            // Lets schedule it in the background and move on
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.resetWorldAreaVisitStreak(_player.userId);
-            });
-
-            _player.worldAreaVisitStreak = 0;
-         }
+         _player.resetWorldAreaVisitStreak();
       }
    }
 
@@ -7221,7 +7248,7 @@ public class RPCManager : NetworkBehaviour
       checkConsumeWorldAreaVisitStreak();
 
       // If the area is a PvP area, a League or a TreasureSite, add the player to the GameStats System
-      if (VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)
+      if (GroupInstanceManager.isAnyLeagueArea(_player.areaKey) || GroupInstanceManager.isPvpArenaArea(_player.areaKey) || GroupInstanceManager.isTreasureSiteArea(_player.areaKey)
          || _player.areaKey.Contains(Area.TUTORIAL_AREA) || _player.areaKey.Contains(Area.STARTING_TOWN_SEA)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
@@ -7244,33 +7271,33 @@ public class RPCManager : NetworkBehaviour
       // Send World Map information
       requestWorldMapData();
 
-      // Verify the voyage consistency only if the user is in a group-specific area
-      if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey) && !VoyageManager.isPOIArea(_player.areaKey)) {
+      // Verify the group instance consistency only if the user is in a group-specific area
+      if (!GroupInstanceManager.isAnyGroupSpecificArea(_player.areaKey)) {
          return;
       }
 
-      // If the player does not meet the voyage requirements, warp the player back to town
-      if (!canPlayerStayInVoyage(true)) {
-         D.debug("This player {" + _player.userId + " " + _player.entityName + "} Cannot stay in Voyage, returning to Town");
-         D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} Player cant stay in voyage!", D.ADMIN_LOG_TYPE.Warp_To_Town);
+      // If the player does not meet the group instance requirements, warp the player back to town
+      if (!canPlayerStayInGroupInstance(true)) {
+         D.debug("This player {" + _player.userId + " " + _player.entityName + "} Cannot stay in group instance, returning to Town");
+         D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} Player cant stay in group instance!", D.ADMIN_LOG_TYPE.Warp_To_Town);
 
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
 
-      if (playerShipEntity && playerShipEntity.tryGetVoyage(out Voyage voyage)) {
-         if (voyage.isPvP) {
+      if (playerShipEntity && playerShipEntity.tryGetGroupInstance(out GroupInstance groupInstance)) {
+         if (groupInstance.isPvP) {
             playerShipEntity.hasEnteredPvP = true;
-            PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
-            PvpManager.self.assignPvpFaction(playerShipEntity, voyage.instanceId);
+            PvpManager.self.assignPvpTeam(playerShipEntity, groupInstance.instanceId);
+            PvpManager.self.assignPvpFaction(playerShipEntity, groupInstance.instanceId);
             PvpManager.self.onPlayerLoadedGameArea(_player.userId);
 
             if (AreaManager.self != null && AreaManager.self.getAreaPvpGameMode(_player.areaKey) == PvpGameMode.CaptureTheFlag) {
                Target_ResetPvpScoreIndicator(_player.connectionToClient, show: true);
             }
          } else {
-            // Not a PvP Voyage
-            Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
+            // Not a PvP group instance
+            Debug.LogWarning($"Player '{_player.entityName}' has entered a non-pvp group instance.");
          }
       }
    }
@@ -7376,7 +7403,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceivePvpToggle (NetworkConnection connection, bool isOn, bool isInTown) {
-      VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
+      InstanceStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
    }
 
    [Command]
@@ -7594,12 +7621,12 @@ public class RPCManager : NetworkBehaviour
          for (int i = 0; i < randomCount; i++) {
             float randomSpeed = Random.Range(.8f, 1.2f);
             float angleOffset = Random.Range(-25, 25);
-            processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId, false);
+            processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.groupId, false);
          }
 
          // Add extra ore spawn if has mining powerup
          if (PowerupPanel.self.hasLandPowerup(LandPowerupType.MiningBoost)) {
-            StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.voyageGroupId));
+            StartCoroutine(CO_SpawnBonusOreWithDelay(oreId, oreNode.transform, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), randomCount, _player.userId, _player.groupId));
          }
       } else {
          D.adminLog("Player successfully interacted ore {" + oreNode.id + "} Mining is not Finished: {" + oreNode.interactCount + "}", D.ADMIN_LOG_TYPE.Mine);
@@ -7720,7 +7747,7 @@ public class RPCManager : NetworkBehaviour
       checkItemQueue();
    }
 
-   public IEnumerator CO_SpawnBonusOreWithDelay (int oreId, Transform nodeTransform, Direction direction, int effectId, int ownerId, int voyageGroupId) {
+   public IEnumerator CO_SpawnBonusOreWithDelay (int oreId, Transform nodeTransform, Direction direction, int effectId, int ownerId, int groupId) {
       // Spawn bonus ore with a delay so bonus ore would be more visible
       yield return new WaitForSeconds(0.3f);
 
@@ -7732,10 +7759,10 @@ public class RPCManager : NetworkBehaviour
       bonusEffect.transform.localPosition = Vector3.zero;
       bonusEffect.transform.localScale = Vector3.one * 0.003f;
 
-      processClientMineEffect(oreId, nodeTransform.position, direction, angleOffset, randomSpeed, effectId, ownerId, voyageGroupId, true);
+      processClientMineEffect(oreId, nodeTransform.position, direction, angleOffset, randomSpeed, effectId, ownerId, groupId, true);
    }
 
-   public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId, bool isBonus) {
+   public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int groupId, bool isBonus) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       if (oreNode == null) {
@@ -7767,11 +7794,11 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Data setup
-      oreMine.initData(ownerId, voyageGroupId, effectId, oreNode, randomSpeed, isBonus);
+      oreMine.initData(ownerId, groupId, effectId, oreNode, randomSpeed, isBonus);
    }
 
    [Command]
-   public void Cmd_PickupOre (int nodeId, int oreEffectId, int ownerId, int voyageGroupId) {
+   public void Cmd_PickupOre (int nodeId, int oreEffectId, int ownerId, int groupId) {
       OreNode oreNode = OreManager.self.getOreNode(nodeId);
 
       // Make sure we found the Node
@@ -7786,8 +7813,8 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      // If the user has no voyage group check the owner id, if it has a voyage group check the owner group id of the ore
-      if ((voyageGroupId < 0 && _player.userId != ownerId) || (voyageGroupId >= 0 && _player.voyageGroupId != voyageGroupId) && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
+      // If the user has no group check the owner id, if it has a group check the owner group id of the ore
+      if ((groupId < 0 && _player.userId != ownerId) || (groupId >= 0 && _player.groupId != groupId) && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
          string message = "This does not belong to you!";
          _player.Target_FloatingMessage(_player.connectionToClient, message);
          return;
@@ -7827,9 +7854,6 @@ public class RPCManager : NetworkBehaviour
          int xp = 10;
          DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
-
-         // Gather voyage group info
-         List<NetworkBehaviour> networkBehaviorList = InstanceManager.self.getInstance(_player.instanceId).getEntities();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
@@ -8003,7 +8027,7 @@ public class RPCManager : NetworkBehaviour
 
                // Check if the chest should reward a map fragment and unlock a new location
                Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-               if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0) {
+               if (GroupInstanceManager.isTreasureSiteArea(instance.areaKey) && instance.groupInstanceId > 0) {
                   D.adminLog("Player {" + _player.userId + "} is Receiving Treasure Chest rewards from Treasure site {" + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Treasure);
                   processTreasureSiteChestReward(chest);
                } else {
@@ -8076,7 +8100,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Update the treasure chest status if is opened, except in treasure site areas since they can be visited again in voyages
-         if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {
+         if (!GroupInstanceManager.isTreasureSiteArea(chest.areaKey)) {
             DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
          }
       });
@@ -8117,10 +8141,10 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Check if the voyage group has opened all the chests in the treasure site
-      if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
-         // Unlink the group from this instance so that another voyage can be started without disbanding
-         groupInfo.voyageId = -1;
-         VoyageGroupManager.self.updateGroup(groupInfo);
+      if (_player.tryGetGroup(out Group groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
+         // Unlink the group from this instance so that another group instance can be started without disbanding
+         groupInfo.groupInstanceId = -1;
+         GroupManager.self.updateGroup(groupInfo);
       }
    }
 
@@ -8263,6 +8287,32 @@ public class RPCManager : NetworkBehaviour
    #endregion
 
    [Command]
+   public void Cmd_RequestTrade (int inviteeUserId) {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(inviteeUserId, out PlayerBodyEntity tradeTarget)) {
+         player.Target_ReceiveNormalChat("Failed to trade player, player is missing!", ChatInfo.Type.System);
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.Target_ReceiveNormalChat("Unable to trade player at the moment.", ChatInfo.Type.System);
+         return;
+      }
+
+      player.clearTradeState();
+      player.tradeTargetUserId = inviteeUserId;
+      player.tradeState = TradeState.RequestedTrade;
+
+      sendGoldAmount();
+
+      tradeTarget.rpc.Target_ReceiveTradeRequest(tradeTarget.connectionToClient, player.userId);
+   }
+
+   [Command]
    public void Cmd_InviteToPvp (int inviteeUserId) {
       if (_player is PlayerBodyEntity) {
          ((PlayerBodyEntity) _player).lastPvpInvitedUser = inviteeUserId;
@@ -8286,7 +8336,7 @@ public class RPCManager : NetworkBehaviour
       if (Global.doNotDisturbEnabled) {
          return;
       }
-      
+
       PvpInviteScreen.self.activate(inviterName);
       PvpInviteScreen.self.acceptButton.onClick.AddListener(() => {
          Global.player.rpc.Cmd_AcceptPvpInvite(inviterUserId);
@@ -8299,6 +8349,310 @@ public class RPCManager : NetworkBehaviour
          PvpInviteScreen.self.hide();
          PvpInviteScreen.self.refuseButton.onClick.RemoveAllListeners();
       });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveTradeRequest (NetworkConnection connection, int inviterUserId) {
+      // Ignore invite if do not disturb flag is enabled
+      if (Global.doNotDisturbEnabled) {
+         Cmd_DeclineTrade(inviterUserId);
+         return;
+      }
+
+      PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
+         Cmd_DeclineTrade(inviterUserId);
+         PanelManager.self.confirmScreen.hide();
+      });
+
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+         Cmd_AcceptTradeRequest(inviterUserId);
+         PanelManager.self.confirmScreen.hide();
+      });
+
+      PanelManager.self.confirmScreen.showYesNo(EntityManager.self.tryGetEntityName(inviterUserId, "Someone") +
+         " is offering you to trade. Do you wish to accept?");
+   }
+
+   [Command]
+   public void Cmd_DeclineTrade (int inviterUserId) {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      // Check if we are trading with this player
+      if (player.tradeState != TradeState.None && player.tradeTargetUserId == inviterUserId) {
+         player.Target_ReceiveNormalChat("You declined the trade.", ChatInfo.Type.System);
+         player.clearTradeState();
+      }
+
+      if (!EntityManager.self.tryGetEntityNotNull(inviterUserId, out PlayerBodyEntity tradeTarget)) {
+         return;
+      }
+
+      // Check if trade target is still trading with us
+      if (tradeTarget.tradeState != TradeState.None && tradeTarget.tradeTargetUserId == player.userId) {
+         tradeTarget.clearTradeState();
+         tradeTarget.Target_ReceiveNormalChat(player.entityName + " declined the trade.", ChatInfo.Type.System);
+      }
+   }
+
+   [Command]
+   public void Cmd_AcceptTradeRequest (int inviterUserId) {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(inviterUserId, out PlayerBodyEntity tradeTarget)) {
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Unable to trade player at the moment.", ChatInfo.Type.System);
+         return;
+      }
+
+      // Check that requesting player is still offering the trade
+      if (tradeTarget.tradeTargetUserId != player.userId || tradeTarget.tradeState != TradeState.RequestedTrade) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trade offer expired.", ChatInfo.Type.System);
+         return;
+      }
+
+      player.clearTradeState();
+      player.tradeTargetUserId = inviterUserId;
+      player.tradeState = TradeState.ChoosingItems;
+
+      tradeTarget.tradeState = TradeState.ChoosingItems;
+
+      sendGoldAmount();
+   }
+
+   [Command]
+   public void Cmd_SetOfferItemInTrade (int itemId, int count) {
+      if (itemId <= 0) {
+         return;
+      }
+
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(player.tradeTargetUserId, out PlayerBodyEntity tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trading player disappeared.", ChatInfo.Type.System);
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.Target_ReceiveNormalChat("Trade offer expired.", ChatInfo.Type.System);
+         player.clearTradeState();
+      }
+
+      if (player.tradeState != TradeState.ChoosingItems) {
+         return;
+      }
+
+      // If count is 0, remove it if exists
+      if (count <= 0) {
+         if (player.offeredTradeItems.ContainsKey(itemId)) {
+            player.offeredTradeItems.Remove(itemId);
+
+            if (tradeTarget.tradeState == TradeState.ConfirmedChosenItems) {
+               tradeTarget.tradeState = TradeState.ChoosingItems;
+            }
+         }
+
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item dbItem = DB_Main.getItem(itemId);
+
+         // Check soulbinding
+         bool soulBound = SoulBindingManager.Bkg_IsItemSoulBound(dbItem);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (player == null || dbItem == null) {
+               return;
+            }
+
+            if (soulBound) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, player, "Soulbound items can't be traded!");
+               return;
+            }
+
+            // If we don't have enough, don't add any at all
+            if (dbItem.count < count) {
+               player.Target_ReceiveNormalChat("Not enough item", ChatInfo.Type.System);
+               return;
+            }
+
+            if (tradeTarget != null) {
+               if (tradeTarget.tradeState == TradeState.ConfirmedChosenItems) {
+                  tradeTarget.tradeState = TradeState.ChoosingItems;
+               }
+            }
+
+            Item toBeAddedItem = dbItem.getCastItem();
+            toBeAddedItem.count = count;
+
+            if (!player.offeredTradeItems.ContainsKey(itemId) && player.offeredTradeItems.Count >= PlayerBodyEntity.MAX_TRADE_ITEMS) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, player, "A maximum of " + PlayerBodyEntity.MAX_TRADE_ITEMS + " items can be traded!");
+            } else {
+               player.offeredTradeItems[itemId] = toBeAddedItem;
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_SetOfferGoldInTrade (int count) {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(player.tradeTargetUserId, out PlayerBodyEntity tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trading player disappeared.", ChatInfo.Type.System);
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trade offer expired.", ChatInfo.Type.System);
+      }
+
+      if (player.tradeState != TradeState.ChoosingItems) {
+         return;
+      }
+
+      // If count is 0, remove it if exists
+      if (count <= 0) {
+         player.offeredGoldTrade = 0;
+
+         if (tradeTarget.tradeState == TradeState.ConfirmedChosenItems) {
+            tradeTarget.tradeState = TradeState.ChoosingItems;
+         }
+
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int dbGold = DB_Main.getGold(player.userId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (player == null) {
+               return;
+            }
+
+            // If we don't have enough, don't add any at all
+            if (dbGold < count) {
+               player.Target_ReceiveNormalChat("Not enough gold", ChatInfo.Type.System);
+               return;
+            }
+
+            if (tradeTarget != null) {
+               if (tradeTarget.tradeState == TradeState.ConfirmedChosenItems) {
+                  tradeTarget.tradeState = TradeState.ChoosingItems;
+               }
+            }
+
+            player.offeredGoldTrade = count;
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_ConfirmAddedItems () {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(player.tradeTargetUserId, out PlayerBodyEntity tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trading player disappeared.", ChatInfo.Type.System);
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trade offer expired.", ChatInfo.Type.System);
+      }
+
+      if (player.tradeState != TradeState.ChoosingItems) {
+         return;
+      }
+
+      if (tradeTarget.tradeState == TradeState.ConfirmedChosenItems) {
+         tradeTarget.tradeState = TradeState.ReviewingTrade;
+         player.tradeState = TradeState.ReviewingTrade;
+      } else {
+         player.tradeState = TradeState.ConfirmedChosenItems;
+      }
+   }
+
+   [Command]
+   public void Cmd_ConfirmTradeReview () {
+      if (!(_player is PlayerBodyEntity)) {
+         return;
+      }
+      PlayerBodyEntity player = _player as PlayerBodyEntity;
+
+      if (!EntityManager.self.tryGetEntityNotNull(player.tradeTargetUserId, out PlayerBodyEntity tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trading player disappeared.", ChatInfo.Type.System);
+         return;
+      }
+
+      if (!player.canTrade(tradeTarget)) {
+         player.clearTradeState();
+         player.Target_ReceiveNormalChat("Trade offer expired.", ChatInfo.Type.System);
+      }
+
+      if (player.tradeState != TradeState.ReviewingTrade) {
+         return;
+      }
+
+      if (tradeTarget.tradeState == TradeState.AcceptedTrade) {
+         // Cache the trade data
+         int id1 = player.userId;
+         List<Item> i1 = player.offeredTradeItems.Values.ToList();
+         int gold1 = player.offeredGoldTrade;
+         int id2 = tradeTarget.userId;
+         List<Item> i2 = tradeTarget.offeredTradeItems.Values.ToList();
+         int gold2 = tradeTarget.offeredGoldTrade;
+
+         // Immediately clear the trade state, so trade can't happen again while DB does it's stuff
+         player.clearTradeState();
+         tradeTarget.clearTradeState();
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            bool tradeSuccess = DB_Main.tradeItemsIfValid(id1, i1, gold1, id2, i2, gold2);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (tradeSuccess) {
+                  // Send out item shortcuts in case those items we traded away
+                  player.rpc.sendItemShortcutList();
+                  tradeTarget.rpc.sendItemShortcutList();
+
+                  player.Target_ReceiveNormalChat("Trade completed!", ChatInfo.Type.System);
+                  tradeTarget.Target_ReceiveNormalChat("Trade completed!", ChatInfo.Type.System);
+               } else {
+                  player.Target_ReceiveNormalChat("Trade failed: system error", ChatInfo.Type.System);
+                  tradeTarget.Target_ReceiveNormalChat("Trade failed: system error", ChatInfo.Type.System);
+               }
+            });
+         });
+      } else {
+         player.tradeState = TradeState.AcceptedTrade;
+      }
    }
 
    [Command]
@@ -8447,7 +8801,7 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      // Process voyage groups
+      // Process groups
       foreach (int memberId in groupMembers) {
          NetEntity entity = EntityManager.self.getEntity(memberId);
          if (entity != null) {
@@ -8530,12 +8884,12 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      // Declare the voyage group engaging the enemy
+      // Declare the group engaging the enemy
       if (enemy.battleId < 1) {
-         if (_player.voyageGroupId == -1) {
-            enemy.voyageGroupId = 0;
+         if (_player.groupId == -1) {
+            enemy.groupId = 0;
          } else {
-            enemy.voyageGroupId = _player.voyageGroupId;
+            enemy.groupId = _player.groupId;
          }
       }
 
@@ -8600,7 +8954,7 @@ public class RPCManager : NetworkBehaviour
       // Get or create the Battle instance
       Battle battle = BattleManager.self.createTeamBattle(area, instance, null, attackers, localBattler, null);
       battle.isPvp = true;
-      
+
       // Handles ability related logic
       List<PlayerBodyEntity> totalPlayerBodies = new List<PlayerBodyEntity>();
 
@@ -8917,10 +9271,10 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle, bool isShipBattle) {
       D.adminLog("Player is starting new battle, IsLeagueArea:{" + VoyageManager.isAnyLeagueArea(_player.areaKey) + "} IsPvpArena :{" + VoyageManager.isPvpArenaArea(_player.areaKey)
-         + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
+         + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + "} IsPOI:{" + VoyageManager.isPOIArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
          + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}", D.ADMIN_LOG_TYPE.Combat);
 
-      if ((VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
+      if ((VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) || VoyageManager.isPOIArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
          string reason = "";
          if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
             reason += "This is not a treasure area\n";
@@ -10466,8 +10820,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_DisplayNotificationForVoyageCompleted (NetworkConnection connection, Notification.Type notificationType) {
-      NotificationManager.self.add(notificationType, () => VoyageManager.self.requestExitCompletedLeague(), false);
-      VoyageManager.self.closeVoyageCompleteNotificationWhenLeavingArea();
+      NotificationManager.self.add(notificationType, () => GroupInstanceManager.self.requestExitCompletedVoyage(), false);
+      GroupInstanceManager.self.closeVoyageCompleteNotificationWhenLeavingArea();
    }
 
    [Server]
@@ -10759,54 +11113,54 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      List<Voyage> voyages = VoyageManager.self.getAllPvpInstances();
-      Target_ReceivePvpArenaList(_player.connectionToClient, voyages.ToArray());
+      List<GroupInstance> pvpInstances = GroupInstanceManager.self.getAllPvpInstances();
+      Target_ReceivePvpArenaList(_player.connectionToClient, pvpInstances.ToArray());
    }
 
    [TargetRpc]
-   public void Target_ReceivePvpArenaList (NetworkConnection connection, Voyage[] voyageArray) {
-      List<Voyage> voyageList = new List<Voyage>(voyageArray);
+   public void Target_ReceivePvpArenaList (NetworkConnection connection, GroupInstance[] pvpInstanceArray) {
+      List<GroupInstance> pvpInstanceList = new List<GroupInstance>(pvpInstanceArray);
 
       // Make sure the panel is showing
       PanelManager.self.showPanel(Panel.Type.NoticeBoard);
       NoticeBoardPanel panel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
 
       // Pass the data to the panel
-      panel.pvpArenaSection.receivePvpArenasFromServer(voyageList);
+      panel.pvpArenaSection.receivePvpArenasFromServer(pvpInstanceList);
    }
 
    [Command]
-   public void Cmd_RequestPvpArenaInfoFromServer (int voyageId) {
+   public void Cmd_RequestPvpArenaInfoFromServer (int groupInstanceId) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage) && voyage.isPvP) {
-         Target_ReceivePvpArenaInfo(_player.connectionToClient, voyage);
+      if (GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance) && groupInstance.isPvP) {
+         Target_ReceivePvpArenaInfo(_player.connectionToClient, groupInstance);
       } else {
          sendError("This pvp arena does not exist anymore!");
       }
    }
 
    [TargetRpc]
-   public void Target_ReceivePvpArenaInfo (NetworkConnection connection, Voyage voyage) {
+   public void Target_ReceivePvpArenaInfo (NetworkConnection connection, GroupInstance groupInstance) {
       // Pass the data to the panel
       NoticeBoardPanel panel = PanelManager.self.get<NoticeBoardPanel>(Panel.Type.NoticeBoard);
-      panel.pvpArenaSection.pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
+      panel.pvpArenaSection.pvpArenaInfoPanel.updatePanelWithPvpArena(groupInstance);
    }
 
    [Command]
-   public void Cmd_JoinPvpArena (int voyageId, PvpTeamType team) {
+   public void Cmd_JoinPvpArena (int groupInstanceId, PvpTeamType team) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      // Make sure the game instance (voyage) exists
-      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+      // Make sure the game instance (group instance) exists
+      if (GroupInstanceManager.self.tryGetGroupInstance(groupInstanceId, out GroupInstance groupInstance)) {
          // Send the join request to the server hosting the game
-         ServerNetworkingManager.self.joinPvpGame(voyageId, _player.userId, _player.entityName, team);
+         ServerNetworkingManager.self.joinPvpGame(groupInstanceId, _player.userId, _player.entityName, team);
       }
    }
 
@@ -11399,7 +11753,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Send the code to the player via mail
-            MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>());
+            MailManager.sendSystemMail(_player.userId, "Reward Code!", $"Well done! Here is your reward code to unlock cool stuff in the awesome XYZ game! {code} [THIS IS A TEST MAIL]", Array.Empty<int>(), Array.Empty<int>(), string.Empty);
             D.debug($"New reward code generated and sent to player {steamId}.");
          });
       });
@@ -11428,7 +11782,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Prevent fast travel on specific conditions
-      if (_player.isInBattle() || _player.tryGetVoyage(out Voyage voyage) || (_player.isPlayerShip() && _player.getPlayerShipEntity().hasAttackers())) {
+      if (_player.isInBattle() || _player.tryGetGroupInstance(out GroupInstance groupInstance) || (_player.isPlayerShip() && _player.getPlayerShipEntity().hasAttackers())) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You can't warp to your friend now!");
          return;
       }
@@ -11761,7 +12115,7 @@ public class RPCManager : NetworkBehaviour
             D.debug($"Reward Item created and ready for delivery. Code: {rewardCode.code}, PlayerId: {steamId}, RewardItemId: {rewardItem.id}");
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 });
+               MailManager.sendSystemMail(_player.userId, "Your Rewards!", $"If your are reading this you just received a new reward!", new[] { rewardItem.id }, new[] { 1 }, string.Empty);
 
                if (!wasPlayerNotified) {
                   wasPlayerNotified = true;
@@ -11783,6 +12137,23 @@ public class RPCManager : NetworkBehaviour
    #endregion
 
    #region Wishlist
+
+   [Command]
+   public void Cmd_NotePlayerWishlist (string appId) {
+      if (_player == null) {
+         D.debug($"Wishlist Request Received. Skipping. Reason: _player was null. AppId: {appId}.");
+         return;
+      }
+
+      // For debugging purposes, use the userId whenever the steamId is unavailable
+      string steamId = Util.isEmpty(_player.steamId) ? _player.userId.ToString() : _player.steamId;
+      appId = (Util.isEmpty(appId) || Util.isEmpty(_player.steamId)) ? "DEV" : appId;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.notePlayerWishlist(steamId, appId);
+         D.debug($"Wishlist Request Received. Noted in DB. PlayerId: {_player.userId}, SteamId: {steamId}, AppId: {appId}.");
+      });
+   }
 
    [Command]
    public void Cmd_RequestWishlist (string steamId) {
@@ -11830,9 +12201,9 @@ public class RPCManager : NetworkBehaviour
       List<WorldMapSpot> playerLocations = new List<WorldMapSpot>();
 
       // Check if the player is in a group
-      if (_player.tryGetGroup(out VoyageGroupInfo group)) {
+      if (_player.tryGetGroup(out Group groupInfo)) {
          // Get the group members and get the location of each of the team members
-         foreach (int userId in group.members) {
+         foreach (int userId in groupInfo.members) {
             NetEntity entity = EntityManager.self.getEntity(userId);
 
             if (entity != null) {
@@ -11867,6 +12238,21 @@ public class RPCManager : NetworkBehaviour
       }
 
       WorldMapPanel.self.onReceiveGroupMemberLocations(groupMemberLocations);
+   }
+
+   #endregion
+
+   #region Instance Info
+
+   [Server]
+   public void sendInstanceInfo (Instance currentInstance) {
+      string instanceInfoText = ServerNetworkingManager.self.getAllInstancesInfoText(currentInstance);
+      Target_ReceiveInstanceInfo(_player.connectionToClient, Area.getName(currentInstance.areaKey), instanceInfoText);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveInstanceInfo (NetworkConnection connection, string areaName, string instanceInfoText) {
+      PanelManager.self.loadingScreen.setInstanceText (areaName, instanceInfoText);
    }
 
    #endregion

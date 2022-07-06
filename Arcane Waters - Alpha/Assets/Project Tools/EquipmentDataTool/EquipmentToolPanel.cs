@@ -374,7 +374,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       _canBeTrashed.isOn = equipmentData.canBeTrashed;
       _iconPath.text = equipmentData.equipmentIconPath;
 
-      _paletteName1Text.text = equipmentData.palettes;
+      //_paletteName1Text.text = equipmentData.palettes;
       _paletteName2Text.text = "UNUSED";
 
       _materialType.value = 0;
@@ -512,7 +512,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       equipmentData.setAllColors = _declareAllColors.isOn;
 
-      equipmentData.palettes = _paletteName1Text.text;
+      //equipmentData.palettes = _paletteName1Text.text;
 
       equipmentData.rarityModifiers = getRarityModifiers();
       equipmentData.elementModifiers = getElementalModifiers();

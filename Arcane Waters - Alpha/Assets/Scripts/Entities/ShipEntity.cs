@@ -105,7 +105,7 @@ public class ShipEntity : SeaEntity
       currentHealth = maxHealth;
       attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
 
-      float reloadModifier = 1 + (((float) instanceDifficulty - 1) / (Voyage.getMaxDifficulty() - 1));
+      float reloadModifier = 1 + (((float) instanceDifficulty - 1) / (GroupInstance.getMaxDifficulty() - 1));
       reloadDelay = enemyData.reloadDelay / (instanceDifficulty > 0 ? reloadModifier : 1);
       reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
 
@@ -318,9 +318,9 @@ public class ShipEntity : SeaEntity
                break;
             case Attack.Type.SpeedBoost:
                hasUsedBuff = true;
-               if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
-                  targetVoyageGroup.addBuffStatsForUser(userId, 1);
-                  totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+               if (GroupManager.self.tryGetGroupById(groupId, out Group targetGroup)) {
+                  targetGroup.addBuffStatsForUser(userId, 1);
+                  totalBuffs = targetGroup.getTotalBuffs(userId);
                }
                addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false, true, this.netId);
@@ -329,7 +329,7 @@ public class ShipEntity : SeaEntity
 
          // Cast abilities to allies if buff radius declared in web tool is greater than 0
          if (hasUsedBuff && shipAbilityData.buffRadius > 0) {
-            List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+            List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithGroupId(groupId);
 
             if (shipAbilityData.isBuffRadiusDependent) {
                switch (shipAbilityData.selectedAttackType) {
@@ -338,9 +338,9 @@ public class ShipEntity : SeaEntity
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
                   case Attack.Type.SpeedBoost:
-                     if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
-                        targetVoyageGroup.addBuffStatsForUser(userId, 1);
-                        totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+                     if (GroupManager.self.tryGetGroupById(groupId, out Group targetGroup)) {
+                        targetGroup.addBuffStatsForUser(userId, 1);
+                        totalBuffs = targetGroup.getTotalBuffs(userId);
                      }
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
@@ -357,9 +357,9 @@ public class ShipEntity : SeaEntity
                                  StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
                                  break;
                               case Attack.Type.SpeedBoost:
-                                 if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
-                                    targetVoyageGroup.addBuffStatsForUser(userId, 1);
-                                    totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+                                 if (GroupManager.self.tryGetGroupById(groupId, out Group targetGroup)) {
+                                    targetGroup.addBuffStatsForUser(userId, 1);
+                                    totalBuffs = targetGroup.getTotalBuffs(userId);
                                  }
                                  allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                                  break;
@@ -399,7 +399,7 @@ public class ShipEntity : SeaEntity
 
    private IEnumerator CO_TriggerActiveAOEBuff (ShipAbilityData shipAbilityData, float statusDuration) {
       double endTimeVal = NetworkTime.time + statusDuration;
-      List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+      List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithGroupId(groupId);
       float value = shipAbilityData.damageModifier;
       float refreshDuration = 0.5f;
      

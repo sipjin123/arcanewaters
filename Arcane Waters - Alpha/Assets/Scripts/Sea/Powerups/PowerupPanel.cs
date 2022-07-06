@@ -86,7 +86,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void addItemBuff (Item item, bool isLand, string areaKey) {
-      if (VoyageManager.isLeagueArea(areaKey) || WorldMapManager.isWorldMapArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
+      if (GroupInstanceManager.isLeagueArea(areaKey) || WorldMapManager.isWorldMapArea(areaKey) || GroupInstanceManager.isTreasureSiteArea(areaKey)) {
          if (!gameObject.activeInHierarchy) {
             gameObject.SetActive(true);
          }

@@ -142,23 +142,34 @@ public class OfflineCharacter : ClientMonoBehaviour {
       setBodyLayers(userInfo);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
+      string myArmorPalettes = "";
+
       if (armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
-         armorData.palettes = armor.paletteNames;
+         //armorData.palettes = armor.paletteNames;
+         myArmorPalettes = armor.paletteNames;
+      } else {
+         myArmorPalettes = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
       }
+
       if (armorData != null) {
-         setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
+         setArmor(armorData.armorType, myArmorPalettes, ArmorStatData.serializeArmorStatData(armorData));
       } else {
          D.debug("Armor data is null: {" + armor.itemTypeId + "} ArmorContentCount: {" + EquipmentXMLManager.self.armorStatList.Count + "}");
       }
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+      string myHatPalettes = "";
+
       if (hatData == null) {
          hatData = HatStatData.getDefaultData();
-         hatData.palettes = hat.paletteNames;
+         //hatData.palettes = hat.paletteNames;
+         myHatPalettes = hat.paletteNames;
+      } else {
+         myHatPalettes = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
       }
 
-      string hatPalette = Item.parseItmPalette(Item.overridePalette(hat.paletteNames, hatData.palettes));
+      string hatPalette = Item.parseItmPalette(Item.overridePalette(hat.paletteNames, myHatPalettes));
       setHat(hatData.hatType, hatPalette, HatStatData.serializeHatStatData(hatData));
 
       setWeapon(userInfo, weapon);

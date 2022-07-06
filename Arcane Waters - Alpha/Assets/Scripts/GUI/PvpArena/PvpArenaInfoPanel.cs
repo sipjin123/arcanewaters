@@ -30,7 +30,7 @@ public class PvpArenaInfoPanel : SubPanel
 
    #endregion
 
-   public void updatePanelWithPvpArena (Voyage pvpArena) {
+   public void updatePanelWithPvpArena (GroupInstance pvpArena) {
       _pvpArena = pvpArena;
 
       // Clear out any old info
@@ -50,8 +50,8 @@ public class PvpArenaInfoPanel : SubPanel
          joinTeamAButton.interactable = false;
          joinTeamBButton.interactable = false;
       } else {
-         joinTeamAButton.interactable = pvpArena.playerCountTeamA <= pvpArena.playerCountTeamB && pvpArena.playerCountTeamA < Voyage.MAX_PLAYERS_PER_GROUP_PVP;
-         joinTeamBButton.interactable = pvpArena.playerCountTeamB <= pvpArena.playerCountTeamA && pvpArena.playerCountTeamB < Voyage.MAX_PLAYERS_PER_GROUP_PVP;
+         joinTeamAButton.interactable = pvpArena.playerCountTeamA <= pvpArena.playerCountTeamB && pvpArena.playerCountTeamA < GroupInstance.MAX_PLAYERS_PER_GROUP_PVP;
+         joinTeamBButton.interactable = pvpArena.playerCountTeamB <= pvpArena.playerCountTeamA && pvpArena.playerCountTeamB < GroupInstance.MAX_PLAYERS_PER_GROUP_PVP;
       }
    }
 
@@ -68,7 +68,7 @@ public class PvpArenaInfoPanel : SubPanel
    #region Private Variables
 
    // The pvp arena being displayed by the panel
-   private Voyage _pvpArena = null;
+   private GroupInstance _pvpArena = null;
 
    #endregion
 }

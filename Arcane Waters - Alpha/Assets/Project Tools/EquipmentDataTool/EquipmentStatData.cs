@@ -47,7 +47,7 @@ public class EquipmentStatData {
    public ElementModifier[] elementModifiers;
 
    // Name of palettes
-   public string palettes = "";
+   //public string palettes = "";
 
    // The bonus stats earned for wearing the item
    public Stats statsData = new Stats();

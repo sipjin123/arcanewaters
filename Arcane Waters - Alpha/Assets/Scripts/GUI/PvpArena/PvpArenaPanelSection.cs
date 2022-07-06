@@ -48,7 +48,7 @@ public class PvpArenaPanelSection : MonoBehaviour
       Global.player.rpc.Cmd_RequestPvpArenaListFromServer();
    }
 
-   public void receivePvpArenasFromServer (List<Voyage> pvpArenaList) {
+   public void receivePvpArenasFromServer (List<GroupInstance> pvpArenaList) {
       setLoadBlocker(false);
 
       // Clear out any current rows
@@ -57,7 +57,7 @@ public class PvpArenaPanelSection : MonoBehaviour
       // Sort by time
       pvpArenaList.Sort((a, b) => { return a.creationDate.CompareTo(b.creationDate); });
 
-      foreach (Voyage pvpArena in pvpArenaList) {
+      foreach (GroupInstance pvpArena in pvpArenaList) {
          PvpArenaCell cell = Instantiate(pvpArenaCellPrefab, cellContainer.transform);
          cell.setCellForPvpArena(pvpArena, () => onPvpArenaRowPressed(pvpArena));
       }
@@ -69,12 +69,12 @@ public class PvpArenaPanelSection : MonoBehaviour
       }
    }
 
-   public void onPvpArenaRowPressed (Voyage voyage) {
-      Global.player.rpc.Cmd_RequestPvpArenaInfoFromServer(voyage.voyageId);
+   public void onPvpArenaRowPressed (GroupInstance groupInstance) {
+      Global.player.rpc.Cmd_RequestPvpArenaInfoFromServer(groupInstance.groupInstanceId);
    }
 
-   public void joinPvpArena (Voyage voyage, PvpTeamType team) {
-      Global.player.rpc.Cmd_JoinPvpArena(voyage.voyageId, team);
+   public void joinPvpArena (GroupInstance groupInstance, PvpTeamType team) {
+      Global.player.rpc.Cmd_JoinPvpArena(groupInstance.groupInstanceId, team);
       PanelManager.self.hideCurrentPanel();
    }
 

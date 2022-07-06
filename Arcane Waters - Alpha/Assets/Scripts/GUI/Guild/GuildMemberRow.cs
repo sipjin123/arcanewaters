@@ -142,7 +142,7 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
 
    public void onInviteClicked () {
       if (Global.player) {
-         VoyageGroupManager.self.inviteUserToVoyageGroup(memberName.text);
+         GroupManager.self.inviteUserToGroup(memberName.text);
       }
    }
 

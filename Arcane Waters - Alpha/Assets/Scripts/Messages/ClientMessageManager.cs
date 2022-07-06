@@ -350,7 +350,7 @@ public class ClientMessageManager : MonoBehaviour {
          case ConfirmMessage.Type.FriendshipDeleted:
             // Sound effect for invitation sent
             if(msg.confirmType == ConfirmMessage.Type.FriendshipInvitationSent) {
-               SoundEffectManager.self.playOneShotWithParam(SoundEffectManager.FRIEND_REQUEST, SoundEffectManager.AMB_SW_PARAM, 0);
+               SoundEffectManager.self.playFriendRequest(false);
             }
 
             // Hide the confirm panel

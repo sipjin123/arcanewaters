@@ -1,4 +1,4 @@
-﻿public class VoyageGroupStats {
+﻿public class GroupStats {
    #region Public Variables
 
    // The user id

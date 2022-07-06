@@ -39,8 +39,8 @@ public class VoyageMapCell : MonoBehaviour {
    // The index of the current league
    public Text leagueIndexText;
 
-   // The voyage id
-   public Text voyageIdText;
+   // The group instance id
+   public Text groupInstanceIdText;
 
    // The pvp game state
    public Text pvpGameStateText;
@@ -66,25 +66,25 @@ public class VoyageMapCell : MonoBehaviour {
 
    #endregion
 
-   public void setCellForVoyage (Voyage voyage) {
-      setCellForVoyage(voyage, null);
+   public void setCellForVoyage (GroupInstance groupInstance) {
+      setCellForVoyage(groupInstance, null);
       disablePointerEvents();
    }
 
-   public void setCellForVoyage (Voyage voyage, UnityAction action) {
-      _voyage = voyage;
+   public void setCellForVoyage (GroupInstance groupInstance, UnityAction action) {
+      _groupInstance = groupInstance;
 
       // Set default sprites
       onPointerExitButton();
 
       // Set the map name
-      mapNameText.text = voyage.areaName;
+      mapNameText.text = groupInstance.areaName;
 
       // Set the plaque images
-      statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName(_voyage.difficulty));
+      statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName(_groupInstance.difficulty));
 
-      // Show different relevant statuses for voyage and league instances
-      if (voyage.isLeague) {
+      // Show different relevant statuses for pvp and league instances
+      if (groupInstance.isLeague) {
          foreach (GameObject gO in pvpArenaStatusRows) {
             if (gO.activeSelf) {
                gO.SetActive(false);
@@ -111,41 +111,41 @@ public class VoyageMapCell : MonoBehaviour {
       }
 
       // Set the player count
-      if (voyage.isPvP) {
-         playerCountText.text = voyage.playerCount + "/" + voyage.pvpGameMaxPlayerCount;
+      if (groupInstance.isPvP) {
+         playerCountText.text = groupInstance.playerCount + "/" + groupInstance.pvpGameMaxPlayerCount;
       } else {
-         playerCountText.text = (voyage.groupCount * Voyage.getMaxGroupSize(voyage.difficulty)) + "/" +
-            Voyage.getMaxGroupsPerInstance(voyage.difficulty) * Voyage.getMaxGroupSize(voyage.difficulty);
+         playerCountText.text = (groupInstance.groupCount * GroupInstance.getMaxGroupSize(groupInstance.difficulty)) + "/" +
+            GroupInstance.getMaxGroupsPerInstance(groupInstance.difficulty) * GroupInstance.getMaxGroupSize(groupInstance.difficulty);
       }
 
-      // Set the time since the voyage started
-      timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(voyage.creationDate)).ToString(@"mm\:ss");
+      // Set the time since the group instance was created
+      timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(groupInstance.creationDate)).ToString(@"mm\:ss");
       timeLeagueText.text = timeText.text;
 
       // Set the enemy count
-      string aliveEnemiesCount = (voyage.aliveNPCEnemyCount == -1) ? "0" : voyage.aliveNPCEnemyCount.ToString();
-      aliveEnemyCountText.text = aliveEnemiesCount + "/" + (voyage.totalNPCEnemyCount).ToString();
+      string aliveEnemiesCount = (groupInstance.aliveNPCEnemyCount == -1) ? "0" : groupInstance.aliveNPCEnemyCount.ToString();
+      aliveEnemyCountText.text = aliveEnemiesCount + "/" + (groupInstance.totalNPCEnemyCount).ToString();
 
       // Set the league index
-      leagueIndexText.text = Voyage.getLeagueAreaName(voyage.leagueIndex);
+      leagueIndexText.text = GroupInstance.getLeagueAreaName(groupInstance.leagueIndex);
 
       // Set the pvp game attributes
-      voyageIdText.text = voyage.voyageId.ToString();
-      pvpGameStateText.text = PvpGame.getGameStateLabel(voyage.pvpGameState);
+      groupInstanceIdText.text = groupInstance.groupInstanceId.ToString();
+      pvpGameStateText.text = PvpGame.getGameStateLabel(groupInstance.pvpGameState);
 
       // Set the plaque labels outline color
-      switch (Voyage.getDifficultyEnum(voyage.difficulty)) {
-         case Voyage.Difficulty.Easy:
+      switch (GroupInstance.getDifficultyEnum(groupInstance.difficulty)) {
+         case GroupInstance.Difficulty.Easy:
             foreach (Outline outline in outlines) {
                outline.effectColor = bronzeOutlineColor;
             }
             break;
-         case Voyage.Difficulty.Medium:
+         case GroupInstance.Difficulty.Medium:
             foreach (Outline outline in outlines) {
                outline.effectColor = silverOutlineColor;
             }
             break;
-         case Voyage.Difficulty.Hard:
+         case GroupInstance.Difficulty.Hard:
             foreach (Outline outline in outlines) {
                outline.effectColor = goldOutlineColor;
             }
@@ -165,7 +165,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void onPointerEnterButton () {
       if (_interactable) {
          // Change frame sprite - HOVERED
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_hover");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_groupInstance.difficulty) + "_frame_hover");
 
          // Change biome sprite - HOVERED
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_hover");
@@ -175,7 +175,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void onPointerExitButton () {
       if (_interactable) {
          // Change frame sprite - DEFAULT
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_default");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_groupInstance.difficulty) + "_frame_default");
 
          // Change biome sprite - DEFAULT
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_default");
@@ -185,7 +185,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void onPointerDownOnButton () {
       if (_interactable) {
          // Change frame sprite - PRESSED
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_pressed");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_groupInstance.difficulty) + "_frame_pressed");
 
          // Change biome sprite - PRESSED
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_pressed");
@@ -213,25 +213,25 @@ public class VoyageMapCell : MonoBehaviour {
    }
 
    public static string getFrameName (int voyageDifficulty) {
-      switch (Voyage.getDifficultyEnum(voyageDifficulty)) {
-         case Voyage.Difficulty.Easy:
+      switch (GroupInstance.getDifficultyEnum(voyageDifficulty)) {
+         case GroupInstance.Difficulty.Easy:
             return "bronze";
-         case Voyage.Difficulty.Medium:
+         case GroupInstance.Difficulty.Medium:
             return "silver";
-         case Voyage.Difficulty.Hard:
+         case GroupInstance.Difficulty.Hard:
             return "gold";
       }
       return "";
    }
 
    private string getBiomeName () {      
-      return _voyage.biome.ToString().ToLower();
+      return _groupInstance.biome.ToString().ToLower();
    }
 
    #region Private Variables
 
-   // The voyage being displayed
-   private Voyage _voyage;
+   // The group instance being displayed
+   private GroupInstance _groupInstance;
 
    // Gets set to true when the cell reacts to pointer events
    private bool _interactable = true;

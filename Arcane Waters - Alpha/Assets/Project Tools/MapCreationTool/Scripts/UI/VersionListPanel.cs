@@ -4,6 +4,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using MapCreationTool.Serialization;
+using UnityEngine.Networking;
+using System.Collections;
+using System.Text;
 
 namespace MapCreationTool
 {
@@ -129,7 +132,14 @@ namespace MapCreationTool
          var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string error = null;
             try {
-               DB_Main.setLiveMapVersion(mapVersion);
+               PublishedVersionChange change = DB_Main.setLiveMapVersion(mapVersion);
+
+               // Create a Discord report in the background
+               if (change.currentVersion != change.previousVersion) {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     createDiscordPublishReport(change);
+                  });
+               }
             } catch (Exception ex) {
                error = ex.Message;
             }
@@ -145,6 +155,58 @@ namespace MapCreationTool
          });
 
          UI.loadingPanel.display("Publishing a map", task);
+      }
+
+      private void createDiscordPublishReport (PublishedVersionChange change) {
+         var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<MapChangeComment> allComments = new List<MapChangeComment>();
+
+            int from = Math.Min(change.currentVersion, change.previousVersion);
+            int to = Math.Max(change.currentVersion, change.previousVersion);
+
+            for (int i = from + 1; i <= to; i++) {
+               List<MapChangeComment> comments = DB_Main.getVersionChangeComments(change.mapId, i);
+               allComments.AddRange(comments);
+            }
+
+            if (change.previousVersion > change.currentVersion) {
+               // If a previous version was published, note that these changes are reverted
+               foreach (MapChangeComment comment in allComments) {
+                  if (!string.IsNullOrWhiteSpace(comment.comment)) {
+                     comment.comment = "(REVERTED): " + comment.comment;
+                  }
+               }
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               StartCoroutine(sendDiscordPublishReport(new MapChangeCommentCollection { records = allComments.ToArray() }));
+            });
+         });
+         UI.loadingPanel.display("Forming Discord report", task);
+      }
+
+      private IEnumerator sendDiscordPublishReport (MapChangeCommentCollection report) {
+         string body = JsonUtility.ToJson(report);
+
+         _sendingDiscordReport = true;
+
+         UnityThreading.Task t = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            while (_sendingDiscordReport) {
+               System.Threading.Thread.Sleep(200);
+            }
+         });
+         UI.loadingPanel.display("Sending Discord report", t);
+
+         using (UnityWebRequest www = new UnityWebRequest(@"https://tools.arcanewaters.com/api/Reports/MapPublish", UnityWebRequest.kHttpVerbPOST)) {
+            www.SetRequestHeader("Content-Type", "application/json");
+            var jsonBytes = Encoding.UTF8.GetBytes(body);
+            www.uploadHandler = new UploadHandlerRaw(jsonBytes);
+            www.downloadHandler = new DownloadHandlerBuffer();
+
+            yield return www.SendWebRequest();
+            _sendingDiscordReport = false;
+            D.log("Discord map publish: " + www.responseCode + " " + www.error);
+         }
       }
 
       public void deleteMapVersion (MapVersion version) {
@@ -194,5 +256,8 @@ namespace MapCreationTool
       public void close () {
          hide();
       }
+
+      // Are we sending a discord report at this moment
+      private bool _sendingDiscordReport = false;
    }
 }

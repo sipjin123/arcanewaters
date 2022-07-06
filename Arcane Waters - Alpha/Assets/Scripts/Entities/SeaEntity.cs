@@ -218,11 +218,11 @@ public class SeaEntity : NetEntity
       }
 
       if (isServer) {
-         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroup)) {
-            totalDamageDealt = voyageGroup.getTotalDamage(userId);
-            totalDamageTaken = voyageGroup.getTotalTank(userId);
-            totalBuffs = voyageGroup.getTotalBuffs(userId);
-            totalHeals = voyageGroup.getTotalHeals(userId);
+         if (GroupManager.self.tryGetGroupById(groupId, out Group groupInfo)) {
+            totalDamageDealt = groupInfo.getTotalDamage(userId);
+            totalDamageTaken = groupInfo.getTotalTank(userId);
+            totalBuffs = groupInfo.getTotalBuffs(userId);
+            totalHeals = groupInfo.getTotalHeals(userId);
          }
       }
 
@@ -310,13 +310,13 @@ public class SeaEntity : NetEntity
       if (sourceEntity != null && sourceEntity is SeaEntity) {
          SeaEntity seaEntity = (SeaEntity) sourceEntity;
 
-         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroup)) {
-            voyageGroup.addTankStatsForUser(userId, amount);
-            totalDamageTaken = voyageGroup.getTotalTank(userId);
+         if (GroupManager.self.tryGetGroupById(groupId, out Group groupInfo)) {
+            groupInfo.addTankStatsForUser(userId, amount);
+            totalDamageTaken = groupInfo.getTotalTank(userId);
          }
-         if (VoyageGroupManager.self.tryGetGroupById(seaEntity.voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
-            targetVoyageGroup.addDamageStatsForUser(seaEntity.userId, amount);
-            seaEntity.totalDamageDealt = targetVoyageGroup.getTotalDamage(seaEntity.userId);
+         if (GroupManager.self.tryGetGroupById(seaEntity.groupId, out Group targetGroup)) {
+            targetGroup.addDamageStatsForUser(seaEntity.userId, amount);
+            seaEntity.totalDamageDealt = targetGroup.getTotalDamage(seaEntity.userId);
          }
       }
 
@@ -1563,7 +1563,7 @@ public class SeaEntity : NetEntity
          return false;
       }
 
-      // Prevent players from damaging each other in PvE voyage instances
+      // Prevent players from damaging each other in PvE instances
       if (attacker.isAdversaryInPveInstance(targetEntity)) {
          return false;
       }
@@ -2765,7 +2765,7 @@ public class SeaEntity : NetEntity
 
    #endregion
 
-   public void setOpenWorldData (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, Voyage.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTime) {
+   public void setOpenWorldData (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, int guildId, GroupInstance.Difficulty difficulty, bool isOpenWorldSpawn, float respawnTime) {
       openWorldRespawnData = new EnemyManager.OpenWorldRespawnData {
          instance = instance,
          area = area,

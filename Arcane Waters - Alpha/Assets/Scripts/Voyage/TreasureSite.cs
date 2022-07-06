@@ -47,13 +47,13 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public string destinationSpawn;
 
-   // The voyage group that has ownership of this site, and has captured or is capturing it
+   // The group that has ownership of this site, and has captured or is capturing it
    [SyncVar]
-   public int voyageGroupId = -1;
+   public int groupId = -1;
 
-   // The voyage group currently in range of the site, either capturing or stealing it
+   // The group currently in range of the site, either capturing or stealing it
    [SyncVar]
-   public int inRangeVoyageGroupId = -1;
+   public int inRangeGroupId = -1;
 
    // The percentage of capture
    [SyncVar]
@@ -63,7 +63,7 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public bool isClearedOfEnemies = false;
 
-   // The difficulty of the voyage where this site is
+   // The difficulty of the instance where this site is
    [SyncVar]
    public int difficulty = 0;
 
@@ -111,14 +111,14 @@ public class TreasureSite : NetworkBehaviour
          // Get the group id of the first ship
          int groupInRange = -1;
          foreach (ShipEntity ship in _capturingShips) {
-            groupInRange = ship.voyageGroupId;
+            groupInRange = ship.groupId;
             break;
          }
 
-         // Determine if the ships in range belong to the same voyage group
+         // Determine if the ships in range belong to the same group
          bool sameGroup = true;
          foreach (ShipEntity ship in _capturingShips) {
-            if (groupInRange != ship.voyageGroupId) {
+            if (groupInRange != ship.groupId) {
                sameGroup = false;
                break;
             }
@@ -127,27 +127,27 @@ public class TreasureSite : NetworkBehaviour
          // If all the ships belong to the same group
          if (sameGroup) {
             // Set the id of the group in range
-            inRangeVoyageGroupId = groupInRange;
+            inRangeGroupId = groupInRange;
 
             // Get the number of ships in range
             int shipCount = _capturingShips.Count;
 
-            // Get the maximum number of ships per group for this voyage difficulty
-            int maxShipCount = Voyage.getMaxGroupSize(difficulty);
+            // Get the maximum number of ships per group for this instance difficulty
+            int maxShipCount = GroupInstance.getMaxGroupSize(difficulty);
 
             // Calculate the capture speed
             float captureDuration = Mathf.Lerp(CAPTURE_MAX_DURATION, CAPTURE_MIN_DURATION, ((float) shipCount) / maxShipCount);
             float captureSpeed = 1f / captureDuration;
 
             // Check if the site was already being captured by the same group
-            if (groupInRange == voyageGroupId) {
+            if (groupInRange == groupId) {
                // Update the status
                status = Status.Capturing;
 
                // Increase the capture points
                capturePoints += captureSpeed * Time.deltaTime;
 
-               // If the points reached the maximum, assign the site to the voyage group
+               // If the points reached the maximum, assign the site to the group
                if (capturePoints >= 1) {
                   capturePoints = 1;
                   status = Status.Captured;
@@ -170,7 +170,7 @@ public class TreasureSite : NetworkBehaviour
                // If the points reached 0, change the ownership and start capturing
                if (capturePoints <= 0) {
                   capturePoints = -capturePoints;
-                  voyageGroupId = groupInRange;
+                  groupId = groupInRange;
                   status = Status.Capturing;
                }
             }
@@ -178,7 +178,7 @@ public class TreasureSite : NetworkBehaviour
          // If the ships in range belong to different groups
          else {
             status = Status.Blocked;
-            inRangeVoyageGroupId = -1;
+            inRangeGroupId = -1;
          }
       }
       // If no ship is in range
@@ -186,7 +186,7 @@ public class TreasureSite : NetworkBehaviour
          if (capturePoints > 0) {
             // Set the status
             status = Status.Resetting;
-            inRangeVoyageGroupId = -1;
+            inRangeGroupId = -1;
 
             // Slowly reduce the capture points
             float captureSpeed = 1f / CAPTURE_RESET_DURATION;
@@ -202,7 +202,7 @@ public class TreasureSite : NetworkBehaviour
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
-         if (ship != null && ship.instanceId == instanceId && VoyageGroupManager.isInGroup(ship)) {
+         if (ship != null && ship.instanceId == instanceId && GroupManager.isInGroup(ship)) {
             // Add the ship to the list of capturing ships
             _capturingShips.Add(ship);
 
@@ -338,10 +338,10 @@ public class TreasureSite : NetworkBehaviour
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 
-      // Disable the treasure site capture if the instance is not a voyage instance
+      // Disable the treasure site capture if the instance is not a group instance
       if (isServer) {
          Instance instance = InstanceManager.self.getInstance(instanceId);
-         if (instance == null || instance.voyageId <= 0) {
+         if (instance == null || instance.groupInstanceId <= 0) {
             enabled = false;
             _captureCollider.enabled = false;
             yield break;
@@ -350,7 +350,7 @@ public class TreasureSite : NetworkBehaviour
 
       // Get all the nearby colliders
       Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
-      D.adminLog("This Treasure Site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + voyageGroupId + "} is Gathering warps: {" + nearbyColliders.Length + "}", D.ADMIN_LOG_TYPE.POI_WARP);
+      D.adminLog("This Treasure Site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + groupId + "} is Gathering warps: {" + nearbyColliders.Length + "}", D.ADMIN_LOG_TYPE.POI_WARP);
 
       // Find the warp associated with this treasure site
       bool found = false;
@@ -358,7 +358,7 @@ public class TreasureSite : NetworkBehaviour
          Warp warp = c.gameObject.GetComponent<Warp>();
          if (warp != null) {
             // Set this treasure site as controller of the warp
-            D.adminLog("This treasure site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + voyageGroupId + "} is overriding Warp:{" + warp.areaTarget + "}", D.ADMIN_LOG_TYPE.POI_WARP);
+            D.adminLog("This treasure site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + groupId + "} is overriding Warp:{" + warp.areaTarget + "}", D.ADMIN_LOG_TYPE.POI_WARP);
             warp.setTreasureSite(instanceId, this);
             _warp = warp;
             found = true;
@@ -402,8 +402,8 @@ public class TreasureSite : NetworkBehaviour
       });
    }
 
-   public virtual bool isOwnedByGroup (int voyageGroupId) {
-      return voyageGroupId == this.voyageGroupId;
+   public virtual bool isOwnedByGroup (int groupId) {
+      return groupId == this.groupId;
    }
 
    public virtual bool isActive () {

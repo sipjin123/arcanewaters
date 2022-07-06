@@ -48,7 +48,7 @@ public class Minimap : ClientMonoBehaviour
    // The prefab we use for showing ship entity icon
    public MM_ShipEntityIcon shipIconPrefab, openWorldAlliedShipIconPrefab, openWorldOtherShipIconPrefab;
 
-   // The prefab we use for showing player icons in our voyage group (only in town)
+   // The prefab we use for showing player icons in our group (only in town)
    public MM_GroupPlayerIcon groupPlayerIconPrefab;
 
    // The prefab we use for showing waypoint icons

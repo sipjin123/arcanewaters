@@ -47,7 +47,7 @@ public class TrinketStatData : EquipmentStatData {
          itemDescription = data.equipmentDescription,
          category = Item.Category.Trinket,
          iconPath = data.equipmentIconPath,
-         paletteNames = data.palettes,
+         paletteNames = PaletteSwapManager.extractPalettes(data.defaultPalettes),
          data = serializeTrinketStatData(data)
       };
       return newTrinket;
@@ -82,7 +82,7 @@ public class TrinketStatData : EquipmentStatData {
    public static TrinketStatData getDefaultData () {
       return new TrinketStatData {
          trinketType = 0,
-         palettes = ""
+         //palettes = ""
       };
    }
 }

@@ -198,7 +198,7 @@ public class MailPanel : Panel
          row.setRowForMail(mail, mail.mailId == _displayedMailId);
 
          if (systemMailStatusList[mailIndex]) {
-            row.senderName.text = MailManager.SYSTEM_USERNAME;
+            row.senderName.text = !Util.isEmpty(mail.senderNameOverride) ? mail.senderNameOverride : MailManager.SYSTEM_USERNAME;
          }
 
          mailIndex++;
@@ -276,7 +276,10 @@ public class MailPanel : Panel
 
       // Adjust UI for system mails
       replyMailButton.interactable = !isSystemMail;
-      senderNameText.text = isSystemMail ? MailManager.SYSTEM_USERNAME : senderNameText.text;
+
+      if (isSystemMail) {
+         senderNameText.text = !Util.isEmpty(mail.senderNameOverride) ? mail.senderNameOverride : MailManager.SYSTEM_USERNAME;
+      }
    }
 
    public void composeNewMail () {

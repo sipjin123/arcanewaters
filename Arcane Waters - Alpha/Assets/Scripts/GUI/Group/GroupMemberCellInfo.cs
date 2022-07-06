@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class VoyageGroupMemberCellInfo
+public class GroupMemberCellInfo
 {
    #region Public Variables
 
@@ -48,9 +48,9 @@ public class VoyageGroupMemberCellInfo
 
    #endregion
 
-   public VoyageGroupMemberCellInfo () { }
+   public GroupMemberCellInfo () { }
 
-   public VoyageGroupMemberCellInfo (UserObjects userObjects) {
+   public GroupMemberCellInfo (UserObjects userObjects) {
       this.userId = userObjects.userInfo.userId;
       this.userName = userObjects.userInfo.username;
       this.userXP = userObjects.userInfo.XP;

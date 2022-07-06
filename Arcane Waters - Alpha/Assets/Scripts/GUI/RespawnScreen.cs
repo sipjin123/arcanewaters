@@ -65,7 +65,7 @@ public class RespawnScreen : MonoBehaviour {
 
          if (playerShip != null) {         
             // If the player dies in a pvp or league area, respawn them in the same map
-            if (!WorldMapManager.isWorldMapArea(playerShip.areaKey) && (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey))) {
+            if (!WorldMapManager.isWorldMapArea(playerShip.areaKey) && (GroupInstanceManager.isPvpArenaArea(playerShip.areaKey) || GroupInstanceManager.isAnyLeagueArea(playerShip.areaKey))) {
                D.adminLog("Player Ship Sending Request for Instance Respawn to server", D.ADMIN_LOG_TYPE.Respawn);
                setLifeboatVisibility(false);
                playerShip.Cmd_RespawnPlayerInInstance();
@@ -95,8 +95,8 @@ public class RespawnScreen : MonoBehaviour {
          TutorialManager3.self.panel.gameObject.SetActive(true);
       }
 
-      // When dying in a voyage area, show a tip explaining how to return
-      if (Global.player.isInGroup() && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
+      // When dying in a voyage, show a tip explaining how to return
+      if (Global.player.isInGroup() && GroupInstanceManager.isAnyLeagueArea(Global.player.areaKey)) {
          NotificationManager.self.add(Notification.Type.ReturnToVoyage);
       }
    }
@@ -154,9 +154,9 @@ public class RespawnScreen : MonoBehaviour {
    }
 
    private void updateButtonText () {
-      if (Global.player != null && VoyageManager.isPvpArenaArea(Global.player.areaKey) && !WorldMapManager.isWorldMapArea(Global.player.areaKey)) {
+      if (Global.player != null && GroupInstanceManager.isPvpArenaArea(Global.player.areaKey) && !WorldMapManager.isWorldMapArea(Global.player.areaKey)) {
          buttonText.text = BUTTON_TEXT_PVP;
-      } else if (Global.player != null && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
+      } else if (Global.player != null && GroupInstanceManager.isAnyLeagueArea(Global.player.areaKey)) {
          buttonText.text = BUTTON_TEXT_LEAGUE;
       } else {
          buttonText.text = BUTTON_TEXT_NORMAL;
@@ -169,7 +169,7 @@ public class RespawnScreen : MonoBehaviour {
          return false;
       }
 
-      if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+      if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && GroupInstanceManager.isPvpArenaArea(Global.player.areaKey)) {
          // Since the introduction of the UINavigation, the content can be hidden by making it not interactable
          Global.player.rpc.Cmd_RequestPvpRespawnTimeout();
          return true;

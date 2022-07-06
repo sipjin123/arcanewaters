@@ -263,7 +263,7 @@ public class TreasureChest : NetworkBehaviour {
          if (Global.player is PlayerBodyEntity) {
             // In league treasure sites, all enemies must be defeated before opening the map fragment chest
             Instance instance = Global.player.getInstance();
-            if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0 && instance.aliveNPCEnemiesCount > 0) {
+            if (GroupInstanceManager.isTreasureSiteArea(instance.areaKey) && instance.groupInstanceId > 0 && instance.aliveNPCEnemiesCount > 0) {
                FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asEnemiesAround();
                return;
             }

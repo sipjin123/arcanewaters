@@ -93,10 +93,10 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
          uint lastAttackerId = seaEntity.lastAttackerId();
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(lastAttackerId);
          if (lastAttacker != null) {
-            if (lastAttacker.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-               if (voyageGroup.members.Count > 0) {
+            if (lastAttacker.tryGetGroup(out Group groupInfo)) {
+               if (groupInfo.members.Count > 0) {
                   // Send the result to all group members
-                  foreach (int userId in voyageGroup.members) {
+                  foreach (int userId in groupInfo.members) {
                      NetEntity memberEntity = EntityManager.self.getEntity(userId);
                      if (memberEntity != null && memberEntity is PlayerShipEntity && seaEntity.wasAttackedBy(memberEntity.netId)) {
                         // Assign default powerup as fall back option if there are no valid loot group powerup

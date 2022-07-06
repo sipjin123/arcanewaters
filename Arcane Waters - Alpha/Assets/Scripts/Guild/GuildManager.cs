@@ -7,7 +7,8 @@ using System;
 using Crosstales.BWF.Manager;
 using System.Text.RegularExpressions;
 
-public class GuildManager : MonoBehaviour {
+public class GuildManager : MonoBehaviour
+{
    #region Public Variables
 
    // The maximum number of people in a guild
@@ -85,7 +86,7 @@ public class GuildManager : MonoBehaviour {
 
    public void acceptInviteOnClient (int guildId, string inviterName, int inviterUserId, string invitedUserName, int invitedUserId, string guildName) {
       Global.player.rpc.Cmd_AcceptGuildInvite(guildId, inviterName, inviterUserId, invitedUserName, invitedUserId, guildName);
-      
+
       // Hide the confirm panel
       PanelManager.self.confirmScreen.hide();
    }
@@ -246,6 +247,25 @@ public class GuildManager : MonoBehaviour {
       return Math.Max(0, GUILD_CREATION_COST);
    }
 
+   [Client]
+   public bool tryGetGuildName (int guildId, out string name) => _guildNames.TryGetValue(guildId, out name);
+
+   [Client]
+   public string tryGetGuildName (int guildId, string fallBackname) {
+      if (_guildNames.TryGetValue(guildId, out string name)) {
+         return name;
+      }
+
+      return fallBackname;
+   }
+
+   [Client]
+   public void cacheGuildName (int guildId, string name) {
+      if (guildId > 0 && !string.IsNullOrWhiteSpace(name)) {
+         _guildNames[guildId] = name;
+      }
+   }
+
    #region Private Variables
 
    // Stores past invites that have been sent
@@ -253,6 +273,9 @@ public class GuildManager : MonoBehaviour {
 
    // The cost for creating a guild
    private static int GUILD_CREATION_COST = 150;
+
+   // Cached name for guilds (client-only)
+   private Dictionary<int, string> _guildNames = new Dictionary<int, string>();
 
    #endregion
 }
