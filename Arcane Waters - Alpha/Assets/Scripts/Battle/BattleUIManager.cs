@@ -201,7 +201,24 @@ public class BattleUIManager : MonoBehaviour {
          try {
             Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
             if (randomTarget == null) {
-               D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
+               D.adminLog("Warning, no live targets found using Random Target Selection! LiveTargets-A:{" + BattleSelectionManager.self.getLiveTargets().Count + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+
+               Battler playerBattler = BattleManager.self.getPlayerBattler();
+               if (playerBattler == null) {
+                  D.adminLog("Player battler is missing-A!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+               } else {
+                  Battle battle = BattleManager.self.getBattle(playerBattler.battleId);
+                  if (battle == null) {
+                     D.adminLog("Missing Battle Reference-A: " + playerBattler.battleId, D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                  } else {
+                     if (battle.getDefenders().Count < 1) {
+                        D.adminLog("Enemy party is missing-A!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                     }
+                     foreach (Battler defender in battle.getDefenders()) {
+                        D.adminLog("-> BiD-A:" + playerBattler.battleId + "{" + defender.userId + ":" + defender.enemyType + "}{" + defender.health + ":" + defender.health + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                     }
+                  }
+               }
             } else {
                BattleSelectionManager.self.clickBattler(randomTarget);
             }
@@ -315,7 +332,24 @@ public class BattleUIManager : MonoBehaviour {
                            try {
                               Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
                               if (randomTarget == null) {
-                                 D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
+                                 D.adminLog("Warning, no live targets found using Random Target Selection! LiveTargets-B:{" + BattleSelectionManager.self.getLiveTargets().Count + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+
+                                 Battler playerBattler = BattleManager.self.getPlayerBattler();
+                                 if (playerBattler == null) {
+                                    D.adminLog("Player battler is missing-B!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                                 } else {
+                                    Battle battle = BattleManager.self.getBattle(playerBattler.battleId);
+                                    if (battle == null) {
+                                       D.adminLog("Missing Battle Reference-B: " + playerBattler.battleId, D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                                    } else {
+                                       if (battle.getDefenders().Count < 1) {
+                                          D.adminLog("Enemy party is missing-B!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                                       }
+                                       foreach (Battler defender in battle.getDefenders()) {
+                                          D.adminLog("-> BiD-B:" + playerBattler.battleId + "{" + defender.userId + ":" + defender.enemyType + "}{" + defender.health + ":" + defender.health + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                                       }
+                                    }
+                                 }
                               } else {
                                  BattleSelectionManager.self.clickBattler(randomTarget);
                               }
@@ -458,7 +492,24 @@ public class BattleUIManager : MonoBehaviour {
          if (!isInitialEnemySelected) {
             Battler randomTarget = BattleSelectionManager.self.getRandomTarget();
             if (randomTarget == null) {
-               D.debug("Warning, no live targets found using Random Target Selection! LiveTargets:{" + BattleSelectionManager.self.getLiveTargets().Count + "}");
+               D.adminLog("Warning, no live targets found using Random Target Selection! LiveTargets-C:{" + BattleSelectionManager.self.getLiveTargets().Count + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+
+               Battler playerBattler = BattleManager.self.getPlayerBattler();
+               if (playerBattler == null) {
+                  D.adminLog("Player battler is missing-C!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+               } else {
+                  Battle battle = BattleManager.self.getBattle(playerBattler.battleId);
+                  if (battle == null) {
+                     D.adminLog("Missing Battle Reference-C: " + playerBattler.battleId, D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                  } else {
+                     if (battle.getDefenders().Count < 1) {
+                        D.adminLog("Enemy party is missing-C!", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                     }
+                     foreach (Battler defender in battle.getDefenders()) {
+                        D.adminLog("-> BiD-C:" + playerBattler.battleId + "{" + defender.userId + ":" + defender.enemyType + "}{" + defender.health + ":" + defender.health + "}", D.ADMIN_LOG_TYPE.BattleMissingSelection);
+                     }
+                  }
+               }
             } else {
                BattleSelectionManager.self.clickBattler(randomTarget);
             }

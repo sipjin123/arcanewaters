@@ -1793,6 +1793,12 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestShipsFromServer () {
+      processShipsFromServer();
+   }
+
+   public void processShipsFromServer () {
+      List<ShipRefundData> refundableShips = new List<ShipRefundData>();
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
