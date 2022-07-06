@@ -109,6 +109,53 @@ public class Blueprint : RecipeItem
       return Item.Category.None;
    }
 
+   public Item translateBlueprintIntoItem (Item item) {
+      Item translatedItem = new Item();
+      translatedItem.category = Category.None;
+      translatedItem.itemTypeId = -1;
+
+      if (item.data.Contains(Blueprint.ARMOR_DATA_PREFIX)) {
+         ArmorStatData fetchedArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
+         if (fetchedArmorData != null) {
+            return Armor.castItemToArmor(item);
+         }
+      } else if (item.data.Contains(Blueprint.WEAPON_DATA_PREFIX)) {
+         WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+         if (fetchedWeaponData != null) {
+            return Weapon.castItemToWeapon(item);
+         }
+      } else if (item.data.Contains(Blueprint.HAT_DATA_PREFIX)) {
+         HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+         if (fetchedHatData != null) {
+            return Hat.castItemToHat(item);
+         }
+      } else if (item.data.Contains(Blueprint.RING_DATA_PREFIX)) {
+         RingStatData fetchedRingData = EquipmentXMLManager.self.getRingData(item.itemTypeId);
+         if (fetchedRingData != null) {
+            return Ring.castItemToRing(item);
+         }
+      } else if (item.data.Contains(Blueprint.NECKLACE_DATA_PREFIX)) {
+         NecklaceStatData fetchedNecklaceData = EquipmentXMLManager.self.getNecklaceData(item.itemTypeId);
+         if (fetchedNecklaceData != null) {
+            return Necklace.castItemToNecklace(item);
+         }
+      } else if (item.data.Contains(Blueprint.TRINKET_DATA_PREFIX)) {
+         TrinketStatData fetchedTrinketData = EquipmentXMLManager.self.getTrinketData(item.itemTypeId);
+         if (fetchedTrinketData != null) {
+            return Trinket.castItemToTrinket(item);
+         }
+      } else if (item.data.Contains(Blueprint.INGREDIENT_DATA_PREFIX)) {
+         CraftingIngredients ingredientReference = new CraftingIngredients(item);
+         return ingredientReference;
+      }
+
+      return translatedItem;
+   }
+
+   public override string getDescription () {
+      return translateBlueprintIntoItem(this).getTooltip();
+   }
+
    public override bool canBeTrashed () {
       return base.canBeTrashed();
    }

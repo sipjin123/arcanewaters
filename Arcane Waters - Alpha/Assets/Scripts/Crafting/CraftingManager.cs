@@ -23,46 +23,6 @@ public class CraftingManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
-      initializeRefinementData();
-   }
-
-   private void initializeRefinementData () {
-      // TODO: Setup this feature to the web tool instead of hard coding the ingredients
-
-      List<Item> newItemGroup = new List<Item>();
-      newItemGroup.Add(new Item {
-         category = Item.Category.CraftingIngredients,
-         itemTypeId = (int) CraftingIngredients.Type.Wood,
-         count = 1
-      });
-      newItemGroup.Add(new Item {
-         category = Item.Category.CraftingIngredients,
-         itemTypeId = (int) CraftingIngredients.Type.Iron_Ore,
-         count = 2
-      });
-
-      _refinementData.Add(0, new RefinementData {
-         xmlId = 0,
-         combinationRequirements = newItemGroup.ToArray()
-      });
-      refinementDataList.Add(_refinementData[0]);
-
-      newItemGroup.Clear();
-      newItemGroup.Add(new Item {
-         category = Item.Category.CraftingIngredients,
-         itemTypeId = (int) CraftingIngredients.Type.Coal,
-         count = 2
-      });
-      newItemGroup.Add(new Item {
-         category = Item.Category.CraftingIngredients,
-         itemTypeId = (int) CraftingIngredients.Type.Silver_Ore,
-         count = 3
-      });
-      _refinementData.Add(1, new RefinementData {
-         xmlId = 1,
-         combinationRequirements = newItemGroup.ToArray()
-      });
-      refinementDataList.Add(_refinementData[1]);
    }
 
    public CraftableItemRequirements getCraftableData(Item.Category itemCategory, int itemTypeId) {

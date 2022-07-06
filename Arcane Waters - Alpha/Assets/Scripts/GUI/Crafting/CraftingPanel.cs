@@ -397,7 +397,7 @@ public class CraftingPanel : Panel
       }
 
       // Highlights the currently selected template
-      if (resultItem.category == Item.Category.Crop || resultItem.category == Item.Category.CraftingIngredients) {
+      if (resultItem.id < 1 && (resultItem.category == Item.Category.Crop || resultItem.category == Item.Category.CraftingIngredients)) {
          BlueprintRow blueprintRow = blueprintRowList.Find(_ => _.itemType == resultItem.itemTypeId);
          if (blueprintRow != null) {
             blueprintRow.highlightTemplate(true);
@@ -546,9 +546,13 @@ public class CraftingPanel : Panel
       refineAbleItemSelection.gameObject.DestroyChildren();
       refinementIngredientsHolder.gameObject.DestroyChildren();
 
+      string targetAreaKey = "";
+      if (Global.player != null) {
+         targetAreaKey = Global.player.areaKey;
+      }
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats, Item.Category.Ring, Item.Category.Necklace, Item.Category.Trinket
-      }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
+      }, targetAreaKey, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
    }
 
    public void selectRefinementTab () {
@@ -573,9 +577,13 @@ public class CraftingPanel : Panel
          ui.SetActive(false);
       }
 
+      string targetAreaKey = "";
+      if (Global.player != null) {
+         targetAreaKey = Global.player.areaKey;
+      }
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats, Item.Category.Ring, Item.Category.Necklace, Item.Category.Trinket
-      }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
+      }, targetAreaKey, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
    }
 
    public void receiveRefineableItems (List<Item> itemList, int currentPageIndex) {

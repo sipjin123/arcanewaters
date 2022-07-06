@@ -90,6 +90,7 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler, IPointerDownHand
       clear();
 
       _itemCell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
+      _itemCell.isShortcutBox = true;
       _itemCell.setCellForItem(item);
 
       if (item.itemTypeId != 0 && item.id != 0) {

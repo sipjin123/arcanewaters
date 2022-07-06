@@ -12,6 +12,7 @@ public class InventoryPanel : Panel
 
    // The number of items to display per page
    public static int ITEMS_PER_PAGE = 48;
+   public static int ITEMS_PER_PAGE_BUFFER = 10;
 
    // The container of the item cells
    public GameObject itemCellsContainer;
@@ -81,7 +82,11 @@ public class InventoryPanel : Panel
 
    public void refreshPanel () {
       showBlocker();
-      NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE, 0, Panel.Type.Inventory);
+      string targetAreaKey = "";
+      if (Global.player != null) {
+         targetAreaKey = Global.player.areaKey;
+      }
+      NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, targetAreaKey, _currentPage, ITEMS_PER_PAGE, 0, Panel.Type.Inventory);
    }
 
    public void preloadPanel () {
@@ -143,8 +148,16 @@ public class InventoryPanel : Panel
       itemCellsContainer.DestroyChildren();
 
       // Create the item cells
+      int spawnCount = 0;
       foreach (Item item in itemArray) {
-         instantiateItemCell(item, itemCellsContainer.transform);
+         ItemCell cellRef = instantiateItemCell(item, itemCellsContainer.transform);
+
+         if (cellRef.gameObject.activeInHierarchy) {
+            spawnCount++;
+         }
+         if (spawnCount >= ITEMS_PER_PAGE) {
+            break;
+         }
       }
 
       // Update the CharacterInfo section

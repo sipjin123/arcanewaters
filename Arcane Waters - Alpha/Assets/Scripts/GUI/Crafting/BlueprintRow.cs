@@ -26,6 +26,9 @@ public class BlueprintRow : MonoBehaviour
    // The icon displayed when the blueprint can be crafted
    public Image canBeCraftedImage;
 
+   // Enable the highlighted object
+   public GameObject highlightObj;
+
    // The button of the row
    public Button rowButton;
 
@@ -43,8 +46,12 @@ public class BlueprintRow : MonoBehaviour
    public void highlightTemplate (bool isHighlighted) {
       if (isHighlighted) {
          rowImage.sprite = blueprintSelectedSprite;
+         highlightObj.SetActive(true);
+         rowButton.enabled = false;
       } else {
          rowImage.sprite = defaultSelectionSprite;
+         highlightObj.SetActive(false);
+         rowButton.enabled = true;
       }
    }
 

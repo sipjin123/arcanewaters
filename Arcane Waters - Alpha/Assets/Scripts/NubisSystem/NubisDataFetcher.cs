@@ -73,6 +73,12 @@ namespace NubisDataHandling
       // The valid length of an xml data
       public static int VALID_XML_LENGTH = 5;
 
+      // The current nubis request status
+      public NubisRequestStatus currentNubisRequestStatus = NubisRequestStatus.None;
+
+      // The current area where the process was triggered
+      public string currentAreaProcess = "";
+
       #endregion
 
       protected override void Awake () {
@@ -408,37 +414,55 @@ namespace NubisDataHandling
          GuildInventoryPanel.self.receiveItemForDisplay(result, categoryFilter, pageIndex, totalItems);
       }
 
-      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42, Item.DurabilityFilter itemDurabilityFilter = Item.DurabilityFilter.None, Panel.Type panelType = Panel.Type.Inventory) {
+      public async void getUserInventory (List<Item.Category> categoryFilter, string requestAreaKey, int pageIndex, int itemsPerPage, Item.DurabilityFilter itemDurabilityFilter = Item.DurabilityFilter.None, Panel.Type panelType = Panel.Type.Inventory) {
          if (Global.player == null) {
             return;
          }
 
+         // Add item per page buffer
+         itemsPerPage = itemsPerPage + InventoryPanel.ITEMS_PER_PAGE_BUFFER;
+		 
+         // Prevent access if process is not complete
+         if (this.currentNubisRequestStatus == NubisRequestStatus.CraftingRequest && panelType == Panel.Type.Craft) {
+            return;
+         }
+         if (this.currentNubisRequestStatus == NubisRequestStatus.InventoryRequest && panelType == Panel.Type.Inventory) {
+            return;
+         }
+
+         if (panelType == Panel.Type.Inventory) {
+            currentNubisRequestStatus = NubisRequestStatus.InventoryRequest;
+         } else if (panelType == Panel.Type.Craft) {
+            currentNubisRequestStatus = NubisRequestStatus.CraftingRequest;
+         }
+         currentAreaProcess = requestAreaKey;
+
          int userId = Global.player.userId;
          int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
          string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
-
-         // Request the jobs from Nubis
-         string jobsBundleString = await NubisClient.call<string>(nameof(DB_Main.getJobXPString), userId);
          Jobs jobsData = new Jobs();
-         if (jobsBundleString != null && jobsBundleString.Length > 0) {
-            string splitter = "[space]";
-            string[] xmlGroup = jobsBundleString.Split(new string[] { splitter }, StringSplitOptions.None);
-            if (xmlGroup.Length >= 6) {
-               try {
-                  jobsData.farmerXP = int.Parse(xmlGroup[0]);
-                  jobsData.explorerXP = int.Parse(xmlGroup[1]);
-                  jobsData.sailorXP = int.Parse(xmlGroup[2]);
-                  jobsData.traderXP = int.Parse(xmlGroup[3]);
-                  jobsData.crafterXP = int.Parse(xmlGroup[4]);
-                  jobsData.minerXP = int.Parse(xmlGroup[5]);
-               } catch {
-                  D.debug("Error! Something went wrong translating jobs data!");
-               }
-            }
-         }
 
          // Handle preloading here
          if (panelType == Panel.Type.Inventory) {
+            // Request the jobs from Nubis
+            string jobsBundleString = await NubisClient.call<string>(nameof(DB_Main.getJobXPString), userId);
+            if (jobsBundleString != null && jobsBundleString.Length > 0) {
+               string splitter = "[space]";
+               string[] xmlGroup = jobsBundleString.Split(new string[] { splitter }, StringSplitOptions.None);
+               if (xmlGroup.Length >= 6) {
+                  try {
+                     jobsData.farmerXP = int.Parse(xmlGroup[0]);
+                     jobsData.explorerXP = int.Parse(xmlGroup[1]);
+                     jobsData.sailorXP = int.Parse(xmlGroup[2]);
+                     jobsData.traderXP = int.Parse(xmlGroup[3]);
+                     jobsData.crafterXP = int.Parse(xmlGroup[4]);
+                     jobsData.minerXP = int.Parse(xmlGroup[5]);
+                  } catch {
+                     D.debug("Error! Something went wrong translating jobs data!");
+                  }
+               }
+            }
+
             // Get the inventory panel
             InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
@@ -523,27 +547,42 @@ namespace NubisDataHandling
          // Filter inventory items here
          itemList.RemoveAll(_ => _.category == Item.Category.Usable);
 
-         if (panelType == Panel.Type.Inventory) {
-            // Get the inventory panel
-            InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+         if (Global.player != null) {
+            if (Global.player.areaKey == currentAreaProcess) {
+               currentAreaProcess = "";
+               if (panelType == Panel.Type.Inventory) {
+                  // Get the inventory panel
+                  InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
-            // Make sure the inventory panel is showing
-            if (!inventoryPanel.isShowing()) {
-               PanelManager.self.showPanel(Panel.Type.Inventory);
+                  // Make sure the inventory panel is showing
+                  if (!inventoryPanel.isShowing()) {
+                     PanelManager.self.showPanel(Panel.Type.Inventory);
 
-               // When inventory panel is opened, we should always start at the first page
-               pageIndex = 0;
+                     // When inventory panel is opened, we should always start at the first page
+                     pageIndex = 0;
+                  }
+                  inventoryPanel.clearPanel();
+
+                  UserObjects userObjects = new UserObjects {
+                     userInfo = inventoryBundle.user,
+                     weapon = inventoryBundle.equippedWeapon,
+                     armor = inventoryBundle.equippedArmor,
+                     hat = inventoryBundle.equippedHat,
+                     ring = inventoryBundle.equippedRing,
+                     necklace = inventoryBundle.equippedNecklace,
+                     trinket = inventoryBundle.equippedTrinket
+                  };
+                  inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true, jobsData);
+               } else if (panelType == Panel.Type.Craft) {
+                  // Get the crafting panel
+                  CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+                  craftingPanel.receiveRefineableItems(itemList, pageIndex);
+               }
             }
-            inventoryPanel.clearPanel();
-
-            UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat,
-            ring = inventoryBundle.equippedRing, necklace = inventoryBundle.equippedNecklace, trinket = inventoryBundle.equippedTrinket };
-            inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true, jobsData);
-         } else if (panelType == Panel.Type.Craft) {
-            // Get the crafting panel
-            CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-            craftingPanel.receiveRefineableItems(itemList, pageIndex);
          }
+
+         currentAreaProcess = "";
+         currentNubisRequestStatus = NubisRequestStatus.None;
       }
 
       public async void getInventoryForItemSelection (List<Item.Category> categoryFilter, List<int> itemIdsToExclude,

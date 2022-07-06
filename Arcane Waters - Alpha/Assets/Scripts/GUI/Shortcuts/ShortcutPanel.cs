@@ -80,6 +80,8 @@ public class ShortcutPanel : ClientMonoBehaviour {
       ShortcutBox box = _boxes?.Find(b => b.slotNumber == slotNumber);
       if (box != null) {
          box.onShortcutPress();
+      } else {
+         D.debug("Failed to find shortcut box:{" + slotNumber + "}");
       }
    }
    

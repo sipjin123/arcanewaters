@@ -36,6 +36,8 @@ public class InventoryManager : MonoBehaviour
          useItem(castedItem);
          return;
       }
+
+      D.debug("Failed to Equip item:{" + castedItem.category + ":" + castedItem.itemTypeId + "} PlayerLvl:{" + level + "}");
    }
 
    public static void equipOrUnequipItem (Item castedItem, Jobs jobsData = null) {
@@ -47,6 +49,9 @@ public class InventoryManager : MonoBehaviour
 
       // If level requirements are met
       if (itemIdToSend != 0 && !EquipmentXMLManager.self.isLevelValid(level, castedItem)) {
+         D.debug("Failed to equip item:{" + itemIdToSend + "} " +
+            "{" + (!EquipmentXMLManager.self.isLevelValid(level, castedItem) ? "Invalid Level:{" + level + "}" : "") + " " +
+            "for item:{" + castedItem.category + ":" + castedItem.itemTypeId + "}}");
          return;
       }
 
@@ -98,6 +103,8 @@ public class InventoryManager : MonoBehaviour
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetTrinketId(itemIdToSend, Global.showSoulbindingWarnings);
+      } else {
+         D.debug("Unknown equip Command for item id:{" + itemIdToSend + "}");
       }
    }
 

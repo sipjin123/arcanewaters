@@ -11,6 +11,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    #region Public Variables
 
+   // If this cell is from the shortcut box
+   public bool isShortcutBox;
+
    // The icon of the item
    public Image icon;
 
@@ -116,6 +119,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public void setCellForItem (Item item, int count) {
       string rawItemData = item.data;
+      if (levelRestrictionObj != null) {
+         levelRestrictionObj.SetActive(false);
+      }
+      bool hideDisabledItems = false;
 
       // Retrieve the icon sprite and coloring depending on the type
       switch (item.category) {
@@ -127,7 +134,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -159,7 +166,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -198,7 +205,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -230,7 +237,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -262,7 +269,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -294,7 +301,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                isDisabledItem = true;
                itemCountText.transform.parent.gameObject.SetActive(false);
                tooltip.message = "Disabled Item";
-               if (Global.player != null && !Global.player.isAdmin()) {
+               if ((Global.player != null && !Global.player.isAdmin()) || hideDisabledItems) {
                   gameObject.SetActive(false);
                }
                return;
@@ -556,8 +563,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       if (item == null || item.category == Item.Category.None || item.itemTypeId == 0) {
          levelRestrictionObj.SetActive(false);
       } else if (item != null && levelRestrictionObj != null && Global.player != null) {
-         bool isLevelValid = EquipmentXMLManager.self.isLevelValid(LevelUtil.levelForXp(Global.player.XP), item);
+         int playerLevel = LevelUtil.levelForXp(Global.player.XP);
+         bool isLevelValid = EquipmentXMLManager.self.isLevelValid(playerLevel, item);
          levelRestrictionObj.SetActive(!isLevelValid);
+         if (levelRestrictionObj.activeInHierarchy && isShortcutBox) {
+            D.debug("Hotkey Item is level restricted! Lvl:{" + playerLevel + "} Item:{" + item.category + ":" + item.itemTypeId + ":" + item.id + "}");
+         }
       }
 
       // Show the item count when relevant
