@@ -37,6 +37,11 @@ public class FlagshipRow : MonoBehaviour {
    public Text sailorLevelRequirementText;
    public GameObject sailorLevelDisplay;
 
+   // Holds the refund button
+   public GameObject refundButtonHolder;
+   public GameObject refundAmountHolder;
+   public Text refundAmountText;
+
    // The ability row references
    public FlagShipAbilityRow[] abilityTemplates;
 
@@ -45,7 +50,7 @@ public class FlagshipRow : MonoBehaviour {
 
    #endregion
 
-   public void setRowForItem (ShipInfo shipInfo, int level, int sailorLevel) {
+   public void setRowForItem (ShipInfo shipInfo, int level, int sailorLevel, bool canRefund, int refundAmount) {
       this.shipInfo = shipInfo;
 
       // Update the icon name and text
@@ -93,6 +98,15 @@ public class FlagshipRow : MonoBehaviour {
       }
 
       setAbilities(shipInfo.shipAbilities);
+      if (refundAmountText != null) {
+         refundAmountText.text = refundAmount.ToString();
+      }
+      if (refundButtonHolder != null) {
+         refundButtonHolder.SetActive(canRefund);
+      }
+      if (refundAmountHolder != null) {
+         refundAmountHolder.SetActive(canRefund);
+      }
    }
 
    private void setAbilities (ShipAbilityInfo info) {
@@ -128,6 +142,14 @@ public class FlagshipRow : MonoBehaviour {
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => flagShipRow.pointerExit());
          counter++;
       }
+   }
+
+   public void refundShip () {
+      FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
+      if (panel != null) {
+         panel.loadBlocker.SetActive(true);
+      }
+      Global.player.rpc.Cmd_RequestRefundShip(shipInfo.shipId, shipInfo.shipXmlId);
    }
 
    public void chooseThisAsFlagship () {

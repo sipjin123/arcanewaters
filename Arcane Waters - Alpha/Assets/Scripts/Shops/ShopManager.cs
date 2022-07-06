@@ -21,6 +21,12 @@ public class ShopManager : MonoBehaviour {
    // If this is initialized
    public bool hasInitialized;
 
+   // The dictionary containing the refund amount per ship xml id
+   public Dictionary<int, int> refundShipData = new Dictionary<int, int>();
+
+   // The default ship refund amount
+   public const int DEFAULT_SHIP_REFUND_AMOUNT = 250;
+
    #endregion
 
    private void Awake () {
@@ -338,6 +344,11 @@ public class ShopManager : MonoBehaviour {
                   // Store the ship
                   _ships[ship.shipId] = ship;
 
+                  // Cache the price of the ship using xml id
+                  if (!refundShipData.ContainsKey(shipXmlId)) {
+                     refundShipData.Add(shipXmlId, price);
+                  }
+
                   // Add it to the list
                   if (_shipsByShopId.ContainsKey(shopData.shopId)) {
                      _shipsByShopId[shopData.shopId].Add(ship.shipId);
@@ -467,6 +478,14 @@ public class ShopManager : MonoBehaviour {
       } 
 
       return list;
+   }
+
+   public int getShipRefundPrice (int shipXmlId) {
+      if (refundShipData.ContainsKey(shipXmlId)) {
+         return refundShipData[shipXmlId];
+      } else {
+         return -1;
+      }
    }
 
    public void onUserSellCrop (int shopId, int offerId, float amount) {

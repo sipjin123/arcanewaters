@@ -212,3 +212,15 @@ public class ShipAbilityInfo
       }
    }
 }
+
+[Serializable]
+public class ShipRefundData {
+   // Unique ship id
+   public int shipId;
+
+   // The xml id which is found in player ship web tool
+   public int shipXmlId;
+
+   // The amount to be rewarded on refund
+   public int shipRefundAmount;
+}

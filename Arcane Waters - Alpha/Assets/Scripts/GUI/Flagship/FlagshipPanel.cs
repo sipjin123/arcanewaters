@@ -20,13 +20,16 @@ public class FlagshipPanel : Panel {
    // Reference to the ship ability tooltip
    public ShipAbilityTooltip shipAbilityTooltip;
 
+   // Blocks panel during server communication
+   public GameObject loadBlocker;
+
    #endregion
 
    public override void show () {
       base.show();
    }
 
-   public void updatePanelWithShips (List<ShipInfo> shipList, int flagshipId, int level, int sailorLevel) {
+   public void updatePanelWithShips (List<ShipInfo> shipList, int flagshipId, int level, int sailorLevel, List<ShipRefundData> refundableShips) {
       playerFlagshipId = flagshipId;
 
       // Clear out any old info
@@ -43,8 +46,17 @@ public class FlagshipPanel : Panel {
          // Create a new row
          FlagshipRow row = Instantiate(rowPrefab, scrollViewContent.transform, false);
          row.transform.SetParent(scrollViewContent.transform, false);
-         row.setRowForItem(shipInfo, level, sailorLevel);
+
+         int refundAmount = 0;
+         bool canBeRefunded = false;
+         ShipRefundData refundData = refundableShips.Find(_ => _.shipId == shipInfo.shipId);
+         if (refundData != null) {
+            canBeRefunded = true;
+            refundAmount = refundData.shipRefundAmount;
+         }
+         row.setRowForItem(shipInfo, level, sailorLevel, canBeRefunded, refundAmount);
       }
+      loadBlocker.SetActive(false);
    }
 
    protected ShipInfo getShipInfo (int shipId) {

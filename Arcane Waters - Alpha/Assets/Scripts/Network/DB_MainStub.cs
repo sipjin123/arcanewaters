@@ -1159,6 +1159,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static int deleteShipForUser (int usrId, int shpId) {
+      return -1;
+   }
+
    public static void setCurrentShip (int userId, int shipId) {
 
    }

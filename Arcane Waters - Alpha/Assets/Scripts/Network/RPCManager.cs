@@ -811,7 +811,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveShips (NetworkConnection connection, ShipInfo[] ships, int flagshipId, int sailorLevel) {
+   public void Target_ReceiveShips (NetworkConnection connection, ShipInfo[] ships, int flagshipId, int sailorLevel, List<ShipRefundData> refundableShips) {
       List<ShipInfo> shipList = new List<ShipInfo>(ships);
 
       // Make sure the panel is showing
@@ -822,7 +822,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass them along to the Flagship panel
-      panel.updatePanelWithShips(shipList, flagshipId, LevelUtil.levelForXp(_player.XP), sailorLevel);
+      panel.updatePanelWithShips(shipList, flagshipId, LevelUtil.levelForXp(_player.XP), sailorLevel, refundableShips);
    }
 
    [TargetRpc]
@@ -1787,7 +1787,44 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveShips(_player.connectionToClient, ships.ToArray(), userObjects.shipInfo.shipId, sailorLevel);
+            foreach (ShipInfo existingShipInfo in ships) {
+               if (existingShipInfo.damage == 0) {
+                  int refundAmount = ShopManager.self.getShipRefundPrice(existingShipInfo.shipXmlId);
+                  if (refundAmount < 1) {
+                     refundAmount = ShopManager.DEFAULT_SHIP_REFUND_AMOUNT;
+                  }
+                  refundableShips.Add(new ShipRefundData {
+                     shipId = existingShipInfo.shipId,
+                     shipRefundAmount = refundAmount,
+                     shipXmlId = existingShipInfo.shipXmlId
+                  });
+               }
+            }
+
+            _player.rpc.Target_ReceiveShips(_player.connectionToClient, ships.ToArray(), userObjects.shipInfo.shipId, sailorLevel, refundableShips);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestRefundShip (int flagshipId, int xmlId) {
+      processRefundShip(flagshipId, xmlId);
+   }
+
+   public void processRefundShip (int flagshipId, int xmlId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int hasDeleted = DB_Main.deleteShipForUser(_player.userId, flagshipId);
+         int refundAmount = ShopManager.DEFAULT_SHIP_REFUND_AMOUNT;
+         if (xmlId > 0) {
+            int cachedRefundAmount = ShopManager.self.getShipRefundPrice(xmlId);
+            if (cachedRefundAmount > 0) {
+               refundAmount = cachedRefundAmount;
+            }
+         }
+         DB_Main.addGold(_player.userId, refundAmount);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processShipsFromServer();
+            _player.Target_ReceiveNormalChat("You have received " + refundAmount + " gold after refunding ship!", ChatInfo.Type.System);
          });
       });
    }

@@ -9693,6 +9693,27 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new int deleteShipForUser (int usrId, int shpId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ships WHERE usrId=@usrId AND shpId=@shpId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@shpId", shpId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            return 1;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return -1;
+   }
+
    public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {
       ShipInfo shipInfo = new ShipInfo();
 
